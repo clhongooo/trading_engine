@@ -1629,6 +1629,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     }
 
     //--------------------------------------------------
+    const set<string> & setMtnPsn = m_MaintainPos[m_RotationGroup[iTradSym]][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()];
     m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s IsTopReturnSym %s. Will now pick the top %d symbols based on their %d-day return. Size of set of maintain pos symbols %d.",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
@@ -1648,8 +1649,6 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     }
     else
     {
-      const set<string> & setMtnPsn = m_MaintainPos[m_RotationGroup[iTradSym]][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()];
-
       if (setMtnPsn.find(m_TradedSymbols[iTradSym]) == setMtnPsn.end()
           &&
           !IsTopReturnSym(m_RotationGroup[iTradSym],
