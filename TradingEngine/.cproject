@@ -84,6 +84,7 @@
 									<listOptionValue builtIn="false" value="pantheios.1.bec.file.gcc46"/>
 									<listOptionValue builtIn="false" value="pantheios.1.util.gcc46"/>
 									<listOptionValue builtIn="false" value="pthread"/>
+									<listOptionValue builtIn="false" value="zmq"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1965872394" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/usr/lib64"/>

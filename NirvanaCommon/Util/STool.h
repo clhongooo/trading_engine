@@ -19,8 +19,6 @@ class STool
     static int Max(int iA, int iB, int iC);
     static int Min(int iA, int iB);
     static int Min(int iA, int iB, int iC);
-    static int Sign(int i);
-    static double Sign(double d);
     static double IntPart1(double d);
     static double IntPart2(double d);
     static double Round(double d, unsigned u);
@@ -73,6 +71,8 @@ class STool
     static bool IsValidPrice(const double);
     static bool IsNumber(const string &);
     static string GetNthItemFromCSV(const string &,const int);
+    static int Sign(const long);
+    static double Sign(const double);
 
 };
 

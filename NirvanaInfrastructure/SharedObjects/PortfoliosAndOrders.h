@@ -14,6 +14,7 @@
 #include "Acct.h"
 #include "STool.h"
 #include "StyCPnLHist.h"
+#include <zmq.hpp>
 
 #define NUMOFDECIMALPLACEINPRICE 5
 
@@ -195,6 +196,13 @@ class PortfoliosAndOrders {
     //--------------------------------------------------
     boost::mutex m_ObserverMutex;
     boost::condition_variable m_cvOrdersAvb;
+    //--------------------------------------------------
+
+    //--------------------------------------------------
+    // ZMQ
+    //--------------------------------------------------
+    boost::scoped_ptr<zmq::context_t> m_zmqcontext;
+    boost::scoped_ptr<zmq::socket_t> m_zmqsocket;
     //--------------------------------------------------
 
 };

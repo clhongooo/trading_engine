@@ -47,11 +47,11 @@ void RegularMiniCtrtManager::UpdateRegularCtrtTgtSgnl(const string & sRglrSym, c
   // Convert regular to mini, and truncate the odd amount
   //--------------------------------------------------
   const double dTgtMiniTheoPos = dTgtRglrTheoPos * dRglrMiniRatio;
-  const double dTgtMiniTheoPosFloored = (dTgtMiniTheoPos > 0 ? 1 : -1) * floor(abs(dTgtMiniTheoPos));
+  const double dTgtMiniTheoPosFloored = STool::Sign(dTgtMiniTheoPos) * floor(abs(dTgtMiniTheoPos));
 
   if (m_RMCM_Mode == RMCM_OPTZMARGINREQ)
   {
-    const long lRglrPos = (dTgtMiniTheoPosFloored > 0 ? 1 : -1) * (long)floor(abs(dTgtMiniTheoPosFloored / dRglrMiniRatio));
+    const long lRglrPos = STool::Sign(dTgtMiniTheoPosFloored) * (long)floor(abs(dTgtMiniTheoPosFloored / dRglrMiniRatio));
     m_SuggestedPos[sRglrSym] = lRglrPos;
     m_SuggestedPos[sMiniSym] = (long)round((dTgtMiniTheoPosFloored - (double)lRglrPos * dRglrMiniRatio));
   }
@@ -60,7 +60,7 @@ void RegularMiniCtrtManager::UpdateRegularCtrtTgtSgnl(const string & sRglrSym, c
     const double dExistgRglrTheoPos = GetRegularCtrtTheoPos(sRglrSym);
     const double dExistgMiniTheoPos = dExistgRglrTheoPos * dRglrMiniRatio;
     const double dMiniTheoPosDelta  = dTgtMiniTheoPosFloored - dExistgMiniTheoPos;
-    const long   lRglrDelta         = (dMiniTheoPosDelta > 0 ? 1 : -1) * (long)round(abs(dMiniTheoPosDelta / dRglrMiniRatio));
+    const long   lRglrDelta         = STool::Sign(dMiniTheoPosDelta) * (long)round(abs(dMiniTheoPosDelta / dRglrMiniRatio));
 
     m_SuggestedPos[sRglrSym] += lRglrDelta;
     m_SuggestedPos[sMiniSym] += (long)round((dMiniTheoPosDelta - (double)lRglrDelta * dRglrMiniRatio));

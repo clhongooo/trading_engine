@@ -45,6 +45,7 @@ SystemConfig::SystemConfig() :
   m_HaltTradingPath(""),
   m_HalfDayTradingPath(""),
   m_CorpActionAdjPath(""),
+  m_LotSizePath(""),
   m_ErroneousTickPxChg(NAN),
   m_GKYZ_Window_Size(6000),
   m_MktData_TradeVolumeMode(SystemConfig::ACCUMULATED_VOLUME_MODE),
@@ -52,6 +53,7 @@ SystemConfig::SystemConfig() :
   m_VolSurfParamFile2FM(""),
   m_ProbDistrFileFSMC1D(""),
   m_OrderRoutingMode(ORDER_ROUTE_OTI),
+  m_NextTier_ZMQ_IP_Port(""),
   m_TCPOrEmbeddedMode(TCPWITHOUTACK),
   m_B1_HKF_SamplingIntervalInSec(1800),
   m_SendResetOnConnectionToCAPI(true),
@@ -191,6 +193,7 @@ SystemConfig::MktDataTradeVolumeMode   SystemConfig::Get_MktDataTradeVolumeMode(
 string                                 SystemConfig::Get_VolSurfParamFile1FM()                         const {  return m_VolSurfParamFile1FM;                         }
 string                                 SystemConfig::Get_VolSurfParamFile2FM()                         const {  return m_VolSurfParamFile2FM;                         }
 string                                 SystemConfig::Get_ProbDistrFileFSMC1D()                         const {  return m_ProbDistrFileFSMC1D;                         }
+string                                 SystemConfig::Get_NextTier_ZMQ_IP_Port()                        const {  return m_NextTier_ZMQ_IP_Port;                        }
 SystemConfig::OrderRoutingMode         SystemConfig::Get_OrderRoutingMode()                            const {  return m_OrderRoutingMode;                            }
 SystemConfig::TCPOrEmbeddedMode        SystemConfig::Get_TCPOrEmbeddedMode()                           const {  return m_TCPOrEmbeddedMode;                           }
 string                                 SystemConfig::Get_Main_Log_Path()                               const {  return m_MainLogPath;                                 }
@@ -313,6 +316,20 @@ bool SystemConfig::GetCorpActionAdj(const string & symbol, const YYYYMMDD & ymd,
   price_ratio = it2->second.m_price_ratio;
   return true;
 }
+
+int SystemConfig::GetLotSize(const string & symbol) const
+{
+  map<string,int>::const_iterator it = m_map_LotSize.find(symbol);
+  if (it == m_map_LotSize.end()) return 1;
+  return it->second;
+}
+
+long SystemConfig::RoundDownLotSize(const string & symbol, const long volume) const
+{
+  const int iLotSize = GetLotSize(symbol);
+  return STool::Sign(volume) * (abs(volume) / iLotSize) * iLotSize;
+}
+
 
 bool SystemConfig::CheckIfBarAggregationM1Symbol(const string & symbol) const
 {
@@ -916,7 +933,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
       }
     }
   }
-
+  //--------------------------------------------------
   {
     m_CorpActionAdjPath = pt.get<string>("SystemSettings.CorpActionAdjPath");
     deque<string> dqFile;
@@ -966,12 +983,40 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
       }
     }
     //--------------------------------------------------
+  }
+  //--------------------------------------------------
+  {
+    m_LotSizePath = pt.get<string>("SystemSettings.LotSizePath");
+    deque<string> dqFile;
+    STool::ReadFile(m_LotSizePath,dqFile);
+    for (deque<string>::iterator it = dqFile.begin(); it != dqFile.end(); ++it)
+    {
+      vector<string> vs;
+      boost::split(vs, *it, boost::is_any_of(","));
 
+      const string & sym      = vs[0];
+      const int      lot_size = boost::lexical_cast<int>(vs[1]);
+      m_map_LotSize[sym] = lot_size;
+    }
+
+    //--------------------------------------------------
+    // print log
+    //--------------------------------------------------
+    for_each (m_map_LotSize,[&](const std::pair<string,int> & ls) {
+      const string & symbol   = ls.first;
+      const int      lot_size = ls.second;
+      m_Logger->Write(Logger::INFO,"SystemConfig: Read config file: %s Lot size: %d", symbol.c_str(), lot_size);
+    });
+    //--------------------------------------------------
   }
 
   string sOrderRoutingMode = pt.get<string>("SystemSettings.OrderRoutingMode");
-  if      (sOrderRoutingMode == "record") m_OrderRoutingMode = ORDER_ROUTE_RECORD;
-  else if (sOrderRoutingMode == "oti")    m_OrderRoutingMode = ORDER_ROUTE_OTI;
+  if      (sOrderRoutingMode == "record")      m_OrderRoutingMode = ORDER_ROUTE_RECORD;
+  else if (sOrderRoutingMode == "oti")         m_OrderRoutingMode = ORDER_ROUTE_OTI;
+  else if (sOrderRoutingMode == "nexttierzmq") m_OrderRoutingMode = ORDER_ROUTE_NEXTTIERZMQ;
+
+  boost::optional<string> o_NextTier_ZMQ_IP_Port = pt.get_optional<string>("SystemSettings.ZMQIPPort");
+  if (o_NextTier_ZMQ_IP_Port) m_NextTier_ZMQ_IP_Port = o_NextTier_ZMQ_IP_Port.get();
 
   string sTCPOrEmbeddedMode = pt.get<string>("SystemSettings.TCPOrEmbeddedMode");
   if (sTCPOrEmbeddedMode == "embedded")

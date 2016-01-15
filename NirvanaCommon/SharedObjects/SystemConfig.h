@@ -72,7 +72,7 @@ class SystemConfig : boost::noncopyable
 {
   public:
     enum MktDataTradeVolumeMode {PER_TRADE_VOLUME_MODE=0, ACCUMULATED_VOLUME_MODE=1};
-    enum OrderRoutingMode {ORDER_ROUTE_RECORD=0, ORDER_ROUTE_OTI=1};
+    enum OrderRoutingMode {ORDER_ROUTE_RECORD=0, ORDER_ROUTE_OTI=1, ORDER_ROUTE_NEXTTIERZMQ=2};
     enum TCPOrEmbeddedMode {TCPWITHOUTACK=0, TCPWITHACK=1, EMBEDDED=2};
 
     static boost::shared_ptr<SystemConfig> Instance();
@@ -124,6 +124,7 @@ class SystemConfig : boost::noncopyable
     string                 Get_ProbDistrFileFSMC1D()          const;
 
     OrderRoutingMode       Get_OrderRoutingMode()             const;
+    string                 Get_NextTier_ZMQ_IP_Port()         const;
     TCPOrEmbeddedMode      Get_TCPOrEmbeddedMode()            const;
 
     bool                   Get_OnOff_S11A_T1GBM()             const;
@@ -175,6 +176,8 @@ class SystemConfig : boost::noncopyable
     bool                   CheckIfHaltTrading(const string &,const YYYYMMDD &)                 const;
     bool                   CheckIfHalfDayTrading(const string &,const YYYYMMDD &)              const;
     bool                   GetCorpActionAdj(const string &,const YYYYMMDD &,double &,double &) const;
+    int                    GetLotSize(const string &)                                          const;
+    long                   RoundDownLotSize(const string &,const long)                         const;
 
 
     //--------------------------------------------------
@@ -272,6 +275,8 @@ class SystemConfig : boost::noncopyable
     map<string,set<YYYYMMDD> >                         m_HalfDayTradingSymDate;
     string                                             m_CorpActionAdjPath;
     map<string,map<YYYYMMDD,tuple_corp_action_adj> >   m_CorpActionAdjDetails;
+    string                                             m_LotSizePath;
+    map<string,int>                                    m_map_LotSize;
     set<string>                                        m_BarAggregationM1Symbols;
     set<string>                                        m_BarAggregationD1Symbols;
     double                                             m_ErroneousTickPxChg;
@@ -282,6 +287,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_VolSurfParamFile2FM;
     string                                             m_ProbDistrFileFSMC1D;
     OrderRoutingMode                                   m_OrderRoutingMode;
+    string                                             m_NextTier_ZMQ_IP_Port;
     TCPOrEmbeddedMode                                  m_TCPOrEmbeddedMode;
     int                                                m_B1_HKF_SamplingIntervalInSec;
     map<int,OTIMDIConfig>                              m_map_OTIMDIConfig;

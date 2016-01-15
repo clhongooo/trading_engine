@@ -1549,7 +1549,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   //       double dTotalSgndNotional = (m_SPY_Px * m_dAggSignedQty);
   //       double dNotionalAmtPerES  = (dESFM1Px * dESMul);
   //
-  //       m_NoOfSgndESCtrtReqd = (m_dAggSignedQty > 0 ? 1 : -1) * (int)(floor(abs(dTotalSgndNotional) / dNotionalAmtPerES));
+  //       m_NoOfSgndESCtrtReqd = STool::Sign(m_dAggSignedQty) * (int)(floor(abs(dTotalSgndNotional) / dNotionalAmtPerES));
   //       double dSPY_SgndNotional  = dTotalSgndNotional  -  (dESFM1Px * dESMul * m_NoOfSgndESCtrtReqd);
   //
   //       //--------------------------------------------------
@@ -1673,6 +1673,14 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                        );
       }
     }
+  }
+
+  //--------------------------------------------------
+  // Round down to lot size if HK stocks
+  //--------------------------------------------------
+  if (m_StyID == STY_B2_HK && GetStyDomicileMkt() == SDM_HK)
+  {
+    m_dAggSignedQty = m_SysCfg->RoundDownLotSize(m_TradedSymbols[iTradSym],(long)m_dAggSignedQty);
   }
 
   //--------------------------------------------------

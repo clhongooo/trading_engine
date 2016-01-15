@@ -24,6 +24,21 @@ PortfoliosAndOrders::PortfoliosAndOrders() :
   LoadPersistedPositionFromFile();
   m_StyCPnLHist->LoadPersistedCPnLHistFromFile();
   WriteActualPortToPersistentPosToLog();
+
+  //--------------------------------------------------
+  // Init for zmq
+  //--------------------------------------------------
+  if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_NEXTTIERZMQ)
+  {
+    //  Prepare our context and socket
+    m_zmqcontext.reset(new zmq::context_t(1));
+    m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_REQ));
+
+    string sZMQIPPort = m_SysCfg->Get_NextTier_ZMQ_IP_Port();
+    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: Initializing ZMQ connection. ZMQ IP Port = %s", sZMQIPPort.c_str());
+    string sConn = "tcp://"+sZMQIPPort;
+    m_zmqsocket->connect(sConn.c_str());
+  }
 }
 
 PortfoliosAndOrders::~PortfoliosAndOrders()
@@ -111,7 +126,9 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
   YYYYMMDDHHMMSS SystemTime = m_MarketData->GetSystemTimeHKT();
   m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d ExecStrat: %d ExecStrat param: %d. OID Details: %s.", SystemTime.ToStr().c_str(), symbol.c_str(), signed_qty, exec_strat, exec_strat_param.size(), oid_details.c_str());
 
-  if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_RECORD)
+  if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_RECORD
+      ||
+      m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_NEXTTIERZMQ)
   {
     double dMidQuote = NAN;
     YYYYMMDDHHMMSS ymdhms;
@@ -181,8 +198,38 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
     UpdateTargetPortfolio(port_id,symbol,signed_qty,'a');
     AcctTrade(port_id,symbol,signed_qty,dMidQuote);
 
-    m_Logger->Write(Logger::INFO,"%s,tradefeed,mktid,%s,OID,%f,%d,%d,TID,0", m_MarketData->GetSystemTimeHKT().ToCashTimestampStr().c_str(), symbol.c_str(), dMidQuote, (long)abs(signed_qty), (signed_qty > 0 ? 1:2));
-    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d Price: %f.", m_MarketData->GetSystemTimeHKT().ToStr().c_str(), symbol.c_str(), signed_qty, dMidQuote);
+    char caTF[4096];
+    sprintf(caTF,"%s,tradefeed,mktid,%s,OID,%f,%d,%d,TID,0\0", m_MarketData->GetSystemTimeHKT().ToCashTimestampStr().c_str(), symbol.c_str(), dMidQuote, (long)abs(signed_qty), (signed_qty > 0 ? 1:2));
+    m_Logger->Write(Logger::INFO,"%s", caTF);
+
+    if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_NEXTTIERZMQ)
+    {
+      //--------------------------------------------------
+      // Transmit through zmq
+      // first augment tradefeed with strategy id
+      //--------------------------------------------------
+      char caStratName[256];
+      sprintf(caStratName,",%s",GetStrategyName(static_cast<StrategyID>(port_id)).c_str());
+      strcat(caTF,caStratName);
+
+      zmq::message_t zmq_msg(strlen(caTF)+1);
+      memcpy((void *)zmq_msg.data(), caTF, strlen(caTF));
+      ((char *)zmq_msg.data())[strlen(caTF)] = '\0';
+      m_zmqsocket->send(zmq_msg);
+
+      //--------------------------------------------------
+      // Get ack
+      //--------------------------------------------------
+      zmq::message_t zmq_reply;
+      m_zmqsocket->recv(&zmq_reply);
+
+      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Ack received through ZMQ: %s",
+                      m_MarketData->GetSystemTimeHKT().ToStr().c_str(), (char *)zmq_reply.data());
+      //--------------------------------------------------
+    }
+
+    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d Price: %f.",
+                    m_MarketData->GetSystemTimeHKT().ToStr().c_str(), symbol.c_str(), signed_qty, dMidQuote);
 
     return true;
   }
@@ -1075,6 +1122,18 @@ void PortfoliosAndOrders::LoadPersistedPositionFromFile()
 
     m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: Read from Position persistence file : %d %s %d %f",port_id,symbol.c_str(),signed_qty,signed_notional);
   }
+
+  //--------------------------------------------------
+  // the case where there is nothing in the position persistion fl
+  //--------------------------------------------------
+  if (dqPosPersistFile.empty())
+  {
+    for (int sty = STY_NIR; sty != STY_LAST; sty++)
+    {
+      if (m_SysCfg->IsStrategyOn(static_cast<StrategyID>(sty))) AcctSetRecord(sty,"DUMMY_SYMBOL",0,0);
+    }
+  }
+  //--------------------------------------------------
 
   return;
 }

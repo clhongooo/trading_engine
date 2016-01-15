@@ -43,22 +43,6 @@ int STool::Min(int iA, int iB, int iC)
 {
   return Min(Min(iA,iB),iC);
 }
-//returns 1 if positive and -1 if negative, 1 otherwise
-int STool::Sign(int i)
-{
-  if (i == 0) return 1;
-  else if (i < 0) return -1;
-  else if (i > 0) return 1;
-  else return 0; // impossible but to prevent compiler warning
-}
-//returns 1 if positive and -1 if negative, 1 otherwise
-double STool::Sign(double d)
-{
-  if (d == 0) return 1;
-  else if (d < 0) return -1;
-  else if (d > 0) return 1;
-  else return 0; // impossible but to prevent compiler warning
-}
 //returns an int closer to zero
 double STool::IntPart1(double d)
 {
@@ -407,5 +391,17 @@ string STool::GetNthItemFromCSV(const string & s, const int n_th)
   }
 
   return s.substr(iLastLoc,iLocUpTo-iLastLoc-1);
+}
+
+
+int STool::Sign(const long a)
+{
+  if (a < 0) return -1;
+  else       return 1;
+}
+double STool::Sign(const double a)
+{
+  if (a < 0) return -1;
+  else       return 1;
 }
 

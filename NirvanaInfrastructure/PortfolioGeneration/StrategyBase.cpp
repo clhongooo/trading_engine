@@ -60,6 +60,16 @@ void StrategyBase::SetStyDomicileMkt(const STY_DOMICILE_MKT a)
   m_StyDomicileMkt = a;
 }
 
+StrategyID StrategyBase::GetStrategyID()
+{
+  return m_StyID;
+}
+
+StrategyBase::STY_DOMICILE_MKT StrategyBase::GetStyDomicileMkt()
+{
+  return m_StyDomicileMkt;
+}
+
 void StrategyBase::SetCloseAllPosIfOutsideTrdgHour(const AUTOCLOSEPOS b)
 {
   m_CloseAllPosIfOutsideTrdgHour = b;

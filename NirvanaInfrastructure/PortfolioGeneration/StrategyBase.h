@@ -39,6 +39,8 @@ class StrategyBase {
   protected:
     void SetStrategyID(const StrategyID);
     void SetStyDomicileMkt(const STY_DOMICILE_MKT);
+    StrategyID GetStrategyID();
+    STY_DOMICILE_MKT GetStyDomicileMkt();
     void SetCloseAllPosIfOutsideTrdgHour(const AUTOCLOSEPOS);
     void SetStyRunMode(const STY_RUN_MODE);
     void SetTradeRelatedParam(const int iTradSym, const TRADEDIR td, const double abspos);
