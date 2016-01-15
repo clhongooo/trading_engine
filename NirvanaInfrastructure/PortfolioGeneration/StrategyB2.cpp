@@ -1584,7 +1584,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   {
     if (m_HistoricalAvgPx->size() < B2_ROTATION_NDAYRETURN)
     {
-      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Not enough data points to calculate %d-day return. %d",
+      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s Not enough data points to calculate %d-day return. %d",
                       GetStrategyName(m_StyID).c_str(),
                       m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                       m_TradedSymbols[iTradSym].c_str(),
@@ -1598,7 +1598,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       return;
     }
     double dRollingReturn = m_SymMidQuote / *(m_HistoricalAvgPx->end()-B2_ROTATION_NDAYRETURN);
-    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s dRollingReturn = %f",
+    m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s dRollingReturn = %f",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                     m_TradedSymbols[iTradSym].c_str(),
@@ -1620,7 +1620,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     AddNDayRollingReturn(m_RotationGroup[iTradSym],m_p_ymdhms_SysTime_Local->GetYYYYMMDD(), m_TradedSymbols[iTradSym], dRollingReturn, m_dAggSignedQty);
     if (!NDayRollingReturnReadyForAllSym(m_RotationGroup[iTradSym],m_p_ymdhms_SysTime_Local->GetYYYYMMDD()))
     {
-      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Not all %d-day returns are ready.",
+      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s Not all %d-day returns are ready.",
                       GetStrategyName(m_StyID).c_str(),
                       m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                       m_TradedSymbols[iTradSym].c_str(),
@@ -1628,6 +1628,20 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       return;
     }
 
+    //--------------------------------------------------
+    m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s IsTopReturnSym %s. Will now pick the top %d symbols based on their %d-day return. Size of set of maintain pos symbols %d.",
+                    GetStrategyName(m_StyID).c_str(),
+                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                    m_TradedSymbols[iTradSym].c_str(),
+                    (IsTopReturnSym(m_RotationGroup[iTradSym],
+                                    m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
+                                    m_TradedSymbols[iTradSym],
+                                    setMtnPsn) ? "true" : "false"),
+                    B2_ROTATION_PICKTOPSYM,
+                    B2_ROTATION_NDAYRETURN,
+                    setMtnPsn.size());
+
+    //--------------------------------------------------
     if (m_dAggSignedQty <= 0)
     {
       m_dAggSignedQty = 0;
@@ -1643,34 +1657,18 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                           m_TradedSymbols[iTradSym],
                           setMtnPsn))
       {
-        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Not the symbol with the %d highest %d-day return. Size of maintain pos symbols %d",
+        m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s is not the symbol with the %d highest %d-day return.",
                         GetStrategyName(m_StyID).c_str(),
                         m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                         m_TradedSymbols[iTradSym].c_str(),
                         B2_ROTATION_PICKTOPSYM,
-                        B2_ROTATION_NDAYRETURN,
-                        setMtnPsn.size());
+                        B2_ROTATION_NDAYRETURN);
 
         m_TargetTradeDir [iTradSym] = TD_NODIR;
         m_TargetAbsPos   [iTradSym] = 0;
         *m_DoneEODTrade = true;
 
         return;
-      }
-      else
-      {
-        m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s Pick top %d symbols %d-day return. Size of maintain pos symbols %d. IsTopReturnSym %s",
-                        GetStrategyName(m_StyID).c_str(),
-                        m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                        m_TradedSymbols[iTradSym].c_str(),
-                        B2_ROTATION_PICKTOPSYM,
-                        B2_ROTATION_NDAYRETURN,
-                        setMtnPsn.size(),
-                        (IsTopReturnSym(m_RotationGroup[iTradSym],
-                                        m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
-                                        m_TradedSymbols[iTradSym],
-                                        setMtnPsn) ? "true" : "false")
-                       );
       }
     }
   }
@@ -1703,7 +1701,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       // the target quantity is too small, just make the quantity zero.
       // not worth keeping a tiny position here
       //--------------------------------------------------
-      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty will be adjusted to zero after considering commission impact. m_SymMidQuote = %f m_dAggSignedQty = %f",
+      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s m_dAggSignedQty will be adjusted to zero after considering commission impact. m_SymMidQuote = %f m_dAggSignedQty = %f",
                       GetStrategyName(m_StyID).c_str(),
                       m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                       m_TradedSymbols[iTradSym].c_str(),
@@ -1738,7 +1736,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   }
   else
   {
-    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Trade wasn't initiated because the commission expense rate is higher than threshold. m_SymMidQuote = %f m_dAggSignedQty = %f",
+    m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s Trade wasn't initiated because the commission expense rate is higher than threshold. m_SymMidQuote = %f m_dAggSignedQty = %f",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                     m_TradedSymbols[iTradSym].c_str(),

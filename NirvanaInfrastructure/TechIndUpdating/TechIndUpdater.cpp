@@ -110,7 +110,7 @@ void TechIndUpdater::Run()
 
         if (!vYMD.empty() && (m_ymdhms_SysTimeHKT.GetYYYYMMDD() > vYMD.back() && m_ymdhms_SysTimeHKT.GetYYYYMMDD() - vYMD.back() > 5))
         {
-          m_Logger->Write(Logger::ERROR,"TechIndUpdater: Supplementary day bar out-of-date. %s Current date: %s. Last supp day bar date: %s.",
+          m_Logger->Write(Logger::ERROR,"TechIndUpdater: Supplementary day bar out-of-date. Sym=%s Current date: %s. Last supp day bar date: %s.",
                           sym.c_str(), m_ymdhms_SysTimeHKT.GetYYYYMMDD().ToStr_().c_str(), (vYMD.empty() ? "Nil" : vYMD.back().ToStr_().c_str()));
           sleep(1);
           exit(1);
@@ -121,7 +121,7 @@ void TechIndUpdater::Run()
           if (vYMD[j] != m_ymdhms_SysTimeHKT.GetYYYYMMDD())
           {
             m_TechInd->AddBarGKYZ(sym, vOpen[j], vHigh[j], vLow[j], vClose[j]);
-            m_Logger->Write(Logger::INFO,"TechIndUpdater: Warmup GKYZ with supplementary day bar data: Sym = %s %d OHLC = %f %f %f %f", sym.c_str(), vYMD[j].ToInt(), vOpen[j], vHigh[j], vLow[j], vClose[j]);
+            m_Logger->Write(Logger::INFO,"TechIndUpdater: Warmup GKYZ with supplementary day bar data: Sym=%s %d OHLC = %f %f %f %f", sym.c_str(), vYMD[j].ToInt(), vOpen[j], vHigh[j], vLow[j], vClose[j]);
           }
         }
       }
