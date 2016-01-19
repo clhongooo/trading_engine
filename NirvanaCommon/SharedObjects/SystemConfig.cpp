@@ -330,6 +330,11 @@ long SystemConfig::RoundDownLotSize(const string & symbol, const long volume) co
   return STool::Sign(volume) * (abs(volume) / iLotSize) * iLotSize;
 }
 
+bool SystemConfig::IsPriceFwdrToNextTierOn() const
+{
+  return m_PriceFwdrIsOn;
+}
+
 
 bool SystemConfig::CheckIfBarAggregationM1Symbol(const string & symbol) const
 {
@@ -984,6 +989,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
     }
     //--------------------------------------------------
   }
+
   //--------------------------------------------------
   {
     m_LotSizePath = pt.get<string>("SystemSettings.LotSizePath");
@@ -1009,6 +1015,9 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
     });
     //--------------------------------------------------
   }
+
+  m_PriceFwdrIsOn = pt.get<bool>("SystemSettings.PriceForwarderToNextTierOnOff");
+
 
   string sOrderRoutingMode = pt.get<string>("SystemSettings.OrderRoutingMode");
   if      (sOrderRoutingMode == "record")      m_OrderRoutingMode = ORDER_ROUTE_RECORD;

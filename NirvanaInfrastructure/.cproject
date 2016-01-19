@@ -43,6 +43,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/ProbDistributionGeneration}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/TechIndUpdating}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VolSurfaceCalculation}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/LowPriorityFacilities}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaCommon/Util}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaCommon/Logger}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/local/pantheios/include"/>

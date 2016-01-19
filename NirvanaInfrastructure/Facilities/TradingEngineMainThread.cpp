@@ -112,6 +112,11 @@ void TradingEngineMainThread::RunMainThread()
   TechIndUpdater tiu;
 
   //--------------------------------------------------
+  // PriceForwarderToNextTier
+  //--------------------------------------------------
+  PriceForwarderToNextTier pf;
+
+  //--------------------------------------------------
   // PortfolioGenerator
   //--------------------------------------------------
   boost::scoped_ptr<StrategyTest>       styTest;
@@ -247,11 +252,12 @@ void TradingEngineMainThread::RunMainThread()
   {
     pg.reset(new PortfolioGenerator());
 
-    m_thread_group.add_thread(new boost::thread(&VolSurfCalculator::Run    ,&vsc));
-    m_thread_group.add_thread(new boost::thread(&TechIndUpdater::Run       ,&tiu));
-    m_thread_group.add_thread(new boost::thread(&PortfolioGenerator::Run   ,pg.get()));
-    // m_thread_group.add_thread(new boost::thread(&TerminalThread::Run       ,&tthd));
-    m_thread_group.add_thread(new boost::thread(&MarkToMarket::Run         ,&mtm));
+    m_thread_group.add_thread(new boost::thread(&VolSurfCalculator::Run          ,&vsc));
+    m_thread_group.add_thread(new boost::thread(&TechIndUpdater::Run             ,&tiu));
+    m_thread_group.add_thread(new boost::thread(&PriceForwarderToNextTier::Run   ,&pf));
+    m_thread_group.add_thread(new boost::thread(&PortfolioGenerator::Run         ,pg.get()));
+    // m_thread_group.add_thread(new boost::thread(&TerminalThread::Run          ,&tthd));
+    m_thread_group.add_thread(new boost::thread(&MarkToMarket::Run               ,&mtm));
     p_Logger->Write(Logger::NOTICE,"Started thread: VolSurfCalculator");    usleep(100000);
     p_Logger->Write(Logger::NOTICE,"Started thread: TechIndUpdater");       usleep(100000);
     p_Logger->Write(Logger::NOTICE,"Started thread: PortfolioGenerator");   usleep(100000);

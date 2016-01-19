@@ -36,6 +36,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/SharedObjects}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/TechIndUpdating}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/VolSurfaceCalculation}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/LowPriorityFacilities}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaCommon/Logger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaCommon/Math}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaCommon/Model}&quot;"/>

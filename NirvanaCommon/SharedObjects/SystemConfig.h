@@ -178,6 +178,7 @@ class SystemConfig : boost::noncopyable
     bool                   GetCorpActionAdj(const string &,const YYYYMMDD &,double &,double &) const;
     int                    GetLotSize(const string &)                                          const;
     long                   RoundDownLotSize(const string &,const long)                         const;
+    bool                   IsPriceFwdrToNextTierOn()                                           const;
 
 
     //--------------------------------------------------
@@ -277,6 +278,7 @@ class SystemConfig : boost::noncopyable
     map<string,map<YYYYMMDD,tuple_corp_action_adj> >   m_CorpActionAdjDetails;
     string                                             m_LotSizePath;
     map<string,int>                                    m_map_LotSize;
+    bool                                               m_PriceFwdrIsOn;
     set<string>                                        m_BarAggregationM1Symbols;
     set<string>                                        m_BarAggregationD1Symbols;
     double                                             m_ErroneousTickPxChg;

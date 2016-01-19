@@ -1615,6 +1615,12 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         it = m_MaintainPos[m_RotationGroup[iTradSym]].find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
       }
       it->second.insert(m_TradedSymbols[iTradSym]);
+      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s has a position that we will maintain. Previous pos = %f Current (raw) m_dAggSignedQty = %f",
+                      GetStrategyName(m_StyID).c_str(),
+                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                      m_TradedSymbols[iTradSym].c_str(),
+                      GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]),
+                      m_dAggSignedQty);
     }
 
     AddNDayRollingReturn(m_RotationGroup[iTradSym],m_p_ymdhms_SysTime_Local->GetYYYYMMDD(), m_TradedSymbols[iTradSym], dRollingReturn, m_dAggSignedQty);
@@ -1630,14 +1636,18 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
     //--------------------------------------------------
     const set<string> & setMtnPsn = m_MaintainPos[m_RotationGroup[iTradSym]][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()];
-    m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s IsTopReturnSym %s. Will now pick the top %d symbols based on their %d-day return. Size of set of maintain pos symbols %d.",
+    m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s IsNextTopRetSymExclMtnPos %s.",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                     m_TradedSymbols[iTradSym].c_str(),
-                    (IsTopReturnSym(m_RotationGroup[iTradSym],
-                                    m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
-                                    m_TradedSymbols[iTradSym],
-                                    setMtnPsn) ? "true" : "false"),
+                    (IsNextTopRetSymExclMtnPos(m_RotationGroup[iTradSym],
+                                               m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
+                                               m_TradedSymbols[iTradSym],
+                                               setMtnPsn) ? "true" : "false"));
+    m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s Will now pick the top %d symbols based on their %d-day return. Size of set of maintain pos symbols %d.",
+                    GetStrategyName(m_StyID).c_str(),
+                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                    m_TradedSymbols[iTradSym].c_str(),
                     B2_ROTATION_PICKTOPSYM,
                     B2_ROTATION_NDAYRETURN,
                     setMtnPsn.size());
@@ -1651,10 +1661,10 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     {
       if (setMtnPsn.find(m_TradedSymbols[iTradSym]) == setMtnPsn.end()
           &&
-          !IsTopReturnSym(m_RotationGroup[iTradSym],
-                          m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
-                          m_TradedSymbols[iTradSym],
-                          setMtnPsn))
+          !IsNextTopRetSymExclMtnPos(m_RotationGroup[iTradSym],
+                                     m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
+                                     m_TradedSymbols[iTradSym],
+                                     setMtnPsn))
       {
         m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s is not the symbol with the %d highest %d-day return.",
                         GetStrategyName(m_StyID).c_str(),
@@ -1855,7 +1865,7 @@ void StrategyB2::AddNDayRollingReturn(const int gid, const YYYYMMDD & ymd, const
 
 }
 
-bool StrategyB2::IsTopReturnSym(const int gid, const YYYYMMDD & ymd, const string & sym, const set<string> & setMaintainPos)
+bool StrategyB2::IsNextTopRetSymExclMtnPos(const int gid, const YYYYMMDD & ymd, const string & sym, const set<string> & setMaintainPos)
 {
   map<YYYYMMDD,map<double,string> >::iterator it2 = m_SymRankedByRollingReturn[gid].find(ymd);
   if (it2 == m_SymRankedByRollingReturn[gid].end()) return false;

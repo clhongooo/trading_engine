@@ -43,6 +43,7 @@
 #define ID_ORDEREXECCHKORD      "OEChkOrd"
 #define ID_ORDEREXEPERSISTPOS   "OEPP"
 #define ID_MTM                  "MTM"
+#define ID_PRICEFWDR            "PF"
 
 
 

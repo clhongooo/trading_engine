@@ -37,6 +37,7 @@
 #include "StrategyR9.h"
 #include "ProbDistributionGenerator.h"
 #include "TechIndUpdater.h"
+#include "PriceForwarderToNextTier.h"
 #include "Exchange.h"
 #include "HKFE.h"
 #include "HKSE.h"

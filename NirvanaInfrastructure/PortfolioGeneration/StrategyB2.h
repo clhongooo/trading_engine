@@ -220,7 +220,7 @@ class StrategyB2 : public StrategyBase {
     //--------------------------------------------------
     bool NDayRollingReturnReadyForAllSym(const int,const YYYYMMDD &);
     void AddNDayRollingReturn(const int,const YYYYMMDD &,const string &,const double,const double);
-    bool IsTopReturnSym(const int,const YYYYMMDD &,const string &,const set<string> &);
+    bool IsNextTopRetSymExclMtnPos(const int,const YYYYMMDD &,const string &,const set<string> &);
     vector<int> m_RotationGroup;
     vector<map<YYYYMMDD,set<string> > >         m_AllAvbSymForRollingBasket;
     vector<map<YYYYMMDD,map<double,string> > >  m_SymRankedByRollingReturn;
