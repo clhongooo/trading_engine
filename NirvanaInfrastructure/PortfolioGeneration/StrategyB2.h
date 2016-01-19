@@ -62,6 +62,7 @@ class StrategyB2 : public StrategyBase {
     bool GetEstimate(const GetEstParam &);
     bool TrainUpParam(const YYYYMMDDHHMMSS &, const double, const double, const double, const double, double &, double &, double &, double &, const vector<double> &, const vector<double> &, const CountingFunction &, const TRAINMODE, const WEIGHTING_SCHEME, map<double,vector<double> > &, map<double,vector<double> > &, const double);
     void SetParamBetaRange(const double, const double, const double, const double, const double, const double, const double, const double, const double, const double, const double, const double);
+    void DoTraining(const int);
 
   protected:
 

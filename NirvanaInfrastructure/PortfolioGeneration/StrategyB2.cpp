@@ -932,6 +932,11 @@ void StrategyB2::InitialWarmUp(const int iTradSym)
     }
   }
 
+  if (m_B2_TrainingFreq == TradingStrategyConfig::OnceAtInitWarmup)
+  {
+    DoTraining(iTradSym);
+  }
+
 }
 
 void StrategyB2::UpdateInternalDataTrng(const int iTradSym)
@@ -1022,11 +1027,139 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
 
 
 
+void StrategyB2::DoTraining(const int iTradSym)
+{
+  // SetParamAdjAmt(SML_ADJ_BETA12, BIG_ADJ_BETA12, SML_ADJ_BETA34, BIG_ADJ_BETA34);
+  SetParamBetaRange(
+    m_beta_1_start[iTradSym],
+    m_beta_1_end[iTradSym],
+    m_beta_1_incremt[iTradSym],
+    m_beta_2_start[iTradSym],
+    m_beta_2_end[iTradSym],
+    m_beta_2_incremt[iTradSym],
+    m_beta_3_start[iTradSym],
+    m_beta_3_end[iTradSym],
+    m_beta_3_incremt[iTradSym],
+    m_beta_4_start[iTradSym],
+    m_beta_4_end[iTradSym],
+    m_beta_4_incremt[iTradSym]);
+
+  *m_bTrainRetAvgPx = TrainUpParam(
+    *m_p_ymdhms_SysTime_Local,
+    m_TrainingPeriod1[iTradSym],
+    m_TrainingPeriod2[iTradSym],
+    m_TrainingPeriod3[iTradSym],
+    m_TrainingPeriod4[iTradSym],
+    m_beta_1[iTradSym],
+    m_beta_2[iTradSym],
+    m_beta_3[iTradSym],
+    m_beta_4[iTradSym],
+    (*m_HistoricalAvgPx),
+    (*m_HistoricalClose),
+    (*m_HistoricalNumNumOfRisingDaysCountAvgPx),
+    StrategyB2::TM_MAXSHARPE,
+    m_WeightScheme[iTradSym],
+    (*m_p_map_BestParamSetBeta1Beta3AvgPx),
+    (*m_p_map_BestParamSetBeta2Beta4AvgPx),
+    m_CurbInSmpRtn[iTradSym]
+    );
+
+  m_map_ymdhms_LastTrainTime[B2_METH_AVGPX][m_TradedSymbols[iTradSym]] = *m_p_ymdhms_SysTime_Local;
+  m_Logger->Write(Logger::INFO,"Strategy %s: %s %s (%d) Sym=%s AvgPx TrainUpParam() returned %s. m_p_map_BestParamSetBeta1Beta3AvgPx.size() = %d m_p_map_BestParamSetBeta2Beta4AvgPx.size() = %d",
+                  GetStrategyName(m_StyID).c_str(),
+                  m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                  __FUNCTION__,__LINE__,
+                  m_TradedSymbols[iTradSym].c_str(),(*m_bTrainRetAvgPx?"True":"False"),
+                  (*m_p_map_BestParamSetBeta1Beta3AvgPx).size(),
+                  (*m_p_map_BestParamSetBeta2Beta4AvgPx).size()
+                 );
+
+  if (m_PriceMode[iTradSym] == B2_PRICEMETH_AVGPXCLOSE)
+  {
+    // SetParamAdjAmt(SML_ADJ_BETA12, BIG_ADJ_BETA12, SML_ADJ_BETA34, BIG_ADJ_BETA34);
+    SetParamBetaRange(
+      m_beta_1_start[iTradSym],
+      m_beta_1_end[iTradSym],
+      m_beta_1_incremt[iTradSym],
+      m_beta_2_start[iTradSym],
+      m_beta_2_end[iTradSym],
+      m_beta_2_incremt[iTradSym],
+      m_beta_3_start[iTradSym],
+      m_beta_3_end[iTradSym],
+      m_beta_3_incremt[iTradSym],
+      m_beta_4_start[iTradSym],
+      m_beta_4_end[iTradSym],
+      m_beta_4_incremt[iTradSym]);
+
+    *m_bTrainRetClose = TrainUpParam(
+      *m_p_ymdhms_SysTime_Local,
+      m_TrainingPeriod1[iTradSym],
+      m_TrainingPeriod2[iTradSym],
+      m_TrainingPeriod3[iTradSym],
+      m_TrainingPeriod4[iTradSym],
+      m_beta_1[iTradSym],
+      m_beta_2[iTradSym],
+      m_beta_3[iTradSym],
+      m_beta_4[iTradSym],
+      (*m_HistoricalClose),
+      (*m_HistoricalClose),
+      (*m_HistoricalNumNumOfRisingDaysCountClose),
+      StrategyB2::TM_MAXSHARPE,
+      m_WeightScheme[iTradSym],
+      (*m_p_map_BestParamSetBeta1Beta3Close),
+      (*m_p_map_BestParamSetBeta2Beta4Close),
+      m_CurbInSmpRtn[iTradSym]
+      );
+
+    m_map_ymdhms_LastTrainTime[B2_METH_CLOSE][m_TradedSymbols[iTradSym]] = *m_p_ymdhms_SysTime_Local;
+    m_Logger->Write(Logger::INFO,"Strategy %s: %s %s (%d) Sym=%s Close TrainUpParam() returned %s. m_p_map_BestParamSetBeta1Beta3Close.size() = %d m_p_map_BestParamSetBeta2Beta4Close.size() = %d",
+                    GetStrategyName(m_StyID).c_str(),
+                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                    __FUNCTION__,__LINE__,
+                    m_TradedSymbols[iTradSym].c_str(),(*m_bTrainRetClose?"True":"False"),
+                    (*m_p_map_BestParamSetBeta1Beta3Close).size(),
+                    (*m_p_map_BestParamSetBeta2Beta4Close).size()
+                   );
+  }
+
+}
+
+
 void StrategyB2::PerformTrainingJustBeforeTrading(const int iTradSym)
 {
   //--------------------------------------------------
-  // Should do the training here, otherwise will miss the last data point (which is today) in our training
+  // if don't want to miss the last data point (which is today) in our training, should do the training here.
+  // if want to leave enough time for many symbols to train, train after initial warmup
   //--------------------------------------------------
+  if (m_B2_TrainingFreq == TradingStrategyConfig::OnceAtInitWarmup)
+  {
+    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s (%d) Sym=%s m_B2_TrainingFreq = OnceAtInitWarmup",
+                    GetStrategyName(m_StyID).c_str(),
+                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                    __FUNCTION__,__LINE__,
+                    m_TradedSymbols[iTradSym].c_str());
+    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s (%d) Sym=%s AvgPx TrainUpParam() returned %s. m_p_map_BestParamSetBeta1Beta3AvgPx.size() = %d m_p_map_BestParamSetBeta2Beta4AvgPx.size() = %d LastTrainTime = %s",
+                    GetStrategyName(m_StyID).c_str(),
+                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                    __FUNCTION__,__LINE__,
+                    m_TradedSymbols[iTradSym].c_str(),
+                    (*m_bTrainRetAvgPx?"True":"False"),
+                    (*m_p_map_BestParamSetBeta1Beta3AvgPx).size(),
+                    (*m_p_map_BestParamSetBeta2Beta4AvgPx).size(),
+                    m_map_ymdhms_LastTrainTime[B2_METH_AVGPX][m_TradedSymbols[iTradSym]].ToStr().c_str()
+                   );
+    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s (%d) Sym=%s Close TrainUpParam() returned %s. m_p_map_BestParamSetBeta1Beta3Close.size() = %d m_p_map_BestParamSetBeta2Beta4Close.size() = %d LastTrainTime = %s",
+                    GetStrategyName(m_StyID).c_str(),
+                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                    __FUNCTION__,__LINE__,
+                    m_TradedSymbols[iTradSym].c_str(),
+                    (*m_bTrainRetClose?"True":"False"),
+                    (*m_p_map_BestParamSetBeta1Beta3Close).size(),
+                    (*m_p_map_BestParamSetBeta2Beta4Close).size(),
+                    m_map_ymdhms_LastTrainTime[B2_METH_AVGPX][m_TradedSymbols[iTradSym]].ToStr().c_str()
+                   );
+    return;
+  }
 
 
   // //--------------------------------------------------
@@ -1062,50 +1195,7 @@ void StrategyB2::PerformTrainingJustBeforeTrading(const int iTradSym)
     )
     )
   {
-    // SetParamAdjAmt(SML_ADJ_BETA12, BIG_ADJ_BETA12, SML_ADJ_BETA34, BIG_ADJ_BETA34);
-    SetParamBetaRange(
-      m_beta_1_start[iTradSym],
-      m_beta_1_end[iTradSym],
-      m_beta_1_incremt[iTradSym],
-      m_beta_2_start[iTradSym],
-      m_beta_2_end[iTradSym],
-      m_beta_2_incremt[iTradSym],
-      m_beta_3_start[iTradSym],
-      m_beta_3_end[iTradSym],
-      m_beta_3_incremt[iTradSym],
-      m_beta_4_start[iTradSym],
-      m_beta_4_end[iTradSym],
-      m_beta_4_incremt[iTradSym]);
-
-    *m_bTrainRetAvgPx = TrainUpParam(
-      *m_p_ymdhms_SysTime_Local,
-      m_TrainingPeriod1[iTradSym],
-      m_TrainingPeriod2[iTradSym],
-      m_TrainingPeriod3[iTradSym],
-      m_TrainingPeriod4[iTradSym],
-      m_beta_1[iTradSym],
-      m_beta_2[iTradSym],
-      m_beta_3[iTradSym],
-      m_beta_4[iTradSym],
-      (*m_HistoricalAvgPx),
-      (*m_HistoricalClose),
-      (*m_HistoricalNumNumOfRisingDaysCountAvgPx),
-      StrategyB2::TM_MAXSHARPE,
-      m_WeightScheme[iTradSym],
-      (*m_p_map_BestParamSetBeta1Beta3AvgPx),
-      (*m_p_map_BestParamSetBeta2Beta4AvgPx),
-      m_CurbInSmpRtn[iTradSym]
-      );
-
-    m_map_ymdhms_LastTrainTime[B2_METH_AVGPX][m_TradedSymbols[iTradSym]] = *m_p_ymdhms_SysTime_Local;
-    m_Logger->Write(Logger::INFO,"Strategy %s: %s %s (%d) Sym=%s AvgPx TrainUpParam() returned %s. m_p_map_BestParamSetBeta1Beta3AvgPx.size() = %d m_p_map_BestParamSetBeta2Beta4AvgPx.size() = %d",
-                    GetStrategyName(m_StyID).c_str(),
-                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                    __FUNCTION__,__LINE__,
-                    m_TradedSymbols[iTradSym].c_str(),(*m_bTrainRetAvgPx?"True":"False"),
-                    (*m_p_map_BestParamSetBeta1Beta3AvgPx).size(),
-                    (*m_p_map_BestParamSetBeta2Beta4AvgPx).size()
-                   );
+    DoTraining(iTradSym);
   }
   else
   {
@@ -1137,50 +1227,7 @@ void StrategyB2::PerformTrainingJustBeforeTrading(const int iTradSym)
       )
       )
     {
-      // SetParamAdjAmt(SML_ADJ_BETA12, BIG_ADJ_BETA12, SML_ADJ_BETA34, BIG_ADJ_BETA34);
-      SetParamBetaRange(
-        m_beta_1_start[iTradSym],
-        m_beta_1_end[iTradSym],
-        m_beta_1_incremt[iTradSym],
-        m_beta_2_start[iTradSym],
-        m_beta_2_end[iTradSym],
-        m_beta_2_incremt[iTradSym],
-        m_beta_3_start[iTradSym],
-        m_beta_3_end[iTradSym],
-        m_beta_3_incremt[iTradSym],
-        m_beta_4_start[iTradSym],
-        m_beta_4_end[iTradSym],
-        m_beta_4_incremt[iTradSym]);
-
-      *m_bTrainRetClose = TrainUpParam(
-        *m_p_ymdhms_SysTime_Local,
-        m_TrainingPeriod1[iTradSym],
-        m_TrainingPeriod2[iTradSym],
-        m_TrainingPeriod3[iTradSym],
-        m_TrainingPeriod4[iTradSym],
-        m_beta_1[iTradSym],
-        m_beta_2[iTradSym],
-        m_beta_3[iTradSym],
-        m_beta_4[iTradSym],
-        (*m_HistoricalClose),
-        (*m_HistoricalClose),
-        (*m_HistoricalNumNumOfRisingDaysCountClose),
-        StrategyB2::TM_MAXSHARPE,
-        m_WeightScheme[iTradSym],
-        (*m_p_map_BestParamSetBeta1Beta3Close),
-        (*m_p_map_BestParamSetBeta2Beta4Close),
-        m_CurbInSmpRtn[iTradSym]
-        );
-
-      m_map_ymdhms_LastTrainTime[B2_METH_CLOSE][m_TradedSymbols[iTradSym]] = *m_p_ymdhms_SysTime_Local;
-      m_Logger->Write(Logger::INFO,"Strategy %s: %s %s (%d) Sym=%s Close TrainUpParam() returned %s. m_p_map_BestParamSetBeta1Beta3Close.size() = %d m_p_map_BestParamSetBeta2Beta4Close.size() = %d",
-                      GetStrategyName(m_StyID).c_str(),
-                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                      __FUNCTION__,__LINE__,
-                      m_TradedSymbols[iTradSym].c_str(),(*m_bTrainRetClose?"True":"False"),
-                      (*m_p_map_BestParamSetBeta1Beta3Close).size(),
-                      (*m_p_map_BestParamSetBeta2Beta4Close).size()
-                     );
+      DoTraining(iTradSym);
     }
     else
     {

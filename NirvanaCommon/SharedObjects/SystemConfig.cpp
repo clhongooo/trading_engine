@@ -590,11 +590,12 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
         }
         tsc.m_WhetherToRetrain = pt.get<bool>(sStratSession + ".WhetherToRetrain");
         string sTrainFreq = pt.get<string>(sStratSession + ".TrainingFreq");
-        if      (sTrainFreq == "Daily")   tsc.m_TrainingFreq = TradingStrategyConfig::Daily;
-        else if (sTrainFreq == "Weekly")  tsc.m_TrainingFreq = TradingStrategyConfig::Weekly;
-        else if (sTrainFreq == "Monthly") tsc.m_TrainingFreq = TradingStrategyConfig::Monthly;
-        else if (sTrainFreq == "Yearly")  tsc.m_TrainingFreq = TradingStrategyConfig::Yearly;
-        else if (sTrainFreq == "Auto")    tsc.m_TrainingFreq = TradingStrategyConfig::Auto;
+        if      (sTrainFreq == "Daily")            tsc.m_TrainingFreq = TradingStrategyConfig::Daily;
+        else if (sTrainFreq == "Weekly")           tsc.m_TrainingFreq = TradingStrategyConfig::Weekly;
+        else if (sTrainFreq == "Monthly")          tsc.m_TrainingFreq = TradingStrategyConfig::Monthly;
+        else if (sTrainFreq == "Yearly")           tsc.m_TrainingFreq = TradingStrategyConfig::Yearly;
+        else if (sTrainFreq == "Auto")             tsc.m_TrainingFreq = TradingStrategyConfig::Auto;
+        else if (sTrainFreq == "OnceAtInitWarmup") tsc.m_TrainingFreq = TradingStrategyConfig::OnceAtInitWarmup;
 
         tsc.m_CPnLHistPersistenceFile        = pt.get<string> (sStratSession + ".CPnLHistPersistenceFile");
         tsc.m_CPnLHistPersistenceIsEnabled   = pt.get<bool>   (sStratSession + ".EnableCPnLHistPersistence");

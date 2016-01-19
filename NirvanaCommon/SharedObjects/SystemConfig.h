@@ -46,7 +46,7 @@ class OTIMDIConfig
 class TradingStrategyConfig
 {
   public:
-    enum TrainingFreq {Auto=0,Daily,Weekly,Monthly,Yearly};
+    enum TrainingFreq {Auto=0,Daily,Weekly,Monthly,Yearly,OnceAtInitWarmup};
     TradingStrategyConfig();
 
     bool                      m_OnOff;
