@@ -31,29 +31,36 @@ void PriceForwarderToNextTier::Run()
     return;
   }
 
+  m_PTask_SendMDToken = m_PTask_SendMD.GetNewTokenAndSetIntervalInSec(m_SysCfg->GetPriceFwdrToNextTierIntervalInSec());
+
   //--------------------------------------------------
   // Init for zmq
   //--------------------------------------------------
-  if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_NEXTTIERZMQ)
   {
     //  Prepare our context and socket
-    m_zmqcontext.reset(new zmq::context_t(2));
+    m_zmqcontext.reset(new zmq::context_t(1));
     m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_REQ));
 
-    string sZMQIPPort = m_SysCfg->Get_NextTier_ZMQ_IP_Port();
-    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: Initializing ZMQ connection. ZMQ IP Port = %s", sZMQIPPort.c_str());
-    string sConn = "tcp://"+sZMQIPPort;
+    string sZMQMDIPPort = m_SysCfg->Get_NextTier_ZMQ_MD_IP_Port();
+    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: Initializing ZMQ connection. ZMQ MD IP Port = %s", sZMQMDIPPort.c_str());
+    string sConn = "tcp://"+sZMQMDIPPort;
     m_zmqsocket->connect(sConn.c_str());
   }
 
   //--------------------------------------------------
   for (;;)
   {
-    m_MarketData->WaitForData();
-
     if (m_SystemState->ChkIfThreadShouldStop()) break;
 
     m_ThrdHlthMon->ReportHealthy(ID_PRICEFWDR);
+
+    //--------------------------------------------------
+    YYYYMMDDHHMMSS m_ymdhms_SysTimeHKT = m_MarketData->GetSystemTimeHKT();
+    if (!m_PTask_SendMD.CheckIfItIsTimeToWakeUp(m_PTask_SendMDToken,m_ymdhms_SysTimeHKT))
+    {
+      sleep(1);
+      continue;
+    }
 
     //--------------------------------------------------
     // Transmit latest mid quote of each symbol through zmq
@@ -61,10 +68,10 @@ void PriceForwarderToNextTier::Run()
     for_each (m_sAllSym,[&](const string & symbol) {
       double dMidQuote = NAN;
       YYYYMMDDHHMMSS ymdhms;
-      if (m_MarketData->GetLatestMidQuote(symbol, dMidQuote, ymdhms)) return;
+      if (!m_MarketData->GetLatestMidQuote(symbol, dMidQuote, ymdhms)) return;
 
       char caMD[4096];
-      sprintf(caMD,"%s,%s,%f\0", m_MarketData->GetSystemTimeHKT().ToCashTimestampStr().c_str(), symbol.c_str(), dMidQuote);
+      sprintf(caMD,"%s,%s,%f\0", m_ymdhms_SysTimeHKT.ToCashTimestampStr().c_str(), symbol.c_str(), dMidQuote);
 
       zmq::message_t zmq_msg(strlen(caMD)+1);
       memcpy((void *)zmq_msg.data(), caMD, strlen(caMD));

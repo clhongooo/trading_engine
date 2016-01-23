@@ -24,7 +24,6 @@
 #include "SDateTime.h"
 
 using namespace std;
-// using namespace atu;
 using namespace boost;
 
 class OTIMDIConfig
@@ -124,7 +123,8 @@ class SystemConfig : boost::noncopyable
     string                 Get_ProbDistrFileFSMC1D()          const;
 
     OrderRoutingMode       Get_OrderRoutingMode()             const;
-    string                 Get_NextTier_ZMQ_IP_Port()         const;
+    string                 Get_NextTier_ZMQ_MD_IP_Port()      const;
+    string                 Get_NextTier_ZMQ_TF_IP_Port()      const;
     TCPOrEmbeddedMode      Get_TCPOrEmbeddedMode()            const;
 
     bool                   Get_OnOff_S11A_T1GBM()             const;
@@ -173,12 +173,14 @@ class SystemConfig : boost::noncopyable
     string                 B2_TheoPosFolder(const StrategyID)                                  const;
     bool                   B2_PersistTheoPosCPnL(const StrategyID)                             const;
     vector<int>            Get_B2_RotationGroup(const StrategyID)                              const;
+    int                    Get_B2_ActionTimeBefCloseInSec(const StrategyID)                    const;
     bool                   CheckIfHaltTrading(const string &,const YYYYMMDD &)                 const;
     bool                   CheckIfHalfDayTrading(const string &,const YYYYMMDD &)              const;
     bool                   GetCorpActionAdj(const string &,const YYYYMMDD &,double &,double &) const;
     int                    GetLotSize(const string &)                                          const;
     long                   RoundDownLotSize(const string &,const long)                         const;
     bool                   IsPriceFwdrToNextTierOn()                                           const;
+    int                    GetPriceFwdrToNextTierIntervalInSec()                               const;
 
 
     //--------------------------------------------------
@@ -279,6 +281,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_LotSizePath;
     map<string,int>                                    m_map_LotSize;
     bool                                               m_PriceFwdrIsOn;
+    int                                                m_PriceFwdrIntervalInSec;
     set<string>                                        m_BarAggregationM1Symbols;
     set<string>                                        m_BarAggregationD1Symbols;
     double                                             m_ErroneousTickPxChg;
@@ -289,7 +292,8 @@ class SystemConfig : boost::noncopyable
     string                                             m_VolSurfParamFile2FM;
     string                                             m_ProbDistrFileFSMC1D;
     OrderRoutingMode                                   m_OrderRoutingMode;
-    string                                             m_NextTier_ZMQ_IP_Port;
+    string                                             m_NextTier_ZMQ_MD_IP_Port;
+    string                                             m_NextTier_ZMQ_TF_IP_Port;
     TCPOrEmbeddedMode                                  m_TCPOrEmbeddedMode;
     int                                                m_B1_HKF_SamplingIntervalInSec;
     map<int,OTIMDIConfig>                              m_map_OTIMDIConfig;
@@ -347,12 +351,14 @@ class SystemConfig : boost::noncopyable
     string                                             m_B2_US_TheoPosFolder;
     bool                                               m_B2_US_PersistTheoPosCPnL;
     vector<int>                                        m_B2_US_RotationGroup;
+    int                                                m_B2_US_ActionTimeBefCloseInSec;
     bool                                               m_B2_HK_HasEnabledMinCommissionCheck;
     bool                                               m_B2_HK_HasEnabledRotationMode;
     string                                             m_B2_HK_TheoCPnLHistFolder;
     string                                             m_B2_HK_TheoPosFolder;
     bool                                               m_B2_HK_PersistTheoPosCPnL;
     vector<int>                                        m_B2_HK_RotationGroup;
+    int                                                m_B2_HK_ActionTimeBefCloseInSec;
 };
 
 #endif

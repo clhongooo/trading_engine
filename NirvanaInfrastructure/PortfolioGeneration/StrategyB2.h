@@ -31,8 +31,6 @@
 #define B2_ROTATION_PICKTOPSYM 1
 #define B2_ROTATION_NDAYRETURN 2
 
-#define B2_ACTIVATION_SEC_BEF_CLOSE 180
-
 #define B2_COMMISSION_RATE_THRESH (double)0.005/(double)80
 
 
@@ -179,6 +177,7 @@ class StrategyB2 : public StrategyBase {
     bool                                      m_B2_HasEnabledMinCommissionCheck;
     bool                                      m_B2_WhetherToRetain;
     TradingStrategyConfig::TrainingFreq       m_B2_TrainingFreq;
+    int                                       m_B2_ActionTimeBefCloseInSec;
 
 
     //--------------------------------------------------

@@ -5,6 +5,7 @@ StrategyB2::StrategyB2() :
   m_TheoPosFolder(""),
   m_B2_HasEnabledMinCommissionCheck(true),
   m_B2_WhetherToRetain(false),
+  m_B2_ActionTimeBefCloseInSec(180),
   // m_ES_SPY_Together_SPYidx(-1),
   // m_SPY_Px(NAN),
   // m_NoOfSgndESCtrtReqd(0),
@@ -542,10 +543,12 @@ void StrategyB2::ReadParam()
   m_B2_HasEnabledMinCommissionCheck = m_SysCfg->B2_HasEnabledMinCommissionCheck(m_StyID);
   m_B2_WhetherToRetain              = m_SysCfg->GetWhetherToRetrain(m_StyID);
   m_B2_TrainingFreq                 = m_SysCfg->GetTrainingFreq(m_StyID);
+  m_B2_ActionTimeBefCloseInSec      = m_SysCfg->Get_B2_ActionTimeBefCloseInSec(m_StyID);
 
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B2_HasEnabledMinCommissionCheck %s", GetStrategyName(m_StyID).c_str(), (m_B2_HasEnabledMinCommissionCheck?"true":"false"));
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B2_WhetherToRetain              %s", GetStrategyName(m_StyID).c_str(), (m_B2_WhetherToRetain             ?"true":"false"));
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B2_TrainingFreq                 %d", GetStrategyName(m_StyID).c_str(),  m_B2_TrainingFreq                                );
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_B2_ActionTimeBefCloseInSec      %d", GetStrategyName(m_StyID).c_str(),  m_B2_ActionTimeBefCloseInSec                     );
 
 
   // //--------------------------------------------------
@@ -819,7 +822,7 @@ bool StrategyB2::SkipSubseqProcessingForSymbol(const int iTradSym, string & sCom
 {
   sComment = "m_DoneEODTrade = " + string(*m_DoneEODTrade?"true":"false");
 
-  HHMMSS hmsStart = m_Exchg->GetTimeNSecBefClose(m_TradedSymbols[iTradSym],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),B2_ACTIVATION_SEC_BEF_CLOSE);
+  HHMMSS hmsStart = m_Exchg->GetTimeNSecBefClose(m_TradedSymbols[iTradSym],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),m_B2_ActionTimeBefCloseInSec);
   HHMMSS hmsEnd   = m_Exchg->GetTimeNSecBefClose(m_TradedSymbols[iTradSym],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),0);
 
   if (m_PTask_PrintStyActionTime.CheckIfItIsTimeToWakeUp(m_PTask_PrintStyActionTimeToken[m_TradedSymbols[iTradSym]],m_ymdhms_SysTime_HKT))
@@ -976,7 +979,7 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
   //--------------------------------------------------
   // because GetTimeNSecBefClose() gives HKT
   //--------------------------------------------------
-  HHMMSS hmsStart = m_Exchg->GetTimeNSecBefClose(m_TradedSymbols[iTradSym],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),B2_ACTIVATION_SEC_BEF_CLOSE);
+  HHMMSS hmsStart = m_Exchg->GetTimeNSecBefClose(m_TradedSymbols[iTradSym],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),m_B2_ActionTimeBefCloseInSec);
   HHMMSS hmsEnd   = m_Exchg->GetTimeNSecBefClose(m_TradedSymbols[iTradSym],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),0);
 
   m_Logger->Write(Logger::DEBUG,"Strategy %s: Sym=%s will only update internal data when time (currently %s) is between %s and %s",

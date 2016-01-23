@@ -34,9 +34,9 @@ PortfoliosAndOrders::PortfoliosAndOrders() :
     m_zmqcontext.reset(new zmq::context_t(1));
     m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_REQ));
 
-    string sZMQIPPort = m_SysCfg->Get_NextTier_ZMQ_IP_Port();
-    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: Initializing ZMQ connection. ZMQ IP Port = %s", sZMQIPPort.c_str());
-    string sConn = "tcp://"+sZMQIPPort;
+    string sZMQTFIPPort = m_SysCfg->Get_NextTier_ZMQ_TF_IP_Port();
+    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: Initializing ZMQ connection. ZMQ TF IP Port = %s", sZMQTFIPPort.c_str());
+    string sConn = "tcp://"+sZMQTFIPPort;
     m_zmqsocket->connect(sConn.c_str());
   }
 }

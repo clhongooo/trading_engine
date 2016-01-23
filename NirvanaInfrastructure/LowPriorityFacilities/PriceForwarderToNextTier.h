@@ -8,6 +8,7 @@
 #include "SystemConfig.h"
 #include "SystemState.h"
 #include "ThreadHealthMonitor.h"
+#include "PeriodicTask.h"
 #include <zmq.hpp>
 
 class PriceForwarderToNextTier {
@@ -37,6 +38,8 @@ class PriceForwarderToNextTier {
     boost::scoped_ptr<zmq::socket_t> m_zmqsocket;
     //--------------------------------------------------
 
+    PeriodicTask   m_PTask_SendMD;
+    int            m_PTask_SendMDToken;
 };
 
 #endif /* LOWPRIORITYFACILITIES_PRICEFORWARDERTONEXTTIER_H_ */

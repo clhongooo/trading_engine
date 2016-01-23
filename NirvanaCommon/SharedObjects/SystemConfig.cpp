@@ -53,7 +53,8 @@ SystemConfig::SystemConfig() :
   m_VolSurfParamFile2FM(""),
   m_ProbDistrFileFSMC1D(""),
   m_OrderRoutingMode(ORDER_ROUTE_OTI),
-  m_NextTier_ZMQ_IP_Port(""),
+  m_NextTier_ZMQ_MD_IP_Port(""),
+  m_NextTier_ZMQ_TF_IP_Port(""),
   m_TCPOrEmbeddedMode(TCPWITHOUTACK),
   m_B1_HKF_SamplingIntervalInSec(1800),
   m_SendResetOnConnectionToCAPI(true),
@@ -107,11 +108,13 @@ SystemConfig::SystemConfig() :
   m_B2_US_TheoCPnLHistFolder(""),
   m_B2_US_TheoPosFolder(""),
   m_B2_US_PersistTheoPosCPnL(false),
+  m_B2_US_ActionTimeBefCloseInSec(180),
   m_B2_HK_HasEnabledMinCommissionCheck(true),
   m_B2_HK_HasEnabledRotationMode(false),
   m_B2_HK_TheoCPnLHistFolder(""),
   m_B2_HK_TheoPosFolder(""),
-  m_B2_HK_PersistTheoPosCPnL(false)
+  m_B2_HK_PersistTheoPosCPnL(false),
+  m_B2_HK_ActionTimeBefCloseInSec(180)
 {
   m_Logger = Logger::Instance();
   SetProgramStartTime();
@@ -193,7 +196,8 @@ SystemConfig::MktDataTradeVolumeMode   SystemConfig::Get_MktDataTradeVolumeMode(
 string                                 SystemConfig::Get_VolSurfParamFile1FM()                         const {  return m_VolSurfParamFile1FM;                         }
 string                                 SystemConfig::Get_VolSurfParamFile2FM()                         const {  return m_VolSurfParamFile2FM;                         }
 string                                 SystemConfig::Get_ProbDistrFileFSMC1D()                         const {  return m_ProbDistrFileFSMC1D;                         }
-string                                 SystemConfig::Get_NextTier_ZMQ_IP_Port()                        const {  return m_NextTier_ZMQ_IP_Port;                        }
+string                                 SystemConfig::Get_NextTier_ZMQ_MD_IP_Port()                     const {  return m_NextTier_ZMQ_MD_IP_Port;                     }
+string                                 SystemConfig::Get_NextTier_ZMQ_TF_IP_Port()                     const {  return m_NextTier_ZMQ_TF_IP_Port;                     }
 SystemConfig::OrderRoutingMode         SystemConfig::Get_OrderRoutingMode()                            const {  return m_OrderRoutingMode;                            }
 SystemConfig::TCPOrEmbeddedMode        SystemConfig::Get_TCPOrEmbeddedMode()                           const {  return m_TCPOrEmbeddedMode;                           }
 string                                 SystemConfig::Get_Main_Log_Path()                               const {  return m_MainLogPath;                                 }
@@ -267,6 +271,7 @@ string       SystemConfig::B2_TheoCPnLHistFolder          (const StrategyID id) 
 string       SystemConfig::B2_TheoPosFolder               (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_TheoPosFolder;                else if (id == STY_B2_HK) return m_B2_HK_TheoPosFolder;                }
 bool         SystemConfig::B2_PersistTheoPosCPnL          (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_PersistTheoPosCPnL;           else if (id == STY_B2_HK) return m_B2_HK_PersistTheoPosCPnL;           }
 vector<int>  SystemConfig::Get_B2_RotationGroup           (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_RotationGroup;                else if (id == STY_B2_HK) return m_B2_HK_RotationGroup;                }
+int          SystemConfig::Get_B2_ActionTimeBefCloseInSec (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_ActionTimeBefCloseInSec;      else if (id == STY_B2_HK) return m_B2_HK_ActionTimeBefCloseInSec;      }
 
 
 bool SystemConfig::ChkIfProceedStyForceExcnEvenIfNoMD(const string & symbol) const
@@ -335,6 +340,10 @@ bool SystemConfig::IsPriceFwdrToNextTierOn() const
   return m_PriceFwdrIsOn;
 }
 
+int SystemConfig::GetPriceFwdrToNextTierIntervalInSec() const
+{
+  return m_PriceFwdrIntervalInSec;
+}
 
 bool SystemConfig::CheckIfBarAggregationM1Symbol(const string & symbol) const
 {
@@ -434,12 +443,14 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_US_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_USSTK.TheoCPnLHistFolder");
   boost::optional<string> o_B2_US_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_USSTK.TheoPosFolder");
   boost::optional<bool>   o_B2_US_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_USSTK.PersistTheoPosCPnL");
+  boost::optional<int>    o_B2_US_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_USSTK.ActionTimeBefCloseInSec");
 
   boost::optional<bool>   o_B2_HK_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_HK.EnableMinCommissionCheck");
   boost::optional<bool>   o_B2_HK_HasEnabledRotationMode       = pt.get_optional<bool>  ("Strategy_B2_HK.EnableRotationMode");
   boost::optional<string> o_B2_HK_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_HK.TheoCPnLHistFolder");
   boost::optional<string> o_B2_HK_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_HK.TheoPosFolder");
   boost::optional<bool>   o_B2_HK_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_HK.PersistTheoPosCPnL");
+  boost::optional<int>    o_B2_HK_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_HK.ActionTimeBefCloseInSec");
 
 
   if(o_B1_HKF_SamplingIntervalInSec   )  m_B1_HKF_SamplingIntervalInSec     = o_B1_HKF_SamplingIntervalInSec    .get();
@@ -454,12 +465,14 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US_TheoCPnLHistFolder          )  m_B2_US_TheoCPnLHistFolder            = o_B2_US_TheoCPnLHistFolder           .get();
   if(o_B2_US_TheoPosFolder               )  m_B2_US_TheoPosFolder                 = o_B2_US_TheoPosFolder                .get();
   if(o_B2_US_PersistTheoPosCPnL          )  m_B2_US_PersistTheoPosCPnL            = o_B2_US_PersistTheoPosCPnL           .get();
+  if(o_B2_US_ActionTimeBefCloseInSec     )  m_B2_US_ActionTimeBefCloseInSec       = o_B2_US_ActionTimeBefCloseInSec      .get();
 
   if(o_B2_HK_HasEnabledMinCommissionCheck)  m_B2_HK_HasEnabledMinCommissionCheck  = o_B2_HK_HasEnabledMinCommissionCheck .get();
   if(o_B2_HK_HasEnabledRotationMode      )  m_B2_HK_HasEnabledRotationMode        = o_B2_HK_HasEnabledRotationMode       .get();
   if(o_B2_HK_TheoCPnLHistFolder          )  m_B2_HK_TheoCPnLHistFolder            = o_B2_HK_TheoCPnLHistFolder           .get();
   if(o_B2_HK_TheoPosFolder               )  m_B2_HK_TheoPosFolder                 = o_B2_HK_TheoPosFolder                .get();
   if(o_B2_HK_PersistTheoPosCPnL          )  m_B2_HK_PersistTheoPosCPnL            = o_B2_HK_PersistTheoPosCPnL           .get();
+  if(o_B2_HK_ActionTimeBefCloseInSec     )  m_B2_HK_ActionTimeBefCloseInSec       = o_B2_HK_ActionTimeBefCloseInSec      .get();
 
   {
     boost::optional<string> o_B2_US_RotationGroup = pt.get_optional<string>("Strategy_B2_USSTK.RotationGroup");
@@ -1018,6 +1031,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   }
 
   m_PriceFwdrIsOn = pt.get<bool>("SystemSettings.PriceForwarderToNextTierOnOff");
+  m_PriceFwdrIntervalInSec = pt.get<int>("SystemSettings.PriceForwarderToNextTierIntervalInSec");
 
 
   string sOrderRoutingMode = pt.get<string>("SystemSettings.OrderRoutingMode");
@@ -1025,8 +1039,10 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   else if (sOrderRoutingMode == "oti")         m_OrderRoutingMode = ORDER_ROUTE_OTI;
   else if (sOrderRoutingMode == "nexttierzmq") m_OrderRoutingMode = ORDER_ROUTE_NEXTTIERZMQ;
 
-  boost::optional<string> o_NextTier_ZMQ_IP_Port = pt.get_optional<string>("SystemSettings.ZMQIPPort");
-  if (o_NextTier_ZMQ_IP_Port) m_NextTier_ZMQ_IP_Port = o_NextTier_ZMQ_IP_Port.get();
+  boost::optional<string> o_NextTier_ZMQ_MD_IP_Port = pt.get_optional<string>("SystemSettings.ZMQMDIPPort");
+  boost::optional<string> o_NextTier_ZMQ_TF_IP_Port = pt.get_optional<string>("SystemSettings.ZMQTFIPPort");
+  if (o_NextTier_ZMQ_MD_IP_Port) m_NextTier_ZMQ_MD_IP_Port = o_NextTier_ZMQ_MD_IP_Port.get();
+  if (o_NextTier_ZMQ_TF_IP_Port) m_NextTier_ZMQ_TF_IP_Port = o_NextTier_ZMQ_TF_IP_Port.get();
 
   string sTCPOrEmbeddedMode = pt.get<string>("SystemSettings.TCPOrEmbeddedMode");
   if (sTCPOrEmbeddedMode == "embedded")
