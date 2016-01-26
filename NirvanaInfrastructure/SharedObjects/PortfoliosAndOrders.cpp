@@ -28,7 +28,11 @@ PortfoliosAndOrders::PortfoliosAndOrders() :
   //--------------------------------------------------
   // Init for zmq
   //--------------------------------------------------
-  if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_NEXTTIERZMQ)
+  if (
+    m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_NEXTTIERZMQ
+    ||
+    m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_OTINXTIERZMQ
+    )
   {
     //  Prepare our context and socket
     m_zmqcontext.reset(new zmq::context_t(1));
@@ -198,34 +202,12 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
     UpdateTargetPortfolio(port_id,symbol,signed_qty,'a');
     AcctTrade(port_id,symbol,signed_qty,dMidQuote);
 
-    char caTF[4096];
-    sprintf(caTF,"%s,tradefeed,mktid,%s,OID,%f,%d,%d,TID,0\0", m_MarketData->GetSystemTimeHKT().ToCashTimestampStr().c_str(), symbol.c_str(), dMidQuote, (long)abs(signed_qty), (signed_qty > 0 ? 1:2));
-    m_Logger->Write(Logger::INFO,"%s", caTF);
+    string sTF = ConstructAugmentedTradeFeed(port_id,symbol,dMidQuote,signed_qty);
+    m_Logger->Write(Logger::INFO,"%s", sTF.c_str());
 
     if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_NEXTTIERZMQ)
     {
-      //--------------------------------------------------
-      // Transmit through zmq
-      // first augment tradefeed with strategy id
-      //--------------------------------------------------
-      char caStratName[256];
-      sprintf(caStratName,",%s",GetStrategyName(static_cast<StrategyID>(port_id)).c_str());
-      strcat(caTF,caStratName);
-
-      zmq::message_t zmq_msg(strlen(caTF)+1);
-      memcpy((void *)zmq_msg.data(), caTF, strlen(caTF));
-      ((char *)zmq_msg.data())[strlen(caTF)] = '\0';
-      m_zmqsocket->send(zmq_msg);
-
-      //--------------------------------------------------
-      // Get ack
-      //--------------------------------------------------
-      zmq::message_t zmq_reply;
-      m_zmqsocket->recv(&zmq_reply);
-
-      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Ack received through ZMQ: %s",
-                      m_MarketData->GetSystemTimeHKT().ToStr().c_str(), (char *)zmq_reply.data());
-      //--------------------------------------------------
+      SendTFToNextTierThruZMQ(port_id, symbol, dMidQuote, signed_qty);
     }
 
     m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d Price: %f.",
@@ -810,6 +792,14 @@ bool PortfoliosAndOrders::BookTradeFromOTI(const string & order_id, const string
   AcctTrade(iPortID, sSymbol, signed_qty, price);
   //--------------------------------------------------
 
+  //--------------------------------------------------
+  // report the trade to next tier through zmq
+  //--------------------------------------------------
+  if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_OTINXTIERZMQ)
+  {
+    SendTFToNextTierThruZMQ(iPortID, sSymbol, price, signed_qty);
+  }
+
   return true;
 }
 
@@ -1198,5 +1188,38 @@ double PortfoliosAndOrders::AcctCheckPos(const int port_id, const string & symbo
   }
 
   return it->second.Pos(symbol);
+}
+
+string PortfoliosAndOrders::ConstructAugmentedTradeFeed(const int port_id, const string & symbol, const double price, const long signed_qty)
+{
+  return m_MarketData->GetSystemTimeHKT().ToCashTimestampStr() + ",tradefeed,mktid," +
+    symbol + ",OID," +
+    boost::lexical_cast<string>(price) + "," +
+    boost::lexical_cast<string>((long)abs(signed_qty)) + "," +
+    boost::lexical_cast<string>(signed_qty > 0 ? 1:2) + ",TID,0," +
+    GetStrategyName(static_cast<StrategyID>(port_id));
+}
+
+void PortfoliosAndOrders::SendTFToNextTierThruZMQ(const int port_id, const string & symbol, const double price, const long signed_qty)
+{
+  //--------------------------------------------------
+  // Transmit through zmq
+  //--------------------------------------------------
+  string sATF = ConstructAugmentedTradeFeed(port_id,symbol,price,signed_qty);
+
+  zmq::message_t zmq_msg(sATF.length()+1);
+  memcpy((void *)zmq_msg.data(), sATF.c_str(), sATF.length());
+  ((char *)zmq_msg.data())[sATF.length()] = '\0';
+  m_zmqsocket->send(zmq_msg);
+
+  //--------------------------------------------------
+  // Get ack
+  //--------------------------------------------------
+  zmq::message_t zmq_reply;
+  m_zmqsocket->recv(&zmq_reply);
+
+  m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Ack received through ZMQ: %s",
+                  m_MarketData->GetSystemTimeHKT().ToStr().c_str(), (char *)zmq_reply.data());
+  //--------------------------------------------------
 }
 

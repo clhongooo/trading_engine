@@ -138,6 +138,7 @@ class PortfoliosAndOrders {
     void AcctClearPosChgFlagNoLock();
     double AcctCheckPos(const int,const string &);
     bool CheckIfSomeAcctPosChgd();
+    string ConstructAugmentedTradeFeed(const int,const string &,const double,const long);
 
     //--------------------------------------------------
     void OutputActualPortToPersistentPos(const char);
@@ -203,6 +204,7 @@ class PortfoliosAndOrders {
     //--------------------------------------------------
     boost::scoped_ptr<zmq::context_t> m_zmqcontext;
     boost::scoped_ptr<zmq::socket_t> m_zmqsocket;
+    void SendTFToNextTierThruZMQ(const int,const string &,const double,const long);
     //--------------------------------------------------
 
 };

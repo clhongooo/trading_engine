@@ -71,7 +71,7 @@ class SystemConfig : boost::noncopyable
 {
   public:
     enum MktDataTradeVolumeMode {PER_TRADE_VOLUME_MODE=0, ACCUMULATED_VOLUME_MODE=1};
-    enum OrderRoutingMode {ORDER_ROUTE_RECORD=0, ORDER_ROUTE_OTI=1, ORDER_ROUTE_NEXTTIERZMQ=2};
+    enum OrderRoutingMode {ORDER_ROUTE_RECORD=0, ORDER_ROUTE_OTI=1, ORDER_ROUTE_NEXTTIERZMQ=2, ORDER_ROUTE_OTINXTIERZMQ=3};
     enum TCPOrEmbeddedMode {TCPWITHOUTACK=0, TCPWITHACK=1, EMBEDDED=2};
 
     static boost::shared_ptr<SystemConfig> Instance();
@@ -174,6 +174,7 @@ class SystemConfig : boost::noncopyable
     bool                   B2_PersistTheoPosCPnL(const StrategyID)                             const;
     vector<int>            Get_B2_RotationGroup(const StrategyID)                              const;
     int                    Get_B2_ActionTimeBefCloseInSec(const StrategyID)                    const;
+    int                    Get_B2_FilterSMAPeriod(const StrategyID)                            const;
     bool                   CheckIfHaltTrading(const string &,const YYYYMMDD &)                 const;
     bool                   CheckIfHalfDayTrading(const string &,const YYYYMMDD &)              const;
     bool                   GetCorpActionAdj(const string &,const YYYYMMDD &,double &,double &) const;
@@ -352,6 +353,7 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_US_PersistTheoPosCPnL;
     vector<int>                                        m_B2_US_RotationGroup;
     int                                                m_B2_US_ActionTimeBefCloseInSec;
+    int                                                m_B2_US_FilterSMAPeriod;
     bool                                               m_B2_HK_HasEnabledMinCommissionCheck;
     bool                                               m_B2_HK_HasEnabledRotationMode;
     string                                             m_B2_HK_TheoCPnLHistFolder;
@@ -359,6 +361,7 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_HK_PersistTheoPosCPnL;
     vector<int>                                        m_B2_HK_RotationGroup;
     int                                                m_B2_HK_ActionTimeBefCloseInSec;
+    int                                                m_B2_HK_FilterSMAPeriod;
 };
 
 #endif

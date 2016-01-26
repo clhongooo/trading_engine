@@ -20,6 +20,7 @@
 #include "NYSE.h"
 #include "SystemConfig.h"
 #include "SystemState.h"
+#include "Sma.hpp"
 
 
 #define B2_METH_AVGPX 0
@@ -32,7 +33,6 @@
 #define B2_ROTATION_NDAYRETURN 2
 
 #define B2_COMMISSION_RATE_THRESH (double)0.005/(double)80
-
 
 class StrategyB2 : public StrategyBase {
   public:
@@ -153,6 +153,7 @@ class StrategyB2 : public StrategyBase {
     vector<Acct>     m_TheoAcct;
     bool             m_PersistTheoPosCPnL;
     bool             m_EnabledRotationMode;
+    int              m_FilterSMAPeriod;
 
     //--------------------------------------------------
     map<string,vector<double> >               m_map_HistoricalAvgPx;
@@ -178,6 +179,7 @@ class StrategyB2 : public StrategyBase {
     bool                                      m_B2_WhetherToRetain;
     TradingStrategyConfig::TrainingFreq       m_B2_TrainingFreq;
     int                                       m_B2_ActionTimeBefCloseInSec;
+    vector<Sma<double> >                      m_v_SMA;
 
 
     //--------------------------------------------------

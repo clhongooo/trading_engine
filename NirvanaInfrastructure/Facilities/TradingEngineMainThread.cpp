@@ -278,7 +278,11 @@ void TradingEngineMainThread::RunMainThread()
     // OTI
     //--------------------------------------------------
     p_oe.reset(new OrderExecutor());
-    if (p_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_OTI)
+    if (
+      p_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_OTI
+      ||
+      p_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_OTINXTIERZMQ
+      )
     {
       int iNumOfOTI = p_SysCfg->GetNumOfOTI();
       for (unsigned int i = 0; i < iNumOfOTI; ++i)

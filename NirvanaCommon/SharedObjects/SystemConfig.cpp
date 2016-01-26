@@ -109,12 +109,14 @@ SystemConfig::SystemConfig() :
   m_B2_US_TheoPosFolder(""),
   m_B2_US_PersistTheoPosCPnL(false),
   m_B2_US_ActionTimeBefCloseInSec(180),
+  m_B2_US_FilterSMAPeriod(100),
   m_B2_HK_HasEnabledMinCommissionCheck(true),
   m_B2_HK_HasEnabledRotationMode(false),
   m_B2_HK_TheoCPnLHistFolder(""),
   m_B2_HK_TheoPosFolder(""),
   m_B2_HK_PersistTheoPosCPnL(false),
-  m_B2_HK_ActionTimeBefCloseInSec(180)
+  m_B2_HK_ActionTimeBefCloseInSec(180),
+  m_B2_HK_FilterSMAPeriod(100)
 {
   m_Logger = Logger::Instance();
   SetProgramStartTime();
@@ -272,6 +274,7 @@ string       SystemConfig::B2_TheoPosFolder               (const StrategyID id) 
 bool         SystemConfig::B2_PersistTheoPosCPnL          (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_PersistTheoPosCPnL;           else if (id == STY_B2_HK) return m_B2_HK_PersistTheoPosCPnL;           }
 vector<int>  SystemConfig::Get_B2_RotationGroup           (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_RotationGroup;                else if (id == STY_B2_HK) return m_B2_HK_RotationGroup;                }
 int          SystemConfig::Get_B2_ActionTimeBefCloseInSec (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_ActionTimeBefCloseInSec;      else if (id == STY_B2_HK) return m_B2_HK_ActionTimeBefCloseInSec;      }
+int          SystemConfig::Get_B2_FilterSMAPeriod         (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_FilterSMAPeriod;              else if (id == STY_B2_HK) return m_B2_HK_FilterSMAPeriod;              }
 
 
 bool SystemConfig::ChkIfProceedStyForceExcnEvenIfNoMD(const string & symbol) const
@@ -444,6 +447,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_US_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_USSTK.TheoPosFolder");
   boost::optional<bool>   o_B2_US_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_USSTK.PersistTheoPosCPnL");
   boost::optional<int>    o_B2_US_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_USSTK.ActionTimeBefCloseInSec");
+  boost::optional<int>    o_B2_US_FilterSMAPeriod              = pt.get_optional<int>   ("Strategy_B2_USSTK.FilterSMAPeriod");
 
   boost::optional<bool>   o_B2_HK_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_HK.EnableMinCommissionCheck");
   boost::optional<bool>   o_B2_HK_HasEnabledRotationMode       = pt.get_optional<bool>  ("Strategy_B2_HK.EnableRotationMode");
@@ -451,6 +455,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_HK_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_HK.TheoPosFolder");
   boost::optional<bool>   o_B2_HK_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_HK.PersistTheoPosCPnL");
   boost::optional<int>    o_B2_HK_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_HK.ActionTimeBefCloseInSec");
+  boost::optional<int>    o_B2_HK_FilterSMAPeriod              = pt.get_optional<int>   ("Strategy_B2_HK.FilterSMAPeriod");
 
 
   if(o_B1_HKF_SamplingIntervalInSec   )  m_B1_HKF_SamplingIntervalInSec     = o_B1_HKF_SamplingIntervalInSec    .get();
@@ -466,6 +471,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US_TheoPosFolder               )  m_B2_US_TheoPosFolder                 = o_B2_US_TheoPosFolder                .get();
   if(o_B2_US_PersistTheoPosCPnL          )  m_B2_US_PersistTheoPosCPnL            = o_B2_US_PersistTheoPosCPnL           .get();
   if(o_B2_US_ActionTimeBefCloseInSec     )  m_B2_US_ActionTimeBefCloseInSec       = o_B2_US_ActionTimeBefCloseInSec      .get();
+  if(o_B2_US_FilterSMAPeriod             )  m_B2_US_FilterSMAPeriod               = o_B2_US_FilterSMAPeriod              .get();
 
   if(o_B2_HK_HasEnabledMinCommissionCheck)  m_B2_HK_HasEnabledMinCommissionCheck  = o_B2_HK_HasEnabledMinCommissionCheck .get();
   if(o_B2_HK_HasEnabledRotationMode      )  m_B2_HK_HasEnabledRotationMode        = o_B2_HK_HasEnabledRotationMode       .get();
@@ -473,6 +479,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_HK_TheoPosFolder               )  m_B2_HK_TheoPosFolder                 = o_B2_HK_TheoPosFolder                .get();
   if(o_B2_HK_PersistTheoPosCPnL          )  m_B2_HK_PersistTheoPosCPnL            = o_B2_HK_PersistTheoPosCPnL           .get();
   if(o_B2_HK_ActionTimeBefCloseInSec     )  m_B2_HK_ActionTimeBefCloseInSec       = o_B2_HK_ActionTimeBefCloseInSec      .get();
+  if(o_B2_HK_FilterSMAPeriod             )  m_B2_HK_FilterSMAPeriod               = o_B2_HK_FilterSMAPeriod              .get();
 
   {
     boost::optional<string> o_B2_US_RotationGroup = pt.get_optional<string>("Strategy_B2_USSTK.RotationGroup");
@@ -1035,9 +1042,10 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
 
 
   string sOrderRoutingMode = pt.get<string>("SystemSettings.OrderRoutingMode");
-  if      (sOrderRoutingMode == "record")      m_OrderRoutingMode = ORDER_ROUTE_RECORD;
-  else if (sOrderRoutingMode == "oti")         m_OrderRoutingMode = ORDER_ROUTE_OTI;
-  else if (sOrderRoutingMode == "nexttierzmq") m_OrderRoutingMode = ORDER_ROUTE_NEXTTIERZMQ;
+  if      (sOrderRoutingMode == "record")          m_OrderRoutingMode = ORDER_ROUTE_RECORD;
+  else if (sOrderRoutingMode == "oti")             m_OrderRoutingMode = ORDER_ROUTE_OTI;
+  else if (sOrderRoutingMode == "nexttierzmq")     m_OrderRoutingMode = ORDER_ROUTE_NEXTTIERZMQ;
+  else if (sOrderRoutingMode == "oti_nexttierzmq") m_OrderRoutingMode = ORDER_ROUTE_OTINXTIERZMQ;
 
   boost::optional<string> o_NextTier_ZMQ_MD_IP_Port = pt.get_optional<string>("SystemSettings.ZMQMDIPPort");
   boost::optional<string> o_NextTier_ZMQ_TF_IP_Port = pt.get_optional<string>("SystemSettings.ZMQTFIPPort");
