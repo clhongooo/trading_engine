@@ -18,6 +18,7 @@ class MDI_Acknowledgement {
     virtual ~MDI_Acknowledgement();
 
     void ReportAckTechIndUpd();
+    void ReportAckMTM();
     void ReportAck(const StrategyID);
     void ReportNotMktData();
     void ReportDataArrived(const int);
@@ -53,6 +54,7 @@ class MDI_Acknowledgement {
 
     vector<int>                m_NoOfAckReceived_sty;
     int                        m_NoOfAckReceived_techind;
+    int                        m_NoOfAckReceived_mtm;
     set<int>                   m_MDIThatNeedAck;
     boost::shared_mutex        m_ReceivedAck_mutex;
 

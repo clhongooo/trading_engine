@@ -31,7 +31,7 @@ then
     echo "15) scenb2hyg"
     echo "16) testrollfwd"
     echo
-    echo "Choice> "
+    echo -n "Choice> "
 
     read line
     if   [[ $line -eq 0  ]]; then ARG1="us"                          

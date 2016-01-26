@@ -153,7 +153,6 @@ class StrategyB2 : public StrategyBase {
     vector<Acct>     m_TheoAcct;
     bool             m_PersistTheoPosCPnL;
     bool             m_EnabledRotationMode;
-    int              m_FilterSMAPeriod;
 
     //--------------------------------------------------
     map<string,vector<double> >               m_map_HistoricalAvgPx;
@@ -179,6 +178,7 @@ class StrategyB2 : public StrategyBase {
     bool                                      m_B2_WhetherToRetain;
     TradingStrategyConfig::TrainingFreq       m_B2_TrainingFreq;
     int                                       m_B2_ActionTimeBefCloseInSec;
+    int                                       m_B2_FilterSMAPeriod;
     vector<Sma<double> >                      m_v_SMA;
 
 

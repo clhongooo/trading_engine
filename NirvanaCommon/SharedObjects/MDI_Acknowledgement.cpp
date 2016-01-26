@@ -11,7 +11,7 @@ boost::shared_ptr<MDI_Acknowledgement> MDI_Acknowledgement::Instance() {
   return instance;
 }
 
-MDI_Acknowledgement::MDI_Acknowledgement() : m_NoOfAckReceived_techind(0)
+MDI_Acknowledgement::MDI_Acknowledgement() : m_NoOfAckReceived_techind(0), m_NoOfAckReceived_mtm(0)
 {
   m_Logger = Logger::Instance();
   m_SysCfg = SystemConfig::Instance();
@@ -28,6 +28,15 @@ void MDI_Acknowledgement::ReportAckTechIndUpd()
   boost::unique_lock<boost::shared_mutex> lock(m_ReceivedAck_mutex);
   m_NoOfAckReceived_techind = min(m_NoOfAckReceived_techind+1,1);
   if (MDI_ACK_DEBUG_MSG) m_Logger->Write(Logger::DEBUG,"%s::%s (%d) m_NoOfAckReceived_techind = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_techind);
+
+  return;
+}
+
+void MDI_Acknowledgement::ReportAckMTM()
+{
+  boost::unique_lock<boost::shared_mutex> lock(m_ReceivedAck_mutex);
+  m_NoOfAckReceived_mtm = min(m_NoOfAckReceived_mtm+1,1);
+  if (MDI_ACK_DEBUG_MSG) m_Logger->Write(Logger::DEBUG,"%s::%s (%d) m_NoOfAckReceived_mtm = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_mtm);
 
   return;
 }
@@ -58,7 +67,9 @@ void MDI_Acknowledgement::ClearAckReportedFromStyNoLock()
     }
   }
   m_NoOfAckReceived_techind = max(m_NoOfAckReceived_techind-1,-1);
+  m_NoOfAckReceived_mtm     = max(m_NoOfAckReceived_mtm-1,-1);
   if (MDI_ACK_DEBUG_MSG) m_Logger->Write(Logger::DEBUG,"%s::%s (%d) m_NoOfAckReceived_techind = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_techind);
+  if (MDI_ACK_DEBUG_MSG) m_Logger->Write(Logger::DEBUG,"%s::%s (%d) m_NoOfAckReceived_mtm = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_mtm);
   if (MDI_ACK_DEBUG_MSG) m_Logger->Write(Logger::DEBUG,"%s::%s (%d) Cleared internal ack record.",__FILE__,__FUNCTION__,__LINE__);
   return;
 }
@@ -93,6 +104,12 @@ bool MDI_Acknowledgement::CheckIfAllAckRecvdNoLock()
     bAllAckReceived = false;
   }
 
+  if (m_NoOfAckReceived_mtm <= 0)
+  {
+    if (MDI_ACK_DEBUG_MSG) m_Logger->Write(Logger::DEBUG,"%s::%s (%d) m_NoOfAckReceived_mtm = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_mtm);
+    bAllAckReceived = false;
+  }
+
   return bAllAckReceived;
 }
 
@@ -109,7 +126,12 @@ void MDI_Acknowledgement::ReportNotMktData()
     }
 
     m_NoOfAckReceived_techind = min(m_NoOfAckReceived_techind+1,1);
-    if (MDI_ACK_DEBUG_MSG) m_Logger->Write(Logger::DEBUG,"%s::%s (%d) m_NoOfAckReceived_techind = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_techind);
+    m_NoOfAckReceived_mtm = min(m_NoOfAckReceived_mtm+1,1);
+    if (MDI_ACK_DEBUG_MSG)
+    {
+      m_Logger->Write(Logger::DEBUG,"%s::%s (%d) m_NoOfAckReceived_techind = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_techind);
+      m_Logger->Write(Logger::DEBUG,"%s::%s (%d) m_NoOfAckReceived_mtm = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_mtm);
+    }
   }
   return;
 }
@@ -130,6 +152,7 @@ void MDI_Acknowledgement::ResetRecvAckNoLock()
   m_NoOfAckReceived_sty.reserve(static_cast<int>(STY_LAST));
   m_NoOfAckReceived_sty.insert(m_NoOfAckReceived_sty.begin(),static_cast<int>(STY_LAST),0);
   m_NoOfAckReceived_techind = 0;
+  m_NoOfAckReceived_mtm = 0;
 
   return;
 }
@@ -162,8 +185,10 @@ void MDI_Acknowledgement::WaitForAck()
         }
       }
       m_Logger->Write(Logger::NOTICE,"%s::%s (%d) Been waiting for ack for a long time: m_NoOfAckReceived_techind = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_techind);
+      m_Logger->Write(Logger::NOTICE,"%s::%s (%d) Been waiting for ack for a long time: m_NoOfAckReceived_mtm = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_mtm);
       ReportAckTechIndUpd();
       m_Logger->Write(Logger::NOTICE,"%s::%s (%d) Been waiting for ack for a long time: m_NoOfAckReceived_techind = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_techind);
+      m_Logger->Write(Logger::NOTICE,"%s::%s (%d) Been waiting for ack for a long time: m_NoOfAckReceived_mtm = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_mtm);
     }
   }
   if (MDI_ACK_DEBUG_MSG) m_Logger->Write(Logger::DEBUG,"%s::%s (%d) All Ack received.",__FILE__,__FUNCTION__,__LINE__);

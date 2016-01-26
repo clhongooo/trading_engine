@@ -10,6 +10,7 @@ MarkToMarket::MarkToMarket()
   m_PortAndOrders   = PortfoliosAndOrders::Instance();
   m_ThrdHlthMon     = ThreadHealthMonitor::Instance();
   m_StyCPnLHist     = StyCPnLHist::Instance();
+  m_MDIAck          = MDI_Acknowledgement::Instance();
 
 }
 
@@ -78,8 +79,8 @@ void MarkToMarket::Run()
         double d_MTM_CPnL_PerSty = 0;
         if (m_PortAndOrders->Get_MTM_CPnL(sid,d_MTM_CPnL_PerSty))
         {
-          fsMTMLog << GetStrategyName(sid) << "\t" << sid << "\t" << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << ymdhms_MDITime.GetHHMMSS().ToInt() << "\t" << d_MTM_CPnL_PerSty << endl;
-          m_Logger->Write(Logger::INFO,"Strategy %s: MTMLog:\t%d\t%s\t%f", GetStrategyName(sid).c_str(), sid, ymdhms_MDITime.ToStr().c_str(), d_MTM_CPnL_PerSty);
+          fsMTMLog << GetStrategyName(sid) << "\t" << sid << "\t" << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << ymdhms_MDITime.GetHHMMSS().ToInt() << "\t" << setprecision(2) << fixed << d_MTM_CPnL_PerSty << endl;
+          m_Logger->Write(Logger::INFO,"Strategy %s: MTMLog:\t%d\t%s\t%.2f", GetStrategyName(sid).c_str(), sid, ymdhms_MDITime.ToStr().c_str(), d_MTM_CPnL_PerSty);
           m_StyCPnLHist->CPnLHistAddAndTruncate(sty,ymdhms_MDITime.GetYYYYMMDD(),d_MTM_CPnL_PerSty);
           m_StyCPnLHist->CPnLHistWriteToFile(sty);
         }
@@ -108,6 +109,7 @@ void MarkToMarket::Run()
       }
     }
 
+    ReportAckIfNeeded();
   }
 
   fsMTMLog.close();
@@ -118,3 +120,11 @@ void MarkToMarket::Run()
 
   return;
 }
+
+void MarkToMarket::ReportAckIfNeeded()
+{
+  if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK || m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::EMBEDDED)
+    m_MDIAck->ReportAckMTM();
+  return;
+}
+

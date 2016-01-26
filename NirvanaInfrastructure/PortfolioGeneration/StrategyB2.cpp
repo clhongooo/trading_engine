@@ -544,11 +544,13 @@ void StrategyB2::ReadParam()
   m_B2_WhetherToRetain              = m_SysCfg->GetWhetherToRetrain(m_StyID);
   m_B2_TrainingFreq                 = m_SysCfg->GetTrainingFreq(m_StyID);
   m_B2_ActionTimeBefCloseInSec      = m_SysCfg->Get_B2_ActionTimeBefCloseInSec(m_StyID);
+  m_B2_FilterSMAPeriod              = m_SysCfg->Get_B2_FilterSMAPeriod(m_StyID);
 
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B2_HasEnabledMinCommissionCheck %s", GetStrategyName(m_StyID).c_str(), (m_B2_HasEnabledMinCommissionCheck?"true":"false"));
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B2_WhetherToRetain              %s", GetStrategyName(m_StyID).c_str(), (m_B2_WhetherToRetain             ?"true":"false"));
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B2_TrainingFreq                 %d", GetStrategyName(m_StyID).c_str(),  m_B2_TrainingFreq                                );
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B2_ActionTimeBefCloseInSec      %d", GetStrategyName(m_StyID).c_str(),  m_B2_ActionTimeBefCloseInSec                     );
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_B2_FilterSMAPeriod              %d", GetStrategyName(m_StyID).c_str(),  m_B2_FilterSMAPeriod                             );
 
 
   // //--------------------------------------------------
@@ -657,12 +659,11 @@ void StrategyB2::ReadParam()
     m_PTask_PrintStyActionTimeToken[sym] = m_PTask_PrintStyActionTime.GetNewTokenAndSetIntervalInSec(60);
   });
 
-  m_FilterSMAPeriod = m_SysCfg->Get_B2_FilterSMAPeriod(m_StyID);
-  if (m_FilterSMAPeriod > 0)
+  if (m_B2_FilterSMAPeriod > 0)
   {
     for (unsigned int i = 0; i < m_TradedSymbols.size(); ++i)
     {
-      m_v_SMA.push_back(Sma<double>(m_FilterSMAPeriod,true));
+      m_v_SMA.push_back(Sma<double>(m_B2_FilterSMAPeriod,true));
     }
   }
 
@@ -929,7 +930,7 @@ void StrategyB2::InitialWarmUp(const int iTradSym)
       m_HistoricalAvgPx->push_back(dAvgPx);
       m_HistoricalClose->push_back(vClose[i]);
       m_HistoricalPricesDates->insert(vYMD[i]);
-      if (m_FilterSMAPeriod > 0) m_v_SMA[iTradSym].Add(dAvgPx);
+      if (m_B2_FilterSMAPeriod > 0) m_v_SMA[iTradSym].Add(dAvgPx);
 
       if (m_HistoricalAvgPx->size()>1)
       {
@@ -1020,7 +1021,7 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
       m_HistoricalAvgPx->push_back(dAvgPx);
       m_HistoricalClose->push_back(m_SymMidQuote);
       m_HistoricalPricesDates->insert(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
-      if (m_FilterSMAPeriod > 0) m_v_SMA[iTradSym].Add(dAvgPx);
+      if (m_B2_FilterSMAPeriod > 0) m_v_SMA[iTradSym].Add(dAvgPx);
 
       if (m_HistoricalAvgPx->size()>1)
       {
@@ -1548,13 +1549,13 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   //--------------------------------------------------
   // Filter away stocks with a declining trend
   //--------------------------------------------------
-  if (m_FilterSMAPeriod > 0)
+  if (m_B2_FilterSMAPeriod > 0)
   {
     if (m_HistoricalAvgPx->back() < m_v_SMA[iTradSym].Value())
     {
       m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because average price is below its %d-day SMA. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f",
                       GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
-                      m_FilterSMAPeriod, m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA[iTradSym].Value());
+                      m_B2_FilterSMAPeriod, m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA[iTradSym].Value());
       m_dAggSignedQty = 0;
     }
     else

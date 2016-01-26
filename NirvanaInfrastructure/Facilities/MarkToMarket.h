@@ -20,7 +20,8 @@ class MarkToMarket {
     void Run();
 
   private:
-    //--------------------------------------------------
+    void ReportAckIfNeeded();
+
     //--------------------------------------------------
     YYYYMMDDHHMMSS m_ymdhms_LastCalculated;
 
@@ -35,6 +36,7 @@ class MarkToMarket {
     boost::shared_ptr<PortfoliosAndOrders>  m_PortAndOrders;
     boost::shared_ptr<ThreadHealthMonitor>  m_ThrdHlthMon;
     boost::shared_ptr<StyCPnLHist>          m_StyCPnLHist;
+    boost::shared_ptr<MDI_Acknowledgement>  m_MDIAck;
     //--------------------------------------------------
 
     //--------------------------------------------------
