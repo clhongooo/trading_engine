@@ -605,7 +605,7 @@ void MarketData::UpdateSystemTime(const YYYYMMDD & yyyymmdd, const HHMMSS & hhmm
 }
 
 
-void MarketData::UpdateBarAggregators(const YYYYMMDD & yyyymmdd, const HHMMSS & hhmmss, const string & symbol, const double dPrice,const long lVolume)
+void MarketData::UpdateBarAggregators(const YYYYMMDD & yyyymmdd, const HHMMSS & hhmmss, const string & symbol, const double dPrice, const long lVolume)
 {
   if (!STool::IsValidPrice(dPrice)) return;
 

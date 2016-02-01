@@ -202,12 +202,12 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
     UpdateTargetPortfolio(port_id,symbol,signed_qty,'a');
     AcctTrade(port_id,symbol,signed_qty,dMidQuote);
 
-    string sTF = ConstructAugmentedTradeFeed(port_id,symbol,dMidQuote,signed_qty);
+    string sTF = ConstructAugmentedTradeFeed(port_id,symbol,dMidQuote,signed_qty,"OID","TID");
     m_Logger->Write(Logger::INFO,"%s", sTF.c_str());
 
     if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_NEXTTIERZMQ)
     {
-      SendTFToNextTierThruZMQ(port_id, symbol, dMidQuote, signed_qty);
+      SendTFToNextTierThruZMQ(port_id, symbol, dMidQuote, signed_qty,"OID","TID");
     }
 
     m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d Price: %f.",
@@ -746,7 +746,7 @@ bool PortfoliosAndOrders::UpdateOrderState(const string order_id, const OrderIns
   return true;
 }
 
-bool PortfoliosAndOrders::BookTradeFromOTI(const string & order_id, const string & symbol, const double price, const long signed_qty)
+bool PortfoliosAndOrders::BookTradeFromOTI(const string & order_id, const string & symbol, const double price, const long signed_qty, const string & oid, const string & tid)
 {
 
   //--------------------------------------------------
@@ -797,7 +797,7 @@ bool PortfoliosAndOrders::BookTradeFromOTI(const string & order_id, const string
   //--------------------------------------------------
   if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_OTINXTIERZMQ)
   {
-    SendTFToNextTierThruZMQ(iPortID, sSymbol, price, signed_qty);
+    SendTFToNextTierThruZMQ(iPortID, sSymbol, price, signed_qty, oid, tid);
   }
 
   return true;
@@ -1190,22 +1190,22 @@ double PortfoliosAndOrders::AcctCheckPos(const int port_id, const string & symbo
   return it->second.Pos(symbol);
 }
 
-string PortfoliosAndOrders::ConstructAugmentedTradeFeed(const int port_id, const string & symbol, const double price, const long signed_qty)
+string PortfoliosAndOrders::ConstructAugmentedTradeFeed(const int port_id, const string & symbol, const double price, const long signed_qty, const string & oid, const string & tid)
 {
   return m_MarketData->GetSystemTimeHKT().ToCashTimestampStr() + ",tradefeed,mktid," +
-    symbol + ",OID," +
+    symbol + "," + oid + "," +
     boost::lexical_cast<string>(price) + "," +
     boost::lexical_cast<string>((long)abs(signed_qty)) + "," +
-    boost::lexical_cast<string>(signed_qty > 0 ? 1:2) + ",TID,0," +
+    boost::lexical_cast<string>(signed_qty > 0 ? 1:2) + "," + tid + ",0," +
     GetStrategyName(static_cast<StrategyID>(port_id));
 }
 
-void PortfoliosAndOrders::SendTFToNextTierThruZMQ(const int port_id, const string & symbol, const double price, const long signed_qty)
+void PortfoliosAndOrders::SendTFToNextTierThruZMQ(const int port_id, const string & symbol, const double price, const long signed_qty, const string & oid, const string & tid)
 {
   //--------------------------------------------------
   // Transmit through zmq
   //--------------------------------------------------
-  string sATF = ConstructAugmentedTradeFeed(port_id,symbol,price,signed_qty);
+  string sATF = ConstructAugmentedTradeFeed(port_id,symbol,price,signed_qty, oid, tid);
 
   zmq::message_t zmq_msg(sATF.length()+1);
   memcpy((void *)zmq_msg.data(), sATF.c_str(), sATF.length());

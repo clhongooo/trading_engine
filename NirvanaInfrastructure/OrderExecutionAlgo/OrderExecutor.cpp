@@ -155,8 +155,9 @@ void OrderExecutor::HandleTradeFeedRecv(const ATU_OTI_tradefeed_struct & tf)
   const string & order_id   = tf.m_order_id;
   const double price        = tf.m_price;
   const long signed_qty     = ((tf.m_buy_or_sell == 1) ? 1 : -1) * boost::lexical_cast<long>(tf.m_qty);
+  const string & trade_id   = tf.m_trade_id;
 
-  m_PortAndOrders->BookTradeFromOTI(order_id, symbol, price, signed_qty);
+  m_PortAndOrders->BookTradeFromOTI(order_id, symbol, price, signed_qty, order_id, trade_id);
   return;
 }
 
