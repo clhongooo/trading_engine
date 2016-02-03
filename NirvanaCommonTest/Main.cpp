@@ -84,7 +84,7 @@ int main ( int argc, const char* argv[] )
   // TestSM1();
   // TestSMA();
   // TestSP();
-  // TestST();
+  TestST();
   // TestTS();
   // TestWMA();
   // TestWR();
@@ -113,7 +113,7 @@ int main ( int argc, const char* argv[] )
   // utTestRunner.addTest(TestPeriodSma::suite());
   // utTestRunner.addTest(TestDistributions::suite());
   // utTestRunner.addTest(TestCountingFunction::suite());
-  utTestRunner.addTest(TestCommissionCalculator::suite());
+  // utTestRunner.addTest(TestCommissionCalculator::suite());
   // utTestRunner.addTest(TestCPnLHist::suite());
   // utTestRunner.addTest(TestKolmogorovSmirnov::suite());
   // utTestRunner.addTest(TestNYSECME::suite());

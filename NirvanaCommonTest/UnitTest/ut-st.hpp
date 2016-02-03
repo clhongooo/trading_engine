@@ -34,11 +34,15 @@ int TestST()
 
 
 
-  ut.Assert(STool::Sign(0) == 1,__FILE__,__FUNCTION__,__LINE__);
-  ut.Assert(STool::Sign(3) == 1,__FILE__,__FUNCTION__,__LINE__);
-  ut.Assert(STool::Sign(-33) == -1,__FILE__,__FUNCTION__,__LINE__);
+  ut.Assert(STool::Sign(0.0) == 1,__FILE__,__FUNCTION__,__LINE__);
+  ut.Assert(STool::Sign(3.0) == 1,__FILE__,__FUNCTION__,__LINE__);
+  ut.Assert(STool::Sign(-33.0) == -1,__FILE__,__FUNCTION__,__LINE__);
   ut.Assert(STool::Sign(2.34567) == 1,__FILE__,__FUNCTION__,__LINE__);
   ut.Assert(STool::Sign(-2.34567) == -1,__FILE__,__FUNCTION__,__LINE__);
+
+  ut.Assert(STool::Sign((int)0) == 1,__FILE__,__FUNCTION__,__LINE__);
+  ut.Assert(STool::Sign((int)3) == 1,__FILE__,__FUNCTION__,__LINE__);
+  ut.Assert(STool::Sign((int)-33) == -1,__FILE__,__FUNCTION__,__LINE__);
 
 
   ut.Assert(STool::Round(2.34567,2) == 2.35,__FILE__,__FUNCTION__,__LINE__);
@@ -111,24 +115,28 @@ int TestST()
   string sTest;
 
   sTest = "  qwer  ";
-  STool::TrimB(sTest);
+  STool::TrimInPlace(sTest);
   ut.Assert(sTest == "qwer",__FILE__,__FUNCTION__,__LINE__);
 
   sTest = "  qwer  ";
-  STool::TrimLeftB(sTest);
+  STool::TrimLeftInPlace(sTest);
   ut.Assert(sTest == "qwer  ",__FILE__,__FUNCTION__,__LINE__);
 
   sTest = "  qwer  ";
-  STool::TrimRightB(sTest);
+  STool::TrimRightInPlace(sTest);
   ut.Assert(sTest == "  qwer",__FILE__,__FUNCTION__,__LINE__);
 
-  ut.Assert(STool::TrimS("  qwer  ") == "qwer",__FILE__,__FUNCTION__,__LINE__);
-  ut.Assert(STool::TrimRightS("  qwer  ") == "  qwer",__FILE__,__FUNCTION__,__LINE__);
-  ut.Assert(STool::TrimLeftS("  qwer  ") == "qwer  ",__FILE__,__FUNCTION__,__LINE__);
+  ut.Assert(STool::Trim("  qwer  ") == "qwer",__FILE__,__FUNCTION__,__LINE__);
+  ut.Assert(STool::TrimRight("  qwer  ") == "  qwer",__FILE__,__FUNCTION__,__LINE__);
+  ut.Assert(STool::TrimLeft("  qwer  ") == "qwer  ",__FILE__,__FUNCTION__,__LINE__);
 
   sTest = "  qwer  "; ut.Assert(STool::Trim(sTest) == "qwer",__FILE__,__FUNCTION__,__LINE__);
   sTest = "  qwer  "; ut.Assert(STool::TrimRight(sTest) == "  qwer",__FILE__,__FUNCTION__,__LINE__);
   sTest = "  qwer  "; ut.Assert(STool::TrimLeft(sTest) == "qwer  ",__FILE__,__FUNCTION__,__LINE__);
+  sTest = "00000941"; ut.Assert(STool::TrimLeft(sTest, "0") == "941",__FILE__,__FUNCTION__,__LINE__);
+  sTest = "00094100"; ut.Assert(STool::TrimLeft(sTest, "0") == "94100",__FILE__,__FUNCTION__,__LINE__);
+  sTest = "000941  "; ut.Assert(STool::TrimLeft(sTest, "0") == "941  ",__FILE__,__FUNCTION__,__LINE__);
+  sTest = "   941  "; ut.Assert(STool::TrimLeft(sTest, "0") == "   941  ",__FILE__,__FUNCTION__,__LINE__);
 
 
   string s1[] = {"2010"};

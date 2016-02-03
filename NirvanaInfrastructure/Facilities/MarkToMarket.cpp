@@ -64,7 +64,7 @@ void MarkToMarket::Run()
                             GetStrategyName(sid).c_str(), ymdhms_MDITime.ToStr().c_str(), sym.c_str());
             return;
           }
-          if (!STool::IsValidPrice(dMidQuote))
+          if (!STool::IsValidPriceOrVol(dMidQuote))
           {
             m_Logger->Write(Logger::DEBUG,"Strategy %s: %s MTMLog: %s Mid quote %d is invalid",
                             GetStrategyName(sid).c_str(), ymdhms_MDITime.ToStr().c_str(), sym.c_str(), dMidQuote);

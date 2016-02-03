@@ -40,15 +40,14 @@ class STool
     static string PadRight(const string &sOri, char cPad, unsigned iLen);
     static string PadRightS(string sOri, char cPad, unsigned iLen);
     static string PadRight(const char *, char cPad, unsigned iLen);
-    static void TrimRightB(string &s);
-    static void TrimLeftB(string &s);
-    static void TrimB(string &s);
-    static string TrimRightS(string s);
-    static string TrimLeftS(string s);
-    static string TrimS(string s);
-    static string& TrimRight(string &s);
-    static string& TrimLeft(string &s);
-    static string& Trim(string &s);
+    static string& TrimRightInPlace(string &s);
+    static string& TrimLeftInPlace(string &s);
+    static string& TrimLeftInPlace(string &s, string sTrim);
+    static string& TrimInPlace(string &s);
+    static string TrimRight(const string &s);
+    static string TrimLeft(const string &s);
+    static string TrimLeft(const string &s, const string sTrim);
+    static string Trim(const string &s);
     static string ConstructStr(const string *s, int iSize, const string &sDelim);
     static string ToUpperCase(string & s);
     static string ToLowerCase(string & s);
@@ -68,10 +67,9 @@ class STool
     static bool ChkIfFileExists(const char *);
     static bool IsStringAllLetters(const string & s);
     static double KellyCriterion(const double,const double);
-    static bool IsValidPrice(const double);
+    static bool IsValidPriceOrVol(const double);
     static bool IsNumber(const string &);
     static string GetNthItemFromCSV(const string &,const int);
-    static int Sign(const long);
     static double Sign(const double);
 
 };

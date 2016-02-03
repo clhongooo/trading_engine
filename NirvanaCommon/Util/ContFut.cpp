@@ -34,7 +34,7 @@ ContFut::~ContFut()
 
 void ContFut::Add(const YYYYMMDDHHMMSS & ymdhms, const ATU_MDI_marketfeed_struct & sMD)
 {
-  if (sMD.m_traded_price == 0 || !STool::IsValidPrice(sMD.m_traded_price)) return;
+  if (sMD.m_traded_price == 0 || !STool::IsValidPriceOrVol(sMD.m_traded_price)) return;
 
   const string & symbol = sMD.m_feedcode;
 
@@ -121,8 +121,8 @@ void ContFut::Add(const YYYYMMDDHHMMSS & ymdhms, const ATU_MDI_marketfeed_struct
     {
       if (
           ymdhms.GetHHMMSS() >= hmsRollTime &&
-          m_LatestSnapshot_Sym_1FM[sUndlySym].m_traded_price > 0 && abs(ymdhms - m_LatestSnapshotUpdateTime_Sym_1FM[sUndlySym]) < 5 && STool::IsValidPrice(m_LatestSnapshot_Sym_1FM[sUndlySym].m_traded_price) &&
-          m_LatestSnapshot_Sym_2FM[sUndlySym].m_traded_price > 0 && abs(ymdhms - m_LatestSnapshotUpdateTime_Sym_2FM[sUndlySym]) < 5 && STool::IsValidPrice(m_LatestSnapshot_Sym_2FM[sUndlySym].m_traded_price)
+          m_LatestSnapshot_Sym_1FM[sUndlySym].m_traded_price > 0 && abs(ymdhms - m_LatestSnapshotUpdateTime_Sym_1FM[sUndlySym]) < 5 && STool::IsValidPriceOrVol(m_LatestSnapshot_Sym_1FM[sUndlySym].m_traded_price) &&
+          m_LatestSnapshot_Sym_2FM[sUndlySym].m_traded_price > 0 && abs(ymdhms - m_LatestSnapshotUpdateTime_Sym_2FM[sUndlySym]) < 5 && STool::IsValidPriceOrVol(m_LatestSnapshot_Sym_2FM[sUndlySym].m_traded_price)
          )
       {
         //--------------------------------------------------

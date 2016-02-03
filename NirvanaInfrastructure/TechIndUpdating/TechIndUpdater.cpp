@@ -284,8 +284,17 @@ void TechIndUpdater::Run()
           }
         }
 
-        double dTP = 0;
-        if (m_MarketData->GetLatestTradePrice(sUpdatedSym, dTP))
+        //--------------------------------------------------
+        // we prefer the last trade price, but take the mid quote if this is not available
+        //--------------------------------------------------
+        double dPrice = 0;
+
+        bool bTPorMQ = (
+          m_MarketData->GetLatestTradePrice(sUpdatedSym, dPrice) ||
+          m_MarketData->GetLatestMidQuote(sUpdatedSym, dPrice)
+          );
+
+        if (bTPorMQ)
         {
           //--------------------------------------------------
           // B1_HKF
@@ -296,12 +305,12 @@ void TechIndUpdater::Run()
             m_SysCfg->IsStrategyOn(STY_B2_HK)
             )
           {
-            m_TechInd->AddDayOHLC(sUpdatedSym,dTP);
+            m_TechInd->AddDayOHLC(sUpdatedSym,dPrice);
 
             if (m_PTask_PrintDayHighLow.CheckIfItIsTimeToWakeUp(m_PTask_PrintDayHighLowToken[sUpdatedSym],m_ymdhms_SysTimeHKT))
             {
-              m_Logger->Write(Logger::INFO,"TechIndUpdater: %s %s TradedPrice = %f DayHigh = %f DayLow = %f",
-                              m_ymdhms_SysTimeHKT.ToStr().c_str(), sUpdatedSym.c_str(), dTP, m_TechInd->GetDayHigh(sUpdatedSym), m_TechInd->GetDayLow(sUpdatedSym));
+              m_Logger->Write(Logger::INFO,"TechIndUpdater: %s %s TradedPrice / MidQuote = %f DayHigh = %f DayLow = %f",
+                              m_ymdhms_SysTimeHKT.ToStr().c_str(), sUpdatedSym.c_str(), dPrice, m_TechInd->GetDayHigh(sUpdatedSym), m_TechInd->GetDayLow(sUpdatedSym));
             }
           }
         }
@@ -369,7 +378,6 @@ void TechIndUpdater::Run()
           }
         }
 
-
         double dMQ = 0;
         if (m_MarketData->GetLatestMidQuote(sUpdatedSym,dMQ))
         {
@@ -398,8 +406,17 @@ void TechIndUpdater::Run()
       if (m_sOtherSym.find(sUpdatedSym) != m_sOtherSym.end())
       {
 
-        double dTP = 0;
-        if (m_MarketData->GetLatestTradePrice(sUpdatedSym, dTP))
+        //--------------------------------------------------
+        // we prefer the last trade price, but take the mid quote if this is not available
+        //--------------------------------------------------
+        double dPrice = 0;
+
+        bool bTPorMQ = (
+          m_MarketData->GetLatestTradePrice(sUpdatedSym, dPrice) ||
+          m_MarketData->GetLatestMidQuote(sUpdatedSym, dPrice)
+          );
+
+        if (bTPorMQ)
         {
           //--------------------------------------------------
           // B2_USSTK
@@ -410,12 +427,12 @@ void TechIndUpdater::Run()
             m_SysCfg->IsStrategyOn(STY_B2_HK)
             )
           {
-            m_TechInd->AddDayOHLC(sUpdatedSym,dTP);
+            m_TechInd->AddDayOHLC(sUpdatedSym,dPrice);
 
             if (m_PTask_PrintDayHighLow.CheckIfItIsTimeToWakeUp(m_PTask_PrintDayHighLowToken[sUpdatedSym],m_ymdhms_SysTimeHKT))
             {
-              m_Logger->Write(Logger::INFO,"TechIndUpdater: %s %s TradedPrice = %f DayHigh = %f DayLow = %f",
-                              m_ymdhms_SysTimeHKT.ToStr().c_str(), sUpdatedSym.c_str(), dTP, m_TechInd->GetDayHigh(sUpdatedSym), m_TechInd->GetDayLow(sUpdatedSym));
+              m_Logger->Write(Logger::INFO,"TechIndUpdater: %s %s TradedPrice / MidQuote = %f DayHigh = %f DayLow = %f",
+                              m_ymdhms_SysTimeHKT.ToStr().c_str(), sUpdatedSym.c_str(), dPrice, m_TechInd->GetDayHigh(sUpdatedSym), m_TechInd->GetDayLow(sUpdatedSym));
             }
           }
         }

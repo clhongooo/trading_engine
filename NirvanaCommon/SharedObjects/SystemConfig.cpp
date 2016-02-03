@@ -24,6 +24,7 @@ SystemConfig::SystemConfig() :
   m_MTMHoldingsLogPath("nirvana_mtm_holdings.log"),
   m_SupplementaryBarD1Path(""),
   m_SupplementaryBarM1Path(""),
+  m_SupplementaryBarLeadingZeroAdj(false),
   m_HKIntradaySeasonalityOnOff(false),
   m_HKIntradaySeasonalityPath(""),
   m_HKIntradaySeasonalityWindow(44),
@@ -208,6 +209,7 @@ string                                 SystemConfig::Get_Exec_Log_Path()        
 string                                 SystemConfig::Get_Holdings_Log_Path()                           const {  return m_MTMHoldingsLogPath;                          }
 string                                 SystemConfig::Get_SupplementaryBarD1Path()                      const {  return m_SupplementaryBarD1Path;                      }
 string                                 SystemConfig::Get_SupplementaryBarM1Path()                      const {  return m_SupplementaryBarM1Path;                      }
+bool                                   SystemConfig::Get_SupplementaryBarLeadingZeroAdj()              const {  return m_SupplementaryBarLeadingZeroAdj;              }
 bool                                   SystemConfig::Get_HKIntradaySeasonalityOnOff()                  const {  return m_HKIntradaySeasonalityOnOff;                  }
 string                                 SystemConfig::Get_HKIntradaySeasonalityPath()                   const {  return m_HKIntradaySeasonalityPath;                   }
 int                                    SystemConfig::Get_HKIntradaySeasonalityWindow()                 const {  return m_HKIntradaySeasonalityWindow;                 }
@@ -398,6 +400,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   m_MTMHoldingsLogPath                 = pt.get<string>         ("SystemSettings.HoldingsLogPath");
   m_SupplementaryBarD1Path             = pt.get<string>         ("SystemSettings.SupplementaryBarD1Path");
   m_SupplementaryBarM1Path             = pt.get<string>         ("SystemSettings.SupplementaryBarM1Path");
+  m_SupplementaryBarLeadingZeroAdj     = pt.get<bool>           ("SystemSettings.SupplementaryBarFileLeadingZeroAdj");
   m_PositionPersistenceFile            = pt.get<string>         ("SystemSettings.PositionPersistenceFile");
   m_PositionPersistenceIsEnabled       = pt.get<bool>           ("SystemSettings.EnablePositionPersistence");
   m_SendResetOnConnectionToCAPI        = pt.get<bool>           ("SystemSettings.SendResetOnConnectionToCAPI");

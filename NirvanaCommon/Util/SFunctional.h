@@ -40,5 +40,31 @@ InitValType FFold(Collection col,InitValType init,Predicate predicate)
   return init;
 }
 
+//--------------------------------------------------
+// Immutable Option class
+//--------------------------------------------------
+template <typename T> 
+class Option { 
+  public:
+    Option(const T & content)
+    {
+      _hasContent = true;
+      _content = content;
+    }
+    Option()
+    {
+      _hasContent = false;
+    }
+    bool IsNone() { return !_hasContent; }
+    T & Get() { return _content; }
+    T & GetOrElse(const T & defaultval)
+    {
+      if (_hasContent) return _content;
+      else defaultval;
+    }
+  private:
+    bool _hasContent;
+    T    _content;
+}; 
 
 #endif /* UTIL_SFUNCTIONAL_H_ */

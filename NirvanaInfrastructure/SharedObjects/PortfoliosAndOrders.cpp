@@ -150,54 +150,54 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
       }
     }
 
-    if (std::isnan(dMidQuote))
-    {
-      vector<YYYYMMDD> vYMD;
-      vector<double>   vOpen;
-      vector<double>   vHigh;
-      vector<double>   vLow;
-      vector<double>   vClose;
-      vector<long>     vVol;
-
-      if (m_MarketData->ChkAvbyOfSuppD1BarOHLCV(symbol))
-      {
-        m_MarketData->GetSuppD1BarOHLCVInDateRange(
-          symbol,
-          YYYYMMDD(19000101),
-          SystemTime.GetYYYYMMDD(),
-          vYMD,
-          vOpen,
-          vHigh,
-          vLow,
-          vClose,
-          vVol);
-      }
-      else
-      {
-        string sContFut = ContFut::GetContFutFrRglrSym(symbol,1);
-
-        if (m_MarketData->ChkAvbyOfSuppD1BarOHLCV(sContFut))
-
-          m_MarketData->GetSuppD1BarOHLCVInDateRange(
-            sContFut,
-            YYYYMMDD(19000101),
-            SystemTime.GetYYYYMMDD(),
-            vYMD,
-            vOpen,
-            vHigh,
-            vLow,
-            vClose,
-            vVol);
-      }
-
-      if (vClose.empty())
-      {
-        m_Logger->Write(Logger::ERROR,"PortfoliosAndOrders: %s: Trade: %s Qty: %d. Trade is not executed because the supp day bar is unavailable.",
-                        m_MarketData->GetSystemTimeHKT().ToStr().c_str(), symbol.c_str(), signed_qty);
-        return false;
-      }
-      dMidQuote = vClose.back();
-    }
+    // if (std::isnan(dMidQuote))
+    // {
+    //   vector<YYYYMMDD> vYMD;
+    //   vector<double>   vOpen;
+    //   vector<double>   vHigh;
+    //   vector<double>   vLow;
+    //   vector<double>   vClose;
+    //   vector<long>     vVol;
+    //
+    //   if (m_MarketData->ChkAvbyOfSuppD1BarOHLCV(symbol))
+    //   {
+    //     m_MarketData->GetSuppD1BarOHLCVInDateRange(
+    //       symbol,
+    //       YYYYMMDD(19000101),
+    //       SystemTime.GetYYYYMMDD(),
+    //       vYMD,
+    //       vOpen,
+    //       vHigh,
+    //       vLow,
+    //       vClose,
+    //       vVol);
+    //   }
+    //   else
+    //   {
+    //     string sContFut = ContFut::GetContFutFrRglrSym(symbol,1);
+    //
+    //     if (m_MarketData->ChkAvbyOfSuppD1BarOHLCV(sContFut))
+    //
+    //       m_MarketData->GetSuppD1BarOHLCVInDateRange(
+    //         sContFut,
+    //         YYYYMMDD(19000101),
+    //         SystemTime.GetYYYYMMDD(),
+    //         vYMD,
+    //         vOpen,
+    //         vHigh,
+    //         vLow,
+    //         vClose,
+    //         vVol);
+    //   }
+    //
+    //   if (vClose.empty())
+    //   {
+    //     m_Logger->Write(Logger::ERROR,"PortfoliosAndOrders: %s: Trade: %s Qty: %d. Trade is not executed because the supp day bar is unavailable.",
+    //                     m_MarketData->GetSystemTimeHKT().ToStr().c_str(), symbol.c_str(), signed_qty);
+    //     return false;
+    //   }
+    //   dMidQuote = vClose.back();
+    // }
 
     UpdateTargetPortfolio(port_id,symbol,signed_qty,'a');
     AcctTrade(port_id,symbol,signed_qty,dMidQuote);

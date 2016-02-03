@@ -192,42 +192,55 @@ string STool::PadRight(const string &sOri, char cPad, unsigned iLen)
   }
 }
 
-void STool::TrimB(string &s)      { boost::algorithm::trim(s);       }
-void STool::TrimLeftB(string &s)  { boost::algorithm::trim_left(s);  }
-void STool::TrimRightB(string &s) { boost::algorithm::trim_right(s); }
+// string& STool::TrimInPlace(string &s)      { boost::algorithm::trim(s);       return s;}
+// string& STool::TrimLeftInPlace(string &s)  { boost::algorithm::trim_left(s);  return s;}
+// string& STool::TrimRightInPlace(string &s) { boost::algorithm::trim_right(s); return s;}
 
-string STool::TrimLeftS(string s)
+string& STool::TrimLeftInPlace(string& s, string sTrim)
+{
+  boost::trim_left_if(s, boost::is_any_of(sTrim) );
+  return s;
+}
+
+string STool::TrimLeft(const string & s, const string sTrim)
+{
+  string s1 = s;
+  return TrimLeftInPlace(s1,sTrim);
+}
+
+string& STool::TrimInPlace(string& s)
+{
+  return TrimLeftInPlace(TrimRightInPlace(s));
+}
+
+string STool::Trim(const string & s)
+{
+  string s1 = s;
+  return TrimInPlace(s1);
+}
+
+string& STool::TrimLeftInPlace(string& s)
 {
   s.erase(s.begin(), find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(isspace))));
   return s;
 }
 
-string STool::TrimRightS(string s)
+string STool::TrimLeft(const string & s)
+{
+  string s1 = s;
+  return TrimLeftInPlace(s1);
+}
+
+string& STool::TrimRightInPlace(string& s)
 {
   s.erase(find_if(s.rbegin(), s.rend(), not1(ptr_fun<int, int>(isspace))).base(), s.end());
   return s;
 }
 
-string STool::TrimS(string s)
+string STool::TrimRight(const string & s)
 {
-  return TrimLeftS(TrimRightS(s));
-}
-
-string& STool::TrimLeft(string& s)
-{
-  s.erase(s.begin(), find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(isspace))));
-  return s;
-}
-
-string& STool::TrimRight(string& s)
-{
-  s.erase(find_if(s.rbegin(), s.rend(), not1(ptr_fun<int, int>(isspace))).base(), s.end());
-  return s;
-}
-
-string& STool::Trim(string& s)
-{
-  return TrimLeft(TrimRight(s));
+  string s1 = s;
+  return TrimRightInPlace(s1);
 }
 
 //Construct String
@@ -333,11 +346,11 @@ bool STool::ChkIfFileExists(const char *sFile)
   }
 }
 
-bool STool::IsValidPrice(const double price)
+bool STool::IsValidPriceOrVol(const double d)
 {
-  if (std::isnan(price)         ) return false;
-  if (price >= ATU_INVALID_PRICE) return false;
-  if (price <= NIR_EPSILON      ) return false;
+  if (std::isnan(d)         ) return false;
+  if (d >= ATU_INVALID_PRICE) return false;
+  if (d <= NIR_EPSILON      ) return false;
   return true;
 }
 
@@ -394,11 +407,6 @@ string STool::GetNthItemFromCSV(const string & s, const int n_th)
 }
 
 
-int STool::Sign(const long a)
-{
-  if (a < 0) return -1;
-  else       return 1;
-}
 double STool::Sign(const double a)
 {
   if (a < 0) return -1;

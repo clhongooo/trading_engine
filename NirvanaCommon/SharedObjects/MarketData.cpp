@@ -256,7 +256,7 @@ void MarketData::UpdateInternalDataWithParsedMDIString(const ATU_MDI_marketfeed_
   if (m_SysCfg->GetErroneousTickPxChg() > 0)
   {
     const string & symbol    = p_sMD->m_feedcode;
-    const double price       = p_sMD->m_traded_price;
+    const double price       = GetTradePriceOrElseWeightedMidQuote(*p_sMD);
     const double dTickReturn = ComputeTickReturn(symbol,price);
 
     if (
@@ -271,9 +271,9 @@ void MarketData::UpdateInternalDataWithParsedMDIString(const ATU_MDI_marketfeed_
       {
         m_MDIAck->ReportNotMktData();
       }
-      m_Logger->Write(Logger::INFO,"MarketData: Discarded bad tick: %s %s %s Traded Price = %f Tick Return = %f",
+      m_Logger->Write(Logger::INFO,"MarketData: Discarded bad tick: %s %s %s Traded Price = %f Best Bid = %f Best Ask = %f Tick Return = %f",
                       yyyymmdd.ToStr_().c_str(),hhmmss.ToStr_().c_str(),
-                      symbol.c_str(), price, dTickReturn);
+                      symbol.c_str(), p_sMD->m_traded_price, p_sMD->m_bid_price_1, p_sMD->m_ask_price_1, dTickReturn);
       return;
     }
   }
@@ -476,12 +476,7 @@ bool MarketData::GetLatestBestBidAskMid(const string & sSymbol, double & dBestBi
     ATU_MDI_marketfeed_struct mdi_struct;
     if (m_ContFut->GetContFutLatestSnapshot(sSymbol,mdi_struct,ymdhms))
     {
-      dBestBid = mdi_struct.m_bid_price_1;
-      dBestAsk = mdi_struct.m_ask_price_1;
-      //--------------------------------------------------
-      // Weighted mid-quote
-      //--------------------------------------------------
-      dMidQuote = (mdi_struct.m_bid_price_1 * mdi_struct.m_ask_volume_1 + mdi_struct.m_ask_price_1 * mdi_struct.m_bid_volume_1) / (mdi_struct.m_bid_volume_1 + mdi_struct.m_ask_volume_1);
+      dMidQuote = GetWeightedMidQuote(mdi_struct);
       return true;
     }
     else return false;
@@ -501,7 +496,7 @@ bool MarketData::GetLatestBestBidAskMid(const string & sSymbol, double & dBestBi
   {
     return false;
   }
-  else if (!STool::IsValidPrice(it1->second->m_bid_price_1) || !STool::IsValidPrice(it1->second->m_ask_price_1))
+  else if (!STool::IsValidPriceOrVol(it1->second->m_bid_price_1) || !STool::IsValidPriceOrVol(it1->second->m_ask_price_1))
   {
     return false;
   }
@@ -510,7 +505,7 @@ bool MarketData::GetLatestBestBidAskMid(const string & sSymbol, double & dBestBi
     ymdhms.Set(*(it2->second));
     dBestBid = it1->second->m_bid_price_1;
     dBestAsk = it1->second->m_ask_price_1;
-    dMidQuote = (it1->second->m_bid_price_1 * it1->second->m_ask_volume_1 + it1->second->m_ask_price_1 * it1->second->m_bid_volume_1) / (it1->second->m_bid_volume_1 + it1->second->m_ask_volume_1);
+    dMidQuote = GetWeightedMidQuote(*(it1->second));
     return true;
   }
 }
@@ -530,7 +525,7 @@ bool MarketData::GetLatestMidQuote(const string & sSymbol, double & dMidQuote, Y
     ATU_MDI_marketfeed_struct mdi_struct;
     if (m_ContFut->GetContFutLatestSnapshot(sSymbol,mdi_struct,ymdhms))
     {
-      dMidQuote = (mdi_struct.m_bid_price_1 * mdi_struct.m_ask_volume_1 + mdi_struct.m_ask_price_1 * mdi_struct.m_bid_volume_1) / (mdi_struct.m_bid_volume_1 + mdi_struct.m_ask_volume_1);
+      dMidQuote = GetWeightedMidQuote(mdi_struct);
       return true;
     }
     else return false;
@@ -563,13 +558,13 @@ bool MarketData::GetLatestMidQuote(const string & sSymbol, double & dMidQuote, Y
     }
     else
     {
-      if (!STool::IsValidPrice(it1->second->m_bid_price_1) || !STool::IsValidPrice(it1->second->m_ask_price_1))
+      if (!STool::IsValidPriceOrVol(it1->second->m_bid_price_1) || !STool::IsValidPriceOrVol(it1->second->m_ask_price_1))
       {
         return false;
       }
       else
       {
-        dMidQuote = (it1->second->m_bid_price_1 * it1->second->m_ask_volume_1 + it1->second->m_ask_price_1 * it1->second->m_bid_volume_1) / (it1->second->m_bid_volume_1 + it1->second->m_ask_volume_1);
+        dMidQuote = GetWeightedMidQuote(*(it1->second));
         ymdhms.Set(*(it2->second));
         return true;
       }
@@ -607,7 +602,7 @@ void MarketData::UpdateSystemTime(const YYYYMMDD & yyyymmdd, const HHMMSS & hhmm
 
 void MarketData::UpdateBarAggregators(const YYYYMMDD & yyyymmdd, const HHMMSS & hhmmss, const string & symbol, const double dPrice, const long lVolume)
 {
-  if (!STool::IsValidPrice(dPrice)) return;
+  if (!STool::IsValidPriceOrVol(dPrice)) return;
 
   if (m_SysCfg->CheckIfBarAggregationM1Symbol(symbol))
   {
@@ -668,18 +663,18 @@ void MarketData::UpdateLatestSnapshot(const YYYYMMDD & yyyymmdd, const HHMMSS & 
   }
 
   {
-    if (STool::IsValidPrice(sMD.m_traded_price)) it->second->m_traded_price = sMD.m_traded_price + price_offset;
-    else                                         it->second->m_traded_price = NAN;
+    if (STool::IsValidPriceOrVol(sMD.m_traded_price)) it->second->m_traded_price = sMD.m_traded_price + price_offset;
+    else                                              it->second->m_traded_price = NAN;
 
     it->second->m_traded_volume  = sMD.m_traded_volume;
   }
 
-  if (STool::IsValidPrice(sMD.m_bid_price_1)) it->second->m_bid_price_1  = sMD.m_bid_price_1 + price_offset;
-  else                                        it->second->m_bid_price_1  = NAN;
+  if (STool::IsValidPriceOrVol(sMD.m_bid_price_1)) it->second->m_bid_price_1  = sMD.m_bid_price_1 + price_offset;
+  else                                             it->second->m_bid_price_1  = NAN;
 
 
-  if (STool::IsValidPrice(sMD.m_ask_price_1)) it->second->m_ask_price_1  = sMD.m_ask_price_1 + price_offset;
-  else                                        it->second->m_ask_price_1  = NAN;
+  if (STool::IsValidPriceOrVol(sMD.m_ask_price_1)) it->second->m_ask_price_1  = sMD.m_ask_price_1 + price_offset;
+  else                                             it->second->m_ask_price_1  = NAN;
 
   it->second->m_bid_volume_1 = boost::lexical_cast<double> (sMD.m_bid_volume_1);
   it->second->m_ask_volume_1 = boost::lexical_cast<double> (sMD.m_ask_volume_1);
@@ -753,7 +748,7 @@ bool MarketData::Peek1DayOHLCBar(const string & symbol, YYYYMMDD & yyyymmdd, HHM
 
 void MarketData::UpdateBarAggregatorsAndLatestSnapshotContFut(const YYYYMMDDHHMMSS & ymdhms, const ATU_MDI_marketfeed_struct & sMD)
 {
-  if (!STool::IsValidPrice(sMD.m_traded_price)) return;
+  if (!STool::IsValidPriceOrVol(sMD.m_traded_price)) return;
 
   m_ContFut->Add(ymdhms, sMD);
   ATU_MDI_marketfeed_struct mdi_struct;
@@ -835,8 +830,8 @@ bool MarketData::GetLatestNominalPrice(const string & feedcode, double & nominal
   if (it == m_LatestSnapshots.end()) return false;
 
   if (
-    !STool::IsValidPrice(it->second->m_bid_price_1) ||
-    !STool::IsValidPrice(it->second->m_ask_price_1)
+    !STool::IsValidPriceOrVol(it->second->m_bid_price_1) ||
+    !STool::IsValidPriceOrVol(it->second->m_ask_price_1)
     )
   {
     nominalprice = it->second->m_traded_price;
@@ -885,18 +880,38 @@ bool MarketData::GetLatestTradePrice(const string & sSymbol, double & tradeprice
   map<string,ATU_MDI_marketfeed_struct*>::iterator it = m_LatestSnapshots.find(sSymbol);
 
   if (it == m_LatestSnapshots.end()) return false;
-  if (!STool::IsValidPrice(it->second->m_traded_price)) return false;
+  if (!STool::IsValidPriceOrVol(it->second->m_traded_price)) return false;
 
   tradeprice = it->second->m_traded_price;
 
   return true;
 }
 
-
-bool MarketData::ChkAvbyOfSuppD1BarOHLCV(const string & symbol)
+Option<string> MarketData::GetSuppD1BarOHLCVPath(const string & symbol)
 {
-  string sFile = m_SysCfg->Get_SupplementaryBarD1Path()+"/"+symbol+".csv";
-  return STool::ChkIfFileExists(sFile);
+  return GetSuppBarOHLCVPath(symbol, m_SysCfg->Get_SupplementaryBarD1Path());
+}
+Option<string> MarketData::GetSuppM1BarOHLCVPath(const string & symbol)
+{
+  return GetSuppBarOHLCVPath(symbol, m_SysCfg->Get_SupplementaryBarM1Path());
+}
+
+Option<string> MarketData::GetSuppBarOHLCVPath(const string & symbol, const string & folder)
+{
+  if (m_SysCfg->Get_SupplementaryBarLeadingZeroAdj())
+  {
+    const string b1f = folder+"/"+STool::TrimLeft(symbol,"0")+".csv";
+    const string b2f = folder+"/"+STool::PadLeft(STool::TrimLeft(symbol,"0"),'0',5)+".csv";
+    if      (STool::ChkIfFileExists(b1f)) return Option<string>(b1f);
+    else if (STool::ChkIfFileExists(b2f)) return Option<string>(b2f);
+    else Option<string>();
+  }
+  else
+  {
+    const string sFile = folder+"/"+symbol+".csv";
+    if (STool::ChkIfFileExists(sFile)) return Option<string>(sFile);
+    else Option<string>();
+  }
 }
 
 void MarketData::GetSuppD1BarOHLCVInDateRange(
@@ -918,13 +933,8 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
   map<string,BarProvider*>::iterator it = m_SupplementaryDayBar.find(sSymbol);
   if (it == m_SupplementaryDayBar.end())
   {
-    string sFile = m_SysCfg->Get_SupplementaryBarD1Path()+"/"+sSymbol+".csv";
-    m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: %s",sFile.c_str());
-
-    string sFormat = "DxOHLC";
-    if (sSymbol == UNDERLYING_VHSI) sFormat = "DxC";
-
-    if (!STool::ChkIfFileExists(sFile))
+    Option<string> oFile= GetSuppD1BarOHLCVPath(sSymbol);
+    if (oFile.IsNone())
     {
       vYMD.clear();
       vOpen.clear();
@@ -935,8 +945,13 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
       return;
     }
 
+    m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: %s",oFile.Get().c_str());
+
+    string sFormat = "DxOHLC";
+    if (sSymbol == UNDERLYING_VHSI) sFormat = "DxC";
+
     BarProvider * bp = new BarProvider(
-      sFile.c_str(),
+      oFile.Get().c_str(),
       sFormat.c_str(),
       5,
       'F',
@@ -973,10 +988,23 @@ void MarketData::GetSuppM1BarOHLCVInDateTimeRange(
   map<string,BarProvider*>::iterator it = m_SupplementaryM1Bar.find(sSymbol);
   if (it == m_SupplementaryM1Bar.end())
   {
-    string sFile = m_SysCfg->Get_SupplementaryBarM1Path()+"/"+sSymbol+".csv";
+    Option<string> oFile= GetSuppM1BarOHLCVPath(sSymbol);
+    if (oFile.IsNone())
+    {
+      vYMD.clear();
+      vHMS.clear();
+      vOpen.clear();
+      vHigh.clear();
+      vLow.clear();
+      vClose.clear();
+      vVol.clear();
+      return;
+    }
+
+    m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: %s",oFile.Get().c_str());
 
     BarProvider * bp = new BarProvider(
-      sFile.c_str(),
+      oFile.Get().c_str(),
       "DTOHLC",
       5,
       'F',
@@ -1017,7 +1045,7 @@ double MarketData::ComputeTickReturn(const string & symbol, const double price)
   //--------------------------------------------------
   // If incoming price is invalid, return NAN to indicate error
   //--------------------------------------------------
-  if (!STool::IsValidPrice(price)) return NAN;
+  if (!STool::IsValidPriceOrVol(price)) return NAN;
 
   //--------------------------------------------------
   // If m_LatestSnapshots does not contain valid data,
@@ -1032,7 +1060,7 @@ double MarketData::ComputeTickReturn(const string & symbol, const double price)
   // same here, we want the new data to replace the old invalid data, so return 0
   //--------------------------------------------------
   ATU_MDI_marketfeed_struct & s = *(it->second);
-  if (!STool::IsValidPrice(s.m_traded_price)) return 0;
+  if (!STool::IsValidPriceOrVol(s.m_traded_price)) return 0;
 
   return (price/s.m_traded_price)-1;
 }
@@ -1043,5 +1071,31 @@ bool MarketData::CheckIfSymbolIsUpdated(const string & symbol)
   set<string>::iterator it = m_UpdatedSymbols.find(symbol);
   if (it == m_UpdatedSymbols.end()) return false;
   return true;
+}
+
+double MarketData::GetTradePriceOrElseWeightedMidQuote(const ATU_MDI_marketfeed_struct & mds) const
+{
+  if (!STool::IsValidPriceOrVol(mds.m_traded_price)) return GetWeightedMidQuote(mds);
+
+  return mds.m_traded_price;
+}
+
+double MarketData::GetWeightedMidQuote(const ATU_MDI_marketfeed_struct & mds) const
+{
+  //--------------------------------------------------
+  // can't even compute
+  //--------------------------------------------------
+  if (!STool::IsValidPriceOrVol(mds.m_bid_price_1) || !STool::IsValidPriceOrVol(mds.m_ask_price_1)) return NAN;
+
+  //--------------------------------------------------
+  // fall back to simple mid quote
+  //--------------------------------------------------
+  if (!STool::IsValidPriceOrVol(mds.m_bid_volume_1) || !STool::IsValidPriceOrVol(mds.m_ask_volume_1))
+    return (mds.m_bid_price_1 + mds.m_ask_price_1) / (double)2;
+
+  //--------------------------------------------------
+  // weighted mid quote
+  //--------------------------------------------------
+  return (mds.m_bid_price_1 * mds.m_ask_volume_1 + mds.m_ask_price_1 * mds.m_bid_volume_1) / (mds.m_bid_volume_1 + mds.m_ask_volume_1);
 }
 
