@@ -364,6 +364,7 @@ class SystemConfig : boost::noncopyable
     vector<int>                                        m_B2_HK_RotationGroup;
     int                                                m_B2_HK_ActionTimeBefCloseInSec;
     int                                                m_B2_HK_FilterSMAPeriod;
+    string                                             m_SymbolsToBeUsedInAllSections;
 };
 
 #endif

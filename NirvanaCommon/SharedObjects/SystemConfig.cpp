@@ -117,7 +117,8 @@ SystemConfig::SystemConfig() :
   m_B2_HK_TheoPosFolder(""),
   m_B2_HK_PersistTheoPosCPnL(false),
   m_B2_HK_ActionTimeBefCloseInSec(180),
-  m_B2_HK_FilterSMAPeriod(100)
+  m_B2_HK_FilterSMAPeriod(100),
+  m_SymbolsToBeUsedInAllSections("")
 {
   m_Logger = Logger::Instance();
   SetProgramStartTime();
@@ -394,6 +395,9 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   else if (sLogLevel == "INFO")      { m_Logger->SetLogLevel(Logger::INFO);      }
   else if (sLogLevel == "DEBUG")     { m_Logger->SetLogLevel(Logger::DEBUG);     }
 
+  m_SymbolsToBeUsedInAllSections       = pt.get<string>         ("SystemSettings.SymbolsToBeUsedInAllSections");
+  m_Logger->Write(Logger::INFO,"SystemConfig: Read SymbolsToBeUsedInAllSections %s", m_SymbolsToBeUsedInAllSections.c_str());
+
   m_MainLogPath                        = pt.get<string>         ("SystemSettings.LogPath");
   m_MTMLogPath                         = pt.get<string>         ("SystemSettings.MTMLogPath");
   m_ExecLogPath                        = pt.get<string>         ("SystemSettings.ExecLogPath");
@@ -571,7 +575,10 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
           }
         }
         {
-          string s_TradedSym = pt.get<string>(sStratSession + ".TradedSymbols");
+          string s_TradedSym = m_SymbolsToBeUsedInAllSections;
+          if (s_TradedSym == "") s_TradedSym = pt.get<string>(sStratSession + ".TradedSymbols");
+          m_Logger->Write(Logger::INFO,"SystemConfig: m_TradedSymbols %s %s", sStratSession.c_str(), s_TradedSym.c_str());
+
           vector<string> vs;
           boost::split(vs, s_TradedSym, boost::is_any_of(","));
           for_each (vs,[&](const string & s) { tsc.m_TradedSymbols.push_back(s); });
@@ -832,7 +839,10 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
         omc.m_MDI_IP   = oMDI_TCP.get();
         omc.m_MDI_Port = pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".ServerPort");
 
-        string s_MDI_SubscriptionSymbols = pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionSymbols");
+        string s_MDI_SubscriptionSymbols = m_SymbolsToBeUsedInAllSections;
+        if (s_MDI_SubscriptionSymbols == "") s_MDI_SubscriptionSymbols = pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionSymbols");
+        m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d %s", otimdi, s_MDI_SubscriptionSymbols.c_str());
+
         vector<string> vsub;
         boost::split(vsub, s_MDI_SubscriptionSymbols, boost::is_any_of(","));
         omc.m_MDISubscriptionSymbols = vsub;
@@ -862,7 +872,10 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
         omc.m_MDI_IP   = "";
         omc.m_MDI_Port = "";
 
-        string s_MDI_SubscriptionSymbols = pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionSymbols");
+        string s_MDI_SubscriptionSymbols = m_SymbolsToBeUsedInAllSections;
+        if (s_MDI_SubscriptionSymbols == "") s_MDI_SubscriptionSymbols = pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionSymbols");
+        m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d %s", otimdi, s_MDI_SubscriptionSymbols.c_str());
+
         vector<string> vsub;
         boost::split(vsub, s_MDI_SubscriptionSymbols, boost::is_any_of(","));
         omc.m_MDISubscriptionSymbols = vsub;
@@ -1071,7 +1084,10 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   }
 
   {
-    string sBarAggregationM1Symbols = pt.get<string>("MarketData.BarAggregationM1Symbols");
+    string sBarAggregationM1Symbols = m_SymbolsToBeUsedInAllSections;
+    if (sBarAggregationM1Symbols == "") sBarAggregationM1Symbols = pt.get<string>("MarketData.BarAggregationM1Symbols");
+    m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationM1Symbols %s", sBarAggregationM1Symbols.c_str());
+
     vector<string> vs;
     boost::split(vs, sBarAggregationM1Symbols, boost::is_any_of(","));
 
@@ -1083,7 +1099,10 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   }
 
   {
-    string sBarAggregationD1Symbols = pt.get<string>("MarketData.BarAggregationD1Symbols");
+    string sBarAggregationD1Symbols = m_SymbolsToBeUsedInAllSections;
+    if (sBarAggregationD1Symbols == "") sBarAggregationD1Symbols = pt.get<string>("MarketData.BarAggregationD1Symbols");
+    m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationD1Symbols %s", sBarAggregationD1Symbols.c_str());
+
     vector<string> vs;
     boost::split(vs, sBarAggregationD1Symbols, boost::is_any_of(","));
 
@@ -1097,7 +1116,10 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   m_ErroneousTickPxChg = pt.get<double>("MarketData.ErroneousTickPxChg");
 
   {
-    string sSymToBeWarmedUpWithDayBars= pt.get<string>("TechIndicators.SymToBeWarmedUpWithDayBars");
+    string sSymToBeWarmedUpWithDayBars = m_SymbolsToBeUsedInAllSections;
+    if (sSymToBeWarmedUpWithDayBars == "") sSymToBeWarmedUpWithDayBars = pt.get<string>("TechIndicators.SymToBeWarmedUpWithDayBars");
+    m_Logger->Write(Logger::INFO,"SystemConfig: sSymToBeWarmedUpWithDayBars %s", sSymToBeWarmedUpWithDayBars.c_str());
+
     vector<string> vs;
     boost::split(vs, sSymToBeWarmedUpWithDayBars, boost::is_any_of(","));
 
