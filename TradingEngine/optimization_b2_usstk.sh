@@ -6,7 +6,7 @@ then
     exit
 fi
 
-if [[ ! -f /mnt/d/data/nirvana/usequities_adj_allinone.csv ]]
+if [[ ! -f /mnt/d/data/blmg/usequities_adj_allinone.csv ]]
 then
     echo "Data file doesn't exist."
     exit
@@ -20,7 +20,7 @@ CURDIR=$(pwd)
 #----------------------------------------------------------------------------------------------------
 
 PARAMVECTORS=(
-"1000000,1,0.035,1,0.15,0.05,0.05,504,756,504,756,-3,5,0.2,-3,5,0.2,-5,5,0.5,-5,5,0.5,2,1"
+"1000000,1,0.035,1,0.15,0.03,0.3,504,756,504,756,-3,5,0.2,-3,5,0.2,-5,5,0.5,-5,5,0.5,2,1"
 )
 
 NOOFPARAMVEC=${#PARAMVECTORS[@]}
@@ -30,13 +30,12 @@ if [[ $INSTANCENUM -eq 1 ]]
 then
     SUBDIR=nir1
     CONFIGFILE=nirvana1.ini
-    #SYMBOLLIST="SPY VXX EEM GDX XLF IWM EWJ QQQ FXI USO EFA XIV EWZ XLE UVXY XLU VWO RSX GDXJ TLT XOP IYR XLI XLK JNK EWT XLV XLP EZU OIH HYG EWG SLV UNG GLD AMLP DXJ XLY EPI VGK DIA HEDJ VEA KRE XLB DBEF VNQ SMH ASHR OIL IVV EWH LQD ITB XHB IAU EWU IEMG FEZ UUP VTI XME EWY BKLN EWI INDA EWW BND XRT EWA EWC KBE AGG PFF AMJ DBC TBT TIP IBB IYH MDY IHE IYC IWV ITA IYK EMB IYJ"
-    SYMBOLLIST="IBB IYH MDY IHE IYC IWV ITA IYK EMB IYJ"
+    SYMBOLLIST="DIA QQQ SPY MDY IWM VTI HYG EMB LQD"
 elif [[ $INSTANCENUM -eq 2 ]]
 then
     SUBDIR=nir2
     CONFIGFILE=nirvana2.ini
-    SYMBOLLIST="EWZ EZU FEZ FXI GDX GDXJ GLD HEDJ HYG IAU IEMG INDA ITB IVV IWM IYR JNK KBE KRE LQD OIH OIL PFF XLY XRT"
+    SYMBOLLIST=""
 elif [[ $INSTANCENUM -eq 3 ]]
 then
     SUBDIR=nir3
@@ -59,7 +58,7 @@ then
     SYMBOLLIST="EWZ"
 fi
 
-TERMINALDATE=20151217
+TERMINALDATE=20160129
 CONFIGFILEPATH=/home/qy/Dropbox/nirvana/conf/
 LOGFILEPATH=/mnt/d/nir/
 SETOFFILESTOCOPY1="$LOGFILEPATH/$SUBDIR/nirvana_mtm_holdings.log $LOGFILEPATH/$SUBDIR/nirvana_mtm.log $LOGFILEPATH/$SUBDIR/nirvana_b2*"

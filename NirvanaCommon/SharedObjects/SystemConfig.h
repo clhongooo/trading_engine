@@ -174,6 +174,7 @@ class SystemConfig : boost::noncopyable
     string                 B2_TheoPosFolder(const StrategyID)                                  const;
     bool                   B2_PersistTheoPosCPnL(const StrategyID)                             const;
     vector<int>            Get_B2_RotationGroup(const StrategyID)                              const;
+    int                    Get_B2_ChooseBestNRotationGroup(const StrategyID)                   const;
     int                    Get_B2_ActionTimeBefCloseInSec(const StrategyID)                    const;
     int                    Get_B2_FilterSMAPeriod(const StrategyID)                            const;
     bool                   CheckIfHaltTrading(const string &,const YYYYMMDD &)                 const;
@@ -354,6 +355,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_B2_US_TheoPosFolder;
     bool                                               m_B2_US_PersistTheoPosCPnL;
     vector<int>                                        m_B2_US_RotationGroup;
+    int                                                m_B2_US_ChooseBestNRotationGroup;
     int                                                m_B2_US_ActionTimeBefCloseInSec;
     int                                                m_B2_US_FilterSMAPeriod;
     bool                                               m_B2_HK_HasEnabledMinCommissionCheck;
@@ -362,6 +364,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_B2_HK_TheoPosFolder;
     bool                                               m_B2_HK_PersistTheoPosCPnL;
     vector<int>                                        m_B2_HK_RotationGroup;
+    int                                                m_B2_HK_ChooseBestNRotationGroup;
     int                                                m_B2_HK_ActionTimeBefCloseInSec;
     int                                                m_B2_HK_FilterSMAPeriod;
     string                                             m_SymbolsToBeUsedInAllSections;

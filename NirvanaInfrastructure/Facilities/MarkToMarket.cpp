@@ -101,7 +101,7 @@ void MarkToMarket::Run()
           {
             fsHoldingsLog << GetStrategyName(sid) << "\t" << sid << "\t" << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << ymdhms_MDITime.GetHHMMSS().ToInt() << "\t" << it->first << "\t" << it->second << endl;
 
-            m_Logger->Write(Logger::INFO,"Strategy %s:HoldingsLog:\t%d\t%s\t%s\t%f", GetStrategyName(sid).c_str(), sid, ymdhms_MDITime.ToStr().c_str(), it->first.c_str(), it->second);
+            m_Logger->Write(Logger::INFO,"Strategy %s:HoldingsLog:\t%d\t%s\t%s\t%d", GetStrategyName(sid).c_str(), sid, ymdhms_MDITime.ToStr().c_str(), it->first.c_str(), it->second);
           }
         }
 

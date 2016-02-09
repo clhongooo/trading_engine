@@ -56,15 +56,150 @@ class Option {
       _hasContent = false;
     }
     bool IsNone() { return !_hasContent; }
-    T & Get() { return _content; }
-    T & GetOrElse(const T & defaultval)
+    T GetOrElse(const T defaultval)
     {
       if (_hasContent) return _content;
-      else defaultval;
+      else return defaultval;
+    }
+    bool operator==(const Option<T>& o)
+    {
+      if (this->_hasContent)
+      {
+        return ((this->_hasContent == o._hasContent)
+                &&
+                (this->_content == o._content));
+      }
+      else
+      {
+        return (this->_hasContent == o._hasContent);
+      }
     }
   private:
     bool _hasContent;
     T    _content;
 }; 
+
+template <typename TK, typename TV> 
+class SMap {
+  private:
+    map<TK,TV> _map;
+  public:
+    Option<TV> Get(const TK k)
+    {
+      typename map<TK,TV>::iterator it = _map.find(k);
+      if (it == _map.end()) return Option<TV>();
+      return Option<TV>(it->second);
+    }
+    TV GetOrElse(const TK k, const TV defaultval)
+    {
+      return Get(k).GetOrElse(defaultval);
+    }
+    typename map<TK,TV>::iterator GetIterBegin()
+    {
+      return _map.begin();
+    }
+    typename map<TK,TV>::iterator GetIterEnd()
+    {
+      return _map.end();
+    }
+    void Add(const TK k, const TV v)
+    {
+      _map[k] = v;
+    }
+    bool Contains(const TK k)
+    {
+      typename map<TK,TV>::iterator it = _map.find(k);
+      if (it == _map.end()) return false;
+      else return true;
+    }
+};
+
+template <typename TK1, typename TK2, typename TV> 
+class SMapOfMap {
+  private:
+    map<TK1,map<TK2,TV> > _map;
+  public:
+    Option<TV> Get(const TK1 k1, const TK2 k2)
+    {
+      typename map<TK1,map<TK2,TV> >::iterator it = _map.find(k1);
+      if (it == _map.end()) return Option<TV>();
+
+      map<TK2,TV> & m2 = it->second;
+      typename map<TK2,TV>::iterator it2 = m2.find(k2);
+      if (it2 == m2.end()) return Option<TV>();
+      return Option<TV>(it2->second);
+    }
+    TV GetOrElse(const TK1 k1, const TK2 k2, TV defaultval)
+    {
+      return Get(k1,k2).GetOrElse(defaultval);
+    }
+    void Add(const TK1 k1, const TK2 k2, const TV v)
+    {
+      typename map<TK1,map<TK2,TV> >::iterator it = _map.find(k1);
+      if (it == _map.end())
+      {
+        _map[k1] = map<TK2,TV>();
+        it = _map.find(k1);
+      }
+
+      map<TK2,TV> & m2 = it->second;
+      m2[k2] = v;
+    }
+    bool Contains(const TK1 k1, const TK2 k2)
+    {
+      typename map<TK1,map<TK2,TV> >::iterator it = _map.find(k1);
+      if (it == _map.end()) return false;
+
+      map<TK2,TV> & m2 = it->second;
+      if (m2.find(k2) == m2.end()) return false;
+      return true;
+    }
+};
+
+template <typename TK, typename TV> 
+class SMapPersistVal {
+  private:
+    SMap<TK,TV> _map;
+  public:
+    Option<TV> Get(const TK k)
+    {
+      return _map.Get(k);
+    }
+    TV GetOrElse(const TK k, TV defaultval)
+    {
+      return _map.GetOrElse(k,defaultval);
+    }
+    void Add(const TK k, const TV v)
+    {
+      if (!_map.Contains(k)) _map.Add(k,v);
+    }
+    bool Contains(const TK k)
+    {
+      return _map.Contains(k);
+    }
+};
+
+template <typename TK1, typename TK2, typename TV> 
+class SMapOfMapPersistVal {
+  private:
+    SMapOfMap<TK1,TK2,TV> _map;
+  public:
+    Option<TV> Get(const TK1 k1, const TK2 k2)
+    {
+      return _map.Get(k1,k2);
+    }
+    TV GetOrElse(const TK1 k1, const TK2 k2, TV defaultval)
+    {
+      return _map.GetOrElse(k1,k2,defaultval);
+    }
+    void Add(const TK1 k1, const TK2 k2, const TV v)
+    {
+      if (!_map.Contains(k1,k2)) _map.Add(k1,k2,v);
+    }
+    bool Contains(const TK1 k1, const TK2 k2)
+    {
+      return _map.Contains(k1,k2);
+    }
+};
 
 #endif /* UTIL_SFUNCTIONAL_H_ */

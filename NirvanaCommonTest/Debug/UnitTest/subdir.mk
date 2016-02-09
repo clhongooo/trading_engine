@@ -26,6 +26,7 @@ CPP_SRCS += \
 ../UnitTest/TestProbMassFunc.cpp \
 ../UnitTest/TestRglrMiniCtrtMgr.cpp \
 ../UnitTest/TestRsi.cpp \
+../UnitTest/TestSFunctional.cpp \
 ../UnitTest/TestTickReturn.cpp \
 ../UnitTest/TestTradingHours.cpp \
 ../UnitTest/TestTrdTickAna.cpp \
@@ -55,6 +56,7 @@ OBJS += \
 ./UnitTest/TestProbMassFunc.o \
 ./UnitTest/TestRglrMiniCtrtMgr.o \
 ./UnitTest/TestRsi.o \
+./UnitTest/TestSFunctional.o \
 ./UnitTest/TestTickReturn.o \
 ./UnitTest/TestTradingHours.o \
 ./UnitTest/TestTrdTickAna.o \
@@ -84,6 +86,7 @@ CPP_DEPS += \
 ./UnitTest/TestProbMassFunc.d \
 ./UnitTest/TestRglrMiniCtrtMgr.d \
 ./UnitTest/TestRsi.d \
+./UnitTest/TestSFunctional.d \
 ./UnitTest/TestTickReturn.d \
 ./UnitTest/TestTradingHours.d \
 ./UnitTest/TestTrdTickAna.d \

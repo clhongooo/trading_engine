@@ -30,7 +30,7 @@
 #define B2_PRICEMETH_AVGPXCLOSE 2
 
 #define B2_ROTATION_PICKTOPSYM 1
-#define B2_ROTATION_NDAYRETURN 2
+#define B2_ROTATION_NDAYRETURN 1
 
 #define B2_COMMISSION_RATE_THRESH (double)0.005/(double)80
 
@@ -124,6 +124,7 @@ class StrategyB2 : public StrategyBase {
     vector<double>           m_TrainingPeriod2;
     vector<double>           m_TrainingPeriod3;
     vector<double>           m_TrainingPeriod4;
+    vector<double>           m_TrainingPeriodMax;
     vector<double>           m_beta_1_start;
     vector<double>           m_beta_1_end;
     vector<double>           m_beta_1_incremt;
@@ -153,6 +154,7 @@ class StrategyB2 : public StrategyBase {
     vector<Acct>     m_TheoAcct;
     bool             m_PersistTheoPosCPnL;
     bool             m_EnabledRotationMode;
+    int              m_ChooseBestNRotationGroup;
 
     //--------------------------------------------------
     map<string,vector<double> >               m_map_HistoricalAvgPx;
@@ -221,16 +223,24 @@ class StrategyB2 : public StrategyBase {
     // Rotation
     //--------------------------------------------------
     bool NDayRollingReturnReadyForAllSym(const int,const YYYYMMDD &);
-    void AddNDayRollingReturn(const int,const YYYYMMDD &,const string &,const double,const double);
+    bool AggSgndQtyReadyForAllSym(const YYYYMMDD &);
+    void AddNDayRollingReturn(const int,const YYYYMMDD &,const string &,const double);
+    void AddAggSgndQty(const YYYYMMDD &,const string &,const double);
+    Option<string> GetSymInGrpRankByRet(const int,const YYYYMMDD &,const int);
     bool IsNextTopRetSymExclMtnPos(const int,const YYYYMMDD &,const string &,const set<string> &);
+    double GetAvgRollgRetOfGrp(const int,const YYYYMMDD &);
     vector<int> m_RotationGroup;
     vector<map<YYYYMMDD,set<string> > >         m_AllAvbSymForRollingBasket;
+    map<YYYYMMDD,set<string> >                  m_AllAvbSym;
     vector<map<YYYYMMDD,map<double,string> > >  m_SymRankedByRollingReturn;
     vector<map<YYYYMMDD,map<string,double> > >  m_SymAndRollingReturn;
-    vector<map<YYYYMMDD,set<string> > >         m_MaintainPos;
+    vector<map<YYYYMMDD,set<string> > >         m_MaintainPosWithinGrp;
+    map<YYYYMMDD,vector<double> >               m_AvgRtnOfGrp;
+    map<YYYYMMDD,vector<string> >               m_RttnGrpWithSgnl;
+    map<YYYYMMDD,map<double,string> >           m_GrpRtnAndLeadingSym;
+    map<YYYYMMDD,map<string,double> >           m_SymAggSgndQty;
+    set<string>                                 m_StkPicks;
     //--------------------------------------------------
-
-
 
 };
 

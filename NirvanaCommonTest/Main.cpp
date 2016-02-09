@@ -18,7 +18,7 @@
 // #include "UnitTest/ut-sma.hpp"
 // #include "UnitTest/ut-snys.hpp"
 // #include "UnitTest/ut-sp.hpp"
-#include "UnitTest/ut-st.hpp"
+// #include "UnitTest/ut-st.hpp"
 // #include "UnitTest/ut-ts.hpp"
 // #include "UnitTest/ut-wma.hpp"
 // #include "UnitTest/ut-wr.hpp"
@@ -54,6 +54,7 @@
 #include "UnitTest/TestPeriodicTask.h"
 #include "UnitTest/TestExchange.h"
 #include "UnitTest/TestRglrMiniCtrtMgr.h"
+#include "UnitTest/TestSFunctional.h"
 
 #include <cppunit/ui/text/TestRunner.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -84,7 +85,7 @@ int main ( int argc, const char* argv[] )
   // TestSM1();
   // TestSMA();
   // TestSP();
-  TestST();
+  // TestST();
   // TestTS();
   // TestWMA();
   // TestWR();
@@ -121,6 +122,7 @@ int main ( int argc, const char* argv[] )
   // utTestRunner.addTest(TestExchange::suite());
   // utTestRunner.addTest(TestPeriodicTask::suite());
   // utTestRunner.addTest(TestRglrMiniCtrtMgr::suite());
+  utTestRunner.addTest(TestSFunctional::suite());
   utTestRunner.run();
 
   cout << "Finished." << endl;

@@ -945,13 +945,13 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
       return;
     }
 
-    m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: %s",oFile.Get().c_str());
+    m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: Sym=%s %s",sSymbol.c_str(), oFile.GetOrElse("None").c_str());
 
     string sFormat = "DxOHLC";
     if (sSymbol == UNDERLYING_VHSI) sFormat = "DxC";
 
     BarProvider * bp = new BarProvider(
-      oFile.Get().c_str(),
+      oFile.GetOrElse("/dev/null").c_str(),
       sFormat.c_str(),
       5,
       'F',
@@ -1001,10 +1001,10 @@ void MarketData::GetSuppM1BarOHLCVInDateTimeRange(
       return;
     }
 
-    m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: %s",oFile.Get().c_str());
+    m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: %s",oFile.GetOrElse("None").c_str());
 
     BarProvider * bp = new BarProvider(
-      oFile.Get().c_str(),
+      oFile.GetOrElse("None").c_str(),
       "DTOHLC",
       5,
       'F',
