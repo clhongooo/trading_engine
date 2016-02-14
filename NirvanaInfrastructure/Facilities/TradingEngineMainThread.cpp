@@ -123,6 +123,7 @@ void TradingEngineMainThread::RunMainThread()
   boost::scoped_ptr<PortfolioGenerator> pg;
   boost::scoped_ptr<StrategyB1_HKF>     styB1_HKF;
   boost::scoped_ptr<StrategyB2_USSTK>   styB2_USSTK;
+  boost::scoped_ptr<StrategyB2_USSHORT> styB2_USSHORT;
   boost::scoped_ptr<StrategyB2_HK>      styB2_HK;
   boost::scoped_ptr<StrategyR7>         styR7;
   boost::scoped_ptr<StrategyR9>         styR9;
@@ -183,6 +184,13 @@ void TradingEngineMainThread::RunMainThread()
     styB2_USSTK.reset(new StrategyB2_USSTK());
     m_thread_group.add_thread(new boost::thread(&StrategyB2_USSTK::Run, styB2_USSTK.get()));
     p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_USSTK"); usleep(100000);
+  }
+
+  if (p_SysCfg->IsStrategyOn(STY_B2_USSHT))
+  {
+    styB2_USSHORT.reset(new StrategyB2_USSHORT());
+    m_thread_group.add_thread(new boost::thread(&StrategyB2_USSHORT::Run, styB2_USSHORT.get()));
+    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_USSHORT"); usleep(100000);
   }
 
   if (p_SysCfg->IsStrategyOn(STY_B2_HK))

@@ -136,7 +136,7 @@ bool Acct::Get_MTM_CPnL(double & mtm_cpnl)
 set<string> Acct::GetSymbolsWithPos()
 {
   set<string> setSym;
-  for_each (m_Pos,[&](std::pair<string,long> tuple) { setSym.insert(tuple.first); });
+  FForEach (m_Pos,[&](std::pair<string,long> tuple) { setSym.insert(tuple.first); });
   return setSym;
 }
 

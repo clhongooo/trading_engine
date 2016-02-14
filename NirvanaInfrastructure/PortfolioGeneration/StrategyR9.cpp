@@ -237,7 +237,7 @@ void StrategyR9::CalcPosSize(const int iTradSym)
 {
 
   long lAggPos = 0;
-  for_each (m_SeedTradePos[iTradSym],[&](const double pos) { lAggPos += pos; });
+  FForEach (m_SeedTradePos[iTradSym],[&](const double pos) { lAggPos += pos; });
 
 
   if (lAggPos == 0)

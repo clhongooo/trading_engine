@@ -104,22 +104,30 @@ SystemConfig::SystemConfig() :
   m_S11A_T1GumbelGaussMarginalSDScaling(0),
   m_S11A_MonitoringIntervalInSec(0),
   m_S11A_T1GumbelGaussSigalLimit(0),
-  m_B2_US_HasEnabledMinCommissionCheck(true),
-  m_B2_US_HasEnabledRotationMode(false),
-  m_B2_US_TheoCPnLHistFolder(""),
-  m_B2_US_TheoPosFolder(""),
-  m_B2_US_PersistTheoPosCPnL(false),
-  m_B2_US_ChooseBestNRotationGroup(1),
-  m_B2_US_ActionTimeBefCloseInSec(180),
-  m_B2_US_FilterSMAPeriod(100),
+  m_B2_USSTK_HasEnabledMinCommissionCheck(true),
+  m_B2_USSTK_HasEnabledRotationMode(0),
+  m_B2_USSTK_TheoCPnLHistFolder(""),
+  m_B2_USSTK_TheoPosFolder(""),
+  m_B2_USSTK_PersistTheoPosCPnL(false),
+  m_B2_USSTK_ChooseBestNRotationGroup(1),
+  m_B2_USSTK_ActionTimeBefCloseInSec(180),
+  m_B2_USSTK_MoveNextBestUpIfNoSignal(true),
+  m_B2_USSHT_HasEnabledMinCommissionCheck(true),
+  m_B2_USSHT_HasEnabledRotationMode(0),
+  m_B2_USSHT_TheoCPnLHistFolder(""),
+  m_B2_USSHT_TheoPosFolder(""),
+  m_B2_USSHT_PersistTheoPosCPnL(false),
+  m_B2_USSHT_ChooseBestNRotationGroup(1),
+  m_B2_USSHT_ActionTimeBefCloseInSec(180),
+  m_B2_USSHT_MoveNextBestUpIfNoSignal(true),
   m_B2_HK_HasEnabledMinCommissionCheck(true),
-  m_B2_HK_HasEnabledRotationMode(false),
+  m_B2_HK_HasEnabledRotationMode(0),
   m_B2_HK_TheoCPnLHistFolder(""),
   m_B2_HK_TheoPosFolder(""),
   m_B2_HK_PersistTheoPosCPnL(false),
   m_B2_HK_ChooseBestNRotationGroup(1),
   m_B2_HK_ActionTimeBefCloseInSec(180),
-  m_B2_HK_FilterSMAPeriod(100),
+  m_B2_HK_MoveNextBestUpIfNoSignal(true),
   m_SymbolsToBeUsedInAllSections("")
 {
   m_Logger = Logger::Instance();
@@ -272,15 +280,16 @@ double                                 SystemConfig::Get_S11AT1GumbelGaussMargin
 double                                 SystemConfig::Get_S11AMonitoringIntervalInSec()                 const {  return m_S11A_MonitoringIntervalInSec;                }
 double                                 SystemConfig::Get_S11AT1GumbelGaussSignalLimit()                const {  return m_S11A_T1GumbelGaussSigalLimit;                }
 
-bool         SystemConfig::B2_HasEnabledMinCommissionCheck(const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_HasEnabledMinCommissionCheck; else if (id == STY_B2_HK) return m_B2_HK_HasEnabledMinCommissionCheck; }
-bool         SystemConfig::B2_HasEnabledRotationMode      (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_HasEnabledRotationMode;       else if (id == STY_B2_HK) return m_B2_HK_HasEnabledRotationMode;       }
-string       SystemConfig::B2_TheoCPnLHistFolder          (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_TheoCPnLHistFolder;           else if (id == STY_B2_HK) return m_B2_HK_TheoCPnLHistFolder;           }
-string       SystemConfig::B2_TheoPosFolder               (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_TheoPosFolder;                else if (id == STY_B2_HK) return m_B2_HK_TheoPosFolder;                }
-bool         SystemConfig::B2_PersistTheoPosCPnL          (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_PersistTheoPosCPnL;           else if (id == STY_B2_HK) return m_B2_HK_PersistTheoPosCPnL;           }
-vector<int>  SystemConfig::Get_B2_RotationGroup           (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_RotationGroup;                else if (id == STY_B2_HK) return m_B2_HK_RotationGroup;                }
-int          SystemConfig::Get_B2_ChooseBestNRotationGroup(const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_ChooseBestNRotationGroup;     else if (id == STY_B2_HK) return m_B2_HK_ChooseBestNRotationGroup;     }
-int          SystemConfig::Get_B2_ActionTimeBefCloseInSec (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_ActionTimeBefCloseInSec;      else if (id == STY_B2_HK) return m_B2_HK_ActionTimeBefCloseInSec;      }
-int          SystemConfig::Get_B2_FilterSMAPeriod         (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_US_FilterSMAPeriod;              else if (id == STY_B2_HK) return m_B2_HK_FilterSMAPeriod;              }
+bool         SystemConfig::B2_HasEnabledMinCommissionCheck (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_USSTK_HasEnabledMinCommissionCheck; else if (id == STY_B2_USSHT) return m_B2_USSHT_HasEnabledMinCommissionCheck; else if (id == STY_B2_HK) return m_B2_HK_HasEnabledMinCommissionCheck; }
+int          SystemConfig::B2_HasEnabledRotationMode       (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_USSTK_HasEnabledRotationMode;       else if (id == STY_B2_USSHT) return m_B2_USSHT_HasEnabledRotationMode;       else if (id == STY_B2_HK) return m_B2_HK_HasEnabledRotationMode;       }
+string       SystemConfig::B2_TheoCPnLHistFolder           (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_USSTK_TheoCPnLHistFolder;           else if (id == STY_B2_USSHT) return m_B2_USSHT_TheoCPnLHistFolder;           else if (id == STY_B2_HK) return m_B2_HK_TheoCPnLHistFolder;           }
+string       SystemConfig::B2_TheoPosFolder                (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_USSTK_TheoPosFolder;                else if (id == STY_B2_USSHT) return m_B2_USSHT_TheoPosFolder;                else if (id == STY_B2_HK) return m_B2_HK_TheoPosFolder;                }
+bool         SystemConfig::B2_PersistTheoPosCPnL           (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_USSTK_PersistTheoPosCPnL;           else if (id == STY_B2_USSHT) return m_B2_USSHT_PersistTheoPosCPnL;           else if (id == STY_B2_HK) return m_B2_HK_PersistTheoPosCPnL;           }
+vector<int>  SystemConfig::Get_B2_RotationGroup            (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_USSTK_RotationGroup;                else if (id == STY_B2_USSHT) return m_B2_USSHT_RotationGroup;                else if (id == STY_B2_HK) return m_B2_HK_RotationGroup;                }
+int          SystemConfig::Get_B2_ChooseBestNRotationGroup (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_USSTK_ChooseBestNRotationGroup;     else if (id == STY_B2_USSHT) return m_B2_USSHT_ChooseBestNRotationGroup;     else if (id == STY_B2_HK) return m_B2_HK_ChooseBestNRotationGroup;     }
+int          SystemConfig::Get_B2_ActionTimeBefCloseInSec  (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_USSTK_ActionTimeBefCloseInSec;      else if (id == STY_B2_USSHT) return m_B2_USSHT_ActionTimeBefCloseInSec;      else if (id == STY_B2_HK) return m_B2_HK_ActionTimeBefCloseInSec;      }
+vector<int>  SystemConfig::Get_B2_FilterSMAPeriod          (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_USSTK_FilterSMAPeriod;              else if (id == STY_B2_USSHT) return m_B2_USSHT_FilterSMAPeriod;              else if (id == STY_B2_HK) return m_B2_HK_FilterSMAPeriod;              }
+bool         SystemConfig::Get_B2_MoveNextBestUpIfNoSignal (const StrategyID id)  const {  if (id == STY_B2_USSTK) return m_B2_USSTK_MoveNextBestUpIfNoSignal;     else if (id == STY_B2_USSHT) return m_B2_USSHT_MoveNextBestUpIfNoSignal;     else if (id == STY_B2_HK) return m_B2_HK_MoveNextBestUpIfNoSignal;     }
 
 
 bool SystemConfig::ChkIfProceedStyForceExcnEvenIfNoMD(const string & symbol) const
@@ -451,25 +460,6 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_S11A_ParamFileT1GumbelGauss        = pt.get_optional<string>("Strategy_S11A.ParamFileT1GumbelGauss");
   boost::optional<string> o_S11A_ParamFileT2Copula             = pt.get_optional<string>("Strategy_S11A.ParamFileT2Copula");
 
-  boost::optional<bool>   o_B2_US_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_USSTK.EnableMinCommissionCheck");
-  boost::optional<bool>   o_B2_US_HasEnabledRotationMode       = pt.get_optional<bool>  ("Strategy_B2_USSTK.EnableRotationMode");
-  boost::optional<string> o_B2_US_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_USSTK.TheoCPnLHistFolder");
-  boost::optional<string> o_B2_US_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_USSTK.TheoPosFolder");
-  boost::optional<bool>   o_B2_US_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_USSTK.PersistTheoPosCPnL");
-  boost::optional<int>    o_B2_US_ChooseBestNRotationGroup     = pt.get_optional<int>   ("Strategy_B2_USSTK.ChooseBestNRotationGroup");
-  boost::optional<int>    o_B2_US_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_USSTK.ActionTimeBefCloseInSec");
-  boost::optional<int>    o_B2_US_FilterSMAPeriod              = pt.get_optional<int>   ("Strategy_B2_USSTK.FilterSMAPeriod");
-
-  boost::optional<bool>   o_B2_HK_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_HK.EnableMinCommissionCheck");
-  boost::optional<bool>   o_B2_HK_HasEnabledRotationMode       = pt.get_optional<bool>  ("Strategy_B2_HK.EnableRotationMode");
-  boost::optional<string> o_B2_HK_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_HK.TheoCPnLHistFolder");
-  boost::optional<string> o_B2_HK_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_HK.TheoPosFolder");
-  boost::optional<bool>   o_B2_HK_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_HK.PersistTheoPosCPnL");
-  boost::optional<int>    o_B2_HK_ChooseBestNRotationGroup     = pt.get_optional<int>   ("Strategy_B2_HK.ChooseBestNRotationGroup");
-  boost::optional<int>    o_B2_HK_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_HK.ActionTimeBefCloseInSec");
-  boost::optional<int>    o_B2_HK_FilterSMAPeriod              = pt.get_optional<int>   ("Strategy_B2_HK.FilterSMAPeriod");
-
-
   if(o_B1_HKF_SamplingIntervalInSec   )  m_B1_HKF_SamplingIntervalInSec     = o_B1_HKF_SamplingIntervalInSec    .get();
   if(o_S11A_ParamFileHistSDCorrel     )  m_S11A_ParamFileHistSDCorrel       = o_S11A_ParamFileHistSDCorrel      .get();
   if(o_S11A_ParamFileHSIHHIIV         )  m_S11A_ParamFileHSIHHIIV           = o_S11A_ParamFileHSIHHIIV          .get();
@@ -477,14 +467,50 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_S11A_ParamFileT1GumbelGauss    )  m_S11A_ParamFileT1GumbelGauss      = o_S11A_ParamFileT1GumbelGauss     .get();
   if(o_S11A_ParamFileT2Copula         )  m_S11A_ParamFileT2Copula           = o_S11A_ParamFileT2Copula          .get();
 
-  if(o_B2_US_HasEnabledMinCommissionCheck)  m_B2_US_HasEnabledMinCommissionCheck  = o_B2_US_HasEnabledMinCommissionCheck .get();
-  if(o_B2_US_HasEnabledRotationMode      )  m_B2_US_HasEnabledRotationMode        = o_B2_US_HasEnabledRotationMode       .get();
-  if(o_B2_US_TheoCPnLHistFolder          )  m_B2_US_TheoCPnLHistFolder            = o_B2_US_TheoCPnLHistFolder           .get();
-  if(o_B2_US_TheoPosFolder               )  m_B2_US_TheoPosFolder                 = o_B2_US_TheoPosFolder                .get();
-  if(o_B2_US_PersistTheoPosCPnL          )  m_B2_US_PersistTheoPosCPnL            = o_B2_US_PersistTheoPosCPnL           .get();
-  if(o_B2_US_ChooseBestNRotationGroup    )  m_B2_US_ChooseBestNRotationGroup      = o_B2_US_ChooseBestNRotationGroup     .get();
-  if(o_B2_US_ActionTimeBefCloseInSec     )  m_B2_US_ActionTimeBefCloseInSec       = o_B2_US_ActionTimeBefCloseInSec      .get();
-  if(o_B2_US_FilterSMAPeriod             )  m_B2_US_FilterSMAPeriod               = o_B2_US_FilterSMAPeriod              .get();
+  boost::optional<bool>   o_B2_USSTK_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_USSTK.EnableMinCommissionCheck");
+  boost::optional<int>    o_B2_USSTK_HasEnabledRotationMode       = pt.get_optional<int>   ("Strategy_B2_USSTK.EnableRotationMode");
+  boost::optional<string> o_B2_USSTK_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_USSTK.TheoCPnLHistFolder");
+  boost::optional<string> o_B2_USSTK_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_USSTK.TheoPosFolder");
+  boost::optional<bool>   o_B2_USSTK_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_USSTK.PersistTheoPosCPnL");
+  boost::optional<int>    o_B2_USSTK_ChooseBestNRotationGroup     = pt.get_optional<int>   ("Strategy_B2_USSTK.ChooseBestNRotationGroup");
+  boost::optional<int>    o_B2_USSTK_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_USSTK.ActionTimeBefCloseInSec");
+  boost::optional<bool>   o_B2_USSTK_MoveNextBestUpIfNoSignal     = pt.get_optional<bool>  ("Strategy_B2_USSTK.MoveNextBestUpIfNoSignal");
+
+  if(o_B2_USSTK_HasEnabledMinCommissionCheck)  m_B2_USSTK_HasEnabledMinCommissionCheck  = o_B2_USSTK_HasEnabledMinCommissionCheck .get();
+  if(o_B2_USSTK_HasEnabledRotationMode      )  m_B2_USSTK_HasEnabledRotationMode        = o_B2_USSTK_HasEnabledRotationMode       .get();
+  if(o_B2_USSTK_TheoCPnLHistFolder          )  m_B2_USSTK_TheoCPnLHistFolder            = o_B2_USSTK_TheoCPnLHistFolder           .get();
+  if(o_B2_USSTK_TheoPosFolder               )  m_B2_USSTK_TheoPosFolder                 = o_B2_USSTK_TheoPosFolder                .get();
+  if(o_B2_USSTK_PersistTheoPosCPnL          )  m_B2_USSTK_PersistTheoPosCPnL            = o_B2_USSTK_PersistTheoPosCPnL           .get();
+  if(o_B2_USSTK_ChooseBestNRotationGroup    )  m_B2_USSTK_ChooseBestNRotationGroup      = o_B2_USSTK_ChooseBestNRotationGroup     .get();
+  if(o_B2_USSTK_ActionTimeBefCloseInSec     )  m_B2_USSTK_ActionTimeBefCloseInSec       = o_B2_USSTK_ActionTimeBefCloseInSec      .get();
+  if(o_B2_USSTK_MoveNextBestUpIfNoSignal    )  m_B2_USSTK_MoveNextBestUpIfNoSignal      = o_B2_USSTK_MoveNextBestUpIfNoSignal     .get();
+
+  boost::optional<bool>   o_B2_USSHT_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_USSHT.EnableMinCommissionCheck");
+  boost::optional<int>    o_B2_USSHT_HasEnabledRotationMode       = pt.get_optional<int>   ("Strategy_B2_USSHT.EnableRotationMode");
+  boost::optional<string> o_B2_USSHT_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_USSHT.TheoCPnLHistFolder");
+  boost::optional<string> o_B2_USSHT_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_USSHT.TheoPosFolder");
+  boost::optional<bool>   o_B2_USSHT_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_USSHT.PersistTheoPosCPnL");
+  boost::optional<int>    o_B2_USSHT_ChooseBestNRotationGroup     = pt.get_optional<int>   ("Strategy_B2_USSHT.ChooseBestNRotationGroup");
+  boost::optional<int>    o_B2_USSHT_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_USSHT.ActionTimeBefCloseInSec");
+  boost::optional<bool>   o_B2_USSHT_MoveNextBestUpIfNoSignal     = pt.get_optional<bool>  ("Strategy_B2_USSHT.MoveNextBestUpIfNoSignal");
+
+  if(o_B2_USSHT_HasEnabledMinCommissionCheck)  m_B2_USSHT_HasEnabledMinCommissionCheck  = o_B2_USSHT_HasEnabledMinCommissionCheck .get();
+  if(o_B2_USSHT_HasEnabledRotationMode      )  m_B2_USSHT_HasEnabledRotationMode        = o_B2_USSHT_HasEnabledRotationMode       .get();
+  if(o_B2_USSHT_TheoCPnLHistFolder          )  m_B2_USSHT_TheoCPnLHistFolder            = o_B2_USSHT_TheoCPnLHistFolder           .get();
+  if(o_B2_USSHT_TheoPosFolder               )  m_B2_USSHT_TheoPosFolder                 = o_B2_USSHT_TheoPosFolder                .get();
+  if(o_B2_USSHT_PersistTheoPosCPnL          )  m_B2_USSHT_PersistTheoPosCPnL            = o_B2_USSHT_PersistTheoPosCPnL           .get();
+  if(o_B2_USSHT_ChooseBestNRotationGroup    )  m_B2_USSHT_ChooseBestNRotationGroup      = o_B2_USSHT_ChooseBestNRotationGroup     .get();
+  if(o_B2_USSHT_ActionTimeBefCloseInSec     )  m_B2_USSHT_ActionTimeBefCloseInSec       = o_B2_USSHT_ActionTimeBefCloseInSec      .get();
+  if(o_B2_USSHT_MoveNextBestUpIfNoSignal    )  m_B2_USSHT_MoveNextBestUpIfNoSignal      = o_B2_USSHT_MoveNextBestUpIfNoSignal     .get();
+
+  boost::optional<bool>   o_B2_HK_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_HK.EnableMinCommissionCheck");
+  boost::optional<int>    o_B2_HK_HasEnabledRotationMode       = pt.get_optional<int>   ("Strategy_B2_HK.EnableRotationMode");
+  boost::optional<string> o_B2_HK_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_HK.TheoCPnLHistFolder");
+  boost::optional<string> o_B2_HK_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_HK.TheoPosFolder");
+  boost::optional<bool>   o_B2_HK_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_HK.PersistTheoPosCPnL");
+  boost::optional<int>    o_B2_HK_ChooseBestNRotationGroup     = pt.get_optional<int>   ("Strategy_B2_HK.ChooseBestNRotationGroup");
+  boost::optional<int>    o_B2_HK_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_HK.ActionTimeBefCloseInSec");
+  boost::optional<bool>   o_B2_HK_MoveNextBestUpIfNoSignal     = pt.get_optional<bool>  ("Strategy_B2_HK.MoveNextBestUpIfNoSignal");
 
   if(o_B2_HK_HasEnabledMinCommissionCheck)  m_B2_HK_HasEnabledMinCommissionCheck  = o_B2_HK_HasEnabledMinCommissionCheck .get();
   if(o_B2_HK_HasEnabledRotationMode      )  m_B2_HK_HasEnabledRotationMode        = o_B2_HK_HasEnabledRotationMode       .get();
@@ -493,17 +519,58 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_HK_PersistTheoPosCPnL          )  m_B2_HK_PersistTheoPosCPnL            = o_B2_HK_PersistTheoPosCPnL           .get();
   if(o_B2_HK_ChooseBestNRotationGroup    )  m_B2_HK_ChooseBestNRotationGroup      = o_B2_HK_ChooseBestNRotationGroup     .get();
   if(o_B2_HK_ActionTimeBefCloseInSec     )  m_B2_HK_ActionTimeBefCloseInSec       = o_B2_HK_ActionTimeBefCloseInSec      .get();
-  if(o_B2_HK_FilterSMAPeriod             )  m_B2_HK_FilterSMAPeriod               = o_B2_HK_FilterSMAPeriod              .get();
+  if(o_B2_HK_MoveNextBestUpIfNoSignal    )  m_B2_HK_MoveNextBestUpIfNoSignal      = o_B2_HK_MoveNextBestUpIfNoSignal     .get();
 
   {
-    boost::optional<string> o_B2_US_RotationGroup = pt.get_optional<string>("Strategy_B2_USSTK.RotationGroup");
-
-    if (o_B2_US_RotationGroup)
+    boost::optional<string> o_B2_USSTK_FilterSMAPeriod = pt.get_optional<string>("Strategy_B2_USSTK.FilterSMAPeriod");
+    if(o_B2_USSTK_FilterSMAPeriod)
     {
-      string s_B2_US_RotationGroup = o_B2_US_RotationGroup.get();
       vector<string> vs;
-      boost::split(vs, s_B2_US_RotationGroup, boost::is_any_of(","));
-      if (!vs.empty() && vs[0] != "") for_each (vs,[&](const string & sgid) { m_B2_US_RotationGroup.push_back(boost::lexical_cast<int>(sgid)); });
+      boost::split(vs, o_B2_USSTK_FilterSMAPeriod.get(), boost::is_any_of(","));
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & sma) { m_B2_USSTK_FilterSMAPeriod.push_back(boost::lexical_cast<int>(sma)); });
+    }
+  }
+
+  {
+    boost::optional<string> o_B2_USSHT_FilterSMAPeriod = pt.get_optional<string>("Strategy_B2_USSHT.FilterSMAPeriod");
+    if(o_B2_USSHT_FilterSMAPeriod)
+    {
+      vector<string> vs;
+      boost::split(vs, o_B2_USSHT_FilterSMAPeriod.get(), boost::is_any_of(","));
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & sma) { m_B2_USSHT_FilterSMAPeriod.push_back(boost::lexical_cast<int>(sma)); });
+    }
+  }
+
+  {
+    boost::optional<string> o_B2_HK_FilterSMAPeriod = pt.get_optional<string>("Strategy_B2_HK.FilterSMAPeriod");
+    if(o_B2_HK_FilterSMAPeriod)
+    {
+      vector<string> vs;
+      boost::split(vs, o_B2_HK_FilterSMAPeriod.get(), boost::is_any_of(","));
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & sma) { m_B2_HK_FilterSMAPeriod.push_back(boost::lexical_cast<int>(sma)); });
+    }
+  }
+
+  {
+    boost::optional<string> o_B2_USSTK_RotationGroup = pt.get_optional<string>("Strategy_B2_USSTK.RotationGroup");
+
+    if (o_B2_USSTK_RotationGroup)
+    {
+      string s_B2_USSTK_RotationGroup = o_B2_USSTK_RotationGroup.get();
+      vector<string> vs;
+      boost::split(vs, s_B2_USSTK_RotationGroup, boost::is_any_of(","));
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & sgid) { m_B2_USSTK_RotationGroup.push_back(boost::lexical_cast<int>(sgid)); });
+    }
+  }
+  {
+    boost::optional<string> o_B2_USSHT_RotationGroup = pt.get_optional<string>("Strategy_B2_USSHT.RotationGroup");
+
+    if (o_B2_USSHT_RotationGroup)
+    {
+      string s_B2_USSHT_RotationGroup = o_B2_USSHT_RotationGroup.get();
+      vector<string> vs;
+      boost::split(vs, s_B2_USSHT_RotationGroup, boost::is_any_of(","));
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & sgid) { m_B2_USSHT_RotationGroup.push_back(boost::lexical_cast<int>(sgid)); });
     }
   }
   {
@@ -514,7 +581,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
       string s_B2_HK_RotationGroup = o_B2_HK_RotationGroup.get();
       vector<string> vs;
       boost::split(vs, s_B2_HK_RotationGroup, boost::is_any_of(","));
-      if (!vs.empty() && vs[0] != "") for_each (vs,[&](const string & sgid) { m_B2_HK_RotationGroup.push_back(boost::lexical_cast<int>(sgid)); });
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & sgid) { m_B2_HK_RotationGroup.push_back(boost::lexical_cast<int>(sgid)); });
     }
   }
 
@@ -588,13 +655,13 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
 
           vector<string> vs;
           boost::split(vs, s_TradedSym, boost::is_any_of(","));
-          for_each (vs,[&](const string & s) { tsc.m_TradedSymbols.push_back(s); });
+          FForEach (vs,[&](const string & s) { tsc.m_TradedSymbols.push_back(s); });
         }
         {
           string s_SpecialTime = pt.get<string>(sStratSession + ".SpecialTime");
           vector<string> vs;
           boost::split(vs, s_SpecialTime, boost::is_any_of(","));
-          for_each (vs,[&](const string & s) { if (s != "") tsc.m_SpecialTime.insert(HHMMSS(boost::lexical_cast<int>(s))); });
+          FForEach (vs,[&](const string & s) { if (s != "") tsc.m_SpecialTime.insert(HHMMSS(boost::lexical_cast<int>(s))); });
         }
 
         {
@@ -605,13 +672,13 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
             vector<string> vsGrp;
             boost::split(vsGrp, s_SyncSym, boost::is_any_of(";"));
 
-            for_each(vsGrp,[&](const string sGrp){
+            FForEach(vsGrp,[&](const string sGrp){
               vector<string> vGrp;
               boost::split(vGrp, sGrp, boost::is_any_of(","));
 
               set<string> setGrp;
-              for_each (vGrp,[&](const string sSym) { setGrp.insert(sSym); });
-              for_each (vGrp,[&](const string sSym) { tsc.m_SynchronizedSymbols[sSym] = setGrp; });
+              FForEach (vGrp,[&](const string sSym) { setGrp.insert(sSym); });
+              FForEach (vGrp,[&](const string sSym) { tsc.m_SynchronizedSymbols[sSym] = setGrp; });
 
             });
           }
@@ -1052,7 +1119,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
     //--------------------------------------------------
     // print log
     //--------------------------------------------------
-    for_each (m_map_LotSize,[&](const std::pair<string,int> & ls) {
+    FForEach (m_map_LotSize,[&](const std::pair<string,int> & ls) {
       const string & symbol   = ls.first;
       const int      lot_size = ls.second;
       m_Logger->Write(Logger::INFO,"SystemConfig: Read config file: %s Lot size: %d", symbol.c_str(), lot_size);

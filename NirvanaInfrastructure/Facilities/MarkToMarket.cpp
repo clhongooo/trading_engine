@@ -57,7 +57,7 @@ void MarkToMarket::Run()
         YYYYMMDDHHMMSS ymdhms1;
         set<string> setSym = m_PortAndOrders->GetSymbolsWithPos(sid);
 
-        for_each (setSym,[&](const string & sym) {
+        FForEach (setSym,[&](const string & sym) {
           if (!m_MarketData->GetLatestMidQuote(sym,dMidQuote))
           {
             m_Logger->Write(Logger::DEBUG,"Strategy %s: %s MTMLog: %s Can't get latest mid-quote",
@@ -88,7 +88,7 @@ void MarkToMarket::Run()
         {
           fsMTMLog << GetStrategyName(sid) << "\t" << sid << "\t" << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << ymdhms_MDITime.GetHHMMSS().ToInt() << "\t" << "N/A" << endl;
           m_Logger->Write(Logger::INFO,"Strategy %s: MTMLog:\t%d\t%s\tN/A", GetStrategyName(sid).c_str(), sid, ymdhms_MDITime.ToStr().c_str());
-          for_each (setSym,[&](const string & sym) {
+          FForEach (setSym,[&](const string & sym) {
             m_Logger->Write(Logger::INFO,"Strategy %s: MTMLog:\t%d\t%s\t Symbol with pos includes: %s",
                             GetStrategyName(sid).c_str(), sid, ymdhms_MDITime.ToStr().c_str(), sym.c_str());
           });

@@ -79,7 +79,7 @@ bool PeriodicTask::UpdateTimeIfNeededNoLock(const YYYYMMDDHHMMSS & ymdhms)
 {
   if (!m_AllTimeIsGood && ymdhms.IsValid())
   {
-    std::for_each(m_ymdhms_LastMonitorTime.begin(), m_ymdhms_LastMonitorTime.end(), [&](YMDHMS & a){ a.Set(ymdhms); });
+    FForEach(m_ymdhms_LastMonitorTime, [&](YMDHMS & a){ a.Set(ymdhms); });
     m_AllTimeIsGood = true;
     return true;
   }

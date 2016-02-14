@@ -206,11 +206,11 @@ bool TradingHours::IsTradingHourPrivate(const string & symbol, const YYYYMMDD & 
     if (vHHMMSS.empty() || hms < vHHMMSS[0]) return false;
 
     vector<HMS> vHMS;
-    for_each (vHHMMSS,[&](const HHMMSS & hhmmss) { vHMS.push_back(HMS(hhmmss)); });
+    FForEach (vHHMMSS,[&](const HHMMSS & hhmmss) { vHMS.push_back(HMS(hhmmss)); });
 
     {
       int iCnt = 0;
-      for_each (vProp,[&](const char P)
+      FForEach (vProp,[&](const char P)
                 {
                   if      (iCnt == 0              && P == 'S') vHMS[iCnt].AddSecond     (max(iStartBufferInSec,iBreakBufferInSec));
                   else if (iCnt == vProp.size()-1 && P == 'E') vHMS[iCnt].SubtractSecond(max(  iEndBufferInSec,iBreakBufferInSec));

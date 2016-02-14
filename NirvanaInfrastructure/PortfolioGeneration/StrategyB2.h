@@ -153,7 +153,7 @@ class StrategyB2 : public StrategyBase {
     string           m_TheoPosFolder;
     vector<Acct>     m_TheoAcct;
     bool             m_PersistTheoPosCPnL;
-    bool             m_EnabledRotationMode;
+    int              m_EnabledRotationMode;
     int              m_ChooseBestNRotationGroup;
 
     //--------------------------------------------------
@@ -180,8 +180,10 @@ class StrategyB2 : public StrategyBase {
     bool                                      m_B2_WhetherToRetain;
     TradingStrategyConfig::TrainingFreq       m_B2_TrainingFreq;
     int                                       m_B2_ActionTimeBefCloseInSec;
-    int                                       m_B2_FilterSMAPeriod;
-    vector<Sma<double> >                      m_v_SMA;
+    vector<int>                               m_B2_FilterSMAPeriod;
+    vector<Sma<double> >                      m_v_SMA_short;
+    vector<Sma<double> >                      m_v_SMA_long;
+    bool                                      m_MoveNextBestUpIfNoSignal;
 
 
     //--------------------------------------------------
@@ -222,24 +224,47 @@ class StrategyB2 : public StrategyBase {
     //--------------------------------------------------
     // Rotation
     //--------------------------------------------------
+    typedef struct TupRetSym {
+      double m_return;
+      char _m_symbol[16];
+      TupRetSym(double r, const string & s)
+      {
+        m_return = r;
+        memset (_m_symbol,'\0',16);
+        strncpy(_m_symbol,s.c_str(),s.length());
+      }
+      string m_symbol() const
+      {
+        return string(_m_symbol);
+      }
+      bool operator<(const TupRetSym & rhs) const { return this->m_return < rhs.m_return; }
+      TupRetSym& operator=(const TupRetSym& tup)
+      { if (this == &tup) return *this;
+        m_return = tup.m_return;
+        strcpy(_m_symbol,tup._m_symbol);
+        return *this;
+      }
+    } TupRetSym;
+
+    enum ASC_DESC {AD_ASCENDING=0,AD_DESCENDING};
     bool NDayRollingReturnReadyForAllSym(const int,const YYYYMMDD &);
     bool AggSgndQtyReadyForAllSym(const YYYYMMDD &);
     void AddNDayRollingReturn(const int,const YYYYMMDD &,const string &,const double);
     void AddAggSgndQty(const YYYYMMDD &,const string &,const double);
-    Option<string> GetSymInGrpRankByRet(const int,const YYYYMMDD &,const int);
-    bool IsNextTopRetSymExclMtnPos(const int,const YYYYMMDD &,const string &,const set<string> &);
+    Option<string> GetSymInGrpRankByRet(const int,const YYYYMMDD &,const int,const ASC_DESC);
     double GetAvgRollgRetOfGrp(const int,const YYYYMMDD &);
-    vector<int> m_RotationGroup;
+    vector<int>                                 m_RotationGroup;
     vector<map<YYYYMMDD,set<string> > >         m_AllAvbSymForRollingBasket;
     map<YYYYMMDD,set<string> >                  m_AllAvbSym;
-    vector<map<YYYYMMDD,map<double,string> > >  m_SymRankedByRollingReturn;
+    vector<map<YYYYMMDD,vector<TupRetSym> > >  m_SymRankedByRollingReturn;
     vector<map<YYYYMMDD,map<string,double> > >  m_SymAndRollingReturn;
     vector<map<YYYYMMDD,set<string> > >         m_MaintainPosWithinGrp;
     map<YYYYMMDD,vector<double> >               m_AvgRtnOfGrp;
-    map<YYYYMMDD,vector<string> >               m_RttnGrpWithSgnl;
+    map<YYYYMMDD,vector<Option<string> > >      m_RttnGrpWithSgnl;
     map<YYYYMMDD,map<double,string> >           m_GrpRtnAndLeadingSym;
     map<YYYYMMDD,map<string,double> >           m_SymAggSgndQty;
     set<string>                                 m_StkPicks;
+    SSet<YYYYMMDD>                              m_HasPerformedRotationLogic;
     //--------------------------------------------------
 
 };

@@ -236,7 +236,7 @@ bool StrategyB1::TrainUpParam(
 
           if (iTrueSignal > 0) vdDisableStep3[i] = true;
         }
-        for_each(vdDisableStep3,[&](const bool b){
+        FForEach(vdDisableStep3,[&](const bool b){
           m_Logger->Write(Logger::DEBUG,"StrategyB1: vdDisableStep3 %s",(b ? "true":"false"));
         } );
       }

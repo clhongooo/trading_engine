@@ -6,38 +6,55 @@
 //--------------------------------------------------
 // Functional programming?
 //--------------------------------------------------
-  template <typename Collection, typename unop>
-void for_each(Collection col, unop op)
+  template <typename Collection, typename UnOp>
+void FForEach(Collection col, UnOp op)
 {
   std::for_each(col.begin(),col.end(),op);
 }
 
-  template <typename Collection, typename unop>
-Collection FMap(Collection col,unop op)
+  template <typename Collection, typename UnOp>
+Collection FMap(Collection col,UnOp op)
 {
-  std::transform(col.begin(),col.end(),col.begin(),op);
-  return col;
+  Collection col2 = col;
+  std::transform(col2.begin(),col2.end(),col2.begin(),op);
+  return col2;
 }
 
   template <typename Collection, typename Predicate>
 Collection FFilterNot(Collection col,Predicate predicate)
 {
-  col.erase(std::remove_if(col.begin(),col.end(),predicate),col.end());
-  return col;
+  Collection col2 = col;
+  col2.erase(std::remove_if(col2.begin(),col2.end(),predicate),col2.end());
+  return col2;
 }
 
   template <typename Collection, typename Predicate>
 Collection FFilter(Collection col,Predicate predicate)
 {
   //capture the predicate in order to be used inside function
-  return FFilterNot(col,[predicate](typename Collection::value_type i) {return ! predicate(i);});
+  Collection col2 = col;
+  return FFilterNot(col2,[predicate](typename Collection::value_type i) {return ! predicate(i);});
+  return col2;
 }
 
-  template <typename Collection, typename InitValType, typename Predicate>
-InitValType FFold(Collection col,InitValType init,Predicate predicate)
+  template <typename Collection, typename InitValType, typename BinOp>
+InitValType FFold(Collection col,InitValType init,BinOp op)
 {
-  std::accumulate(col.begin(),col.end(),init,predicate);
-  return init;
+  // template< class InputIt, class T, class BinaryOperation >
+  //
+  // T accumulate( InputIt first, InputIt last, T init, BinaryOperation op );
+  //
+  //   binary operation function object that will be applied.
+  //
+  //   The signature of the function should be equivalent to the following:
+  //    Ret fun(const Type1 &a, const Type2 &b);
+  //
+  //    The signature does not need to have const &.
+  //    The type Type1 must be such that an object of type T can be implicitly converted to Type1.
+  //    The type Type2 must be such that an object of type InputIt can be dereferenced and then implicitly converted to Type2.
+  //    The type Ret must be such that an object of type T can be assigned a value of type Ret.
+
+  return std::accumulate(col.begin(),col.end(),init,op);
 }
 
 //--------------------------------------------------
@@ -56,6 +73,7 @@ class Option {
       _hasContent = false;
     }
     bool IsNone() { return !_hasContent; }
+    bool IsSome() { return _hasContent; }
     T GetOrElse(const T defaultval)
     {
       if (_hasContent) return _content;
@@ -63,16 +81,14 @@ class Option {
     }
     bool operator==(const Option<T>& o)
     {
-      if (this->_hasContent)
-      {
-        return ((this->_hasContent == o._hasContent)
-                &&
-                (this->_content == o._content));
-      }
-      else
-      {
-        return (this->_hasContent == o._hasContent);
-      }
+      if (this->_hasContent && !o._hasContent) return false;
+      if (!this->_hasContent && o._hasContent) return false;
+      if (!this->_hasContent && !o._hasContent) return true;
+
+      //--------------------------------------------------
+      // both have content
+      //--------------------------------------------------
+      return (this->_content == o._content);
     }
   private:
     bool _hasContent;
@@ -113,6 +129,36 @@ class SMap {
       else return true;
     }
 };
+
+template <typename TV> 
+class SSet {
+  private:
+    set<TV> _set;
+  public:
+    typename set<TV>::iterator GetIterBegin()
+    {
+      return _set.begin();
+    }
+    typename set<TV>::iterator GetIterEnd()
+    {
+      return _set.end();
+    }
+    void Add(const TV v)
+    {
+      _set.insert(v);
+    }
+    void Remove(const TV v)
+    {
+      _set.erase(v);
+    }
+    bool Contains(const TV v)
+    {
+      typename set<TV>::iterator it = _set.find(v);
+      if (it == _set.end()) return false;
+      else return true;
+    }
+};
+
 
 template <typename TK1, typename TK2, typename TV> 
 class SMapOfMap {

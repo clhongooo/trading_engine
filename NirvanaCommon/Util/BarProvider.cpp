@@ -39,21 +39,21 @@ BarProvider::BarProvider()
 }
 
 BarProvider::BarProvider(
-    const char *ccPath,
-    const string &sFormat, 
-    int iRndDecimalPlc, 
-    char cReverseInputOrder, 
-    char cHeader,
-    char cCompressionType)
+  const char *ccPath,
+  const string &sFormat, 
+  int iRndDecimalPlc, 
+  char cReverseInputOrder, 
+  char cHeader,
+  char cCompressionType)
 {
   Reset();
   LoadDataFile(
-      ccPath,
-      sFormat,
-      iRndDecimalPlc,
-      cReverseInputOrder,
-      cHeader,
-      cCompressionType);
+    ccPath,
+    sFormat,
+    iRndDecimalPlc,
+    cReverseInputOrder,
+    cHeader,
+    cCompressionType);
 }
 
 
@@ -124,12 +124,12 @@ BarProvider::~BarProvider() {
 
 
 void BarProvider::LoadDataFile(
-    const char *ccPath,
-    const string &sFormat,
-    int iRndDecimalPlc,
-    char cFwdBkwd, 
-    char cHeader,
-    char cCompressionType)
+  const char *ccPath,
+  const string &sFormat,
+  int iRndDecimalPlc,
+  char cFwdBkwd, 
+  char cHeader,
+  char cCompressionType)
 {
   boost::scoped_ptr<boost::unique_lock<shared_mutex> > lock; if (m_DataModified) lock.reset(new boost::unique_lock<shared_mutex>(m_BarProvider_Mutex));
 
@@ -156,12 +156,12 @@ void BarProvider::LoadDataFile(
   if (m_vlVolume == NULL) { m_vlVolume = new vector<long>();     m_vlVolume->reserve(iReserveSize);       }
 
   if (
-      (sFormat == "")
-      ||
-      (cCompressionType != 'G' && cCompressionType != 'P') ||
-      (cFwdBkwd != 'F' && cFwdBkwd != 'B') ||
-      (cHeader != 'H' && cHeader != 'N')
-     )
+    (sFormat == "")
+    ||
+    (cCompressionType != 'G' && cCompressionType != 'P') ||
+    (cFwdBkwd != 'F' && cFwdBkwd != 'B') ||
+    (cHeader != 'H' && cHeader != 'N')
+    )
   {
     FreeVec();
     SException se;
@@ -191,13 +191,24 @@ void BarProvider::LoadDataFile(
       vector<string> vs;
       boost::split(vs, str, boost::is_any_of(","));
 
-      if (vs.size() < sFormat.length())
+      //--------------------------------------------------
+      // Bloomberg bars have many problems, mainly missing fields, therefore should be more lenient
+      //--------------------------------------------------
+      // if (vs.size() < sFormat.length())
+      // {
+      //   FreeVec();
+      //   SException se;
+      //   se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
+      //   throw se;
+      // }
+      if (vs.size() < sFormat.length()) continue;
+      bool bValidLine = true;
+      for (vector<string>::iterator it = vs.begin(); it != vs.end(); ++it)
       {
-        FreeVec();
-        SException se;
-        se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
-        throw se;
+        if (*it == "") bValidLine = false;
       }
+      if (!bValidLine) continue;
+      //--------------------------------------------------
 
       for (unsigned int i = 0; i < sFormat.size(); ++i)
       {
@@ -746,9 +757,9 @@ void BarProvider::GetOHLCVInDateTimeRange(const YYYYMMDD & ymdStart, const HHMMS
     else
     {
       if (
-          (GetYYYYMMDD() < ymdStart) ||
-          (GetYYYYMMDD() == ymdStart && GetHHMMSS() < hmsStart)
-         )
+        (GetYYYYMMDD() < ymdStart) ||
+        (GetYYYYMMDD() == ymdStart && GetHHMMSS() < hmsStart)
+        )
         continue;
     }
 

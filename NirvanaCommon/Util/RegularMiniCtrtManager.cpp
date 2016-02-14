@@ -73,7 +73,7 @@ void RegularMiniCtrtManager::UpdateRegularCtrtTgtSgnl(const string & sRglrSym, c
 
 void RegularMiniCtrtManager::NetOffRndOffRegularMini()
 {
-  for_each (m_RegularCtrtTheoPos,[&](const std::pair<string,double> & rglrtheo) {
+  FForEach (m_RegularCtrtTheoPos,[&](const std::pair<string,double> & rglrtheo) {
     const string & sRglrSym = rglrtheo.first;
     long lRglrSugSize = m_SuggestedPos[sRglrSym];
     const string sMiniSym = m_Exchg->GetMiniFrRglrFutCtrt(sRglrSym);

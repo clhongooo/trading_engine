@@ -40,7 +40,7 @@ TechIndUpdater::TechIndUpdater() :
   m_sAllSym.insert(m_sOtherSym.begin(),m_sOtherSym.end());
   //--------------------------------------------------
 
-  for_each(m_sAllSym,[&](const string & sym) {
+  FForEach(m_sAllSym,[&](const string & sym) {
     m_PTask_PrintDayHighLowToken[sym] = m_PTask_PrintDayHighLow.GetNewTokenAndSetIntervalInSec(10);
   });
 }
@@ -110,10 +110,10 @@ void TechIndUpdater::Run()
 
         if (!vYMD.empty() && (m_ymdhms_SysTimeHKT.GetYYYYMMDD() > vYMD.back() && m_ymdhms_SysTimeHKT.GetYYYYMMDD() - vYMD.back() > 5))
         {
-          m_Logger->Write(Logger::ERROR,"TechIndUpdater: Supplementary day bar out-of-date. Sym=%s Current date: %s. Last supp day bar date: %s.",
+          m_Logger->Write(Logger::ERROR,"TechIndUpdater: Supplementary day bar may be out-of-date. Sym=%s Current date: %s. Last supp day bar date: %s.",
                           sym.c_str(), m_ymdhms_SysTimeHKT.GetYYYYMMDD().ToStr_().c_str(), (vYMD.empty() ? "Nil" : vYMD.back().ToStr_().c_str()));
-          sleep(1);
-          exit(1);
+          // sleep(1);
+          // exit(1);
         }
 
         for (unsigned int j = 0; j < vYMD.size(); ++j)

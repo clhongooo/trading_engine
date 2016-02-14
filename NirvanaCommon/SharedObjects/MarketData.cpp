@@ -947,7 +947,7 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
 
     m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: Sym=%s %s",sSymbol.c_str(), oFile.GetOrElse("None").c_str());
 
-    string sFormat = "DxOHLC";
+    string sFormat = "DxOHLCV";
     if (sSymbol == UNDERLYING_VHSI) sFormat = "DxC";
 
     BarProvider * bp = new BarProvider(

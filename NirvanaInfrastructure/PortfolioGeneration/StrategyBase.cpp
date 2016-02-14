@@ -635,7 +635,7 @@ void StrategyBase::Run()
         {
           set<string> setSyncGrp = m_SysCfg->GetSynchronizedSymbols(m_StyID,m_TradedSymbols[iTradSym]);
           bool b1OrMoreStale = false;
-          for_each (setSyncGrp,[&](const string & sym)
+          FForEach (setSyncGrp,[&](const string & sym)
                     {
                       double dMQ = 0;
                       YYYYMMDDHHMMSS ymdhms_mq;
@@ -653,7 +653,7 @@ void StrategyBase::Run()
           if (b1OrMoreStale)
           {
             string sGrp;
-            for_each (setSyncGrp,[&](const string & s) { sGrp += s + ","; });
+            FForEach (setSyncGrp,[&](const string & s) { sGrp += s + ","; });
             m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s Not all symbols in the synchronized group are up-to-date. %s",
                             GetStrategyName(m_StyID).c_str(),
                             m_ymdhms_SysTime_HKT.ToStr().c_str(),
@@ -858,7 +858,7 @@ void StrategyBase::StyInitAndChecking()
   //--------------------------------------------------
   // The purpose of calling it once is to get the actual position before everything; that is so important
   //--------------------------------------------------
-  for_each (m_TradedSymbols,[&](const string & sym) {
+  FForEach (m_TradedSymbols,[&](const string & sym) {
 
     double dPrevTheoSgndPos = GetPrevTheoSgndPos(sym);
     m_Logger->Write(Logger::INFO,"Strategy %s: PrevTheoSgndPos for symbol %s = %f",

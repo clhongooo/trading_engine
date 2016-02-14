@@ -96,7 +96,7 @@ void StrategyB1_HKF::ReadParam()
 
       m_map_MAPeriodUnion[sSymbol] = setUnion;
 
-      for_each(setUnion,[&](const int maprd){
+      FForEach(setUnion,[&](const int maprd){
         m_mv_Sma[sSymbol][maprd].Reset(maprd,true);
         m_Logger->Write(Logger::INFO,"Strategy %s: %s MA periods for training includes %d", GetStrategyName(m_StyID).c_str(), sSymbol.c_str(), maprd);
       } );
@@ -295,9 +295,9 @@ void StrategyB1_HKF::InitialWarmUp(const int iTradSym)
 
     if (!vYMD.empty() && (m_ymdhms_SysTime_HKT.GetYYYYMMDD() > vYMD.back() && m_ymdhms_SysTime_HKT.GetYYYYMMDD() - vYMD.back() > 5))
     {
-      m_Logger->Write(Logger::ERROR,"Strategy %s: %s Supplementary day bar out-of-date. Current date: %s. Last supp day bar date: %s.", GetStrategyName(m_StyID).c_str(), sSymbol.c_str(), m_ymdhms_SysTime_HKT.GetYYYYMMDD().ToStr_().c_str(), vYMD.back().ToStr_().c_str());
-      sleep(1);
-      exit(1);
+      m_Logger->Write(Logger::ERROR,"Strategy %s: %s Supplementary day bar may be out-of-date. Current date: %s. Last supp day bar date: %s.", GetStrategyName(m_StyID).c_str(), sSymbol.c_str(), m_ymdhms_SysTime_HKT.GetYYYYMMDD().ToStr_().c_str(), vYMD.back().ToStr_().c_str());
+      // sleep(1);
+      // exit(1);
     }
 
     if (vYMD.empty()) return;
@@ -336,7 +336,7 @@ void StrategyB1_HKF::InitialWarmUp(const int iTradSym)
         }
 
         //--------------------------------------------------
-        for_each(m_map_MAPeriodUnion[m_TradedSymbols[iTradSym]],[&](const int maprd){ m_mv_Sma[sSymbol][maprd].Add(dAvgPx); } );
+        FForEach(m_map_MAPeriodUnion[m_TradedSymbols[iTradSym]],[&](const int maprd){ m_mv_Sma[sSymbol][maprd].Add(dAvgPx); } );
         //--------------------------------------------------
 
       }
@@ -425,7 +425,7 @@ void StrategyB1_HKF::UpdateInternalData(const int iTradSym)
 
           if (m_HistoricalAvgPx->size()>1)
           {
-            for_each(m_map_MAPeriodUnion[m_TradedSymbols[iTradSym]],[&](const int maprd) { m_mv_Sma[sSymbol][maprd].Add(m_HistoricalAvgPx->back()); });
+            FForEach(m_map_MAPeriodUnion[m_TradedSymbols[iTradSym]],[&](const int maprd) { m_mv_Sma[sSymbol][maprd].Add(m_HistoricalAvgPx->back()); });
           }
         }
         else if (iItfOrUndly == 1)
@@ -444,7 +444,7 @@ void StrategyB1_HKF::UpdateInternalData(const int iTradSym)
 
           if (m_HistoricalUndlyAvgPx->size()>1)
           {
-            for_each(m_map_MAPeriodUnion[m_TradedSymbols[iTradSym]],[&](const int maprd){ m_mv_Sma[sSymbol][maprd].Add(m_HistoricalUndlyAvgPx->back());  } );
+            FForEach(m_map_MAPeriodUnion[m_TradedSymbols[iTradSym]],[&](const int maprd){ m_mv_Sma[sSymbol][maprd].Add(m_HistoricalUndlyAvgPx->back());  } );
           }
         }
 

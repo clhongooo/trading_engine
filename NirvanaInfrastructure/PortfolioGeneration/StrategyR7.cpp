@@ -273,7 +273,7 @@ void StrategyR7::CalcPosSize(const int iTradSym)
 {
 
   long lAggPos = 0;
-  for_each (m_TheoPosSize[iTradSym],[&](const double pos) { lAggPos += pos; });
+  FForEach (m_TheoPosSize[iTradSym],[&](const double pos) { lAggPos += pos; });
 
 
   if (lAggPos == 0)

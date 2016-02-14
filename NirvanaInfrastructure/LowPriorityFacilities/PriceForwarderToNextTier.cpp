@@ -65,7 +65,7 @@ void PriceForwarderToNextTier::Run()
     //--------------------------------------------------
     // Transmit latest mid quote of each symbol through zmq
     //--------------------------------------------------
-    for_each (m_sAllSym,[&](const string & symbol) {
+    FForEach (m_sAllSym,[&](const string & symbol) {
       double dMidQuote = NAN;
       YYYYMMDDHHMMSS ymdhms;
       if (!m_MarketData->GetLatestMidQuote(symbol, dMidQuote, ymdhms)) return;
