@@ -526,10 +526,10 @@ void StrategyB2::ReadParam()
   m_PersistTheoPosCPnL = m_SysCfg->B2_PersistTheoPosCPnL(m_StyID);
 
   //--------------------------------------------------
-  m_EnabledRotationMode = m_SysCfg->B2_HasEnabledRotationMode(m_StyID);
-  m_Logger->Write(Logger::INFO,"Strategy %s: m_EnabledRotationMode             %d", GetStrategyName(m_StyID).c_str(),  m_EnabledRotationMode                            );
+  m_RotationMode = m_SysCfg->B2_HasEnabledRotationMode(m_StyID);
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationMode             %d", GetStrategyName(m_StyID).c_str(),  m_RotationMode                            );
 
-  if (m_EnabledRotationMode)
+  if (m_RotationMode != 0)
   {
     m_ChooseBestNRotationGroup = m_SysCfg->Get_B2_ChooseBestNRotationGroup(m_StyID);
     m_Logger->Write(Logger::INFO,"Strategy %s: m_ChooseBestNRotationGroup        %d", GetStrategyName(m_StyID).c_str(),  m_ChooseBestNRotationGroup                       );
@@ -681,15 +681,26 @@ void StrategyB2::ReadParam()
 
   if (!m_B2_FilterSMAPeriod.empty())
   {
-    if (m_B2_FilterSMAPeriod[0] > 0)
+    if (m_B2_FilterSMAPeriod.size() == 2)
     {
-      for (unsigned int i = 0; i < m_TradedSymbols.size(); ++i)
-        m_v_SMA_short.push_back(Sma<double>(m_B2_FilterSMAPeriod[0],true));
+      if (m_B2_FilterSMAPeriod[0] > 0)
+      {
+        for (unsigned int i = 0; i < m_TradedSymbols.size(); ++i)
+          m_v_SMA_short.push_back(Sma<double>(m_B2_FilterSMAPeriod[0],true));
+      }
+      if (m_B2_FilterSMAPeriod[1] > 0)
+      {
+        for (unsigned int i = 0; i < m_TradedSymbols.size(); ++i)
+          m_v_SMA_long.push_back(Sma<double>(m_B2_FilterSMAPeriod[1],true));
+      }
     }
-    if (m_B2_FilterSMAPeriod[1] > 0)
+    else if (m_B2_FilterSMAPeriod.size() == 1)
     {
-      for (unsigned int i = 0; i < m_TradedSymbols.size(); ++i)
-        m_v_SMA_long.push_back(Sma<double>(m_B2_FilterSMAPeriod[1],true));
+      if (m_B2_FilterSMAPeriod[0] > 0)
+      {
+        for (unsigned int i = 0; i < m_TradedSymbols.size(); ++i)
+          m_v_SMA_long.push_back(Sma<double>(m_B2_FilterSMAPeriod[0],true));
+      }
     }
   }
 
@@ -967,8 +978,15 @@ void StrategyB2::InitialWarmUp(const int iTradSym)
       m_HistoricalPricesDates->insert(vYMD[i]);
       if (!m_B2_FilterSMAPeriod.empty())
       {
-        if (m_B2_FilterSMAPeriod[0] > 0) m_v_SMA_short[iTradSym].Add(dAvgPx);
-        if (m_B2_FilterSMAPeriod[1] > 0) m_v_SMA_long[iTradSym].Add(dAvgPx);
+        if (m_B2_FilterSMAPeriod.size() == 2)
+        {
+          if (m_B2_FilterSMAPeriod[0] > 0) m_v_SMA_short[iTradSym].Add(dAvgPx);
+          if (m_B2_FilterSMAPeriod[1] > 0) m_v_SMA_long[iTradSym].Add(dAvgPx);
+        }
+        else if (m_B2_FilterSMAPeriod.size() == 1)
+        {
+          if (m_B2_FilterSMAPeriod[0] > 0) m_v_SMA_long[iTradSym].Add(dAvgPx);
+        }
       }
 
       if (m_HistoricalAvgPx->size()>1)
@@ -1003,7 +1021,7 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
   //--------------------------------------------------
   // For rotation
   //--------------------------------------------------
-  if (m_EnabledRotationMode != 0)
+  if (m_RotationMode != 0)
   {
     if (m_AllAvbSymForRollingBasket[m_RotationGroup[iTradSym]].find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD()) == m_AllAvbSymForRollingBasket[m_RotationGroup[iTradSym]].end())
     {
@@ -1069,8 +1087,16 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
       m_HistoricalPricesDates->insert(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
       if (!m_B2_FilterSMAPeriod.empty())
       {
-        if (m_B2_FilterSMAPeriod[0] > 0) m_v_SMA_short[iTradSym].Add(dAvgPx);
-        if (m_B2_FilterSMAPeriod[1] > 0) m_v_SMA_long[iTradSym].Add(dAvgPx);
+        if (m_B2_FilterSMAPeriod.size() == 2)
+        {
+          if (m_B2_FilterSMAPeriod[0] > 0) m_v_SMA_short[iTradSym].Add(dAvgPx);
+          if (m_B2_FilterSMAPeriod[1] > 0) m_v_SMA_long[iTradSym].Add(dAvgPx);
+        }
+        else if (m_B2_FilterSMAPeriod.size() == 1)
+        {
+          if (m_B2_FilterSMAPeriod[0] > 0) m_v_SMA_long[iTradSym].Add(dAvgPx);
+
+        }
       }
 
       if (m_HistoricalAvgPx->size()>1)
@@ -1608,7 +1634,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //     -1        1      trade
     //      1        1      trade
     //--------------------------------------------------
-    if (m_EnabledRotationMode == 1
+    if (m_RotationMode == 1
+        &&
+        m_B2_FilterSMAPeriod.size() == 2
         &&
         m_HistoricalAvgPx->back() < m_v_SMA_short[iTradSym].Value()
         &&
@@ -1619,11 +1647,52 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                       m_B2_FilterSMAPeriod, m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_short[iTradSym].Value(), m_v_SMA_long[iTradSym].Value());
       m_dAggSignedQty = 0;
     }
-    else
+    else if (m_RotationMode == 1
+             &&
+             m_B2_FilterSMAPeriod.size() == 1
+             &&
+             m_HistoricalAvgPx->back() < m_v_SMA_long[iTradSym].Value())
     {
-      m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s m_dAggSignedQty = %f Avg Px = %f SMA = %f SMA = %f",
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because average price is below its %d-day SMA. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f",
+                      GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
+                      m_B2_FilterSMAPeriod, m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_long[iTradSym].Value());
+      m_dAggSignedQty = 0;
+    }
+    else if (m_RotationMode == -1
+             &&
+             m_B2_FilterSMAPeriod.size() == 2
+             &&
+             m_HistoricalAvgPx->back() > m_v_SMA_short[iTradSym].Value()
+             &&
+             m_HistoricalAvgPx->back() > m_v_SMA_long[iTradSym].Value())
+    {
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because average price is above its %d-day SMA. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f SMA = %f",
+                      GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
+                      m_B2_FilterSMAPeriod, m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_short[iTradSym].Value(), m_v_SMA_long[iTradSym].Value());
+      m_dAggSignedQty = 0;
+    }
+    else if (m_RotationMode == -1
+             &&
+             m_B2_FilterSMAPeriod.size() == 1
+             &&
+             m_HistoricalAvgPx->back() > m_v_SMA_long[iTradSym].Value())
+    {
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because average price is above its %d-day SMA. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f",
+                      GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
+                      m_B2_FilterSMAPeriod, m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_long[iTradSym].Value());
+      m_dAggSignedQty = 0;
+    }
+    else if (m_B2_FilterSMAPeriod.size() == 2)
+    {
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty = %f Avg Px = %f SMA = %f SMA = %f",
                       GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
                       m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_short[iTradSym].Value(), m_v_SMA_long[iTradSym].Value());
+    }
+    else if (m_B2_FilterSMAPeriod.size() == 1)
+    {
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty = %f Avg Px = %f SMA = %f",
+                      GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
+                      m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_long[iTradSym].Value());
     }
   }
   //--------------------------------------------------
@@ -1724,7 +1793,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   //--------------------------------------------------
   // Rotation
   //--------------------------------------------------
-  if (m_EnabledRotationMode != 0)
+  if (m_RotationMode != 0)
   {
     //--------------------------------------------------
     // check whether there is enough historical data
@@ -1759,7 +1828,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
     if (
       (
-        m_EnabledRotationMode == 1
+        m_RotationMode == 1
         &&
         GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]) > 0
         &&
@@ -1767,7 +1836,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       )
       || 
       (
-        m_EnabledRotationMode == -1
+        m_RotationMode == -1
         &&
         GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]) < 0
         &&
@@ -1908,9 +1977,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             )
           {
             ASC_DESC ad;
-            if (m_EnabledRotationMode == 1)
+            if (m_RotationMode == 1)
               ad = AD_DESCENDING;
-            else if (m_EnabledRotationMode == -1)
+            else if (m_RotationMode == -1)
               ad = AD_ASCENDING;
 
             Option<string> o_sym = GetSymInGrpRankByRet(iRttnGrp,
@@ -1921,7 +1990,11 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             if (o_sym.IsSome())
             {
               double dAggSgndQty = m_SymAggSgndQty[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()][o_sym.GetOrElse("")];
-              if (dAggSgndQty > 0)
+              if (
+                (m_RotationMode == 1 && dAggSgndQty > 0)
+                ||
+                (m_RotationMode == -1 && dAggSgndQty < 0)
+                )
               {
                 vSymWithSgnl[iRttnGrp] = Option<string>(o_sym.GetOrElse(""));
               }
@@ -1970,30 +2043,33 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         vector<Option<string> > & vSymWithSgnl = it1->second;
         vector<double> & vGrpRtn = it2->second;
 
-        map<YYYYMMDD,map<double,string> >::iterator it = m_GrpRtnAndLeadingSym.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+        map<YYYYMMDD,vector<TupRetSym> >::iterator it = m_GrpRtnAndLeadingSym.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
         if (it == m_GrpRtnAndLeadingSym.end())
         {
-          map<double,string> mGrpRtnAndLeadSym;
+          vector<TupRetSym> mGrpRtnAndLeadSym;
           m_GrpRtnAndLeadingSym[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()] = mGrpRtnAndLeadSym;
           it  = m_GrpRtnAndLeadingSym.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
         }
 
-        map<double,string> & mGrpRtnAndLeadSym = it->second;
+        vector<TupRetSym> & mGrpRtnAndLeadSym = it->second;
 
         for (int grp = 0; grp < m_RotationGroup.back(); ++grp)
         {
           if (vSymWithSgnl[grp].IsNone()) continue;
           if (std::isnan(vGrpRtn[grp])) continue;
-          mGrpRtnAndLeadSym[vGrpRtn[grp]] = vSymWithSgnl[grp].GetOrElse("");
+          mGrpRtnAndLeadSym.push_back(TupRetSym(vGrpRtn[grp],vSymWithSgnl[grp].GetOrElse("")));
         }
 
         //--------------------------------------------------
         // pick only the top groups with signals
         //--------------------------------------------------
-        int iCnt = 0;
         if (!mGrpRtnAndLeadSym.empty())
         {
-          map<double,string>::iterator itgs = mGrpRtnAndLeadSym.end(); itgs--;
+
+          std::sort(mGrpRtnAndLeadSym.begin(), mGrpRtnAndLeadSym.end());
+          if (m_RotationMode == 1) FReverse(mGrpRtnAndLeadSym);
+
+          int iCnt = 0;
           while (true)
           {
             if (!m_MoveNextBestUpIfNoSignal)
@@ -2004,10 +2080,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             {
               if (m_StkPicks.size() >= m_ChooseBestNRotationGroup) break;
             }
+            m_StkPicks.insert(mGrpRtnAndLeadSym[iCnt].m_symbol());
             iCnt++;
-            m_StkPicks.insert(itgs->second);
-            if (itgs == mGrpRtnAndLeadSym.begin()) break;
-            itgs--;
+            if (iCnt >= mGrpRtnAndLeadSym.size()) break;
           }
         }
 
@@ -2032,13 +2107,13 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
     // set 0 to trade position if this is not the stock that we should keep
     //--------------------------------------------------
-    if (m_EnabledRotationMode == 1
+    if (m_RotationMode == 1
         &&
         m_dAggSignedQty < 0)
     {
       m_dAggSignedQty = 0;
     }
-    else if (m_EnabledRotationMode == -1
+    else if (m_RotationMode == -1
              &&
              m_dAggSignedQty > 0)
     {
@@ -2168,7 +2243,7 @@ void StrategyB2::UnsetConvenienceVarb()
 
 void StrategyB2::ParamSanityCheck()
 {
-  if (m_EnabledRotationMode != 0)
+  if (m_RotationMode != 0)
   {
     if (m_RotationGroup.size() != m_TradedSymbols.size())
     {

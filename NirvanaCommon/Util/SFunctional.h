@@ -12,6 +12,12 @@ void FForEach(Collection col, UnOp op)
   std::for_each(col.begin(),col.end(),op);
 }
 
+  template <typename Collection>
+void FReverse(Collection col)
+{
+  std::reverse(col.begin(),col.end());
+}
+
   template <typename Collection, typename UnOp>
 Collection FMap(Collection col,UnOp op)
 {

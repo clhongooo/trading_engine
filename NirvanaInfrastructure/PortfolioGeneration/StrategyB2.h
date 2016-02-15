@@ -153,7 +153,7 @@ class StrategyB2 : public StrategyBase {
     string           m_TheoPosFolder;
     vector<Acct>     m_TheoAcct;
     bool             m_PersistTheoPosCPnL;
-    int              m_EnabledRotationMode;
+    int              m_RotationMode;
     int              m_ChooseBestNRotationGroup;
 
     //--------------------------------------------------
@@ -227,11 +227,12 @@ class StrategyB2 : public StrategyBase {
     typedef struct TupRetSym {
       double m_return;
       char _m_symbol[16];
-      TupRetSym(double r, const string & s)
+      TupRetSym(double r, const string s)
       {
         m_return = r;
-        memset (_m_symbol,'\0',16);
-        strncpy(_m_symbol,s.c_str(),s.length());
+        // memset (_m_symbol,'\0',16);
+        strcpy(_m_symbol,s.c_str());
+        _m_symbol[s.length()] = '\0';
       }
       string m_symbol() const
       {
@@ -261,7 +262,7 @@ class StrategyB2 : public StrategyBase {
     vector<map<YYYYMMDD,set<string> > >         m_MaintainPosWithinGrp;
     map<YYYYMMDD,vector<double> >               m_AvgRtnOfGrp;
     map<YYYYMMDD,vector<Option<string> > >      m_RttnGrpWithSgnl;
-    map<YYYYMMDD,map<double,string> >           m_GrpRtnAndLeadingSym;
+    map<YYYYMMDD,vector<TupRetSym> >            m_GrpRtnAndLeadingSym;
     map<YYYYMMDD,map<string,double> >           m_SymAggSgndQty;
     set<string>                                 m_StkPicks;
     SSet<YYYYMMDD>                              m_HasPerformedRotationLogic;

@@ -420,10 +420,12 @@ void TechIndUpdater::Run()
         {
           //--------------------------------------------------
           // B2_USSTK
+          // B2_USSHT
           // B2_HK
           //--------------------------------------------------
           if (
             m_SysCfg->IsStrategyOn(STY_B2_USSTK) ||
+            m_SysCfg->IsStrategyOn(STY_B2_USSHT) ||
             m_SysCfg->IsStrategyOn(STY_B2_HK)
             )
           {
