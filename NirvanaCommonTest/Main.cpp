@@ -111,7 +111,7 @@ int main ( int argc, const char* argv[] )
   // utTestRunner.addTest(TestHKSE::suite());
   // utTestRunner.addTest(TestGKYZ::suite());
   // utTestRunner.addTest(TestDaySma::suite());
-  // utTestRunner.addTest(TestPeriodSma::suite());
+  utTestRunner.addTest(TestPeriodSma::suite());
   // utTestRunner.addTest(TestDistributions::suite());
   // utTestRunner.addTest(TestCountingFunction::suite());
   // utTestRunner.addTest(TestCommissionCalculator::suite());
@@ -122,7 +122,7 @@ int main ( int argc, const char* argv[] )
   // utTestRunner.addTest(TestExchange::suite());
   // utTestRunner.addTest(TestPeriodicTask::suite());
   // utTestRunner.addTest(TestRglrMiniCtrtMgr::suite());
-  utTestRunner.addTest(TestSFunctional::suite());
+  // utTestRunner.addTest(TestSFunctional::suite());
   utTestRunner.run();
 
   cout << "Finished." << endl;
