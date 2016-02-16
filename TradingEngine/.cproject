@@ -52,7 +52,7 @@
 								<option id="gnu.cpp.compiler.option.preprocessor.def.618841559" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value=" '__SVN_REV__=&quot;$(shell svnversion -n ${workspace_loc:/${ProjName}})&quot;'"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.other.other.534203222" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++11" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.534203222" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++11 -c -Wfatal-errors" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.debugging.prof.508788474" name="Generate prof information (-p)" superClass="gnu.cpp.compiler.option.debugging.prof" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.debugging.codecov.1618447030" name="Generate gcov information (-ftest-coverage -fprofile-arcs)" superClass="gnu.cpp.compiler.option.debugging.codecov" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.949780687" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="false" valueType="boolean"/>

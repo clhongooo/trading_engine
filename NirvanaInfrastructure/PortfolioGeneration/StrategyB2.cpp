@@ -1642,9 +1642,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         &&
         m_HistoricalAvgPx->back() < m_v_SMA_long[iTradSym].Value())
     {
-      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because average price is below its %d-day SMA. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f SMA = %f",
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because of the SMA filters. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f SMA = %f",
                       GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
-                      m_B2_FilterSMAPeriod, m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_short[iTradSym].Value(), m_v_SMA_long[iTradSym].Value());
+                      m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_short[iTradSym].Value(), m_v_SMA_long[iTradSym].Value());
       m_dAggSignedQty = 0;
     }
     else if (m_RotationMode == 1
@@ -1653,9 +1653,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
              &&
              m_HistoricalAvgPx->back() < m_v_SMA_long[iTradSym].Value())
     {
-      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because average price is below its %d-day SMA. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f",
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because of the SMA filters. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f",
                       GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
-                      m_B2_FilterSMAPeriod, m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_long[iTradSym].Value());
+                      m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_long[iTradSym].Value());
       m_dAggSignedQty = 0;
     }
     else if (m_RotationMode == -1
@@ -1666,9 +1666,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
              &&
              m_HistoricalAvgPx->back() > m_v_SMA_long[iTradSym].Value())
     {
-      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because average price is above its %d-day SMA. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f SMA = %f",
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because of the SMA filters. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f SMA = %f",
                       GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
-                      m_B2_FilterSMAPeriod, m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_short[iTradSym].Value(), m_v_SMA_long[iTradSym].Value());
+                      m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_short[iTradSym].Value(), m_v_SMA_long[iTradSym].Value());
       m_dAggSignedQty = 0;
     }
     else if (m_RotationMode == -1
@@ -1677,9 +1677,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
              &&
              m_HistoricalAvgPx->back() > m_v_SMA_long[iTradSym].Value())
     {
-      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because average price is above its %d-day SMA. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f",
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because of the SMA filters. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f",
                       GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
-                      m_B2_FilterSMAPeriod, m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_long[iTradSym].Value());
+                      m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_long[iTradSym].Value());
       m_dAggSignedQty = 0;
     }
     else if (m_B2_FilterSMAPeriod.size() == 2)
