@@ -419,13 +419,13 @@ void TechIndUpdater::Run()
         if (bTPorMQ)
         {
           //--------------------------------------------------
-          // B2_USSTK
-          // B2_USSHT
+          // B2_US1
+          // B2_US2
           // B2_HK
           //--------------------------------------------------
           if (
-            m_SysCfg->IsStrategyOn(STY_B2_USSTK) ||
-            m_SysCfg->IsStrategyOn(STY_B2_USSHT) ||
+            m_SysCfg->IsStrategyOn(STY_B2_US1) ||
+            m_SysCfg->IsStrategyOn(STY_B2_US2) ||
             m_SysCfg->IsStrategyOn(STY_B2_HK)
             )
           {
