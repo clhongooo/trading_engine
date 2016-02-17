@@ -7,26 +7,26 @@ HHMMSS HHMMSS::BAD_TIME(-1);
 HHMM HHMM::BAD_TIME(-1);
 HMS HMS::BAD_TIME(0,0,-1);
 
-bool YYYYMMDD::operator==(const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD == ymd._iYMD) ? true : false; }
-bool YYYYMMDD::operator!=(const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD != ymd._iYMD) ? true : false; }
+bool YYYYMMDD::operator==(const YYYYMMDD& ymd) const { if (!this->IsValid() && !ymd.IsValid()) return true; else if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD == ymd._iYMD) ? true : false; }
+bool YYYYMMDD::operator!=(const YYYYMMDD& ymd) const { return !(*this == ymd); }
 bool YYYYMMDD::operator> (const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD >  ymd._iYMD) ? true : false; }
 bool YYYYMMDD::operator>=(const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD >= ymd._iYMD) ? true : false; }
 bool YYYYMMDD::operator< (const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD <  ymd._iYMD) ? true : false; }
 bool YYYYMMDD::operator<=(const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD <= ymd._iYMD) ? true : false; }
-bool YYYYMMDD::operator==(const YMD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD == ymd.ToInt()) ? true : false; }
-bool YYYYMMDD::operator!=(const YMD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD != ymd.ToInt()) ? true : false; }
+bool YYYYMMDD::operator==(const YMD& ymd) const { if (!this->IsValid() && !ymd.IsValid()) return true; else if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD == ymd.ToInt()) ? true : false; }
+bool YYYYMMDD::operator!=(const YMD& ymd) const { return !(*this == ymd); }
 bool YYYYMMDD::operator> (const YMD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD >  ymd.ToInt()) ? true : false; }
 bool YYYYMMDD::operator>=(const YMD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD >= ymd.ToInt()) ? true : false; }
 bool YYYYMMDD::operator< (const YMD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD <  ymd.ToInt()) ? true : false; }
 bool YYYYMMDD::operator<=(const YMD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (_iYMD <= ymd.ToInt()) ? true : false; }
-bool YMD::operator==(const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() == ymd._iYMD) ? true : false; }
-bool YMD::operator!=(const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() != ymd._iYMD) ? true : false; }
+bool YMD::operator==(const YYYYMMDD& ymd) const { if (!this->IsValid() && !ymd.IsValid()) return true; else if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() == ymd._iYMD) ? true : false; }
+bool YMD::operator!=(const YYYYMMDD& ymd) const { return !(*this == ymd); }
 bool YMD::operator> (const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() >  ymd._iYMD) ? true : false; }
 bool YMD::operator>=(const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() >= ymd._iYMD) ? true : false; }
 bool YMD::operator< (const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() <  ymd._iYMD) ? true : false; }
 bool YMD::operator<=(const YYYYMMDD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() <= ymd._iYMD) ? true : false; }
-bool YMD::operator==(const YMD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() == ymd.ToInt()) ? true : false; }
-bool YMD::operator!=(const YMD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() != ymd.ToInt()) ? true : false; }
+bool YMD::operator==(const YMD& ymd) const { if (!this->IsValid() && !ymd.IsValid()) return true; else if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() == ymd.ToInt()) ? true : false; }
+bool YMD::operator!=(const YMD& ymd) const { return !(*this == ymd); }
 bool YMD::operator> (const YMD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() >  ymd.ToInt()) ? true : false; }
 bool YMD::operator>=(const YMD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() >= ymd.ToInt()) ? true : false; }
 bool YMD::operator< (const YMD& ymd) const { if (!this->IsValid() || !ymd.IsValid()) return false; return (this->ToInt() <  ymd.ToInt()) ? true : false; }
@@ -340,33 +340,33 @@ const string HHMMSS::ToStr_() const {
 }
 
 
-bool HHMMSS::operator==(const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS == hms._iHMS) ? true : false; }
-bool HHMMSS::operator!=(const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS != hms._iHMS) ? true : false; }
+bool HHMMSS::operator==(const HHMMSS& hms) const { if (!this->IsValid() && !hms.IsValid()) return true; else if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS == hms._iHMS) ? true : false; }
+bool HHMMSS::operator!=(const HHMMSS& hms) const { return !(*this == hms); }
 bool HHMMSS::operator> (const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS >  hms._iHMS) ? true : false; }
 bool HHMMSS::operator>=(const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS >= hms._iHMS) ? true : false; }
 bool HHMMSS::operator< (const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS <  hms._iHMS) ? true : false; }
 bool HHMMSS::operator<=(const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS <= hms._iHMS) ? true : false; }
-bool HHMMSS::operator==(const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS == hms.ToInt()) ? true : false; }
-bool HHMMSS::operator!=(const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS != hms.ToInt()) ? true : false; }
+bool HHMMSS::operator==(const HMS& hms) const { if (!this->IsValid() && !hms.IsValid()) return true; else if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS == hms.ToInt()) ? true : false; }
+bool HHMMSS::operator!=(const HMS& hms) const { return !(*this == hms); }
 bool HHMMSS::operator> (const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS >  hms.ToInt()) ? true : false; }
 bool HHMMSS::operator>=(const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS >= hms.ToInt()) ? true : false; }
 bool HHMMSS::operator< (const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS <  hms.ToInt()) ? true : false; }
 bool HHMMSS::operator<=(const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (_iHMS <= hms.ToInt()) ? true : false; }
-bool HMS::operator==(const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() == hms.ToInt()) ? true : false; }
-bool HMS::operator!=(const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() != hms.ToInt()) ? true : false; }
+bool HMS::operator==(const HMS& hms) const { if (!this->IsValid() && !hms.IsValid()) return true; else if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() == hms.ToInt()) ? true : false; }
+bool HMS::operator!=(const HMS& hms) const { return !(*this == hms); }
 bool HMS::operator> (const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() >  hms.ToInt()) ? true : false; }
 bool HMS::operator>=(const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() >= hms.ToInt()) ? true : false; }
 bool HMS::operator< (const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() <  hms.ToInt()) ? true : false; }
 bool HMS::operator<=(const HMS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() <= hms.ToInt()) ? true : false; }
-bool HMS::operator==(const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() == hms._iHMS) ? true : false; }
-bool HMS::operator!=(const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() != hms._iHMS) ? true : false; }
+bool HMS::operator==(const HHMMSS& hms) const { if (!this->IsValid() && !hms.IsValid()) return true; else if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() == hms._iHMS) ? true : false; }
+bool HMS::operator!=(const HHMMSS& hms) const { return !(*this == hms); }
 bool HMS::operator> (const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() >  hms._iHMS) ? true : false; }
 bool HMS::operator>=(const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() >= hms._iHMS) ? true : false; }
 bool HMS::operator< (const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() <  hms._iHMS) ? true : false; }
 bool HMS::operator<=(const HHMMSS& hms) const { if (!this->IsValid() || !hms.IsValid()) return false; return (this->ToInt() <= hms._iHMS) ? true : false; }
 
-bool HHMM::operator==(const HHMM& hm) const { if (!this->IsValid() || !hm.IsValid()) return false; return (_iHM == hm._iHM) ? true : false; }
-bool HHMM::operator!=(const HHMM& hm) const { if (!this->IsValid() || !hm.IsValid()) return false; return (_iHM != hm._iHM) ? true : false; }
+bool HHMM::operator==(const HHMM& hm) const { if (!this->IsValid() && !hm.IsValid()) return true; else if (!this->IsValid() || !hm.IsValid()) return false; return (_iHM == hm._iHM) ? true : false; }
+bool HHMM::operator!=(const HHMM& hm) const { return !(*this == hm); }
 bool HHMM::operator> (const HHMM& hm) const { if (!this->IsValid() || !hm.IsValid()) return false; return (_iHM >  hm._iHM) ? true : false; }
 bool HHMM::operator>=(const HHMM& hm) const { if (!this->IsValid() || !hm.IsValid()) return false; return (_iHM >= hm._iHM) ? true : false; }
 bool HHMM::operator< (const HHMM& hm) const { if (!this->IsValid() || !hm.IsValid()) return false; return (_iHM <  hm._iHM) ? true : false; }

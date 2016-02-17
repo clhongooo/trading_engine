@@ -770,8 +770,7 @@ void MarketData::UpdateBarAggregatorsAndLatestSnapshotContFut(const YYYYMMDDHHMM
 
 void MarketData::CleanUpOldSnapshots()
 {
-  map<string,YYYYMMDDHHMMSS*>::iterator it;
-  for (it = m_LatestSnapshotsUpdateTime.begin(); it != m_LatestSnapshotsUpdateTime.end(); ++it)
+  for (map<string,YYYYMMDDHHMMSS*>::iterator it = m_LatestSnapshotsUpdateTime.begin(); it != m_LatestSnapshotsUpdateTime.end(); ++it)
   {
     if (!it->second) continue;
 
@@ -782,13 +781,15 @@ void MarketData::CleanUpOldSnapshots()
 
     delete it2->second;
     it2->second = NULL;
-    m_LatestSnapshots.erase(it2);
+    // m_LatestSnapshots.erase(it2);
 
     delete it->second;
     it->second = NULL;
-    m_LatestSnapshotsUpdateTime.erase(it);
+    // m_LatestSnapshotsUpdateTime.erase(it);
 
+    // it = m_LatestSnapshotsUpdateTime.begin();
   }
+
   return;
 }
 

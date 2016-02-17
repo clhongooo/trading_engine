@@ -135,20 +135,12 @@ bool TradingHours::IsTradingHourStartEndBreakBuffer(const string & symbol, const
 bool TradingHours::IsTradingHourPrivate(const string & symbol, const YYYYMMDD & ymd, const HHMMSS & hms, const int iStartBufferInSec, const int iEndBufferInSec, const int iBreakBufferInSec)
 {
   map<string,Date_TradingHours>::const_iterator it = m_map_Sym_DateTrdgHour.find(symbol);
-  if (it == m_map_Sym_DateTrdgHour.end())
-  {
-    if (m_DefaultBehaviour == DFT_DISALLOW) return false;
-    else                                    return true;
-  }
+  if (it == m_map_Sym_DateTrdgHour.end()) return ReturnDefault();
 
   const vector<YYYYMMDD>   & vYYYYMMDD    = it->second.m_vYYYYMMDD;
   const vector<Time_Range> & vTimeRange   = it->second.m_vTimeRange;
 
-  if (ymd < vYYYYMMDD[0])
-  {
-    if (m_DefaultBehaviour == DFT_DISALLOW) return false;
-    else                                    return true;
-  }
+  if (vYYYYMMDD.empty() || ymd < vYYYYMMDD[0]) return ReturnDefault();
 
   //--------------------------------------------------
   // Mutable
@@ -163,7 +155,15 @@ bool TradingHours::IsTradingHourPrivate(const string & symbol, const YYYYMMDD & 
   if (itMem == m_Memoized_DateIdx.end())
   {
     it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
-    iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+    if (it_vYYYYMMDD != vYYYYMMDD.end())
+    {
+      iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+    }
+    else
+    {
+      if (vYYYYMMDD.empty()) return ReturnDefault();
+      else iDateIdx = vYYYYMMDD.size()-1;
+    }
   }
   else
   {
@@ -180,7 +180,15 @@ bool TradingHours::IsTradingHourPrivate(const string & symbol, const YYYYMMDD & 
     else
     {
       it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
-      iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+      if (it_vYYYYMMDD != vYYYYMMDD.end())
+      {
+        iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+      }
+      else
+      {
+        if (vYYYYMMDD.empty()) return ReturnDefault();
+        else iDateIdx = vYYYYMMDD.size()-1;
+      }
     }
   }
 
@@ -195,7 +203,7 @@ bool TradingHours::IsTradingHourPrivate(const string & symbol, const YYYYMMDD & 
   vector<YYYYMMDD>::const_iterator cit_vYYYYMMDD = it_vYYYYMMDD;
   const int ciDateIdx = iDateIdx;
 
-  if (*cit_vYYYYMMDD == ymd)
+  if (cit_vYYYYMMDD != vYYYYMMDD.end() && *cit_vYYYYMMDD == ymd)
   {
     //--------------------------------------------------
     // Spot on : date
@@ -210,14 +218,14 @@ bool TradingHours::IsTradingHourPrivate(const string & symbol, const YYYYMMDD & 
 
     {
       int iCnt = 0;
-      FForEach (vProp,[&](const char P)
-                {
-                  if      (iCnt == 0              && P == 'S') vHMS[iCnt].AddSecond     (max(iStartBufferInSec,iBreakBufferInSec));
-                  else if (iCnt == vProp.size()-1 && P == 'E') vHMS[iCnt].SubtractSecond(max(  iEndBufferInSec,iBreakBufferInSec));
-                  else if (                          P == 'S') vHMS[iCnt].AddSecond     (                      iBreakBufferInSec);
-                  else if (                          P == 'E') vHMS[iCnt].SubtractSecond(                      iBreakBufferInSec);
-                  iCnt++;
-                });
+      FForEach(vProp,[&](const char P)
+               {
+                 if      (iCnt == 0              && P == 'S') vHMS[iCnt].AddSecond     (max(iStartBufferInSec,iBreakBufferInSec));
+                 else if (iCnt == vProp.size()-1 && P == 'E') vHMS[iCnt].SubtractSecond(max(  iEndBufferInSec,iBreakBufferInSec));
+                 else if (                          P == 'S') vHMS[iCnt].AddSecond     (                      iBreakBufferInSec);
+                 else if (                          P == 'E') vHMS[iCnt].SubtractSecond(                      iBreakBufferInSec);
+                 iCnt++;
+               });
     }
 
     //--------------------------------------------------
@@ -255,7 +263,7 @@ bool TradingHours::IsTradingHourPrivate(const string & symbol, const YYYYMMDD & 
     }
   }
 
-  return false;
+  return ReturnDefault();
 }
 
 
@@ -270,7 +278,7 @@ HHMMSS TradingHours::GetTimeNSecBefClose(const string & symbol, const YYYYMMDD &
   const vector<YYYYMMDD>   & vYYYYMMDD    = it->second.m_vYYYYMMDD;
   const vector<Time_Range> & vTimeRange   = it->second.m_vTimeRange;
 
-  if (ymd < vYYYYMMDD[0]) return HHMMSS();
+  if (vYYYYMMDD.empty() || ymd < vYYYYMMDD[0]) return HHMMSS();
 
   //--------------------------------------------------
   // Mutable
@@ -285,24 +293,43 @@ HHMMSS TradingHours::GetTimeNSecBefClose(const string & symbol, const YYYYMMDD &
   if (itMem == m_Memoized_DateIdx.end())
   {
     it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
-    iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+    if (it_vYYYYMMDD != vYYYYMMDD.end())
+    {
+      iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+    }
+    else
+    {
+      if (vYYYYMMDD.empty()) HHMMSS();
+      else iDateIdx = vYYYYMMDD.size()-1;
+    }
   }
   else
   {
     const int iIdx = itMem->second;
-    if (vYYYYMMDD[iIdx  ] >= ymd &&
-        vYYYYMMDD[iIdx-1] <  ymd)
+    if (iIdx < vYYYYMMDD.size())
     {
-      //--------------------------------------------------
-      // Still usable, so no need to search again
-      //--------------------------------------------------
-      it_vYYYYMMDD = vYYYYMMDD.begin() + iIdx;
-      iDateIdx     = iIdx;
-    }
-    else
-    {
-      it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
-      iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+      if (vYYYYMMDD[iIdx  ] >= ymd &&
+          vYYYYMMDD[iIdx-1] <  ymd)
+      {
+        //--------------------------------------------------
+        // Still usable, so no need to search again
+        //--------------------------------------------------
+        it_vYYYYMMDD = vYYYYMMDD.begin() + iIdx;
+        iDateIdx     = iIdx;
+      }
+      else
+      {
+        it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
+        if (it_vYYYYMMDD != vYYYYMMDD.end())
+        {
+          iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+        }
+        else
+        {
+          if (vYYYYMMDD.empty()) HHMMSS();
+          else iDateIdx = vYYYYMMDD.size()-1;
+        }
+      }
     }
   }
 
@@ -317,7 +344,7 @@ HHMMSS TradingHours::GetTimeNSecBefClose(const string & symbol, const YYYYMMDD &
   vector<YYYYMMDD>::const_iterator cit_vYYYYMMDD = it_vYYYYMMDD;
   const int ciDateIdx = iDateIdx;
 
-  if (*cit_vYYYYMMDD == ymd)
+  if (cit_vYYYYMMDD != vYYYYMMDD.end() && *cit_vYYYYMMDD == ymd)
   {
     //--------------------------------------------------
     // Spot on : date
@@ -338,6 +365,13 @@ HHMMSS TradingHours::GetTimeNSecBefClose(const string & symbol, const YYYYMMDD &
     }
   }
 
-  return false;
+  return HHMMSS();
+}
+
+
+bool TradingHours::ReturnDefault()
+{
+  if (m_DefaultBehaviour == DFT_DISALLOW) return false;
+  else                                    return true;
 }
 

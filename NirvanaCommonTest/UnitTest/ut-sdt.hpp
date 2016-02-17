@@ -506,7 +506,7 @@ int TestSDT()
 
     hms7.Invalidate();
     ut.AssertF(hms7.IsValid(),__FILE__,__FUNCTION__,__LINE__);
-    ut.AssertF(hms7 == HMS(),__FILE__,__FUNCTION__,__LINE__);
+    ut.Assert(hms7 == HMS(),__FILE__,__FUNCTION__,__LINE__);
 
 
     HMS hms9(15,15,0);

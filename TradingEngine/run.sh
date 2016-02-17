@@ -66,7 +66,9 @@ then
     RUNCMD="gdb --args ./Debug/TradingEngine"
 elif [[ $ARG2 == "v" ]]
 then
-    RUNCMD="valgrind -v --tool=memcheck --leak-check=full --show-leak-kinds=all ./Debug/TradingEngine"
+    # RUNCMD="valgrind -v --tool=memcheck --leak-check=full --show-leak-kinds=all ./Debug/TradingEngine"
+    RUNCMD="valgrind ./Debug/TradingEngine"
+    # RUNCMD="valgrind --tool=callgrind ./Debug/TradingEngine"
 else
     RUNCMD="./Debug/TradingEngine"
 fi
@@ -176,6 +178,4 @@ fi
 
 #  gdb --args ./Debug/TradingEngine "/home/qy/Dropbox/nirvana/conf/nirvana"$ARG1".ini"
    $RUNCMD "/home/qy/Dropbox/nirvana/conf/nirvana"$ARG1".ini"
-#  valgrind ./Debug/TradingEngine "/home/qy/Dropbox/nirvana/conf/nirvana"$ARG1".ini"
-#  valgrind --tool=callgrind ./Debug/TradingEngine "/home/qy/Dropbox/nirvana/conf/nirvana"$ARG1".ini"
 

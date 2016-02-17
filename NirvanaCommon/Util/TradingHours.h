@@ -49,6 +49,7 @@ class TradingHours {
   private:
     bool IsTradingHourPrivate(const string &,const YYYYMMDDHHMMSS &,const int,const int,const int);
     bool IsTradingHourPrivate(const string &,const YYYYMMDD &,const HHMMSS &,const int,const int,const int);
+    bool ReturnDefault();
 
     map<string,Date_TradingHours> m_map_Sym_DateTrdgHour;
     map<string,int> m_Memoized_DateIdx;

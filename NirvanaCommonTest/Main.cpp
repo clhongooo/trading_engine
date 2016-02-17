@@ -12,7 +12,7 @@
 // #include "UnitTest/ut-lr.hpp"
 // #include "UnitTest/ut-obs.hpp"
 // #include "UnitTest/ut-re.hpp"
-// #include "UnitTest/ut-sdt.hpp"
+#include "UnitTest/ut-sdt.hpp"
 // #include "UnitTest/ut-slb.hpp"
 // #include "UnitTest/ut-sm1.hpp"
 // #include "UnitTest/ut-sma.hpp"
@@ -89,7 +89,7 @@ int main ( int argc, const char* argv[] )
   // TestTS();
   // TestWMA();
   // TestWR();
-  // TestSDT();
+  TestSDT();
   // TestBM();
   // TestSM();
   // TestMSM();
@@ -111,14 +111,14 @@ int main ( int argc, const char* argv[] )
   // utTestRunner.addTest(TestHKSE::suite());
   // utTestRunner.addTest(TestGKYZ::suite());
   // utTestRunner.addTest(TestDaySma::suite());
-  utTestRunner.addTest(TestPeriodSma::suite());
+  // utTestRunner.addTest(TestPeriodSma::suite());
   // utTestRunner.addTest(TestDistributions::suite());
   // utTestRunner.addTest(TestCountingFunction::suite());
   // utTestRunner.addTest(TestCommissionCalculator::suite());
   // utTestRunner.addTest(TestCPnLHist::suite());
   // utTestRunner.addTest(TestKolmogorovSmirnov::suite());
   // utTestRunner.addTest(TestNYSECME::suite());
-  // utTestRunner.addTest(TestTradingHours::suite());
+  utTestRunner.addTest(TestTradingHours::suite());
   // utTestRunner.addTest(TestExchange::suite());
   // utTestRunner.addTest(TestPeriodicTask::suite());
   // utTestRunner.addTest(TestRglrMiniCtrtMgr::suite());
