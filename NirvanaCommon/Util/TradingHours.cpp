@@ -168,8 +168,12 @@ bool TradingHours::IsTradingHourPrivate(const string & symbol, const YYYYMMDD & 
   else
   {
     const int iIdx = itMem->second;
-    if (vYYYYMMDD[iIdx  ] >= ymd &&
-        vYYYYMMDD[iIdx-1] <  ymd)
+    if (
+      (iIdx > 0)
+      &&
+      (vYYYYMMDD[iIdx  ] >= ymd &&
+       vYYYYMMDD[iIdx-1] <  ymd)
+      )
     {
       //--------------------------------------------------
       // Still usable, so no need to search again
@@ -308,8 +312,12 @@ HHMMSS TradingHours::GetTimeNSecBefClose(const string & symbol, const YYYYMMDD &
     const int iIdx = itMem->second;
     if (iIdx < vYYYYMMDD.size())
     {
-      if (vYYYYMMDD[iIdx  ] >= ymd &&
-          vYYYYMMDD[iIdx-1] <  ymd)
+      if (
+        (iIdx > 0)
+        &&
+        (vYYYYMMDD[iIdx  ] >= ymd &&
+         vYYYYMMDD[iIdx-1] <  ymd)
+        )
       {
         //--------------------------------------------------
         // Still usable, so no need to search again
