@@ -29,7 +29,7 @@ void MarkToMarket::Run()
   for (int sty = STY_NIR; sty != STY_LAST; sty++)
   {
     StrategyID sid = static_cast<StrategyID>(sty);
-    m_MTM_Done[sid] = set<int>();
+    m_Sty_MTM_Done[sid] = set<int>();
   }
 
   //--------------------------------------------------
@@ -45,13 +45,16 @@ void MarkToMarket::Run()
     YYYYMMDDHHMMSS ymdhms_MDITime = m_MarketData->GetSystemTimeHKT();
 
     //--------------------------------------------------
+    double dOverallCPnL = 0;
+
+    //--------------------------------------------------
     for (int sty = STY_NIR; sty != STY_LAST; sty++)
     {
       StrategyID sid = static_cast<StrategyID>(sty);
 
       if (m_SysCfg->IsStrategyOn(sid) &&
           ymdhms_MDITime.GetHHMMSS() >= m_SysCfg->GetStrategyMTMTime(sid) &&
-          m_MTM_Done[sid].find(ymdhms_MDITime.GetYYYYMMDD().ToInt()) == m_MTM_Done[sid].end())
+          m_Sty_MTM_Done[sid].find(ymdhms_MDITime.GetYYYYMMDD().ToInt()) == m_Sty_MTM_Done[sid].end())
       {
         double dMidQuote = 0;
         YYYYMMDDHHMMSS ymdhms1;
@@ -79,14 +82,15 @@ void MarkToMarket::Run()
         double d_MTM_CPnL_PerSty = 0;
         if (m_PortAndOrders->Get_MTM_CPnL(sid,d_MTM_CPnL_PerSty))
         {
-          fsMTMLog << GetStrategyName(sid) << "\t" << sid << "\t" << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << ymdhms_MDITime.GetHHMMSS().ToInt() << "\t" << setprecision(2) << fixed << d_MTM_CPnL_PerSty << endl;
+          // fsMTMLog << GetStrategyName(sid) << "\t" << sid << "\t" << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << ymdhms_MDITime.GetHHMMSS().ToInt() << "\t" << setprecision(2) << fixed << d_MTM_CPnL_PerSty << endl;
+          dOverallCPnL += d_MTM_CPnL_PerSty;
           m_Logger->Write(Logger::INFO,"Strategy %s: MTMLog:\t%d\t%s\t%.2f", GetStrategyName(sid).c_str(), sid, ymdhms_MDITime.ToStr().c_str(), d_MTM_CPnL_PerSty);
           m_StyCPnLHist->CPnLHistAddAndTruncate(sty,ymdhms_MDITime.GetYYYYMMDD(),d_MTM_CPnL_PerSty);
           m_StyCPnLHist->CPnLHistWriteToFile(sty);
         }
         else
         {
-          fsMTMLog << GetStrategyName(sid) << "\t" << sid << "\t" << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << ymdhms_MDITime.GetHHMMSS().ToInt() << "\t" << "N/A" << endl;
+          // fsMTMLog << GetStrategyName(sid) << "\t" << sid << "\t" << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << ymdhms_MDITime.GetHHMMSS().ToInt() << "\t" << "N/A" << endl;
           m_Logger->Write(Logger::INFO,"Strategy %s: MTMLog:\t%d\t%s\tN/A", GetStrategyName(sid).c_str(), sid, ymdhms_MDITime.ToStr().c_str());
           FForEach (setSym,[&](const string & sym) {
             m_Logger->Write(Logger::INFO,"Strategy %s: MTMLog:\t%d\t%s\t Symbol with pos includes: %s",
@@ -105,9 +109,19 @@ void MarkToMarket::Run()
           }
         }
 
-        m_MTM_Done[sid].insert(ymdhms_MDITime.GetYYYYMMDD().ToInt());
+        m_Sty_MTM_Done[sid].insert(ymdhms_MDITime.GetYYYYMMDD().ToInt());
       }
     }
+
+    //--------------------------------------------------
+    if (abs(dOverallCPnL) > NIR_EPSILON &&
+        m_Overall_MTM_Done.find(ymdhms_MDITime.GetYYYYMMDD().ToInt()) == m_Overall_MTM_Done.end())
+    {
+      fsMTMLog << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << setprecision(2) << fixed << dOverallCPnL << endl;
+      m_Overall_MTM_Done.insert(ymdhms_MDITime.GetYYYYMMDD().ToInt());
+    }
+    //--------------------------------------------------
+
 
     ReportAckIfNeeded();
   }

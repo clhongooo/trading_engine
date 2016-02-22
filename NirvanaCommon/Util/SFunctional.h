@@ -18,12 +18,13 @@ void FReverse(Collection col)
   std::reverse(col.begin(),col.end());
 }
 
-  template <typename Collection, typename UnOp>
-Collection FMap(Collection col,UnOp op)
+  template <typename CollectionIn, typename CollectionOut, typename UnOp>
+void FMap(CollectionIn col, CollectionOut colOut, UnOp op)
 {
-  Collection col2 = col;
-  std::transform(col2.begin(),col2.end(),col2.begin(),op);
-  return col2;
+  //--------------------------------------------------
+  // CAUTION: UNTESTED
+  //--------------------------------------------------
+  std::transform(colIn.begin(),colIn.end(),back_inserter(colOut),op);
 }
 
   template <typename Collection, typename Predicate>

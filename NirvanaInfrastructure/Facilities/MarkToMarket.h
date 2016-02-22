@@ -40,7 +40,8 @@ class MarkToMarket {
     //--------------------------------------------------
 
     //--------------------------------------------------
-    map<StrategyID,set<int> > m_MTM_Done;
+    map<StrategyID,set<int> > m_Sty_MTM_Done;
+    set<int> m_Overall_MTM_Done;
 
 };
 

@@ -1921,10 +1921,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
         vector<double> & vGrpRtn = it->second;
 
-        for (int grp = m_RotationGroup.front(); grp < m_RotationGroup.back()+1; ++grp)
-        {
-          vGrpRtn[grp] = GetAvgRollgRetOfGrp(grp, m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
-        }
+        FForEach(m_RotationGroup,[&](const int grp){
+          if (std::isnan(vGrpRtn[grp])) vGrpRtn[grp] = GetAvgRollgRetOfGrp(grp, m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+        });
 
         m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- Group Avg Return ---", GetStrategyName(m_StyID).c_str());
         for (int grp = 0; grp < vGrpRtn.size(); ++grp)
@@ -2053,9 +2052,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
         vector<TupRetSym> & mGrpRtnAndLeadSym = it->second;
 
-        for (int grp = 0; grp < m_RotationGroup.back(); ++grp)
+        for (int grp = 0; grp < m_RotationGroup.back()+1; ++grp)
         {
-          if (vSymWithSgnl[grp].IsNone()) continue;
+          // if (vSymWithSgnl[grp].IsNone()) continue;
           if (std::isnan(vGrpRtn[grp])) continue;
           mGrpRtnAndLeadSym.push_back(TupRetSym(vGrpRtn[grp],vSymWithSgnl[grp].GetOrElse("")));
         }
@@ -2066,8 +2065,27 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         if (!mGrpRtnAndLeadSym.empty())
         {
 
+          m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- mGrpRtnAndLeadSym (before sorting) ---", GetStrategyName(m_StyID).c_str());
+
+          FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: mGrpRtnAndLeadSym: %f %s",
+                            GetStrategyName(m_StyID).c_str(),
+                            tup.m_return,
+                            tup.m_symbol().c_str());
+          });
+
+          m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- mGrpRtnAndLeadSym (sorted) ---", GetStrategyName(m_StyID).c_str());
+
           std::sort(mGrpRtnAndLeadSym.begin(), mGrpRtnAndLeadSym.end());
           if (m_RotationMode == 1) FReverse(mGrpRtnAndLeadSym);
+
+          FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: mGrpRtnAndLeadSym: %f %s",
+                            GetStrategyName(m_StyID).c_str(),
+                            tup.m_return,
+                            tup.m_symbol().c_str());
+          });
+          m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- mGrpRtnAndLeadSym ---", GetStrategyName(m_StyID).c_str());
 
           int iCnt = 0;
           while (true)
@@ -2080,7 +2098,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             {
               if (m_StkPicks.size() >= m_ChooseBestNRotationGroup) break;
             }
-            m_StkPicks.insert(mGrpRtnAndLeadSym[iCnt].m_symbol());
+            if (mGrpRtnAndLeadSym[iCnt].m_symbol() != "") m_StkPicks.insert(mGrpRtnAndLeadSym[iCnt].m_symbol());
             iCnt++;
             if (iCnt >= mGrpRtnAndLeadSym.size()) break;
           }
