@@ -36,7 +36,8 @@ PortfoliosAndOrders::PortfoliosAndOrders() :
   {
     //  Prepare our context and socket
     m_zmqcontext.reset(new zmq::context_t(1));
-    m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_REQ));
+    // m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_REQ));
+    m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_PUSH));
 
     string sZMQTFIPPort = m_SysCfg->Get_NextTier_ZMQ_TF_IP_Port();
     m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: Initializing ZMQ connection. ZMQ TF IP Port = %s", sZMQTFIPPort.c_str());
@@ -1212,14 +1213,14 @@ void PortfoliosAndOrders::SendTFToNextTierThruZMQ(const int port_id, const strin
   ((char *)zmq_msg.data())[sATF.length()] = '\0';
   m_zmqsocket->send(zmq_msg);
 
-  //--------------------------------------------------
-  // Get ack
-  //--------------------------------------------------
-  zmq::message_t zmq_reply;
-  m_zmqsocket->recv(&zmq_reply);
-
-  m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Ack received through ZMQ: %s",
-                  m_MarketData->GetSystemTimeHKT().ToStr().c_str(), (char *)zmq_reply.data());
-  //--------------------------------------------------
+  // //--------------------------------------------------
+  // // Get ack
+  // //--------------------------------------------------
+  // zmq::message_t zmq_reply;
+  // m_zmqsocket->recv(&zmq_reply);
+  //
+  // m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Ack received through ZMQ: %s",
+  //                 m_MarketData->GetSystemTimeHKT().ToStr().c_str(), (char *)zmq_reply.data());
+  // //--------------------------------------------------
 }
 

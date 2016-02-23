@@ -39,7 +39,8 @@ void PriceForwarderToNextTier::Run()
   {
     //  Prepare our context and socket
     m_zmqcontext.reset(new zmq::context_t(1));
-    m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_REQ));
+    // m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_REQ));
+    m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_PUSH));
 
     string sZMQMDIPPort = m_SysCfg->Get_NextTier_ZMQ_MD_IP_Port();
     m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: Initializing ZMQ connection. ZMQ MD IP Port = %s", sZMQMDIPPort.c_str());
@@ -77,12 +78,12 @@ void PriceForwarderToNextTier::Run()
       ((char *)zmq_msg.data())[strlen(caMD)] = '\0';
       m_zmqsocket->send(zmq_msg);
 
-      //--------------------------------------------------
-      // Get ack
-      //--------------------------------------------------
-      zmq::message_t zmq_reply;
-      m_zmqsocket->recv(&zmq_reply);
-      //--------------------------------------------------
+      // //--------------------------------------------------
+      // // Get ack
+      // //--------------------------------------------------
+      // zmq::message_t zmq_reply;
+      // m_zmqsocket->recv(&zmq_reply);
+      // //--------------------------------------------------
     });
 
   }
