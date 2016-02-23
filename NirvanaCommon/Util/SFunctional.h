@@ -19,7 +19,7 @@ void FReverse(Collection col)
 }
 
   template <typename CollectionIn, typename CollectionOut, typename UnOp>
-void FMap(CollectionIn col, CollectionOut colOut, UnOp op)
+void FMap(CollectionIn colIn, CollectionOut colOut, UnOp op)
 {
   //--------------------------------------------------
   // CAUTION: UNTESTED

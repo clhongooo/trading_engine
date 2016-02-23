@@ -66,12 +66,11 @@ void PriceForwarderToNextTier::Run()
     // Transmit latest mid quote of each symbol through zmq
     //--------------------------------------------------
     FForEach (m_sAllSym,[&](const string & symbol) {
-      double dMidQuote = NAN;
-      YYYYMMDDHHMMSS ymdhms;
-      if (!m_MarketData->GetLatestMidQuote(symbol, dMidQuote, ymdhms)) return;
+      double dNP = NAN;
+      if (!m_MarketData->GetLatestNominalPrice(symbol, dNP)) return;
 
       char caMD[4096];
-      sprintf(caMD,"%s,%s,%f\0", m_ymdhms_SysTimeHKT.ToCashTimestampStr().c_str(), symbol.c_str(), dMidQuote);
+      sprintf(caMD,"%s,%s,%f\0", m_ymdhms_SysTimeHKT.ToCashTimestampStr().c_str(), symbol.c_str(), dNP);
 
       zmq::message_t zmq_msg(strlen(caMD)+1);
       memcpy((void *)zmq_msg.data(), caMD, strlen(caMD));
