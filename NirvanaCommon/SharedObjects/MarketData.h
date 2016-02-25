@@ -121,12 +121,21 @@ class MarketData
     set<string> m_UpdatedSymbols;
     shared_mutex m_UpdatedSymbolsMutex;
 
+    typedef struct TupMDIStructTS {
+      bool m_isReady;
+      ATU_MDI_marketfeed_struct m_mdi_struct;
+      YYYYMMDDHHMMSS m_yyyymmddhhmmss;
+      TupMDIStructTS () { m_isReady = false; }
+      bool IsReady() { return m_isReady; }
+      void SetAsReady() { m_isReady = true; }
+      void SetAsNotReady() { m_isReady = false; }
+    } TupMDIStructTS;
+
     //--------------------------------------------------
     // Latest Snapshot
     //--------------------------------------------------
-    map<string,ATU_MDI_marketfeed_struct*> m_LatestSnapshots;
-    map<string,YYYYMMDDHHMMSS*>            m_LatestSnapshotsUpdateTime;
-    map<string,shared_mutex *>             m_LatestSnapshotsMutex;
+    map<string,TupMDIStructTS>   m_LatestSnapshots;
+    map<string,shared_mutex *>   m_LatestSnapshotsMutex;
 
     //--------------------------------------------------
     // Accumulated trading volume

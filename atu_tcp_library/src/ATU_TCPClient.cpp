@@ -31,7 +31,21 @@ ATU_TCPClient::ATU_TCPClient(string server, string port) :
 	init();
 }
 void ATU_TCPClient::init() {
+  //--------------------------------------------------
+  // Sunny added - [start]
+  //--------------------------------------------------
+  if (m_sendQueue == NULL)
+  //--------------------------------------------------
+  // Sunny added - [end]
+  //--------------------------------------------------
 	m_sendQueue=new ATU_ThreadSafeQueue< string* >(ATU_TCP_QUEUE_SIZE);
+  //--------------------------------------------------
+  // Sunny added - [start]
+  //--------------------------------------------------
+  if (m_recvQueue == NULL)
+  //--------------------------------------------------
+  // Sunny added - [end]
+  //--------------------------------------------------
 	m_recvQueue=new ATU_ThreadSafeQueue< string* >(ATU_TCP_QUEUE_SIZE);
 }
 ATU_TCPClient::~ATU_TCPClient()
@@ -79,6 +93,15 @@ void ATU_TCPClient::queuemsg(string str){
 	
 	if (!m_shutDown) {
 		string *strptr=new string(str);
+
+    //--------------------------------------------------
+    // Sunny added - [start]
+    //--------------------------------------------------
+    if (m_sendQueue == NULL)
+      m_sendQueue=new ATU_ThreadSafeQueue< string* >(ATU_TCP_QUEUE_SIZE);
+    //--------------------------------------------------
+    // Sunny added - [end]
+    //--------------------------------------------------
 
 		m_sendQueue->push(strptr);
 		m_sendCond.notify_all();
@@ -158,7 +181,13 @@ void ATU_TCPClient::process_send_queue()
 	addLog(__LOGSOURCE__,ATU_logfeed_struct::DEBUG,"","");
 	while(!m_shutDown) {
 		string *strptr;
-		if (!m_sendQueue->empty() && m_isReady) {
+    //--------------------------------------------------
+    // Sunny modified - [start]
+    //--------------------------------------------------
+		if (m_sendQueue != NULL && !m_sendQueue->empty() && m_isReady) {
+    //--------------------------------------------------
+    // Sunny modified - [end]
+    //--------------------------------------------------
 			m_sendQueue->pop(strptr);
 			sendmsg(*strptr);
 			delete strptr;

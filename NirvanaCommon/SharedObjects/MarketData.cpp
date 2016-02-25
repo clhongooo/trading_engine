@@ -28,24 +28,6 @@ MarketData::~MarketData()
 {
 
   {
-    map<string,ATU_MDI_marketfeed_struct*>::iterator it;
-    for (it = m_LatestSnapshots.begin(); it != m_LatestSnapshots.end(); ++it)
-    {
-      delete it->second;
-      it->second = NULL;
-    }
-  }
-
-  {
-    map<string,YYYYMMDDHHMMSS*>::iterator it;
-    for (it = m_LatestSnapshotsUpdateTime.begin(); it != m_LatestSnapshotsUpdateTime.end(); ++it)
-    {
-      delete it->second;
-      it->second = NULL;
-    }
-  }
-
-  {
     map<string,shared_mutex*>::iterator it;
     for (it = m_LatestSnapshotsMutex.begin(); it != m_LatestSnapshotsMutex.end(); ++it)
     {
@@ -482,30 +464,19 @@ bool MarketData::GetLatestBestBidAskMid(const string & sSymbol, double & dBestBi
     else return false;
   }
 
-
   boost::shared_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(sSymbol)));
 
-  map<string,ATU_MDI_marketfeed_struct*>::iterator it1 = m_LatestSnapshots.find(sSymbol);
-  map<string,YYYYMMDDHHMMSS*>::iterator it2 = m_LatestSnapshotsUpdateTime.find(sSymbol);
+  map<string,TupMDIStructTS>::iterator it1 = m_LatestSnapshots.find(sSymbol);
 
-  if (it1 == m_LatestSnapshots.end() || it2 == m_LatestSnapshotsUpdateTime.end())
-  {
-    return false;
-  }
-  else if (!it1->second || !it2->second)
-  {
-    return false;
-  }
-  else if (!STool::IsValidPriceOrVol(it1->second->m_bid_price_1) || !STool::IsValidPriceOrVol(it1->second->m_ask_price_1))
-  {
-    return false;
-  }
+  if (it1 == m_LatestSnapshots.end()) { return false; }
+  else if (!it1->second.IsReady()) { return false; }
+  else if (!STool::IsValidPriceOrVol(it1->second.m_mdi_struct.m_bid_price_1) || !STool::IsValidPriceOrVol(it1->second.m_mdi_struct.m_ask_price_1)) { return false; }
   else
   {
-    ymdhms.Set(*(it2->second));
-    dBestBid = it1->second->m_bid_price_1;
-    dBestAsk = it1->second->m_ask_price_1;
-    dMidQuote = GetWeightedMidQuote(*(it1->second));
+    ymdhms.Set(it1->second.m_yyyymmddhhmmss);
+    dBestBid = it1->second.m_mdi_struct.m_bid_price_1;
+    dBestAsk = it1->second.m_mdi_struct.m_ask_price_1;
+    dMidQuote = GetWeightedMidQuote(it1->second.m_mdi_struct);
     return true;
   }
 }
@@ -534,17 +505,10 @@ bool MarketData::GetLatestMidQuote(const string & sSymbol, double & dMidQuote, Y
 
   boost::shared_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(sSymbol)));
 
-  map<string,ATU_MDI_marketfeed_struct*>::iterator it1 = m_LatestSnapshots.find(sSymbol);
-  map<string,YYYYMMDDHHMMSS*>::iterator it2 = m_LatestSnapshotsUpdateTime.find(sSymbol);
+  map<string,TupMDIStructTS>::iterator it1 = m_LatestSnapshots.find(sSymbol);
 
-  if (it1 == m_LatestSnapshots.end() || it2 == m_LatestSnapshotsUpdateTime.end())
-  {
-    return false;
-  }
-  else if (!it1->second || !it2->second)
-  {
-    return false;
-  }
+  if (it1 == m_LatestSnapshots.end()) { return false; }
+  else if (!it1->second.IsReady()) { return false; }
   else
   {
     //--------------------------------------------------
@@ -552,20 +516,17 @@ bool MarketData::GetLatestMidQuote(const string & sSymbol, double & dMidQuote, Y
     //--------------------------------------------------
     if (sSymbol == UNDERLYING_HSI || sSymbol == UNDERLYING_HHI)
     {
-      dMidQuote = it1->second->m_traded_price;
-      ymdhms.Set(*(it2->second));
+      dMidQuote = it1->second.m_mdi_struct.m_traded_price;
+      ymdhms.Set(it1->second.m_yyyymmddhhmmss);
       return true;
     }
     else
     {
-      if (!STool::IsValidPriceOrVol(it1->second->m_bid_price_1) || !STool::IsValidPriceOrVol(it1->second->m_ask_price_1))
-      {
-        return false;
-      }
+      if (!STool::IsValidPriceOrVol(it1->second.m_mdi_struct.m_bid_price_1) || !STool::IsValidPriceOrVol(it1->second.m_mdi_struct.m_ask_price_1)) { return false; }
       else
       {
-        dMidQuote = GetWeightedMidQuote(*(it1->second));
-        ymdhms.Set(*(it2->second));
+        dMidQuote = GetWeightedMidQuote(it1->second.m_mdi_struct);
+        ymdhms.Set(it1->second.m_yyyymmddhhmmss);
         return true;
       }
     }
@@ -653,42 +614,41 @@ void MarketData::UpdateLatestSnapshot(const YYYYMMDD & yyyymmdd, const HHMMSS & 
   //--------------------------------------------------
   boost::unique_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(sMD.m_feedcode)));
 
-  map<string,ATU_MDI_marketfeed_struct*>::iterator it = m_LatestSnapshots.find(sMD.m_feedcode);
+  map<string,TupMDIStructTS>::iterator it = m_LatestSnapshots.find(sMD.m_feedcode);
 
-  if (it == m_LatestSnapshots.end() || !it->second)
+  if (it == m_LatestSnapshots.end())
   {
-    ATU_MDI_marketfeed_struct* sMDI = new ATU_MDI_marketfeed_struct();
-    m_LatestSnapshots[sMD.m_feedcode] = sMDI;
+    m_LatestSnapshots[sMD.m_feedcode] = TupMDIStructTS();
     it = m_LatestSnapshots.find(sMD.m_feedcode);
   }
 
   {
-    if (STool::IsValidPriceOrVol(sMD.m_traded_price)) it->second->m_traded_price = sMD.m_traded_price + price_offset;
-    else                                              it->second->m_traded_price = NAN;
+    if (STool::IsValidPriceOrVol(sMD.m_traded_price)) it->second.m_mdi_struct.m_traded_price = sMD.m_traded_price + price_offset;
+    else                                              it->second.m_mdi_struct.m_traded_price = NAN;
 
-    it->second->m_traded_volume  = sMD.m_traded_volume;
+    it->second.m_mdi_struct.m_traded_volume = sMD.m_traded_volume;
   }
 
-  if (STool::IsValidPriceOrVol(sMD.m_bid_price_1)) it->second->m_bid_price_1  = sMD.m_bid_price_1 + price_offset;
-  else                                             it->second->m_bid_price_1  = NAN;
+  if (STool::IsValidPriceOrVol(sMD.m_bid_price_1)) it->second.m_mdi_struct.m_bid_price_1  = sMD.m_bid_price_1 + price_offset;
+  else                                             it->second.m_mdi_struct.m_bid_price_1  = NAN;
 
 
-  if (STool::IsValidPriceOrVol(sMD.m_ask_price_1)) it->second->m_ask_price_1  = sMD.m_ask_price_1 + price_offset;
-  else                                             it->second->m_ask_price_1  = NAN;
+  if (STool::IsValidPriceOrVol(sMD.m_ask_price_1)) it->second.m_mdi_struct.m_ask_price_1  = sMD.m_ask_price_1 + price_offset;
+  else                                             it->second.m_mdi_struct.m_ask_price_1  = NAN;
 
-  it->second->m_bid_volume_1 = boost::lexical_cast<double> (sMD.m_bid_volume_1);
-  it->second->m_ask_volume_1 = boost::lexical_cast<double> (sMD.m_ask_volume_1);
+  it->second.m_mdi_struct.m_bid_volume_1 = boost::lexical_cast<double> (sMD.m_bid_volume_1);
+  it->second.m_mdi_struct.m_ask_volume_1 = boost::lexical_cast<double> (sMD.m_ask_volume_1);
 
   //--------------------------------------------------
   // record update time
   //--------------------------------------------------
-  map<string,YYYYMMDDHHMMSS*>::iterator it2 = m_LatestSnapshotsUpdateTime.find(sMD.m_feedcode);
-  if (it2 == m_LatestSnapshotsUpdateTime.end() || !it2->second)
-  {
-    m_LatestSnapshotsUpdateTime[sMD.m_feedcode] = new YYYYMMDDHHMMSS();
-    it2 = m_LatestSnapshotsUpdateTime.find(sMD.m_feedcode);
-  }
-  it2->second->Set(yyyymmdd,hhmmss);
+  it->second.m_yyyymmddhhmmss.Set(yyyymmdd,hhmmss);
+
+  //--------------------------------------------------
+  // set as ready after all the updating
+  //--------------------------------------------------
+  if (!it->second.IsReady()) it->second.SetAsReady();
+
 }
 
 
@@ -770,24 +730,11 @@ void MarketData::UpdateBarAggregatorsAndLatestSnapshotContFut(const YYYYMMDDHHMM
 
 void MarketData::CleanUpOldSnapshots()
 {
-  for (map<string,YYYYMMDDHHMMSS*>::iterator it = m_LatestSnapshotsUpdateTime.begin(); it != m_LatestSnapshotsUpdateTime.end(); ++it)
+  for (map<string,TupMDIStructTS>::iterator it = m_LatestSnapshots.begin(); it != m_LatestSnapshots.end(); ++it)
   {
-    if (!it->second) continue;
-
-    boost::unique_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(it->first)));
-
     m_Logger->Write(Logger::DEBUG,"MarketData: CleanUpOldSnapshots. %s", it->first.c_str());
-    map<string,ATU_MDI_marketfeed_struct*>::iterator it2 = m_LatestSnapshots.find(it->first);
-
-    delete it2->second;
-    it2->second = NULL;
-    // m_LatestSnapshots.erase(it2);
-
-    delete it->second;
-    it->second = NULL;
-    // m_LatestSnapshotsUpdateTime.erase(it);
-
-    // it = m_LatestSnapshotsUpdateTime.begin();
+    boost::unique_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(it->first)));
+    it->second.SetAsNotReady();
   }
 
   return;
@@ -821,34 +768,34 @@ void MarketData::NotifyConsumers()
   m_cvDataAvb.notify_all();
 }
 
-
 bool MarketData::GetLatestNominalPrice(const string & feedcode, double & nominalprice)
 {
   boost::shared_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(feedcode)));
 
-  map<string,ATU_MDI_marketfeed_struct*>::iterator it = m_LatestSnapshots.find(feedcode);
+  map<string,TupMDIStructTS>::iterator it = m_LatestSnapshots.find(feedcode);
 
   if (it == m_LatestSnapshots.end()) return false;
+  if (!it->second.IsReady()) return false;
 
   if (
-    !STool::IsValidPriceOrVol(it->second->m_bid_price_1) ||
-    !STool::IsValidPriceOrVol(it->second->m_ask_price_1)
+    !STool::IsValidPriceOrVol(it->second.m_mdi_struct.m_bid_price_1) ||
+    !STool::IsValidPriceOrVol(it->second.m_mdi_struct.m_ask_price_1)
     )
   {
-    nominalprice = it->second->m_traded_price;
+    nominalprice = it->second.m_mdi_struct.m_traded_price;
   }
-  else if (it->second->m_traded_price >= it->second->m_bid_price_1 &&
-           it->second->m_traded_price <= it->second->m_ask_price_1)
+  else if (it->second.m_mdi_struct.m_traded_price >= it->second.m_mdi_struct.m_bid_price_1 &&
+           it->second.m_mdi_struct.m_traded_price <= it->second.m_mdi_struct.m_ask_price_1)
   {
-    nominalprice = it->second->m_traded_price;
+    nominalprice = it->second.m_mdi_struct.m_traded_price;
   }
-  else if (it->second->m_traded_price < it->second->m_bid_price_1)
+  else if (it->second.m_mdi_struct.m_traded_price < it->second.m_mdi_struct.m_bid_price_1)
   {
-    nominalprice = it->second->m_bid_price_1;
+    nominalprice = it->second.m_mdi_struct.m_bid_price_1;
   }
-  else if (it->second->m_traded_price > it->second->m_ask_price_1)
+  else if (it->second.m_mdi_struct.m_traded_price > it->second.m_mdi_struct.m_ask_price_1)
   {
-    nominalprice = it->second->m_ask_price_1;
+    nominalprice = it->second.m_mdi_struct.m_ask_price_1;
   }
 
   return true;
@@ -878,12 +825,13 @@ bool MarketData::GetLatestTradePrice(const string & sSymbol, double & tradeprice
   }
   //--------------------------------------------------
 
-  map<string,ATU_MDI_marketfeed_struct*>::iterator it = m_LatestSnapshots.find(sSymbol);
+  map<string,TupMDIStructTS>::iterator it = m_LatestSnapshots.find(sSymbol);
 
   if (it == m_LatestSnapshots.end()) return false;
-  if (!STool::IsValidPriceOrVol(it->second->m_traded_price)) return false;
+  if (!it->second.IsReady()) return false;
+  if (!STool::IsValidPriceOrVol(it->second.m_mdi_struct.m_traded_price)) return false;
 
-  tradeprice = it->second->m_traded_price;
+  tradeprice = it->second.m_mdi_struct.m_traded_price;
 
   return true;
 }
@@ -1054,13 +1002,14 @@ double MarketData::ComputeTickReturn(const string & symbol, const double price)
   // just return 0 to let the data flows through the pipe
   //--------------------------------------------------
   boost::shared_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(symbol)));
-  map<string,ATU_MDI_marketfeed_struct*>::iterator it = m_LatestSnapshots.find(symbol);
+  map<string,TupMDIStructTS>::iterator it = m_LatestSnapshots.find(symbol);
   if (it == m_LatestSnapshots.end()) return 0;
+  if (!it->second.IsReady()) return 0;
 
   //--------------------------------------------------
   // same here, we want the new data to replace the old invalid data, so return 0
   //--------------------------------------------------
-  ATU_MDI_marketfeed_struct & s = *(it->second);
+  ATU_MDI_marketfeed_struct & s = it->second.m_mdi_struct;
   if (!STool::IsValidPriceOrVol(s.m_traded_price)) return 0;
 
   return (price/s.m_traded_price)-1;
