@@ -67,7 +67,7 @@ then
 elif [[ $ARG2 == "v" ]]
 then
     # RUNCMD="valgrind -v --tool=memcheck --leak-check=full --show-leak-kinds=all ./Debug/TradingEngine"
-    RUNCMD="valgrind ./Debug/TradingEngine"
+    RUNCMD="valgrind -v --tool=memcheck ./Debug/TradingEngine"
     # RUNCMD="valgrind --tool=callgrind ./Debug/TradingEngine"
 else
     RUNCMD="./Debug/TradingEngine"

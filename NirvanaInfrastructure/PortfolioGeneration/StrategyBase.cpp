@@ -45,7 +45,7 @@ StrategyBase::~StrategyBase()
 
 void StrategyBase::ReportAckIfNeeded()
 {
-  if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK || m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::EMBEDDED)
+  if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
     m_MDIAck->ReportAck(m_StyID);
   return;
 }
@@ -498,7 +498,7 @@ void StrategyBase::Run()
     //--------------------------------------------------
     // Wait for m_TechInd if in ack mode
     //--------------------------------------------------
-    if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK)
+    if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
       m_TechInd->WaitForData();
     else
       m_MarketData->WaitForData();
@@ -616,7 +616,7 @@ void StrategyBase::Run()
           continue;
         }
 
-        if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK
+        if ((m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
             &&
             (
               !m_MarketData->CheckIfSymbolIsUpdated(m_TradedSymbols[iTradSym])

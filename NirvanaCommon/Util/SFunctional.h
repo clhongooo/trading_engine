@@ -2,6 +2,8 @@
 #define UTIL_SFUNCTIONAL_H_
 
 #include "PCH.h"
+#include <boost/thread.hpp>
+#include <boost/thread/shared_mutex.hpp>
 
 //--------------------------------------------------
 // Functional programming?
@@ -18,14 +20,18 @@ void FReverse(Collection col)
   std::reverse(col.begin(),col.end());
 }
 
-  template <typename CollectionIn, typename CollectionOut, typename UnOp>
-void FMap(CollectionIn colIn, CollectionOut colOut, UnOp op)
-{
-  //--------------------------------------------------
-  // CAUTION: UNTESTED
-  //--------------------------------------------------
-  std::transform(colIn.begin(),colIn.end(),back_inserter(colOut),op);
-}
+//   template <typename CollectionIn, typename CollectionOut, typename InType, typename UnOp>
+// void FMap(CollectionIn colIn, CollectionOut colOut, UnOp op)
+// {
+//   // //--------------------------------------------------
+//   // // CAUTION: UNTESTED
+//   // //--------------------------------------------------
+//   // std::transform(colIn.begin(),colIn.end(),back_inserter(colOut),op);
+//   colOut.clear();
+//   FForEach(colIn, [&](const InType i) {
+//     colOut.push_back(op(i));
+//   });
+// }
 
   template <typename Collection, typename Predicate>
 Collection FFilterNot(Collection col,Predicate predicate)
@@ -81,6 +87,10 @@ class Option {
     }
     bool IsNone() { return !_hasContent; }
     bool IsSome() { return _hasContent; }
+    T Get() 
+    {
+      return _content;
+    }
     T GetOrElse(const T defaultval)
     {
       if (_hasContent) return _content;
@@ -107,7 +117,7 @@ class SMap {
   private:
     map<TK,TV> _map;
   public:
-    Option<TV> Get(const TK k)
+    Option<TV> Get(const TK k) const
     {
       typename map<TK,TV>::iterator it = _map.find(k);
       if (it == _map.end()) return Option<TV>();
@@ -125,15 +135,97 @@ class SMap {
     {
       return _map.end();
     }
-    void Add(const TK k, const TV v)
+    void AddOrUpdate(const TK k, const TV v)
     {
       _map[k] = v;
     }
-    bool Contains(const TK k)
+    void Remove(const TK k)
+    {
+      typename map<TK,TV>::iterator it = _map.find(k);
+      if (it == _map.end()) return;
+      _map.erase(it);
+    }
+    bool Contains(const TK k) const
     {
       typename map<TK,TV>::iterator it = _map.find(k);
       if (it == _map.end()) return false;
       else return true;
+    }
+    vector<std::pair<TK,TV> > ToVector() const
+    {
+      vector<std::pair<TK,TV> > vOut;
+      FForEach(_map,[&](const std::pair<TK,TV> p) { vOut.push_back(p); });
+      return vOut;
+    }
+    void FromVectorReplaceOrAdd(vector<std::pair<TK,TV> > vIn)
+    {
+      FForEach(vIn,[&](const std::pair<TK,TV> p) { _map[p.first] = p.second; });
+    }
+    void FromVectorTotalReplace(vector<std::pair<TK,TV> > vIn)
+    {
+      _map.clear();
+      FromVectorReplaceOrAdd(vIn);
+    }
+};
+
+template <typename TK, typename TV> 
+class SMapThreadSafe {
+  private:
+    map<TK,TV> _map;
+    boost::shared_mutex _mutex;
+    void FromVectorReplaceOrAddNoLock(vector<std::pair<TK,TV> > vIn)
+    {
+      FForEach(vIn,[&](const std::pair<TK,TV> p) { _map[p.first] = p.second; });
+    }
+  public:
+    Option<TV> Get(const TK k)
+    {
+      boost::shared_lock<boost::shared_mutex> lock(_mutex);
+      typename map<TK,TV>::iterator it = _map.find(k);
+      if (it == _map.end()) return Option<TV>();
+      return Option<TV>(it->second);
+    }
+    TV GetOrElse(const TK k, const TV defaultval)
+    {
+      boost::shared_lock<boost::shared_mutex> lock(_mutex);
+      return Get(k).GetOrElse(defaultval);
+    }
+    void AddOrUpdate(const TK k, const TV v)
+    {
+      boost::unique_lock<boost::shared_mutex> lock(_mutex);
+      _map[k] = v;
+    }
+    void Remove(const TK k)
+    {
+      boost::unique_lock<boost::shared_mutex> lock(_mutex);
+      typename map<TK,TV>::iterator it = _map.find(k);
+      if (it == _map.end()) return;
+      _map.erase(it);
+    }
+    bool Contains(const TK k) const
+    {
+      boost::shared_lock<boost::shared_mutex> lock(_mutex);
+      typename map<TK,TV>::iterator it = _map.find(k);
+      if (it == _map.end()) return false;
+      else return true;
+    }
+    vector<std::pair<TK,TV> > ToVector()
+    {
+      boost::shared_lock<boost::shared_mutex> lock(_mutex);
+      vector<std::pair<TK,TV> > vOut;
+      FForEach(_map,[&](const std::pair<TK,TV> p) { vOut.push_back(p); });
+      return vOut;
+    }
+    void FromVectorReplaceOrAdd(vector<std::pair<TK,TV> > vIn)
+    {
+      boost::unique_lock<boost::shared_mutex> lock(_mutex);
+      FForEach(vIn,[&](const std::pair<TK,TV> p) { _map[p.first] = p.second; });
+    }
+    void FromVectorTotalReplace(vector<std::pair<TK,TV> > vIn)
+    {
+      boost::unique_lock<boost::shared_mutex> lock(_mutex);
+      _map.clear();
+      FromVectorReplaceOrAddNoLock(vIn);
     }
 };
 

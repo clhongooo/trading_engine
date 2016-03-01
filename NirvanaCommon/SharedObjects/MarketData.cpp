@@ -249,7 +249,8 @@ void MarketData::UpdateInternalDataWithParsedMDIString(const ATU_MDI_marketfeed_
       (!std::isnan(dTickReturn) && fabs(dTickReturn) > m_SysCfg->GetErroneousTickPxChg())
       )
     {
-      if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK || m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::EMBEDDED)
+      if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK ||
+          m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
       {
         m_MDIAck->ReportNotMktData();
       }
@@ -313,7 +314,8 @@ bool MarketData::UpdateMarketData(const string & sMD)
 
   if (!ParseMDIString(sMD,vMD,yyyymmdd,hhmmss))
   {
-    if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK || m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::EMBEDDED)
+    if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK ||
+        m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
     {
       m_MDIAck->ReportNotMktData();
     }

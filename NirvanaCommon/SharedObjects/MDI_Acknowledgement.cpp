@@ -187,6 +187,7 @@ void MDI_Acknowledgement::WaitForAck()
       m_Logger->Write(Logger::NOTICE,"%s::%s (%d) Been waiting for ack for a long time: m_NoOfAckReceived_techind = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_techind);
       m_Logger->Write(Logger::NOTICE,"%s::%s (%d) Been waiting for ack for a long time: m_NoOfAckReceived_mtm = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_mtm);
       ReportAckTechIndUpd();
+      ReportAckMTM();
       m_Logger->Write(Logger::NOTICE,"%s::%s (%d) Been waiting for ack for a long time: m_NoOfAckReceived_techind = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_techind);
       m_Logger->Write(Logger::NOTICE,"%s::%s (%d) Been waiting for ack for a long time: m_NoOfAckReceived_mtm = %d",__FILE__,__FUNCTION__,__LINE__,m_NoOfAckReceived_mtm);
     }

@@ -29,7 +29,7 @@ void PortfolioGenerator::Run()
 
     YYYYMMDDHHMMSS ymdhms_MDITime = m_MarketData->GetSystemTimeHKT();
 
-    if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK)
+    if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
       m_MDIAck->ReportAck(STY_NIR);
 
     // //--------------------------------------------------

@@ -13,8 +13,7 @@ boost::shared_ptr<PortfoliosAndOrders> PortfoliosAndOrders::Instance() {
 
 
 PortfoliosAndOrders::PortfoliosAndOrders() :
-  m_UniqID(0),
-  m_CurrentMode(SINGLE_ORDER)
+  m_UniqID(0)
 {
   m_MarketData = MarketData::Instance();
   m_SysCfg     = SystemConfig::Instance();
@@ -28,11 +27,7 @@ PortfoliosAndOrders::PortfoliosAndOrders() :
   //--------------------------------------------------
   // Init for zmq
   //--------------------------------------------------
-  if (
-    m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_NEXTTIERZMQ
-    ||
-    m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_OTINXTIERZMQ
-    )
+  if (m_SysCfg->NextTierZMQIsOn())
   {
     //  Prepare our context and socket
     m_zmqcontext.reset(new zmq::context_t(1));
@@ -50,90 +45,12 @@ PortfoliosAndOrders::~PortfoliosAndOrders()
 {
 }
 
-void PortfoliosAndOrders::SetTargetPortfolio(const int port_id, const map<string,long> & portfolio)
-{
-  boost::unique_lock<boost::shared_mutex> lock(m_target_portfolios_mutex);
-
-  map<int, map<string,long> >::iterator targetIter = m_target_portfolios.find(port_id);
-
-  // If the port id doesn't exist, initialize an empty target portfolio.
-  if(targetIter == m_target_portfolios.end()) {
-    map<string ,long> m;
-    m_target_portfolios[port_id] = m;
-    targetIter = m_target_portfolios.find(port_id);
-  }
-
-  // Clear rather than modify in place, because some assets may not be in
-  // the new target portfolio.
-  targetIter->second.clear();
-
-  // Update the target portfolio.
-  for(map<string, long>::const_iterator i = portfolio.begin(); i != portfolio.end(); i++){
-    targetIter->second[i->first] = i->second;
-  }
-
-  // If working orders exist, it means executor is now establishing previous target portfolio.
-  // So here interrupt the establishing process by clearing all working orders.
-  if(!IsPortfolioWorkingOrderEmpty(port_id))
-  {
-    CancelAllWorkingOrdersInPortfolio(port_id);
-  }
-  // If there's no working order, new target portfolio can be established now with safety.
-  else{
-    lock.unlock();
-    ConstructActualPortfolio(port_id);
-  }
-  return;
-}
-
-void PortfoliosAndOrders::GetTargetPortfolio(const int port_id, map<string,long> &mReturnMap)
-{
-  boost::unique_lock<boost::shared_mutex> lock(m_target_portfolios_mutex);
-
-  map<int, map<string,long> >::iterator mm_iter = m_target_portfolios.find(port_id);
-
-  if (mm_iter == m_target_portfolios.end()) return ;
-
-  mReturnMap.clear();
-
-  for (map<string,long>::iterator m_iter = mm_iter->second.begin(); m_iter != mm_iter->second.end(); ++m_iter) {
-    mReturnMap[m_iter->first] = m_iter->second;
-  }
-
-  return ;
-}
-
-void PortfoliosAndOrders::ConstructActualPortfolio(const int port_id)
-{
-  boost::unique_lock<boost::shared_mutex> lock1(m_target_portfolios_mutex);
-
-  // Get the current target portfolio.
-  map<int, map<string,long> >::iterator it_mm_target = m_target_portfolios.find(port_id);
-  if (it_mm_target == m_target_portfolios.end()) return;
-
-  for (map<string,long>::iterator it_m_target = it_mm_target->second.begin();
-       it_m_target != it_mm_target->second.end();
-       it_m_target++)
-  {
-    const string & symbol     = it_m_target->first;
-    const long tgt_signed_qty = it_m_target->second;
-    const long act_signed_qty = AcctCheckPos(port_id, symbol);
-
-    if (tgt_signed_qty != act_signed_qty)
-      Trade(port_id, symbol, tgt_signed_qty - act_signed_qty);
-  }
-
-  return ;
-}
-
 bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol, const long signed_qty, const OrderInstruction::ExecStrategy exec_strat, const vector<double> & exec_strat_param, const bool gen_new_oid, const string & oid_details)
 {
   YYYYMMDDHHMMSS SystemTime = m_MarketData->GetSystemTimeHKT();
   m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d ExecStrat: %d ExecStrat param: %d. OID Details: %s.", SystemTime.ToStr().c_str(), symbol.c_str(), signed_qty, exec_strat, exec_strat_param.size(), oid_details.c_str());
 
-  if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_RECORD
-      ||
-      m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_NEXTTIERZMQ)
+  if (m_SysCfg->Get_OTIMode() == SystemConfig::OTI_RECORD)
   {
     double dMidQuote = NAN;
     YYYYMMDDHHMMSS ymdhms;
@@ -151,62 +68,12 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
       }
     }
 
-    // if (std::isnan(dMidQuote))
-    // {
-    //   vector<YYYYMMDD> vYMD;
-    //   vector<double>   vOpen;
-    //   vector<double>   vHigh;
-    //   vector<double>   vLow;
-    //   vector<double>   vClose;
-    //   vector<long>     vVol;
-    //
-    //   if (m_MarketData->ChkAvbyOfSuppD1BarOHLCV(symbol))
-    //   {
-    //     m_MarketData->GetSuppD1BarOHLCVInDateRange(
-    //       symbol,
-    //       YYYYMMDD(19000101),
-    //       SystemTime.GetYYYYMMDD(),
-    //       vYMD,
-    //       vOpen,
-    //       vHigh,
-    //       vLow,
-    //       vClose,
-    //       vVol);
-    //   }
-    //   else
-    //   {
-    //     string sContFut = ContFut::GetContFutFrRglrSym(symbol,1);
-    //
-    //     if (m_MarketData->ChkAvbyOfSuppD1BarOHLCV(sContFut))
-    //
-    //       m_MarketData->GetSuppD1BarOHLCVInDateRange(
-    //         sContFut,
-    //         YYYYMMDD(19000101),
-    //         SystemTime.GetYYYYMMDD(),
-    //         vYMD,
-    //         vOpen,
-    //         vHigh,
-    //         vLow,
-    //         vClose,
-    //         vVol);
-    //   }
-    //
-    //   if (vClose.empty())
-    //   {
-    //     m_Logger->Write(Logger::ERROR,"PortfoliosAndOrders: %s: Trade: %s Qty: %d. Trade is not executed because the supp day bar is unavailable.",
-    //                     m_MarketData->GetSystemTimeHKT().ToStr().c_str(), symbol.c_str(), signed_qty);
-    //     return false;
-    //   }
-    //   dMidQuote = vClose.back();
-    // }
-
-    UpdateTargetPortfolio(port_id,symbol,signed_qty,'a');
     AcctTrade(port_id,symbol,signed_qty,dMidQuote);
 
     string sTF = ConstructAugmentedTradeFeed(port_id,symbol,dMidQuote,signed_qty,"OID","TID");
     m_Logger->Write(Logger::INFO,"%s", sTF.c_str());
 
-    if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_NEXTTIERZMQ)
+    if (m_SysCfg->NextTierZMQIsOn())
     {
       SendTFToNextTierThruZMQ(port_id, symbol, dMidQuote, signed_qty,"OID","TID");
     }
@@ -238,17 +105,10 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
   oi.m_exec_strategy       = exec_strat;
   oi.m_exec_strategy_param = exec_strat_param;
   oi.m_resend              = true;
-  oi.m_create_time         = SystemTime.GetHHMMSS();
-  oi.m_attention_time      = hmsAttnTime.ToHHMMSS();
 
-  {
-    boost::unique_lock<boost::shared_mutex> lock(m_orders_mutex);
+  m_working_orders.AddOrUpdate(oi.m_order_id,oi);
 
-    // Add the working orders to m_working_orders.
-    m_working_orders[oi.m_order_id] = oi;
-  }
-
-  m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: Added to working orders. m_order_id [%s] m_time_stamp [%s] m_symbol [%s] m_portfolio_id [%d] m_signed_qty [%d] m_order_exec_state [%d] m_exec_strategy [%d] m_exec_strategy_param (size) [%d] m_resend [%d] m_create_time [%s] m_attention_time [%s]",
+  m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: Added to working orders. m_order_id [%s] m_time_stamp [%s] m_symbol [%s] m_portfolio_id [%d] m_signed_qty [%d] m_order_exec_state [%d] m_exec_strategy [%d] m_exec_strategy_param (size) [%d] m_resend [%d]",
                   oi.m_order_id.c_str(),
                   oi.m_time_stamp.c_str(),
                   oi.m_symbol.c_str(),
@@ -257,9 +117,7 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
                   oi.m_order_exec_state,
                   oi.m_exec_strategy,
                   oi.m_exec_strategy_param.size(),
-                  oi.m_resend,
-                  oi.m_create_time.ToStr().c_str(),
-                  oi.m_attention_time.ToStr().c_str()
+                  oi.m_resend
                  );
 
   NotifyConsumers();
@@ -409,29 +267,6 @@ bool PortfoliosAndOrders::GetActualPortfolio(const int port_id, map<string,long>
 }
 
 
-bool PortfoliosAndOrders::GetAndEraseWorkingOrder(OrderInstruction & oi)
-{
-  boost::unique_lock<boost::shared_mutex> lock(m_orders_mutex);
-  if (!m_working_orders.empty())
-  {
-    map<string,OrderInstruction>::iterator it = m_working_orders.begin();
-
-    oi.m_order_id             = it->second.m_order_id;
-    oi.m_symbol               = it->second.m_symbol;
-    oi.m_signed_qty           = it->second.m_signed_qty;
-    oi.m_order_exec_state     = it->second.m_order_exec_state;
-    oi.m_exec_strategy        = it->second.m_exec_strategy;
-    oi.m_exec_strategy_param  = it->second.m_exec_strategy_param;
-
-    m_working_orders.erase(it);
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
 bool PortfoliosAndOrders::Get_MTM_CPnL(const int port_id, double & mtm_cpnl)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_acct_mutex);
@@ -477,13 +312,6 @@ set<string> PortfoliosAndOrders::GetSymbolsWithPos(const int port_id)
   return it->second.GetSymbolsWithPos();
 }
 
-void AttentionTime::Add(const HHMMSS & hmsAttnTime,const string & oid)
-{
-  boost::unique_lock<boost::shared_mutex> lock(m_attention_time_mutex);
-  m_map_attention_time[hmsAttnTime].insert(oid);
-  return;
-}
-
 
 void PortfoliosAndOrders::ConstructSignalFeedsAndChgOrderState(vector<string>& vStrSF)
 {
@@ -503,7 +331,7 @@ void PortfoliosAndOrders::ConstructSignalFeedsAndChgOrderState(vector<string>& v
       it->m_market           <<  "," <<
       it->m_feedcode         <<  "," <<
       it->m_order_id         <<  "," <<
-      it->m_price            <<  "," <<
+      it->m_price            <<  "," <<   setprecision(2) << fixed <<
       it->m_qty              <<  "," <<
       it->m_open_or_close    <<  "," <<
       it->m_buy_or_sell      <<  "," <<
@@ -518,43 +346,30 @@ void PortfoliosAndOrders::ConstructSignalFeedsAndChgOrderState(vector<string>& v
 
 void PortfoliosAndOrders::ConstructSignalFeedsAndChgOrderState(vector<ATU_OTI_signalfeed_struct>& signalfeeds)
 {
-  boost::unique_lock<boost::shared_mutex> lock(m_orders_mutex);
-
   // iterate the working orders set and construct signalfeeds.
-  for (map<string,OrderInstruction>::iterator it_wkg_ord = m_working_orders.begin(); it_wkg_ord != m_working_orders.end(); it_wkg_ord++)
-  {
-    ATU_OTI_signalfeed_struct strctSigFeed;
+  const vector<std::pair<string,OrderInstruction> > vWOOI = m_working_orders.ToVector();
+  vector<std::pair<string,OrderInstruction> > vWOOI2;
 
-    if (it_wkg_ord->second.m_order_exec_state == OrderInstruction::PENDING_ADD_BEF_SF)
+  FForEach(vWOOI,[&](const std::pair<string,OrderInstruction> p) {
+    if (p.second.m_order_exec_state == OrderInstruction::PENDING_ADD_BEF_SF)
     {
-      if (
-        it_wkg_ord->second.m_exec_strategy == OrderInstruction::LIMIT_AT_MIDQUOTE_THEN_MARKET ||
-        it_wkg_ord->second.m_exec_strategy == OrderInstruction::ALWAYS_LIMIT_AT_MID_QUOTE     ||
-        it_wkg_ord->second.m_exec_strategy == OrderInstruction::LIMIT_AT_BBO_THEN_MARKET
-        )
-      {
-        LimitOrderConstructor(it_wkg_ord->second, strctSigFeed);
-        m_attn_time.Add(it_wkg_ord->second.m_attention_time,it_wkg_ord->second.m_order_id);
-      }
-      else if (it_wkg_ord->second.m_exec_strategy == OrderInstruction::MARKET)
-      {
-        MarketOrderConstructor(it_wkg_ord->second, strctSigFeed);
-      }
       //--------------------------------------------------
       // Other order types are not handled
       //--------------------------------------------------
-
-      it_wkg_ord->second.m_order_exec_state = OrderInstruction::PENDING_ADD_AFT_SF;
+      // if (it_wkg_ord->second.m_exec_strategy == OrderInstruction::MARKET)
+      // {
+      ATU_OTI_signalfeed_struct strctSigFeed;
+      MarketOrderConstructor(p.second, strctSigFeed);
       signalfeeds.push_back(strctSigFeed);
-    }
-    else if (it_wkg_ord->second.m_order_exec_state == OrderInstruction::PENDING_CANCEL_BEF_SF)
-    {
-      CancelOrderConstructor(it_wkg_ord->second, strctSigFeed);
-      it_wkg_ord->second.m_order_exec_state = OrderInstruction::PENDING_CANCEL_AFT_SF;
-      signalfeeds.push_back(strctSigFeed);
-    }
 
-  }
+      OrderInstruction oi = p.second;
+      oi.m_order_exec_state = OrderInstruction::PENDING_ADD_AFT_SF;
+      vWOOI2.push_back(std::pair<string,OrderInstruction>(p.first,oi));
+      // }
+    }
+  });
+
+  m_working_orders.FromVectorReplaceOrAdd(vWOOI2);
 
   return;
 }
@@ -617,131 +432,23 @@ void PortfoliosAndOrders::LimitOrderConstructor(const OrderInstruction oi, ATU_O
   return ;
 }
 
-bool PortfoliosAndOrders::CancelWorkingOrder(const string order_id, const bool isResend)
+bool PortfoliosAndOrders::UpdateOrderState(const string & order_id, const OrderInstruction::OrderExecState exec_state)
 {
-  boost::unique_lock<boost::shared_mutex> lock(m_orders_mutex);
 
-  // No mutex, since this method is always called by other methods which are holding mutex.
-  map<string, OrderInstruction>::iterator it_wkg_ord = m_working_orders.find(order_id);
+  Option<OrderInstruction> oOI = m_working_orders.Get(order_id);
+  if (oOI.IsNone()) return false;
 
-  if (it_wkg_ord == m_working_orders.end()) return false;
+  OrderInstruction oi = oOI.Get();
+  oi.m_order_exec_state = exec_state;
 
-  it_wkg_ord->second.m_time_stamp = m_MarketData->GetSystemTimeHKT().ToCashTimestampStr();
-  it_wkg_ord->second.m_order_exec_state = OrderInstruction::PENDING_CANCEL_BEF_SF;
-  // Distinguish the reason for this cancel operation,
-  // an over-time cancel or a order-clearing cancel
-  it_wkg_ord->second.m_resend = isResend;
-
-  NotifyConsumers();
-
-  return true;
-}
-
-void PortfoliosAndOrders::CancelOrderConstructor(const OrderInstruction oi, ATU_OTI_signalfeed_struct& strctCancelOrder)
-{
-  double dBestBid, dBestAsk, dMidQuote;
-  YYYYMMDDHHMMSS ymdhms;
-  m_MarketData->GetLatestBestBidAskMid(oi.m_symbol, dBestBid, dBestAsk, dMidQuote, ymdhms);
-
-  strctCancelOrder.m_timestamp      = oi.m_time_stamp;
-  strctCancelOrder.m_market         = "HKIF";
-  strctCancelOrder.m_feedcode       = oi.m_symbol;
-  strctCancelOrder.m_order_id       = oi.m_order_id;
-  strctCancelOrder.m_price          = dMidQuote;
-  strctCancelOrder.m_qty            = fabs(oi.m_signed_qty);
-  strctCancelOrder.m_open_or_close  = "";
-  strctCancelOrder.m_buy_or_sell    = (oi.m_signed_qty > 0) ? 1 : 2;
-  strctCancelOrder.m_order_action   = "delete";
-  strctCancelOrder.m_order_type     = "limit_order";
-  strctCancelOrder.m_order_validity = "today";
-
-  return ;
-}
-
-bool PortfoliosAndOrders::UpdateOrderState(const string order_id, const OrderInstruction::OrderExecState exec_state)
-{
-  boost::unique_lock<boost::shared_mutex> lock(m_orders_mutex);
-
-  map<string,OrderInstruction>::iterator it_wkg_ord = m_working_orders.find(order_id);
-
-  if (it_wkg_ord == m_working_orders.end()) return false;
-
-  //--------------------------------------------------
-  // Update exec_state
-  //--------------------------------------------------
-  it_wkg_ord->second.m_order_exec_state = exec_state;
-
-  if (exec_state == OrderInstruction::CANCELLED)
+  if (exec_state == OrderInstruction::FILLED)
   {
-    // Backup useful fields first.
-    int                            port_id          = it_wkg_ord->second.m_portfolio_id;
-    string                         symbol           = it_wkg_ord->second.m_symbol;
-    long                           qty              = it_wkg_ord->second.m_signed_qty;
-    OrderInstruction::ExecStrategy exec_strat       = it_wkg_ord->second.m_exec_strategy;
-    vector<double>                 exec_strat_param = it_wkg_ord->second.m_exec_strategy_param;
-
-    // Remove the cancelled order and add it to completed orders set.
-    m_completed_orders[it_wkg_ord->first] = it_wkg_ord->second;
-    m_working_orders.erase(it_wkg_ord);
-
-    lock.unlock();
-
-    // Conditions should be satisfied to adjust portfolio.
-    // 1. This cancel order doesn't need to be re-sent;
-    // 2. This cancel order is the last order to be cancelled for this portfolio;
-    // 3. Executor is at Portfolio mode.
-    if (!it_wkg_ord->second.m_resend && m_CurrentMode == PORTFOLIO && IsPortfolioWorkingOrderEmpty(port_id))
-    {
-      ConstructActualPortfolio(port_id);
-      // If not re-send, it means this cancel order is put by a target portfolio update.
-      return true;
-    }
-
-    // The executor is at Single_order mode. This means this cancelled order is cancelled for over-time reason.
-    // It needs to be re-sent.
-    if (exec_strat == OrderInstruction::LIMIT_AT_MIDQUOTE_THEN_MARKET ||
-        exec_strat == OrderInstruction::LIMIT_AT_BBO_THEN_MARKET)
-    {
-      // Trade(port_id, symbol, qty, OrderInstruction::MARKET,vector<double>(),"OriOID_"+order_id);
-      TradeUltimate(port_id, symbol, qty, OrderInstruction::MARKET,vector<double>(),false,order_id);
-    }
-    else if (exec_strat == OrderInstruction::ALWAYS_LIMIT_AT_MID_QUOTE)
-    {
-      // Trade(port_id, symbol, qty, OrderInstruction::ALWAYS_LIMIT_AT_MID_QUOTE, exec_strat_param,"OriOID_"+order_id);
-      TradeUltimate(port_id, symbol, qty, OrderInstruction::ALWAYS_LIMIT_AT_MID_QUOTE, exec_strat_param,false,order_id);
-    }
+    m_completed_orders.AddOrUpdate(order_id, oi);
+    m_working_orders.Remove(order_id);
   }
-  else if (exec_state == OrderInstruction::FILLED)
+  else
   {
-    // New exec_state is not for cancel operations.
-    // This order is a limit order. Besides signing the order as completed, executor should also
-    // remove it from the attention time map.
-    // if (it_wkg_ord->second.m_exec_strategy == OrderInstruction::LIMIT_AT_MIDQUOTE_THEN_MARKET ||
-    //     it_wkg_ord->second.m_exec_strategy == OrderInstruction::LIMIT_AT_BBO_THEN_MARKET      ||
-    //     it_wkg_ord->second.m_exec_strategy == OrderInstruction::ALWAYS_LIMIT_AT_MID_QUOTE)
-    {
-      m_attn_time.RemoveOrderIDFromAttentionTimeMap(it_wkg_ord->second.m_attention_time, order_id);
-    }
-
-    // Remove the cancelled order and add it to completed orders set.
-    m_completed_orders[it_wkg_ord->first] = it_wkg_ord->second;
-    m_working_orders.erase(it_wkg_ord);
-
-    lock.unlock();
-
-    // If executor is at Portfolio mode, the working orders set can be emptified when trades happens.
-    // So adjustment in actual portfolio is also necessary.
-    long port_id = it_wkg_ord->second.m_portfolio_id;
-    if (m_CurrentMode == PORTFOLIO && IsPortfolioWorkingOrderEmpty(port_id))
-      ConstructActualPortfolio(port_id);
-
-  }
-  else if (exec_state == OrderInstruction::ERROR)
-  {
-    //--------------------------------------------------
-    // The order was somehow cancelled
-    // Try to reproduce the previous state
-    //--------------------------------------------------
+    m_working_orders.AddOrUpdate(order_id, oi);
   }
 
   return true;
@@ -749,228 +456,76 @@ bool PortfoliosAndOrders::UpdateOrderState(const string order_id, const OrderIns
 
 bool PortfoliosAndOrders::BookTradeFromOTI(const string & order_id, const string & symbol, const double price, const long signed_qty, const string & oid, const string & tid)
 {
+  m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: BookTradeFromOTI orderid %s symbol %s price %f signedqty %d oid %s tid %s",
+                  order_id.c_str(),
+                  symbol.c_str(),
+                  price,
+                  signed_qty,
+                  oid.c_str(),
+                  tid.c_str());
 
   //--------------------------------------------------
   // try to search the order_id in working orders and completed orders
   //--------------------------------------------------
-  boost::unique_lock<boost::shared_mutex> lock(m_orders_mutex);
+  Option<OrderInstruction> oWOOI = m_working_orders.Get(order_id);
+  Option<OrderInstruction> oCOOI = m_completed_orders.Get(order_id);
+
+  if (oWOOI.IsNone() && oCOOI.IsNone())
+  {
+    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: BookTradeFromOTI orderid %s was not found in both completed and working orders.", order_id.c_str());
+    return false;
+  }
 
   int iPortID = -1;
   string sSymbol = "";
 
-  map<string, OrderInstruction>::iterator it_wkg_ord = m_working_orders.find(order_id);
-  if (it_wkg_ord != m_working_orders.end())
+  if (oWOOI.IsSome())
   {
-    iPortID = it_wkg_ord->second.m_portfolio_id;
-    sSymbol = it_wkg_ord->second.m_symbol;
+    OrderInstruction oi = oWOOI.Get();
+    iPortID = oi.m_portfolio_id;
+    sSymbol = oi.m_symbol;
+    oi.m_signed_qty -= signed_qty;
+    m_working_orders.AddOrUpdate(order_id, oi);
+
+    if (oi.m_signed_qty == 0) UpdateOrderState(order_id, OrderInstruction::FILLED);
   }
   else
   {
-    map<string, OrderInstruction>::iterator it_comp_ord = m_completed_orders.find(order_id);
-    if (it_comp_ord != m_completed_orders.end())
-    {
-      iPortID = it_comp_ord->second.m_portfolio_id;
-      sSymbol = it_comp_ord->second.m_symbol;
-    }
+    iPortID = oCOOI.Get().m_portfolio_id;
+    sSymbol = oCOOI.Get().m_symbol;
   }
-  if (iPortID == -1 || sSymbol == "") return false;
   //--------------------------------------------------
 
-  it_wkg_ord->second.m_signed_qty -= signed_qty;
-
-  if (it_wkg_ord->second.m_signed_qty == 0)
-  {
-    //--------------------------------------------------
-    // FIXME: Ugly code by XN.
-    //--------------------------------------------------
-    // Attention!!! Since UpdateOrderState also require the lock, so before calling the UpdateOrderState,
-    // you should first unlock, or the UpdateOrderState will keep on waiting for the lock, thus deadlock happens
-    lock.unlock();
-    UpdateOrderState(order_id, OrderInstruction::FILLED);
-  }
-
-  //--------------------------------------------------
   AcctTrade(iPortID, sSymbol, signed_qty, price);
-  //--------------------------------------------------
 
   //--------------------------------------------------
   // report the trade to next tier through zmq
   //--------------------------------------------------
-  if (m_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_OTINXTIERZMQ)
-  {
+  if (m_SysCfg->NextTierZMQIsOn())
     SendTFToNextTierThruZMQ(iPortID, sSymbol, price, signed_qty, oid, tid);
-  }
 
   return true;
 }
 
 int PortfoliosAndOrders::GetUnprocessedWorkingOrdersCount()
 {
-  boost::shared_lock<boost::shared_mutex> lock(m_orders_mutex);
-
   int iUnprocOrdCnt = 0;
-  for (map<string,OrderInstruction>::iterator it = m_working_orders.begin(); it != m_working_orders.end(); ++it)
-  {
+  vector<std::pair<string,OrderInstruction> > vWO = m_working_orders.ToVector();
 
-    if (
-      (it->second.m_order_exec_state == OrderInstruction::PENDING_ADD_BEF_SF   ) ||
-      (it->second.m_order_exec_state == OrderInstruction::PENDING_CANCEL_BEF_SF)
-      )
-    {
-      iUnprocOrdCnt++;
-    }
+  FForEach(vWO,[&](const std::pair<string,OrderInstruction> p) {
+    if (p.second.m_order_exec_state == OrderInstruction::PENDING_ADD_BEF_SF) iUnprocOrdCnt++;
+  });
 
-  }
   return iUnprocOrdCnt;
-}
-
-void PortfoliosAndOrders::SwitchMode(const Mode m)
-{
-  m_CurrentMode = m;
-}
-
-bool PortfoliosAndOrders::IsPortfolioWorkingOrderEmpty(const long port_id)
-{
-  boost::shared_lock<boost::shared_mutex> lock(m_orders_mutex);
-
-  for (map<string, OrderInstruction>::iterator it = m_working_orders.begin(); it != m_working_orders.end(); it++){
-    if (it->second.m_portfolio_id == port_id)
-      return false;
-  }
-
-  return true;
-}
-
-void PortfoliosAndOrders::CheckAndReplaceOrders(const HHMMSS & curTime)
-{
-  deque<HHMMSS> dq_hms_AttnTime;
-  deque<string> dq_s_OIDToCancel;
-
-  int iNum = m_attn_time.GetWorkingOrdersPastAttentionTime(curTime,dq_hms_AttnTime,dq_s_OIDToCancel);
-
-  for (unsigned int i = 0; i < iNum; ++i)
-  {
-    CancelWorkingOrder(dq_s_OIDToCancel[i], true);
-    m_attn_time.RemoveOrderIDFromAttentionTimeMap(dq_hms_AttnTime[i], dq_s_OIDToCancel[i]);
-  }
-  m_attn_time.CleanAttentionTimeMap(curTime);
-
-  return;
-}
-
-int AttentionTime::GetWorkingOrdersPastAttentionTime(const HHMMSS & curTime, deque<HHMMSS> & dq_hms_AttnTime, deque<string> & dq_s_OIDToCancel)
-{
-  boost::shared_lock<boost::shared_mutex> lock(m_attention_time_mutex);
-
-  dq_hms_AttnTime.clear();
-  dq_s_OIDToCancel.clear();
-
-  map<HHMMSS,set<string> >::iterator it_attn_time = m_map_attention_time.begin();
-
-  while (it_attn_time != m_map_attention_time.end())
-  {
-    if (it_attn_time->first < curTime)
-    {
-      for (set<string>::iterator it_order_id = it_attn_time->second.begin(); it_order_id != it_attn_time->second.end(); it_order_id++)
-      {
-        dq_hms_AttnTime.push_back(it_attn_time->first);
-        dq_s_OIDToCancel.push_back(*it_order_id);
-      }
-      it_attn_time++;
-    }
-    else break;
-  }
-
-  return dq_s_OIDToCancel.size();
-}
-
-bool AttentionTime::RemoveOrderIDFromAttentionTimeMap(const HHMMSS & attentionTime, const string & order_id)
-{
-  boost::unique_lock<boost::shared_mutex> lock(m_attention_time_mutex);
-  int no_of_elem_erased = m_map_attention_time[attentionTime].erase(order_id);
-  return (no_of_elem_erased == 1);
-}
-
-void AttentionTime::CleanAttentionTimeMap(const HHMMSS & curTime)
-{
-  boost::unique_lock<boost::shared_mutex> lock(m_attention_time_mutex);
-
-  map<HHMMSS,set<string> >::iterator it = m_map_attention_time.begin();
-  while (it != m_map_attention_time.end())
-  {
-    if (it->second.empty() && it->first < curTime)
-    {
-      m_map_attention_time.erase(it->first);
-      it = m_map_attention_time.begin();
-    }
-    else
-    {
-      ++it;
-    }
-  }
-  return;
-}
-
-bool PortfoliosAndOrders::IsOrderPendingCancelAftSF(const string order_id)
-{
-  boost::shared_lock<boost::shared_mutex> lock(m_orders_mutex);
-
-  map<string,OrderInstruction>::iterator it = m_working_orders.find(order_id);
-
-  if (it == m_working_orders.end()) return false;
-
-  return it->second.m_order_exec_state == OrderInstruction::PENDING_CANCEL_AFT_SF;
 }
 
 bool PortfoliosAndOrders::IsOrderPendingAddAftSF(const string order_id)
 {
-  boost::shared_lock<boost::shared_mutex> lock(m_orders_mutex);
+  Option<OrderInstruction> oi = m_working_orders.Get(order_id);
+  if (oi.IsNone()) return false;
 
-  map<string,OrderInstruction>::iterator it = m_working_orders.find(order_id);
-
-  if (it == m_working_orders.end()) return false;
-
-  return it->second.m_order_exec_state == OrderInstruction::PENDING_ADD_AFT_SF;
+  return oi.Get().m_order_exec_state == OrderInstruction::PENDING_ADD_AFT_SF;
 }
-
-void PortfoliosAndOrders::CancelAllWorkingOrdersInPortfolio(const int port_id)
-{
-  boost::unique_lock<boost::shared_mutex> lock(m_orders_mutex);
-
-  bool bNeedsToCancel = false;
-
-  for (map<string, OrderInstruction>::iterator it_wkg_ord = m_working_orders.begin(); it_wkg_ord != m_working_orders.end(); it_wkg_ord++)
-  {
-    if (it_wkg_ord->second.m_portfolio_id     == port_id &&
-        it_wkg_ord->second.m_order_exec_state != OrderInstruction::PENDING_CANCEL_BEF_SF &&
-        it_wkg_ord->second.m_order_exec_state != OrderInstruction::PENDING_CANCEL_AFT_SF
-       )
-    {
-      bNeedsToCancel = true;
-
-      it_wkg_ord->second.m_order_exec_state = OrderInstruction::PENDING_CANCEL_BEF_SF;
-      it_wkg_ord->second.m_resend = false;
-
-      // If the order to be cleared is a limit order, the record in relevant attention time map
-      // should be erased too.
-      // if (
-      //     it_wkg_ord->second.m_exec_strategy == OrderInstruction::LIMIT_AT_MIDQUOTE_THEN_MARKET ||
-      //     it_wkg_ord->second.m_exec_strategy == OrderInstruction::ALWAYS_LIMIT_AT_MID_QUOTE     ||
-      //     it_wkg_ord->second.m_exec_strategy == OrderInstruction::LIMIT_AT_BBO_THEN_MARKET
-      //    )
-      {
-        m_attn_time.RemoveOrderIDFromAttentionTimeMap(it_wkg_ord->second.m_attention_time, it_wkg_ord->second.m_order_id);
-      }
-    }
-  }
-
-  // Only when cancel happens, the executor should be notified.
-  // Or it will cause inconsistency in orders set.
-  if(bNeedsToCancel) NotifyConsumers();
-
-  return ;
-}
-
 
 void PortfoliosAndOrders::WriteActualPortToPersistentPosFile()
 {
@@ -984,7 +539,9 @@ void PortfoliosAndOrders::WriteActualPortToPersistentPosToLog()
 
 void PortfoliosAndOrders::OutputActualPortToPersistentPos(const char cOperation)
 {
+  //--------------------------------------------------
   // Persist actual positions to file only if needed
+  //--------------------------------------------------
   if (
     !m_SysCfg->PositionPersistenceIsEnabled()
     ||
@@ -993,6 +550,12 @@ void PortfoliosAndOrders::OutputActualPortToPersistentPos(const char cOperation)
   {
     return;
   }
+
+  //--------------------------------------------------
+  // clear the position change flag first
+  // in case somebody updates m_acct while we are writing the file, we will still know position is changed
+  //--------------------------------------------------
+  AcctClearPosChgFlagNoLock();
 
   //--------------------------------------------------
   // TODO: FIXME: Will definitely slow down the order execution by writing to file in this same thread
@@ -1012,29 +575,20 @@ void PortfoliosAndOrders::OutputActualPortToPersistentPos(const char cOperation)
       const long signed_qty = it2->second;
       const double signed_notional = it->second.GetSignedNotional(symbol);
 
-      if (cOperation == 'f')
-      {
-        fsPosPersist << port_id << "," << symbol << "," << signed_qty << "," << signed_notional << endl;
-      }
-      else if (cOperation == 'l') 
-      {
-        m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: m_acct: port_id = %d symbol = %s signed_qty = %d signed_notional = %f",
-                        port_id,
-                        symbol.c_str(),
-                        signed_qty,
-                        signed_notional);
-      }
+      if (cOperation == 'f') fsPosPersist << port_id << "," << symbol << "," << signed_qty << "," << signed_notional << endl;
+
+      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: m_acct: port_id = %d symbol = %s signed_qty = %d signed_notional = %f",
+                      port_id,
+                      symbol.c_str(),
+                      signed_qty,
+                      signed_notional);
     }
   }
 
-  if (cOperation == 'f')
-  {
-    fsPosPersist.close();
-    AcctClearPosChgFlagNoLock();
-  }
+  if (cOperation == 'f') fsPosPersist.close();
+
   return;
 }
-
 
 double PortfoliosAndOrders::GetActualSignedPosition(const int portid, const string & symbol)
 {
@@ -1042,40 +596,11 @@ double PortfoliosAndOrders::GetActualSignedPosition(const int portid, const stri
   map<int,Acct>::iterator it = m_acct.find(portid);
   if (it == m_acct.end())
   {
-    if (!m_SysCfg->PositionPersistenceIsEnabled()) return 0;
-    else return NAN; // deliberately return shit to raise alarm
+    // if (!m_SysCfg->PositionPersistenceIsEnabled()) return 0;
+    // else return NAN; // deliberately return shit to raise alarm
+    return 0;
   }
   else return it->second.Pos(symbol);
-}
-
-void PortfoliosAndOrders::UpdateTargetPortfolio(const int port_id, const string & symbol, const long signed_qty, const char add_or_replace)
-{
-  boost::unique_lock<boost::shared_mutex> lock(m_target_portfolios_mutex);
-  map<int, map<string,long> >::iterator it = m_target_portfolios.find(port_id);
-  if (it == m_target_portfolios.end())
-  {
-    m_target_portfolios[port_id] = map<string,long>();
-    it = m_target_portfolios.find(port_id);
-  }
-  switch(add_or_replace)
-  {
-    case 'a':
-      {
-        it->second[symbol] += signed_qty;
-        break;
-      }
-    case 'r':
-      {
-        it->second[symbol] = signed_qty;
-        break;
-      }
-    default:
-      {
-
-        break;
-      }
-  }
-  return;
 }
 
 void PortfoliosAndOrders::LoadPersistedPositionFromFile()
@@ -1093,6 +618,8 @@ void PortfoliosAndOrders::LoadPersistedPositionFromFile()
     vs.clear();
     boost::split(vs, dqPosPersistFile[i], is_any_of(","));
 
+    if (vs.empty()) continue;
+
     if (vs.size() != 4)
     {
       m_Logger->Write(Logger::ERROR,"PortfoliosAndOrders: Position persistence file is broken. Expecting format: <port_id>,<symbol>,<signed_qty>,<signed_notional>. Now exiting.");
@@ -1108,23 +635,23 @@ void PortfoliosAndOrders::LoadPersistedPositionFromFile()
     long     signed_qty       = boost::lexical_cast<long>(vs[2]);
     double   signed_notional  = boost::lexical_cast<double>(vs[3]);
 
-    UpdateTargetPortfolio(port_id,symbol,signed_qty,'r');
+    // UpdateTargetPortfolio(port_id,symbol,signed_qty,'r');
     AcctSetRecord(port_id,symbol,signed_qty,signed_notional);
 
     m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: Read from Position persistence file : %d %s %d %f",port_id,symbol.c_str(),signed_qty,signed_notional);
   }
 
-  //--------------------------------------------------
-  // the case where there is nothing in the position persistion fl
-  //--------------------------------------------------
-  if (dqPosPersistFile.empty())
-  {
-    for (int sty = STY_NIR; sty != STY_LAST; sty++)
-    {
-      if (m_SysCfg->IsStrategyOn(static_cast<StrategyID>(sty))) AcctSetRecord(sty,"DUMMY_SYMBOL",0,0);
-    }
-  }
-  //--------------------------------------------------
+  // //--------------------------------------------------
+  // // the case where there is nothing in the position persistion fl
+  // //--------------------------------------------------
+  // if (dqPosPersistFile.empty())
+  // {
+  //   for (int sty = STY_NIR; sty != STY_LAST; sty++)
+  //   {
+  //     if (m_SysCfg->IsStrategyOn(static_cast<StrategyID>(sty))) AcctSetRecord(sty,DUMMY_SYMBOL,0,0);
+  //   }
+  // }
+  // //--------------------------------------------------
 
   return;
 }
@@ -1212,15 +739,5 @@ void PortfoliosAndOrders::SendTFToNextTierThruZMQ(const int port_id, const strin
   memcpy((void *)zmq_msg.data(), sATF.c_str(), sATF.length());
   ((char *)zmq_msg.data())[sATF.length()] = '\0';
   m_zmqsocket->send(zmq_msg);
-
-  // //--------------------------------------------------
-  // // Get ack
-  // //--------------------------------------------------
-  // zmq::message_t zmq_reply;
-  // m_zmqsocket->recv(&zmq_reply);
-  //
-  // m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Ack received through ZMQ: %s",
-  //                 m_MarketData->GetSystemTimeHKT().ToStr().c_str(), (char *)zmq_reply.data());
-  // //--------------------------------------------------
 }
 

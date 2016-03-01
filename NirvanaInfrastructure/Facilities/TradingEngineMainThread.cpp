@@ -283,14 +283,10 @@ void TradingEngineMainThread::RunMainThread()
     // Start OTI threads
     //--------------------------------------------------
     //--------------------------------------------------
-    // OTI
+    // OTI (only support 1 OTI now...)
     //--------------------------------------------------
     p_oe.reset(new OrderExecutor());
-    if (
-      p_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_OTI
-      ||
-      p_SysCfg->Get_OrderRoutingMode() == SystemConfig::ORDER_ROUTE_OTINXTIERZMQ
-      )
+    if (p_SysCfg->Get_OTIMode() == SystemConfig::OTI_TCP)
     {
       int iNumOfOTI = p_SysCfg->GetNumOfOTI();
       for (unsigned int i = 0; i < iNumOfOTI; ++i)
@@ -302,8 +298,7 @@ void TradingEngineMainThread::RunMainThread()
         p_oe->SetOTIServer(sIP,sPort);
         p_Logger->Write(Logger::NOTICE,"Finished loading OTI %d.",i);
         m_thread_group.add_thread(new boost::thread(&OrderExecutor::Run           ,(p_oe.get())));
-        m_thread_group.add_thread(new boost::thread(&OrderExecutor::RunChkOrd     ,(p_oe.get())));
-        m_thread_group.add_thread(new boost::thread(&OrderExecutor::RunPersistPos ,(p_oe.get())));
+        // m_thread_group.add_thread(new boost::thread(&OrderExecutor::RunChkOrd     ,(p_oe.get())));
       }
     }
     else
@@ -311,6 +306,10 @@ void TradingEngineMainThread::RunMainThread()
       p_Logger->Write(Logger::NOTICE,"OTI not loaded."); usleep(100000);
     }
 
+    //--------------------------------------------------
+    // start RunPersistPos always
+    //--------------------------------------------------
+    m_thread_group.add_thread(new boost::thread(&OrderExecutor::RunPersistPos,(p_oe.get())));
 
     //--------------------------------------------------
     // Start MDI threads

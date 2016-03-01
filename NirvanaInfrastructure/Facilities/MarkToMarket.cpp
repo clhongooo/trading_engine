@@ -137,7 +137,7 @@ void MarkToMarket::Run()
 
 void MarkToMarket::ReportAckIfNeeded()
 {
-  if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK || m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::EMBEDDED)
+  if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
     m_MDIAck->ReportAckMTM();
   return;
 }

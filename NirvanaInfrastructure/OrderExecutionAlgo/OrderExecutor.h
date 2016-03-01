@@ -42,7 +42,7 @@ class OrderExecutor {
     virtual void OnRecvMsg(string);
     virtual void OnTCPConnect();
     virtual void Run();
-    virtual void RunChkOrd();
+    // virtual void RunChkOrd();
     virtual void RunPersistPos();
 
   protected:

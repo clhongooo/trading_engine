@@ -34,7 +34,7 @@ void ATU_TCPClient::init() {
   //--------------------------------------------------
   // Sunny added - [start]
   //--------------------------------------------------
-  if (m_sendQueue == NULL)
+  // if (m_sendQueue == NULL)
   //--------------------------------------------------
   // Sunny added - [end]
   //--------------------------------------------------
@@ -42,7 +42,7 @@ void ATU_TCPClient::init() {
   //--------------------------------------------------
   // Sunny added - [start]
   //--------------------------------------------------
-  if (m_recvQueue == NULL)
+  // if (m_recvQueue == NULL)
   //--------------------------------------------------
   // Sunny added - [end]
   //--------------------------------------------------
@@ -97,8 +97,8 @@ void ATU_TCPClient::queuemsg(string str){
     //--------------------------------------------------
     // Sunny added - [start]
     //--------------------------------------------------
-    if (m_sendQueue == NULL)
-      m_sendQueue=new ATU_ThreadSafeQueue< string* >(ATU_TCP_QUEUE_SIZE);
+    // if (m_sendQueue == NULL)
+      // m_sendQueue=new ATU_ThreadSafeQueue< string* >(ATU_TCP_QUEUE_SIZE);
     //--------------------------------------------------
     // Sunny added - [end]
     //--------------------------------------------------
@@ -184,7 +184,9 @@ void ATU_TCPClient::process_send_queue()
     //--------------------------------------------------
     // Sunny modified - [start]
     //--------------------------------------------------
-		if (m_sendQueue != NULL && !m_sendQueue->empty() && m_isReady) {
+		// if (m_sendQueue != NULL && !m_sendQueue->empty() && m_isReady)
+		if (!m_sendQueue->empty() && m_isReady)
+    {
     //--------------------------------------------------
     // Sunny modified - [end]
     //--------------------------------------------------

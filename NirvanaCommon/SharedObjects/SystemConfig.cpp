@@ -53,10 +53,11 @@ SystemConfig::SystemConfig() :
   m_VolSurfParamFile1FM(""),
   m_VolSurfParamFile2FM(""),
   m_ProbDistrFileFSMC1D(""),
-  m_OrderRoutingMode(ORDER_ROUTE_OTI),
+  m_MDIMode(MDI_READFILE),
+  m_OTIMode(OTI_RECORD),
+  m_NextTierZMQIsOn(false),
   m_NextTier_ZMQ_MD_IP_Port(""),
   m_NextTier_ZMQ_TF_IP_Port(""),
-  m_TCPOrEmbeddedMode(TCPWITHOUTACK),
   m_B1_HKF_SamplingIntervalInSec(1800),
   m_SendResetOnConnectionToCAPI(true),
   m_NumOfMDI(0),
@@ -212,8 +213,9 @@ string                                 SystemConfig::Get_VolSurfParamFile2FM()  
 string                                 SystemConfig::Get_ProbDistrFileFSMC1D()                         const {  return m_ProbDistrFileFSMC1D;                         }
 string                                 SystemConfig::Get_NextTier_ZMQ_MD_IP_Port()                     const {  return m_NextTier_ZMQ_MD_IP_Port;                     }
 string                                 SystemConfig::Get_NextTier_ZMQ_TF_IP_Port()                     const {  return m_NextTier_ZMQ_TF_IP_Port;                     }
-SystemConfig::OrderRoutingMode         SystemConfig::Get_OrderRoutingMode()                            const {  return m_OrderRoutingMode;                            }
-SystemConfig::TCPOrEmbeddedMode        SystemConfig::Get_TCPOrEmbeddedMode()                           const {  return m_TCPOrEmbeddedMode;                           }
+SystemConfig::MDIMode                  SystemConfig::Get_MDIMode()                                     const {  return m_MDIMode;                                     }
+SystemConfig::OTIMode                  SystemConfig::Get_OTIMode()                                     const {  return m_OTIMode;                                     }
+bool                                   SystemConfig::NextTierZMQIsOn()                                 const {  return m_NextTierZMQIsOn;                             }
 string                                 SystemConfig::Get_Main_Log_Path()                               const {  return m_MainLogPath;                                 }
 string                                 SystemConfig::Get_MTM_Log_Path()                                const {  return m_MTMLogPath;                                  }
 string                                 SystemConfig::Get_Exec_Log_Path()                               const {  return m_ExecLogPath;                                 }
@@ -1131,24 +1133,21 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   m_PriceFwdrIntervalInSec = pt.get<int>("SystemSettings.PriceForwarderToNextTierIntervalInSec");
 
 
-  string sOrderRoutingMode = pt.get<string>("SystemSettings.OrderRoutingMode");
-  if      (sOrderRoutingMode == "record")          m_OrderRoutingMode = ORDER_ROUTE_RECORD;
-  else if (sOrderRoutingMode == "oti")             m_OrderRoutingMode = ORDER_ROUTE_OTI;
-  else if (sOrderRoutingMode == "nexttierzmq")     m_OrderRoutingMode = ORDER_ROUTE_NEXTTIERZMQ;
-  else if (sOrderRoutingMode == "oti_nexttierzmq") m_OrderRoutingMode = ORDER_ROUTE_OTINXTIERZMQ;
+  string sMDIMode = pt.get<string>("SystemSettings.MDIMode");
+  if      (sMDIMode == "readfile")        m_MDIMode = MDI_READFILE;
+  else if (sMDIMode == "tcpwithack")      m_MDIMode = MDI_TCPWITHACK;
+  else if (sMDIMode == "tcpwithoutack")   m_MDIMode = MDI_TCPWITHOUTACK;
+
+  string sOTIMode = pt.get<string>("SystemSettings.OTIMode");
+  if      (sOTIMode == "record")          m_OTIMode = OTI_RECORD;
+  else if (sOTIMode == "tcp")             m_OTIMode = OTI_TCP;
+
+  m_NextTierZMQIsOn = pt.get<bool>("SystemSettings.NextTierZMQIsOn");
 
   boost::optional<string> o_NextTier_ZMQ_MD_IP_Port = pt.get_optional<string>("SystemSettings.ZMQMDIPPort");
   boost::optional<string> o_NextTier_ZMQ_TF_IP_Port = pt.get_optional<string>("SystemSettings.ZMQTFIPPort");
   if (o_NextTier_ZMQ_MD_IP_Port) m_NextTier_ZMQ_MD_IP_Port = o_NextTier_ZMQ_MD_IP_Port.get();
   if (o_NextTier_ZMQ_TF_IP_Port) m_NextTier_ZMQ_TF_IP_Port = o_NextTier_ZMQ_TF_IP_Port.get();
-
-  string sTCPOrEmbeddedMode = pt.get<string>("SystemSettings.TCPOrEmbeddedMode");
-  if (sTCPOrEmbeddedMode == "embedded")
-    m_TCPOrEmbeddedMode = EMBEDDED;
-  else if (sTCPOrEmbeddedMode == "tcpwithoutack")
-    m_TCPOrEmbeddedMode = TCPWITHOUTACK;
-  else if (sTCPOrEmbeddedMode == "tcpwithack")
-    m_TCPOrEmbeddedMode = TCPWITHACK;
 
   switch(pt.get<int> ("MarketData.TradeVolumeMode"))
   {

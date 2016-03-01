@@ -71,8 +71,8 @@ class SystemConfig : boost::noncopyable
 {
   public:
     enum MktDataTradeVolumeMode {PER_TRADE_VOLUME_MODE=0, ACCUMULATED_VOLUME_MODE=1};
-    enum OrderRoutingMode {ORDER_ROUTE_RECORD=0, ORDER_ROUTE_OTI=1, ORDER_ROUTE_NEXTTIERZMQ=2, ORDER_ROUTE_OTINXTIERZMQ=3};
-    enum TCPOrEmbeddedMode {TCPWITHOUTACK=0, TCPWITHACK=1, EMBEDDED=2};
+    enum MDIMode {MDI_READFILE=0, MDI_TCPWITHACK=1, MDI_TCPWITHOUTACK=2};
+    enum OTIMode {OTI_RECORD=0, OTI_TCP=1};
 
     static boost::shared_ptr<SystemConfig> Instance();
     void SetConfigPath(const string &);
@@ -123,10 +123,11 @@ class SystemConfig : boost::noncopyable
     string                 Get_VolSurfParamFile2FM()          const;
     string                 Get_ProbDistrFileFSMC1D()          const;
 
-    OrderRoutingMode       Get_OrderRoutingMode()             const;
+    MDIMode                Get_MDIMode()                      const;
+    OTIMode                Get_OTIMode()                      const;
+    bool                   NextTierZMQIsOn()                  const;
     string                 Get_NextTier_ZMQ_MD_IP_Port()      const;
     string                 Get_NextTier_ZMQ_TF_IP_Port()      const;
-    TCPOrEmbeddedMode      Get_TCPOrEmbeddedMode()            const;
 
     bool                   Get_OnOff_S11A_T1GBM()             const;
     bool                   Get_OnOff_S11A_T1GUMBELCAUCHY()    const;
@@ -296,10 +297,11 @@ class SystemConfig : boost::noncopyable
     string                                             m_VolSurfParamFile1FM;
     string                                             m_VolSurfParamFile2FM;
     string                                             m_ProbDistrFileFSMC1D;
-    OrderRoutingMode                                   m_OrderRoutingMode;
+    MDIMode                                            m_MDIMode;
+    OTIMode                                            m_OTIMode;
+    bool                                               m_NextTierZMQIsOn;
     string                                             m_NextTier_ZMQ_MD_IP_Port;
     string                                             m_NextTier_ZMQ_TF_IP_Port;
-    TCPOrEmbeddedMode                                  m_TCPOrEmbeddedMode;
     int                                                m_B1_HKF_SamplingIntervalInSec;
     map<int,OTIMDIConfig>                              m_map_OTIMDIConfig;
     map<StrategyID,TradingStrategyConfig>              m_map_TradingStrategyConfig;

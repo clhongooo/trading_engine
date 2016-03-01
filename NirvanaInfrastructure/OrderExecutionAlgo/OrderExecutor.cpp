@@ -16,9 +16,9 @@ OrderExecutor::~OrderExecutor()
 
 void OrderExecutor::SetOTIServer(const string & ip, const string & port)
 {
-  if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::EMBEDDED)
+  if (m_SysCfg->Get_OTIMode() == SystemConfig::OTI_RECORD)
   {
-    m_Logger->Write(Logger::INFO, "No need to connect to OTI because we are running in embedded mode.");
+    m_Logger->Write(Logger::INFO, "No need to connect to OTI because we are running in OTI record mode.");
   }
   else
   {
@@ -47,22 +47,24 @@ void OrderExecutor::OnRecvMsg(string str)
   vector<string> feedMsg;
   boost::split(feedMsg, str, is_any_of(","));
 
-  if(feedMsg.size() <= 1){
-    return ;
+  if (feedMsg.size() < 2)
+  {
+    return;
   }
-  else if(feedMsg[1] == "orderfeed"){
-
+  else if (feedMsg[1] == "orderfeed")
+  {
     HandleOrderFeedRecv(feedMsg);
   }
-  else if(feedMsg[1] == "tradefeed"){
-
+  else if (feedMsg[1] == "tradefeed")
+  {
     HandleTradeFeedRecv(feedMsg);
   }
-  else{
     // For errorfeed handling ...
-  }
+  // else
+  // {
+  // }
 
-  return ;
+  return;
 }
 
 void OrderExecutor::HandleOrderFeedRecv(const vector<string> & feedMsg)
@@ -99,37 +101,43 @@ void OrderExecutor::HandleOrderFeedRecv(const ATU_OTI_orderfeed_struct & of)
 
   if (of.m_deleted == 1 && of.m_qty == of.m_qty_filled)
   {
-    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: OrderID: %s Order status changed to FILLED", of.m_order_id.c_str());
+    m_Logger->Write(Logger::INFO,"OrderExecutor: OrderID: %s Order status changed to FILLED", of.m_order_id.c_str());
     m_PortAndOrders->UpdateOrderState(of.m_order_id, OrderInstruction::FILLED);
   }
   else if (of.m_deleted == 1 && of.m_qty != of.m_qty_filled)
   {
-    if (m_PortAndOrders->IsOrderPendingCancelAftSF(of.m_order_id))
-    {
-      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: OrderID: %s Order status changed to CANCELLED", of.m_order_id.c_str());
-      m_PortAndOrders->UpdateOrderState(of.m_order_id, OrderInstruction::CANCELLED);
-    }
-    else
-    {
-      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: OrderID: %s Order status changed to ERROR because it's deleted for unknown reasons.", of.m_order_id.c_str());
-      m_PortAndOrders->UpdateOrderState(of.m_order_id, OrderInstruction::ERROR);
-    }
+    //--------------------------------------------------
+    // code deleted after refactoring PortfoliosAndOrders
+    //--------------------------------------------------
+    // if (m_PortAndOrders->IsOrderPendingCancelAftSF(of.m_order_id))
+    // {
+    //   m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: OrderID: %s Order status changed to CANCELLED", of.m_order_id.c_str());
+    //   m_PortAndOrders->UpdateOrderState(of.m_order_id, OrderInstruction::CANCELLED);
+    // }
+    // else
+    // {
+    m_Logger->Write(Logger::INFO,"OrderExecutor: OrderID: %s Order status changed to ERROR because it's deleted for unknown reasons.", of.m_order_id.c_str());
+    m_PortAndOrders->UpdateOrderState(of.m_order_id, OrderInstruction::ERROR);
+    // }
   }
   else if (of.m_qty_filled == 0 && of.m_deleted == 0)
   {
     if (m_PortAndOrders->IsOrderPendingAddAftSF(of.m_order_id))
     {
-      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: OrderID: %s Order status changed to ADDED", of.m_order_id.c_str());
+      m_Logger->Write(Logger::INFO,"OrderExecutor: OrderID: %s Order status changed to ADDED", of.m_order_id.c_str());
       m_PortAndOrders->UpdateOrderState(of.m_order_id, OrderInstruction::ADDED);
     }
-    else if (m_PortAndOrders->IsOrderPendingCancelAftSF(of.m_order_id))
-    {
-      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: OrderID: %s delete acknowledgement received", of.m_order_id.c_str());
-    }
-    else
-    {
-      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: OrderID: %s orderfeed seems to be duplicated and is therefore ignored.", of.m_order_id.c_str());
-    }
+    //--------------------------------------------------
+    // code deleted after refactoring PortfoliosAndOrders
+    //--------------------------------------------------
+    // else if (m_PortAndOrders->IsOrderPendingCancelAftSF(of.m_order_id))
+    // {
+    //   m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: OrderID: %s delete acknowledgement received", of.m_order_id.c_str());
+    // }
+    // else
+    // {
+    // m_Logger->Write(Logger::INFO,"OrderExecutor: OrderID: %s orderfeed seems to be duplicated and is therefore ignored.", of.m_order_id.c_str());
+    // }
   }
 
   return;
@@ -184,11 +192,11 @@ void OrderExecutor::OnNotifyLogfeed(ATU_logfeed_struct *s)
 void OrderExecutor::Run()
 {
 
-  if (m_SysCfg->Get_TCPOrEmbeddedMode() != SystemConfig::EMBEDDED)
+  if (m_SysCfg->Get_OTIMode() != SystemConfig::OTI_RECORD)
   {
     for (;;)
     {
-      // m_PortAndOrders->WaitForData();
+      m_PortAndOrders->WaitForData();
 
       if (m_SystemState->ChkIfThreadShouldStop()) break;
 
@@ -202,7 +210,11 @@ void OrderExecutor::Run()
         for (int i = 0; i < v.size(); i++)
         {
           m_oti_server->queuemsg(v[i]);
-          m_Logger->Write(Logger::INFO, "OrderExecutor: %s : %s : %s Sent: %s", m_OTI_Server_IP.c_str(), m_OTI_Server_Port.c_str(), m_MarketData->GetSystemTimeHKT().ToStr().c_str(), v[i].c_str());
+          m_Logger->Write(Logger::INFO, "OrderExecutor: %s : %s : %s Sent: %s",
+                          m_OTI_Server_IP.c_str(),
+                          m_OTI_Server_Port.c_str(),
+                          m_MarketData->GetSystemTimeHKT().ToStr().c_str(),
+                          v[i].c_str());
         }
       }
     }
@@ -217,33 +229,30 @@ void OrderExecutor::Run()
 
 
 // Xiao Nan
-void OrderExecutor::RunChkOrd()
-{
-  if (m_SysCfg->Get_TCPOrEmbeddedMode() != SystemConfig::EMBEDDED)
-  {
-    for (;;)
-    {
-      m_MarketData->WaitForData();
-      m_ThrdHlthMon->ReportHealthy(ID_ORDEREXECCHKORD);
-
-      // Check system time and determine whether there are orders that should be cancelled.
-      m_PortAndOrders->CheckAndReplaceOrders(m_MarketData->GetSystemTimeHKT().GetHHMMSS());
-    }
-  }
-}
+// void OrderExecutor::RunChkOrd()
+// {
+//   if (m_SysCfg->Get_TCPOrEmbeddedMode() != SystemConfig::EMBEDDED)
+//   {
+//     for (;;)
+//     {
+//       m_MarketData->WaitForData();
+//       m_ThrdHlthMon->ReportHealthy(ID_ORDEREXECCHKORD);
+//
+//       // Check system time and determine whether there are orders that should be cancelled.
+//       m_PortAndOrders->CheckAndReplaceOrders(m_MarketData->GetSystemTimeHKT().GetHHMMSS());
+//     }
+//   }
+// }
 
 
 void OrderExecutor::RunPersistPos()
 {
-  if (m_SysCfg->Get_TCPOrEmbeddedMode() != SystemConfig::EMBEDDED)
+  for (;;)
   {
-    for (;;)
-    {
-      m_ThrdHlthMon->ReportHealthy(ID_ORDEREXEPERSISTPOS);
-      m_PortAndOrders->WriteActualPortToPersistentPosFile();
-      m_PortAndOrders->WriteActualPortToPersistentPosToLog();
-      sleep(5);
-    }
+    m_ThrdHlthMon->ReportHealthy(ID_ORDEREXEPERSISTPOS);
+    m_PortAndOrders->WriteActualPortToPersistentPosFile();
+    m_PortAndOrders->WriteActualPortToPersistentPosToLog();
+    sleep(5);
   }
 }
 

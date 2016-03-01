@@ -17,9 +17,9 @@ DataAggregator::~DataAggregator()
 
 void DataAggregator::SetMDIServer(const string & ip, const string & port)
 {
-  if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::EMBEDDED)
+  if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
   {
-    m_Logger->Write(Logger::INFO,"DataAggregator: Running in capi embedded mode. No need to connect to ATU MDI %s %s", ip.c_str(), port.c_str());
+    m_Logger->Write(Logger::INFO,"DataAggregator: Running in read file mode. No need to connect to ATU MDI %s %s", ip.c_str(), port.c_str());
   }
   else
   {
@@ -78,16 +78,16 @@ void DataAggregator::OnRecvMsgCSV(string str)
 {
   // m_Logger->Write(Logger::DEBUG, "DataAggregator: OnRecvMsgCSV() Received: %s", str.c_str());
 
-  if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK)
+  if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
   {
     m_MDIAck->ReportDataArrived(m_Aggregator_Identity);
   }
   if (m_MarketData->UpdateMarketData(str))
   {
-    if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK)
+    if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
       m_MDIAck->WaitForAck();
   }
-  if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK)
+  if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
   {
     string s = "9394,acknowledgement,0,fromtradingengine\n";
     if (m_mdi_server) m_mdi_server->queuemsg(s);
@@ -168,7 +168,7 @@ void DataAggregator::BatchMktFeedSubscription(const vector<string>& symbols, con
     oo << begDate ;
     oo << "," ;
     oo << endDate ;
-    if (m_SysCfg->Get_TCPOrEmbeddedMode() == SystemConfig::TCPWITHACK)
+    if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK)
     {
       oo << ",ack_mode=YES";
     }

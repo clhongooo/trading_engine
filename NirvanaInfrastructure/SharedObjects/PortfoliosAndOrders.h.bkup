@@ -51,10 +51,24 @@ typedef struct {
   OrderExecState      m_order_exec_state;
   ExecStrategy        m_exec_strategy;
   bool                m_resend;
+  HHMMSS              m_attention_time;
+  HHMMSS              m_create_time;
   vector<double>      m_exec_strategy_param;
 } OrderInstruction;
 
 
+
+class AttentionTime {
+  public:
+    int  GetWorkingOrdersPastAttentionTime(const HHMMSS &,deque<HHMMSS> &,deque<string> &);
+    bool RemoveOrderIDFromAttentionTimeMap(const HHMMSS &, const string &);
+    void CleanAttentionTimeMap(const HHMMSS &);
+    void Add(const HHMMSS &,const string &);
+
+  private:
+    map<HHMMSS,set<string> > m_map_attention_time;
+    shared_mutex             m_attention_time_mutex;
+};
 
 class PortfoliosAndOrders {
   public:
@@ -64,6 +78,7 @@ class PortfoliosAndOrders {
     static boost::shared_ptr<PortfoliosAndOrders> Instance();
     virtual ~PortfoliosAndOrders();
 
+    void SwitchMode(const Mode m);
     bool Trade(const int,const string &,const long);
     bool Trade(const int,const string &,const long,const bool,const string &);
 
@@ -77,17 +92,28 @@ class PortfoliosAndOrders {
     void ConstructSignalFeedsAndChgOrderState(vector<ATU_OTI_signalfeed_struct>&);
     void MarketOrderConstructor(const OrderInstruction oi, ATU_OTI_signalfeed_struct&);
     void LimitOrderConstructor(const OrderInstruction, ATU_OTI_signalfeed_struct&);
+    void CancelOrderConstructor(const OrderInstruction, ATU_OTI_signalfeed_struct&);
 
-    bool UpdateOrderState(const string & orderId, const OrderInstruction::OrderExecState state);
+    bool UpdateOrderState(const string orderId, const OrderInstruction::OrderExecState state);
     bool BookTradeFromOTI(const string & order_id, const string & symbol, const double price, const long signed_qty, const string & oid, const string & tid);
 
     //--------------------------------------------------
     // Get / set portfolios
     //--------------------------------------------------
+    void GetTargetPortfolio(const int, map<string,long> &);
+    void SetTargetPortfolio(const int, const map<string,long> &);
     bool GetActualPortfolio(const int, map<string,long> &);
+    void ConstructActualPortfolio(const int portId);
     double GetActualSignedPosition(const int portid, const string & symbol);
+
+    void CancelAllWorkingOrdersInPortfolio(const int);
+
+    bool IsOrderPendingCancelAftSF(const string orderId);
     bool IsOrderPendingAddAftSF(const string orderId);
     int  GetUnprocessedWorkingOrdersCount();
+    bool IsPortfolioWorkingOrderEmpty(const long portId);
+
+    void CheckAndReplaceOrders(const HHMMSS &);
 
     //--------------------------------------------------
     void WriteActualPortToPersistentPosFile();
@@ -101,9 +127,12 @@ class PortfoliosAndOrders {
 
   private:
     void LoadPersistedPositionFromFile();
+    bool CancelWorkingOrder(const string orderId, const bool isResend);
+    // bool GetAndEraseWorkingOrder(OrderInstruction &);
 
     bool DetermineExecStrategy(const string &,OrderInstruction::ExecStrategy &,vector<double> &);
     bool TradeUltimate(const int, const string &, const long, const OrderInstruction::ExecStrategy, const vector<double>&, const bool, const string &);
+    void UpdateTargetPortfolio(const int, const string &, const long, const char);
     void AcctTrade(const int,const string &,const long,const double);
     void AcctSetRecord(const int,const string &,const long,const double);
     void AcctClearPosChgFlagNoLock();
@@ -115,6 +144,9 @@ class PortfoliosAndOrders {
     void OutputActualPortToPersistentPos(const char);
     //--------------------------------------------------
 
+    // XN
+    Mode m_CurrentMode;
+    AttentionTime m_attn_time;
     long m_UniqID;
 
     //--------------------------------------------------
@@ -134,13 +166,24 @@ class PortfoliosAndOrders {
     boost::shared_ptr<StyCPnLHist>    m_StyCPnLHist;
 
     //--------------------------------------------------
+    // m_target_portfolios:
+    // Key   - portfolio number
+    // Value - map containing the portfolio composition
+    //         Key   - instrument symbol
+    //         Value - signed qty. e.g. +2 means long 2 contracts
+    //--------------------------------------------------
+    map<int, map<string,long> >              m_target_portfolios;
+    shared_mutex                             m_target_portfolios_mutex;
+
+    //--------------------------------------------------
     // A working order refers to any uncancelled and unfilled orders
     // A completed order refers to any cancelled and filled orders
     // Key   - order id
     // Value - OrderInstruction
     //--------------------------------------------------
-    SMapThreadSafe<string,OrderInstruction>    m_working_orders;
-    SMapThreadSafe<string,OrderInstruction>    m_completed_orders;
+    map<string,OrderInstruction>             m_working_orders;
+    map<string,OrderInstruction>             m_completed_orders;
+    shared_mutex                             m_orders_mutex;
 
     //--------------------------------------------------
     // For internal book keeping, calculation of PnL
