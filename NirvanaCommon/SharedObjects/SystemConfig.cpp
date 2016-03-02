@@ -435,12 +435,12 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if (sDefaultTimeZone == "CST") m_DefaultTimeZone = SDateTime::CST;
   if (sDefaultTimeZone == "GMT") m_DefaultTimeZone = SDateTime::GMT;
 
-  boost::optional<string>  o_HKIntradaySeasonalityPath     = STool::Trim(pt.get_optional<string>("HKIntradaySeasonality.TrainingResultPath"));
+  boost::optional<string>  o_HKIntradaySeasonalityPath     = pt.get_optional<string>("HKIntradaySeasonality.TrainingResultPath");
   boost::optional<bool>    o_HKIntradaySeasonalityOnOff    = pt.get_optional<bool>    ("HKIntradaySeasonality.OnOff");
   boost::optional<int>     o_HKIntradaySeasonalityWindow   = pt.get_optional<int>     ("HKIntradaySeasonality.WindowLength");
 
+  if(o_HKIntradaySeasonalityPath  )  m_HKIntradaySeasonalityPath    = STool::Trim(o_HKIntradaySeasonalityPath.get());
   if(o_HKIntradaySeasonalityOnOff )  m_HKIntradaySeasonalityOnOff   = o_HKIntradaySeasonalityOnOff  .get();
-  if(o_HKIntradaySeasonalityPath  )  m_HKIntradaySeasonalityPath    = o_HKIntradaySeasonalityPath   .get();
   if(o_HKIntradaySeasonalityWindow)  m_HKIntradaySeasonalityWindow  = o_HKIntradaySeasonalityWindow .get();
 
   m_TradingHoursPath                   = STool::Trim(pt.get<string>   ("StaticData.TradingHoursPath"));
@@ -969,7 +969,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
       }
 
 
-      boost::optional<string> oOTI = STool::Trim(pt.get_optional<string>("OTI_" + boost::lexical_cast<string>(otimdi) + ".ServerIP"));
+      boost::optional<string> oOTI = pt.get_optional<string>("OTI_" + boost::lexical_cast<string>(otimdi) + ".ServerIP");
       if (oOTI)
       {
         m_NumOfOTI++;
@@ -1149,10 +1149,10 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
 
   m_NextTierZMQIsOn = pt.get<bool>("SystemSettings.NextTierZMQIsOn");
 
-  boost::optional<string> o_NextTier_ZMQ_MD_IP_Port = STool::Trim(pt.get_optional<string>("SystemSettings.ZMQMDIPPort"));
-  boost::optional<string> o_NextTier_ZMQ_TF_IP_Port = STool::Trim(pt.get_optional<string>("SystemSettings.ZMQTFIPPort"));
-  if (o_NextTier_ZMQ_MD_IP_Port) m_NextTier_ZMQ_MD_IP_Port = o_NextTier_ZMQ_MD_IP_Port.get();
-  if (o_NextTier_ZMQ_TF_IP_Port) m_NextTier_ZMQ_TF_IP_Port = o_NextTier_ZMQ_TF_IP_Port.get();
+  boost::optional<string> o_NextTier_ZMQ_MD_IP_Port = pt.get_optional<string>("SystemSettings.ZMQMDIPPort");
+  boost::optional<string> o_NextTier_ZMQ_TF_IP_Port = pt.get_optional<string>("SystemSettings.ZMQTFIPPort");
+  if (o_NextTier_ZMQ_MD_IP_Port) m_NextTier_ZMQ_MD_IP_Port = STool::Trim(o_NextTier_ZMQ_MD_IP_Port.get());
+  if (o_NextTier_ZMQ_TF_IP_Port) m_NextTier_ZMQ_TF_IP_Port = STool::Trim(o_NextTier_ZMQ_TF_IP_Port.get());
 
   switch(pt.get<int> ("MarketData.TradeVolumeMode"))
   {

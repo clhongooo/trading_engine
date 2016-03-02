@@ -9,13 +9,13 @@
 // Functional programming?
 //--------------------------------------------------
   template <typename Collection, typename UnOp>
-void FForEach(Collection col, UnOp op)
+void FForEach(const Collection & col, UnOp op)
 {
   std::for_each(col.begin(),col.end(),op);
 }
 
   template <typename Collection>
-void FReverse(Collection col)
+void FReverse(Collection & col)
 {
   std::reverse(col.begin(),col.end());
 }
@@ -34,7 +34,7 @@ void FReverse(Collection col)
 // }
 
   template <typename Collection, typename Predicate>
-Collection FFilterNot(Collection col,Predicate predicate)
+Collection FFilterNot(const Collection & col,Predicate predicate)
 {
   Collection col2 = col;
   col2.erase(std::remove_if(col2.begin(),col2.end(),predicate),col2.end());
@@ -42,7 +42,7 @@ Collection FFilterNot(Collection col,Predicate predicate)
 }
 
   template <typename Collection, typename Predicate>
-Collection FFilter(Collection col,Predicate predicate)
+Collection FFilter(const Collection & col,Predicate predicate)
 {
   //capture the predicate in order to be used inside function
   Collection col2 = col;
@@ -51,7 +51,7 @@ Collection FFilter(Collection col,Predicate predicate)
 }
 
   template <typename Collection, typename InitValType, typename BinOp>
-InitValType FFold(Collection col,InitValType init,BinOp op)
+InitValType FFold(const Collection & col,InitValType init,BinOp op)
 {
   // template< class InputIt, class T, class BinaryOperation >
   //

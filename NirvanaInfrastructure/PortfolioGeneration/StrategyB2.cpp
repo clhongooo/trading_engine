@@ -2067,20 +2067,31 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
           m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- mGrpRtnAndLeadSym (before sorting) ---", GetStrategyName(m_StyID).c_str());
 
+          int grp = 0;
           FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
-            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: mGrpRtnAndLeadSym: %f %s",
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: mGrpRtnAndLeadSym: Group %d %f %s",
                             GetStrategyName(m_StyID).c_str(),
+                            grp,
                             tup.m_return,
                             tup.m_symbol().c_str());
+            grp++;
           });
 
           m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- mGrpRtnAndLeadSym (sorted) ---", GetStrategyName(m_StyID).c_str());
 
           std::sort(mGrpRtnAndLeadSym.begin(), mGrpRtnAndLeadSym.end());
+
+          FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (ascending order) mGrpRtnAndLeadSym: %f %s",
+                            GetStrategyName(m_StyID).c_str(),
+                            tup.m_return,
+                            tup.m_symbol().c_str());
+          });
+
           if (m_RotationMode == 1) FReverse(mGrpRtnAndLeadSym);
 
           FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
-            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: mGrpRtnAndLeadSym: %f %s",
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (according to rotation scheme) mGrpRtnAndLeadSym: %f %s",
                             GetStrategyName(m_StyID).c_str(),
                             tup.m_return,
                             tup.m_symbol().c_str());
