@@ -119,7 +119,7 @@ class SMap {
   public:
     Option<TV> Get(const TK k) const
     {
-      typename map<TK,TV>::iterator it = _map.find(k);
+      typename map<TK,TV>::const_iterator it = _map.find(k);
       if (it == _map.end()) return Option<TV>();
       return Option<TV>(it->second);
     }
@@ -147,7 +147,7 @@ class SMap {
     }
     bool Contains(const TK k) const
     {
-      typename map<TK,TV>::iterator it = _map.find(k);
+      typename map<TK,TV>::const_iterator it = _map.find(k);
       if (it == _map.end()) return false;
       else return true;
     }
@@ -181,7 +181,7 @@ class SMapThreadSafe {
     Option<TV> Get(const TK k)
     {
       boost::shared_lock<boost::shared_mutex> lock(_mutex);
-      typename map<TK,TV>::iterator it = _map.find(k);
+      typename map<TK,TV>::const_iterator it = _map.find(k);
       if (it == _map.end()) return Option<TV>();
       return Option<TV>(it->second);
     }
@@ -278,7 +278,7 @@ class SMapOfMap {
     {
       return Get(k1,k2).GetOrElse(defaultval);
     }
-    void Add(const TK1 k1, const TK2 k2, const TV v)
+    void AddOrUpdate(const TK1 k1, const TK2 k2, const TV v)
     {
       typename map<TK1,map<TK2,TV> >::iterator it = _map.find(k1);
       if (it == _map.end())
@@ -321,29 +321,6 @@ class SMapPersistVal {
     bool Contains(const TK k)
     {
       return _map.Contains(k);
-    }
-};
-
-template <typename TK1, typename TK2, typename TV> 
-class SMapOfMapPersistVal {
-  private:
-    SMapOfMap<TK1,TK2,TV> _map;
-  public:
-    Option<TV> Get(const TK1 k1, const TK2 k2)
-    {
-      return _map.Get(k1,k2);
-    }
-    TV GetOrElse(const TK1 k1, const TK2 k2, TV defaultval)
-    {
-      return _map.GetOrElse(k1,k2,defaultval);
-    }
-    void Add(const TK1 k1, const TK2 k2, const TV v)
-    {
-      if (!_map.Contains(k1,k2)) _map.Add(k1,k2,v);
-    }
-    bool Contains(const TK1 k1, const TK2 k2)
-    {
-      return _map.Contains(k1,k2);
     }
 };
 

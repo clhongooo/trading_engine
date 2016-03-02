@@ -13,8 +13,6 @@ PriceForwarderToNextTier::PriceForwarderToNextTier()
     vector<string> vs = m_SysCfg->GetMDISubscriptionSymbols(i);
     m_sAllSym.insert(vs.begin(),vs.end());
   }
-
-
 }
 
 PriceForwarderToNextTier::~PriceForwarderToNextTier()

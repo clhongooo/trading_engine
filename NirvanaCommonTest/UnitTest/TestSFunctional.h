@@ -5,6 +5,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include "SFunctional.h"
+#include <boost/lexical_cast.hpp>
 
 #include <cppunit/ui/text/TestRunner.h>
 #include <cppunit/extensions/HelperMacros.h>

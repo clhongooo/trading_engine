@@ -396,10 +396,10 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::property_tree::ptree pt;
   boost::property_tree::ini_parser::read_ini(sConfigPath, pt);
 
-  string sLogPath = pt.get<std::string>("SystemSettings.LogPath");
+  string sLogPath = STool::Trim(pt.get<std::string>("SystemSettings.LogPath"));
   m_Logger->SetPath(sLogPath.c_str());
 
-  string sLogLevel = pt.get<std::string>("SystemSettings.LogLevel");
+  string sLogLevel = STool::Trim(pt.get<std::string>("SystemSettings.LogLevel"));
   if      (sLogLevel == "EMERGENCY") { m_Logger->SetLogLevel(Logger::EMERGENCY); }
   else if (sLogLevel == "ALERT")     { m_Logger->SetLogLevel(Logger::ALERT);     }
   else if (sLogLevel == "CRITICAL")  { m_Logger->SetLogLevel(Logger::CRITICAL);  }
@@ -409,17 +409,19 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   else if (sLogLevel == "INFO")      { m_Logger->SetLogLevel(Logger::INFO);      }
   else if (sLogLevel == "DEBUG")     { m_Logger->SetLogLevel(Logger::DEBUG);     }
 
-  m_SymbolsToBeUsedInAllSections       = pt.get<string>         ("SystemSettings.SymbolsToBeUsedInAllSections");
-  m_Logger->Write(Logger::INFO,"SystemConfig: Read SymbolsToBeUsedInAllSections %s", m_SymbolsToBeUsedInAllSections.c_str());
+  m_SymbolsToBeUsedInAllSections       = STool::Trim(pt.get<string>   ("SystemSettings.SymbolsToBeUsedInAllSections"));
+  m_MainLogPath                        = STool::Trim(pt.get<string>   ("SystemSettings.LogPath"));
+  m_MTMLogPath                         = STool::Trim(pt.get<string>   ("SystemSettings.MTMLogPath"));
+  m_ExecLogPath                        = STool::Trim(pt.get<string>   ("SystemSettings.ExecLogPath"));
+  m_MTMHoldingsLogPath                 = STool::Trim(pt.get<string>   ("SystemSettings.HoldingsLogPath"));
+  m_SupplementaryBarD1Path             = STool::Trim(pt.get<string>   ("SystemSettings.SupplementaryBarD1Path"));
+  m_SupplementaryBarM1Path             = STool::Trim(pt.get<string>   ("SystemSettings.SupplementaryBarM1Path"));
+  m_PositionPersistenceFile            = STool::Trim(pt.get<string>   ("SystemSettings.PositionPersistenceFile"));
 
-  m_MainLogPath                        = pt.get<string>         ("SystemSettings.LogPath");
-  m_MTMLogPath                         = pt.get<string>         ("SystemSettings.MTMLogPath");
-  m_ExecLogPath                        = pt.get<string>         ("SystemSettings.ExecLogPath");
-  m_MTMHoldingsLogPath                 = pt.get<string>         ("SystemSettings.HoldingsLogPath");
-  m_SupplementaryBarD1Path             = pt.get<string>         ("SystemSettings.SupplementaryBarD1Path");
-  m_SupplementaryBarM1Path             = pt.get<string>         ("SystemSettings.SupplementaryBarM1Path");
+  if (m_SymbolsToBeUsedInAllSections != "") m_Logger->Write(Logger::INFO,"SystemConfig: Read SymbolsToBeUsedInAllSections: %s", m_SymbolsToBeUsedInAllSections.c_str());
+  else m_Logger->Write(Logger::INFO,"SystemConfig: Read SymbolsToBeUsedInAllSections: Nil");
+
   m_SupplementaryBarLeadingZeroAdj     = pt.get<bool>           ("SystemSettings.SupplementaryBarFileLeadingZeroAdj");
-  m_PositionPersistenceFile            = pt.get<string>         ("SystemSettings.PositionPersistenceFile");
   m_PositionPersistenceIsEnabled       = pt.get<bool>           ("SystemSettings.EnablePositionPersistence");
   m_SendResetOnConnectionToCAPI        = pt.get<bool>           ("SystemSettings.SendResetOnConnectionToCAPI");
 
@@ -427,33 +429,33 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
 
   string sDefaultTimeZone;
   boost::optional<string> o_DefaultTimeZone = pt.get_optional<string>("SystemSettings.DefaultTimeZone");
-  if (o_DefaultTimeZone) sDefaultTimeZone = o_DefaultTimeZone.get();
+  if (o_DefaultTimeZone) sDefaultTimeZone = STool::Trim(o_DefaultTimeZone.get());
   if (sDefaultTimeZone == "HKT") m_DefaultTimeZone = SDateTime::HKT;
   if (sDefaultTimeZone == "EST") m_DefaultTimeZone = SDateTime::EST;
   if (sDefaultTimeZone == "CST") m_DefaultTimeZone = SDateTime::CST;
   if (sDefaultTimeZone == "GMT") m_DefaultTimeZone = SDateTime::GMT;
 
+  boost::optional<string>  o_HKIntradaySeasonalityPath     = STool::Trim(pt.get_optional<string>("HKIntradaySeasonality.TrainingResultPath"));
   boost::optional<bool>    o_HKIntradaySeasonalityOnOff    = pt.get_optional<bool>    ("HKIntradaySeasonality.OnOff");
-  boost::optional<string>  o_HKIntradaySeasonalityPath     = pt.get_optional<string>  ("HKIntradaySeasonality.TrainingResultPath");
   boost::optional<int>     o_HKIntradaySeasonalityWindow   = pt.get_optional<int>     ("HKIntradaySeasonality.WindowLength");
 
   if(o_HKIntradaySeasonalityOnOff )  m_HKIntradaySeasonalityOnOff   = o_HKIntradaySeasonalityOnOff  .get();
   if(o_HKIntradaySeasonalityPath  )  m_HKIntradaySeasonalityPath    = o_HKIntradaySeasonalityPath   .get();
   if(o_HKIntradaySeasonalityWindow)  m_HKIntradaySeasonalityWindow  = o_HKIntradaySeasonalityWindow .get();
 
+  m_TradingHoursPath                   = STool::Trim(pt.get<string>   ("StaticData.TradingHoursPath"));
+  m_HKFE_CalendarPath                  = STool::Trim(pt.get<string>   ("StaticData.HKFE_CalendarPath"));
+  m_HKSE_HSIConstituentsPath           = STool::Trim(pt.get<string>   ("StaticData.HKSE_HSIConstituentsPath"));
+  m_HKMA_ExchgFundBillPath             = STool::Trim(pt.get<string>   ("StaticData.HKMA_ExchgFundBillPath"));
+  m_CorrelMatricesPath                 = STool::Trim(pt.get<string>   ("StaticData.CorrelMatricesPath"));
+  m_VolSurfParamFile1FM                = STool::Trim(pt.get<string>   ("VolatilitySurface.ParamFile1FM"));
+  m_VolSurfParamFile2FM                = STool::Trim(pt.get<string>   ("VolatilitySurface.ParamFile2FM"));
+  m_ProbDistrFileFSMC1D                = STool::Trim(pt.get<string>   ("ProbDistribution.ProbDistrFileFSMC1D"));
   m_VolSurfCalcIntervalInSec           = pt.get<long>           ("VolatilitySurface.CalcIntervalInSeconds");
   m_ProbDistrnCalcIntervalInSec        = pt.get<long>           ("ProbDistribution.CalcIntervalInSeconds");
   m_TechIndUpdateIntervalInSec         = pt.get<long>           ("TechIndicators.CalcIntervalInSeconds");
-  m_TradingHoursPath                   = pt.get<string>         ("StaticData.TradingHoursPath");
-  m_HKFE_CalendarPath                  = pt.get<string>         ("StaticData.HKFE_CalendarPath");
-  m_HKSE_HSIConstituentsPath           = pt.get<string>         ("StaticData.HKSE_HSIConstituentsPath");
-  m_HKMA_ExchgFundBillPath             = pt.get<string>         ("StaticData.HKMA_ExchgFundBillPath");
-  m_CorrelMatricesPath                 = pt.get<string>         ("StaticData.CorrelMatricesPath");
   m_GKYZ_Window_Size                   = pt.get<long>           ("TechIndicators.GKYZ_WindowSize");
 
-  m_VolSurfParamFile1FM                = pt.get<string>         ("VolatilitySurface.ParamFile1FM");
-  m_VolSurfParamFile2FM                = pt.get<string>         ("VolatilitySurface.ParamFile2FM");
-  m_ProbDistrFileFSMC1D                = pt.get<string>         ("ProbDistribution.ProbDistrFileFSMC1D");
 
   boost::optional<int>    o_B1_HKF_SamplingIntervalInSec       = pt.get_optional<int>   ("Strategy_B1_HKF.SamplingIntervalInSec");
   boost::optional<string> o_S11A_ParamFileHistSDCorrel         = pt.get_optional<string>("Strategy_S11A.ParamFileHistSDCorrel");
@@ -462,66 +464,66 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_S11A_ParamFileT1GumbelGauss        = pt.get_optional<string>("Strategy_S11A.ParamFileT1GumbelGauss");
   boost::optional<string> o_S11A_ParamFileT2Copula             = pt.get_optional<string>("Strategy_S11A.ParamFileT2Copula");
 
-  if(o_B1_HKF_SamplingIntervalInSec   )  m_B1_HKF_SamplingIntervalInSec     = o_B1_HKF_SamplingIntervalInSec    .get();
-  if(o_S11A_ParamFileHistSDCorrel     )  m_S11A_ParamFileHistSDCorrel       = o_S11A_ParamFileHistSDCorrel      .get();
-  if(o_S11A_ParamFileHSIHHIIV         )  m_S11A_ParamFileHSIHHIIV           = o_S11A_ParamFileHSIHHIIV          .get();
-  if(o_S11A_ParamFileT1GumbelCauchy   )  m_S11A_ParamFileT1GumbelCauchy     = o_S11A_ParamFileT1GumbelCauchy    .get();
-  if(o_S11A_ParamFileT1GumbelGauss    )  m_S11A_ParamFileT1GumbelGauss      = o_S11A_ParamFileT1GumbelGauss     .get();
-  if(o_S11A_ParamFileT2Copula         )  m_S11A_ParamFileT2Copula           = o_S11A_ParamFileT2Copula          .get();
+  if(o_B1_HKF_SamplingIntervalInSec   )  m_B1_HKF_SamplingIntervalInSec     = o_B1_HKF_SamplingIntervalInSec                .get();
+  if(o_S11A_ParamFileHistSDCorrel     )  m_S11A_ParamFileHistSDCorrel       = STool::Trim(o_S11A_ParamFileHistSDCorrel      .get());
+  if(o_S11A_ParamFileHSIHHIIV         )  m_S11A_ParamFileHSIHHIIV           = STool::Trim(o_S11A_ParamFileHSIHHIIV          .get());
+  if(o_S11A_ParamFileT1GumbelCauchy   )  m_S11A_ParamFileT1GumbelCauchy     = STool::Trim(o_S11A_ParamFileT1GumbelCauchy    .get());
+  if(o_S11A_ParamFileT1GumbelGauss    )  m_S11A_ParamFileT1GumbelGauss      = STool::Trim(o_S11A_ParamFileT1GumbelGauss     .get());
+  if(o_S11A_ParamFileT2Copula         )  m_S11A_ParamFileT2Copula           = STool::Trim(o_S11A_ParamFileT2Copula          .get());
 
   boost::optional<bool>   o_B2_US1_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_US1.EnableMinCommissionCheck");
   boost::optional<int>    o_B2_US1_HasEnabledRotationMode       = pt.get_optional<int>   ("Strategy_B2_US1.EnableRotationMode");
-  boost::optional<string> o_B2_US1_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_US1.TheoCPnLHistFolder");
-  boost::optional<string> o_B2_US1_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_US1.TheoPosFolder");
   boost::optional<bool>   o_B2_US1_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_US1.PersistTheoPosCPnL");
   boost::optional<int>    o_B2_US1_ChooseBestNRotationGroup     = pt.get_optional<int>   ("Strategy_B2_US1.ChooseBestNRotationGroup");
   boost::optional<int>    o_B2_US1_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_US1.ActionTimeBefCloseInSec");
   boost::optional<bool>   o_B2_US1_MoveNextBestUpIfNoSignal     = pt.get_optional<bool>  ("Strategy_B2_US1.MoveNextBestUpIfNoSignal");
+  boost::optional<string> o_B2_US1_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_US1.TheoCPnLHistFolder");
+  boost::optional<string> o_B2_US1_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_US1.TheoPosFolder");
 
   if(o_B2_US1_HasEnabledMinCommissionCheck)  m_B2_US1_HasEnabledMinCommissionCheck  = o_B2_US1_HasEnabledMinCommissionCheck .get();
   if(o_B2_US1_HasEnabledRotationMode      )  m_B2_US1_HasEnabledRotationMode        = o_B2_US1_HasEnabledRotationMode       .get();
-  if(o_B2_US1_TheoCPnLHistFolder          )  m_B2_US1_TheoCPnLHistFolder            = o_B2_US1_TheoCPnLHistFolder           .get();
-  if(o_B2_US1_TheoPosFolder               )  m_B2_US1_TheoPosFolder                 = o_B2_US1_TheoPosFolder                .get();
   if(o_B2_US1_PersistTheoPosCPnL          )  m_B2_US1_PersistTheoPosCPnL            = o_B2_US1_PersistTheoPosCPnL           .get();
   if(o_B2_US1_ChooseBestNRotationGroup    )  m_B2_US1_ChooseBestNRotationGroup      = o_B2_US1_ChooseBestNRotationGroup     .get();
   if(o_B2_US1_ActionTimeBefCloseInSec     )  m_B2_US1_ActionTimeBefCloseInSec       = o_B2_US1_ActionTimeBefCloseInSec      .get();
   if(o_B2_US1_MoveNextBestUpIfNoSignal    )  m_B2_US1_MoveNextBestUpIfNoSignal      = o_B2_US1_MoveNextBestUpIfNoSignal     .get();
+  if(o_B2_US1_TheoCPnLHistFolder          )  m_B2_US1_TheoCPnLHistFolder            = STool::Trim(o_B2_US1_TheoCPnLHistFolder.get());
+  if(o_B2_US1_TheoPosFolder               )  m_B2_US1_TheoPosFolder                 = STool::Trim(o_B2_US1_TheoPosFolder     .get());
 
   boost::optional<bool>   o_B2_US2_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_US2.EnableMinCommissionCheck");
   boost::optional<int>    o_B2_US2_HasEnabledRotationMode       = pt.get_optional<int>   ("Strategy_B2_US2.EnableRotationMode");
-  boost::optional<string> o_B2_US2_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_US2.TheoCPnLHistFolder");
-  boost::optional<string> o_B2_US2_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_US2.TheoPosFolder");
   boost::optional<bool>   o_B2_US2_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_US2.PersistTheoPosCPnL");
   boost::optional<int>    o_B2_US2_ChooseBestNRotationGroup     = pt.get_optional<int>   ("Strategy_B2_US2.ChooseBestNRotationGroup");
   boost::optional<int>    o_B2_US2_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_US2.ActionTimeBefCloseInSec");
   boost::optional<bool>   o_B2_US2_MoveNextBestUpIfNoSignal     = pt.get_optional<bool>  ("Strategy_B2_US2.MoveNextBestUpIfNoSignal");
+  boost::optional<string> o_B2_US2_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_US2.TheoCPnLHistFolder");
+  boost::optional<string> o_B2_US2_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_US2.TheoPosFolder");
 
   if(o_B2_US2_HasEnabledMinCommissionCheck)  m_B2_US2_HasEnabledMinCommissionCheck  = o_B2_US2_HasEnabledMinCommissionCheck .get();
   if(o_B2_US2_HasEnabledRotationMode      )  m_B2_US2_HasEnabledRotationMode        = o_B2_US2_HasEnabledRotationMode       .get();
-  if(o_B2_US2_TheoCPnLHistFolder          )  m_B2_US2_TheoCPnLHistFolder            = o_B2_US2_TheoCPnLHistFolder           .get();
-  if(o_B2_US2_TheoPosFolder               )  m_B2_US2_TheoPosFolder                 = o_B2_US2_TheoPosFolder                .get();
   if(o_B2_US2_PersistTheoPosCPnL          )  m_B2_US2_PersistTheoPosCPnL            = o_B2_US2_PersistTheoPosCPnL           .get();
   if(o_B2_US2_ChooseBestNRotationGroup    )  m_B2_US2_ChooseBestNRotationGroup      = o_B2_US2_ChooseBestNRotationGroup     .get();
   if(o_B2_US2_ActionTimeBefCloseInSec     )  m_B2_US2_ActionTimeBefCloseInSec       = o_B2_US2_ActionTimeBefCloseInSec      .get();
   if(o_B2_US2_MoveNextBestUpIfNoSignal    )  m_B2_US2_MoveNextBestUpIfNoSignal      = o_B2_US2_MoveNextBestUpIfNoSignal     .get();
+  if(o_B2_US2_TheoCPnLHistFolder          )  m_B2_US2_TheoCPnLHistFolder            = STool::Trim(o_B2_US2_TheoCPnLHistFolder.get());
+  if(o_B2_US2_TheoPosFolder               )  m_B2_US2_TheoPosFolder                 = STool::Trim(o_B2_US2_TheoPosFolder     .get());
 
   boost::optional<bool>   o_B2_HK_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_HK.EnableMinCommissionCheck");
   boost::optional<int>    o_B2_HK_HasEnabledRotationMode       = pt.get_optional<int>   ("Strategy_B2_HK.EnableRotationMode");
-  boost::optional<string> o_B2_HK_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_HK.TheoCPnLHistFolder");
-  boost::optional<string> o_B2_HK_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_HK.TheoPosFolder");
   boost::optional<bool>   o_B2_HK_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_HK.PersistTheoPosCPnL");
   boost::optional<int>    o_B2_HK_ChooseBestNRotationGroup     = pt.get_optional<int>   ("Strategy_B2_HK.ChooseBestNRotationGroup");
   boost::optional<int>    o_B2_HK_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_HK.ActionTimeBefCloseInSec");
   boost::optional<bool>   o_B2_HK_MoveNextBestUpIfNoSignal     = pt.get_optional<bool>  ("Strategy_B2_HK.MoveNextBestUpIfNoSignal");
+  boost::optional<string> o_B2_HK_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_HK.TheoCPnLHistFolder");
+  boost::optional<string> o_B2_HK_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_HK.TheoPosFolder");
 
   if(o_B2_HK_HasEnabledMinCommissionCheck)  m_B2_HK_HasEnabledMinCommissionCheck  = o_B2_HK_HasEnabledMinCommissionCheck .get();
   if(o_B2_HK_HasEnabledRotationMode      )  m_B2_HK_HasEnabledRotationMode        = o_B2_HK_HasEnabledRotationMode       .get();
-  if(o_B2_HK_TheoCPnLHistFolder          )  m_B2_HK_TheoCPnLHistFolder            = o_B2_HK_TheoCPnLHistFolder           .get();
-  if(o_B2_HK_TheoPosFolder               )  m_B2_HK_TheoPosFolder                 = o_B2_HK_TheoPosFolder                .get();
   if(o_B2_HK_PersistTheoPosCPnL          )  m_B2_HK_PersistTheoPosCPnL            = o_B2_HK_PersistTheoPosCPnL           .get();
   if(o_B2_HK_ChooseBestNRotationGroup    )  m_B2_HK_ChooseBestNRotationGroup      = o_B2_HK_ChooseBestNRotationGroup     .get();
   if(o_B2_HK_ActionTimeBefCloseInSec     )  m_B2_HK_ActionTimeBefCloseInSec       = o_B2_HK_ActionTimeBefCloseInSec      .get();
   if(o_B2_HK_MoveNextBestUpIfNoSignal    )  m_B2_HK_MoveNextBestUpIfNoSignal      = o_B2_HK_MoveNextBestUpIfNoSignal     .get();
+  if(o_B2_HK_TheoCPnLHistFolder          )  m_B2_HK_TheoCPnLHistFolder            = STool::Trim(o_B2_HK_TheoCPnLHistFolder.get());
+  if(o_B2_HK_TheoPosFolder               )  m_B2_HK_TheoPosFolder                 = STool::Trim(o_B2_HK_TheoPosFolder     .get());
 
   {
     boost::optional<string> o_B2_US1_FilterSMAPeriod = pt.get_optional<string>("Strategy_B2_US1.FilterSMAPeriod");
@@ -591,7 +593,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   m_CMEContFutRollFwdTime  = HHMMSS(pt.get<int>("Strategy_Base.CMEContFutRollFwdTime"));
 
   {
-    string s_ProceedStyForceExcnEvenIfNoMD = pt.get<string>("Strategy_Base.ProceedStyForceExcnEvenIfNoMD");
+    string s_ProceedStyForceExcnEvenIfNoMD = STool::Trim(pt.get<string>("Strategy_Base.ProceedStyForceExcnEvenIfNoMD"));
 
     vector<string> vs;
     boost::split(vs, s_ProceedStyForceExcnEvenIfNoMD, boost::is_any_of(","));
@@ -621,7 +623,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
       {
         tsc.m_OnOff         = pt.get<bool>     (sStratSession + ".OnOff");
         tsc.m_MTMTime       = pt.get<int>      (sStratSession + ".MTMTime");
-        tsc.m_SignalLogPath = pt.get<string>   (sStratSession + ".SignalLogPath");
+        tsc.m_SignalLogPath = STool::Trim(pt.get<string>(sStratSession + ".SignalLogPath"));
 
         tsc.m_StartTimeBufferInSec  = pt.get<int>(sStratSession  + ".StartTimeBufferInSec");
         tsc.m_EndTimeBufferInSec    = pt.get<int>(sStratSession  + ".EndTimeBufferInSec");
@@ -633,7 +635,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
           string s_ParamVec;
           if (o_ParamVec)
           {
-            s_ParamVec = o_ParamVec.get();
+            s_ParamVec = STool::Trim(o_ParamVec.get());
 
             //--------------------------------------------------
             // New format
@@ -652,22 +654,23 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
         }
         {
           string s_TradedSym = m_SymbolsToBeUsedInAllSections;
-          if (s_TradedSym == "") s_TradedSym = pt.get<string>(sStratSession + ".TradedSymbols");
-          m_Logger->Write(Logger::INFO,"SystemConfig: m_TradedSymbols %s %s", sStratSession.c_str(), s_TradedSym.c_str());
+          if (s_TradedSym == "") s_TradedSym = STool::Trim(pt.get<string>(sStratSession + ".TradedSymbols"));
+          if (s_TradedSym != "") m_Logger->Write(Logger::INFO,"SystemConfig: m_TradedSymbols %s %s", sStratSession.c_str(), s_TradedSym.c_str());
+          else m_Logger->Write(Logger::INFO,"SystemConfig: m_TradedSymbols %s Nil", sStratSession.c_str());
 
           vector<string> vs;
           boost::split(vs, s_TradedSym, boost::is_any_of(","));
           FForEach (vs,[&](const string & s) { tsc.m_TradedSymbols.push_back(s); });
         }
         {
-          string s_SpecialTime = pt.get<string>(sStratSession + ".SpecialTime");
+          string s_SpecialTime = STool::Trim(pt.get<string>(sStratSession + ".SpecialTime"));
           vector<string> vs;
           boost::split(vs, s_SpecialTime, boost::is_any_of(","));
           FForEach (vs,[&](const string & s) { if (s != "") tsc.m_SpecialTime.insert(HHMMSS(boost::lexical_cast<int>(s))); });
         }
 
         {
-          string s_SyncSym = pt.get<string>(sStratSession + ".SynchronizedSymbols");
+          string s_SyncSym = STool::Trim(pt.get<string>(sStratSession + ".SynchronizedSymbols"));
 
           if (STool::Trim(s_SyncSym) != "")
           {
@@ -695,7 +698,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
           }
         }
         tsc.m_WhetherToRetrain = pt.get<bool>(sStratSession + ".WhetherToRetrain");
-        string sTrainFreq = pt.get<string>(sStratSession + ".TrainingFreq");
+        string sTrainFreq = STool::Trim(pt.get<string>(sStratSession + ".TrainingFreq"));
         if      (sTrainFreq == "Daily")            tsc.m_TrainingFreq = TradingStrategyConfig::Daily;
         else if (sTrainFreq == "Weekly")           tsc.m_TrainingFreq = TradingStrategyConfig::Weekly;
         else if (sTrainFreq == "Monthly")          tsc.m_TrainingFreq = TradingStrategyConfig::Monthly;
@@ -703,7 +706,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
         else if (sTrainFreq == "Auto")             tsc.m_TrainingFreq = TradingStrategyConfig::Auto;
         else if (sTrainFreq == "OnceAtInitWarmup") tsc.m_TrainingFreq = TradingStrategyConfig::OnceAtInitWarmup;
 
-        tsc.m_CPnLHistPersistenceFile        = pt.get<string> (sStratSession + ".CPnLHistPersistenceFile");
+        tsc.m_CPnLHistPersistenceFile        = STool::Trim(pt.get<string>(sStratSession + ".CPnLHistPersistenceFile"));
         tsc.m_CPnLHistPersistenceIsEnabled   = pt.get<bool>   (sStratSession + ".EnableCPnLHistPersistence");
 
 
@@ -912,20 +915,21 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
         OTIMDIConfig & omc = it->second;
 
         omc.m_MDI_File = "";
-        omc.m_MDI_IP   = oMDI_TCP.get();
-        omc.m_MDI_Port = pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".ServerPort");
+        omc.m_MDI_IP   = STool::Trim(oMDI_TCP.get());
+        omc.m_MDI_Port = STool::Trim(pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".ServerPort"));
 
         string s_MDI_SubscriptionSymbols = m_SymbolsToBeUsedInAllSections;
-        if (s_MDI_SubscriptionSymbols == "") s_MDI_SubscriptionSymbols = pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionSymbols");
-        m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d %s", otimdi, s_MDI_SubscriptionSymbols.c_str());
+        if (s_MDI_SubscriptionSymbols == "") s_MDI_SubscriptionSymbols = STool::Trim(pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionSymbols"));
+        if (s_MDI_SubscriptionSymbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d %s", otimdi, s_MDI_SubscriptionSymbols.c_str());
+        else m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d Nil.", otimdi);
 
         vector<string> vsub;
         boost::split(vsub, s_MDI_SubscriptionSymbols, boost::is_any_of(","));
         omc.m_MDISubscriptionSymbols = vsub;
 
-        omc.m_MDISubscriptionStartDate   = pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionStartDate");
-        omc.m_MDISubscriptionEndDate     = pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionEndDate");
-        omc.m_MDISubscriptionReplaySpeed = pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionReplaySpeed");
+        omc.m_MDISubscriptionStartDate   = STool::Trim(pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionStartDate"));
+        omc.m_MDISubscriptionEndDate     = STool::Trim(pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionEndDate"));
+        omc.m_MDISubscriptionReplaySpeed = STool::Trim(pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionReplaySpeed"));
 
         m_Logger->Write(Logger::INFO,"SystemConfig: Read MDI Config: %d %s", otimdi, omc.m_MDI_IP.c_str());
       }
@@ -949,8 +953,9 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
         omc.m_MDI_Port = "";
 
         string s_MDI_SubscriptionSymbols = m_SymbolsToBeUsedInAllSections;
-        if (s_MDI_SubscriptionSymbols == "") s_MDI_SubscriptionSymbols = pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionSymbols");
-        m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d %s", otimdi, s_MDI_SubscriptionSymbols.c_str());
+        if (s_MDI_SubscriptionSymbols == "") s_MDI_SubscriptionSymbols = STool::Trim(pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionSymbols"));
+        if (s_MDI_SubscriptionSymbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d %s", otimdi, s_MDI_SubscriptionSymbols.c_str());
+        else m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d Nil", otimdi);
 
         vector<string> vsub;
         boost::split(vsub, s_MDI_SubscriptionSymbols, boost::is_any_of(","));
@@ -964,7 +969,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
       }
 
 
-      boost::optional<string> oOTI = pt.get_optional<string>("OTI_" + boost::lexical_cast<string>(otimdi) + ".ServerIP");
+      boost::optional<string> oOTI = STool::Trim(pt.get_optional<string>("OTI_" + boost::lexical_cast<string>(otimdi) + ".ServerIP"));
       if (oOTI)
       {
         m_NumOfOTI++;
@@ -977,8 +982,8 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
         }
         OTIMDIConfig & omc = it->second;
 
-        omc.m_OTI_IP   = pt.get<string>("OTI_" + boost::lexical_cast<string>(otimdi) + ".ServerIP");
-        omc.m_OTI_Port = pt.get<string>("OTI_" + boost::lexical_cast<string>(otimdi) + ".ServerPort");
+        omc.m_OTI_IP   = STool::Trim(pt.get<string>("OTI_" + boost::lexical_cast<string>(otimdi) + ".ServerIP"));
+        omc.m_OTI_Port = STool::Trim(pt.get<string>("OTI_" + boost::lexical_cast<string>(otimdi) + ".ServerPort"));
 
         m_Logger->Write(Logger::INFO,"SystemConfig: Read OTI Config: %d %s", otimdi, omc.m_OTI_IP.c_str());
       }
@@ -986,7 +991,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   }
 
   {
-    m_HaltTradingPath = pt.get<string>("SystemSettings.HaltTradingPath");
+    m_HaltTradingPath = STool::Trim(pt.get<string>("SystemSettings.HaltTradingPath"));
     deque<string> dqFile;
     STool::ReadFile(m_HaltTradingPath,dqFile);
     for (deque<string>::iterator it = dqFile.begin(); it != dqFile.end(); ++it)
@@ -1019,7 +1024,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
     }
   }
   {
-    m_HalfDayTradingPath = pt.get<string>("SystemSettings.HalfDayTradingPath");
+    m_HalfDayTradingPath = STool::Trim(pt.get<string>("SystemSettings.HalfDayTradingPath"));
     deque<string> dqFile;
     STool::ReadFile(m_HalfDayTradingPath,dqFile);
     for (deque<string>::iterator it = dqFile.begin(); it != dqFile.end(); ++it)
@@ -1053,7 +1058,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   }
   //--------------------------------------------------
   {
-    m_CorpActionAdjPath = pt.get<string>("SystemSettings.CorpActionAdjPath");
+    m_CorpActionAdjPath = STool::Trim(pt.get<string>("SystemSettings.CorpActionAdjPath"));
     deque<string> dqFile;
     STool::ReadFile(m_CorpActionAdjPath,dqFile);
     for (deque<string>::iterator it = dqFile.begin(); it != dqFile.end(); ++it)
@@ -1105,7 +1110,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
 
   //--------------------------------------------------
   {
-    m_LotSizePath = pt.get<string>("SystemSettings.LotSizePath");
+    m_LotSizePath = STool::Trim(pt.get<string>("SystemSettings.LotSizePath"));
     deque<string> dqFile;
     STool::ReadFile(m_LotSizePath,dqFile);
     for (deque<string>::iterator it = dqFile.begin(); it != dqFile.end(); ++it)
@@ -1133,19 +1138,19 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   m_PriceFwdrIntervalInSec = pt.get<int>("SystemSettings.PriceForwarderToNextTierIntervalInSec");
 
 
-  string sMDIMode = pt.get<string>("SystemSettings.MDIMode");
+  string sMDIMode = STool::Trim(pt.get<string>("SystemSettings.MDIMode"));
   if      (sMDIMode == "readfile")        m_MDIMode = MDI_READFILE;
   else if (sMDIMode == "tcpwithack")      m_MDIMode = MDI_TCPWITHACK;
   else if (sMDIMode == "tcpwithoutack")   m_MDIMode = MDI_TCPWITHOUTACK;
 
-  string sOTIMode = pt.get<string>("SystemSettings.OTIMode");
+  string sOTIMode = STool::Trim(pt.get<string>("SystemSettings.OTIMode"));
   if      (sOTIMode == "record")          m_OTIMode = OTI_RECORD;
   else if (sOTIMode == "tcp")             m_OTIMode = OTI_TCP;
 
   m_NextTierZMQIsOn = pt.get<bool>("SystemSettings.NextTierZMQIsOn");
 
-  boost::optional<string> o_NextTier_ZMQ_MD_IP_Port = pt.get_optional<string>("SystemSettings.ZMQMDIPPort");
-  boost::optional<string> o_NextTier_ZMQ_TF_IP_Port = pt.get_optional<string>("SystemSettings.ZMQTFIPPort");
+  boost::optional<string> o_NextTier_ZMQ_MD_IP_Port = STool::Trim(pt.get_optional<string>("SystemSettings.ZMQMDIPPort"));
+  boost::optional<string> o_NextTier_ZMQ_TF_IP_Port = STool::Trim(pt.get_optional<string>("SystemSettings.ZMQTFIPPort"));
   if (o_NextTier_ZMQ_MD_IP_Port) m_NextTier_ZMQ_MD_IP_Port = o_NextTier_ZMQ_MD_IP_Port.get();
   if (o_NextTier_ZMQ_TF_IP_Port) m_NextTier_ZMQ_TF_IP_Port = o_NextTier_ZMQ_TF_IP_Port.get();
 
@@ -1158,8 +1163,9 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
 
   {
     string sBarAggregationM1Symbols = m_SymbolsToBeUsedInAllSections;
-    if (sBarAggregationM1Symbols == "") sBarAggregationM1Symbols = pt.get<string>("MarketData.BarAggregationM1Symbols");
-    m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationM1Symbols %s", sBarAggregationM1Symbols.c_str());
+    if (sBarAggregationM1Symbols == "") sBarAggregationM1Symbols = STool::Trim(pt.get<string>("MarketData.BarAggregationM1Symbols"));
+    if (sBarAggregationM1Symbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationM1Symbols %s", sBarAggregationM1Symbols.c_str());
+    else m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationM1Symbols Nil");
 
     vector<string> vs;
     boost::split(vs, sBarAggregationM1Symbols, boost::is_any_of(","));
@@ -1173,8 +1179,9 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
 
   {
     string sBarAggregationD1Symbols = m_SymbolsToBeUsedInAllSections;
-    if (sBarAggregationD1Symbols == "") sBarAggregationD1Symbols = pt.get<string>("MarketData.BarAggregationD1Symbols");
-    m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationD1Symbols %s", sBarAggregationD1Symbols.c_str());
+    if (sBarAggregationD1Symbols == "") sBarAggregationD1Symbols = STool::Trim(pt.get<string>("MarketData.BarAggregationD1Symbols"));
+    if (sBarAggregationD1Symbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationD1Symbols %s", sBarAggregationD1Symbols.c_str());
+    else m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationD1Symbols Nil");
 
     vector<string> vs;
     boost::split(vs, sBarAggregationD1Symbols, boost::is_any_of(","));
@@ -1190,8 +1197,9 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
 
   {
     string sSymToBeWarmedUpWithDayBars = m_SymbolsToBeUsedInAllSections;
-    if (sSymToBeWarmedUpWithDayBars == "") sSymToBeWarmedUpWithDayBars = pt.get<string>("TechIndicators.SymToBeWarmedUpWithDayBars");
-    m_Logger->Write(Logger::INFO,"SystemConfig: sSymToBeWarmedUpWithDayBars %s", sSymToBeWarmedUpWithDayBars.c_str());
+    if (sSymToBeWarmedUpWithDayBars == "") sSymToBeWarmedUpWithDayBars = STool::Trim(pt.get<string>("TechIndicators.SymToBeWarmedUpWithDayBars"));
+    if (sSymToBeWarmedUpWithDayBars != "") m_Logger->Write(Logger::INFO,"SystemConfig: sSymToBeWarmedUpWithDayBars %s", sSymToBeWarmedUpWithDayBars.c_str());
+    else m_Logger->Write(Logger::INFO,"SystemConfig: sSymToBeWarmedUpWithDayBars Nil");
 
     vector<string> vs;
     boost::split(vs, sSymToBeWarmedUpWithDayBars, boost::is_any_of(","));
