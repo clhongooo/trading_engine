@@ -60,6 +60,9 @@ void MarkToMarket::Run()
         YYYYMMDDHHMMSS ymdhms1;
         set<string> setSym = m_PortAndOrders->GetSymbolsWithPos(sid);
 
+        //--------------------------------------------------
+        // provide the price for MTM
+        //--------------------------------------------------
         FForEach (setSym,[&](const string & sym) {
           if (!m_MarketData->GetLatestMidQuote(sym,dMidQuote))
           {
@@ -79,6 +82,9 @@ void MarkToMarket::Run()
                           GetStrategyName(sid).c_str(), ymdhms_MDITime.ToStr().c_str(), sym.c_str(), dMidQuote);
         });
 
+        //--------------------------------------------------
+        // get the PnL per strategy
+        //--------------------------------------------------
         double d_MTM_CPnL_PerSty = 0;
         if (m_PortAndOrders->Get_MTM_CPnL(sid,d_MTM_CPnL_PerSty))
         {
@@ -98,6 +104,9 @@ void MarkToMarket::Run()
           });
         }
 
+        //--------------------------------------------------
+        // get actual portfolio
+        //--------------------------------------------------
         map<string,long> mPort;
         if (m_PortAndOrders->GetActualPortfolio(sid,mPort))
         {
@@ -109,10 +118,15 @@ void MarkToMarket::Run()
           }
         }
 
+        //--------------------------------------------------
+        // mark today as done
+        //--------------------------------------------------
         m_Sty_MTM_Done[sid].insert(ymdhms_MDITime.GetYYYYMMDD().ToInt());
       }
     }
 
+    //--------------------------------------------------
+    // output the sum of PnL of all strategies
     //--------------------------------------------------
     if (abs(dOverallCPnL) > NIR_EPSILON &&
         m_Overall_MTM_Done.find(ymdhms_MDITime.GetYYYYMMDD().ToInt()) == m_Overall_MTM_Done.end())
@@ -121,7 +135,6 @@ void MarkToMarket::Run()
       m_Overall_MTM_Done.insert(ymdhms_MDITime.GetYYYYMMDD().ToInt());
     }
     //--------------------------------------------------
-
 
     ReportAckIfNeeded();
   }

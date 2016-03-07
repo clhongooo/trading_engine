@@ -171,6 +171,11 @@ class SystemConfig : boost::noncopyable
     double                 Get_S11AT1GumbelGaussSignalLimit()                                  const;
     bool                   B2_HasEnabledMinCommissionCheck(const StrategyID)                   const;
     int                    B2_HasEnabledRotationMode(const StrategyID)                         const;
+    bool                   B2_RotationModeTradeHighestReturn(const StrategyID)                 const;
+    Option<double>         B2_LongOnlyWhenClosePriceBelowAvgPrice(const StrategyID)            const;
+    Option<double>         B2_ShortOnlyWhenClosePriceAboveAvgPrice(const StrategyID)           const;
+    Option<double>         B2_LongOnlyWhenAvgPriceReturnAbove(const StrategyID)                const;
+    Option<double>         B2_ShortOnlyWhenAvgPriceReturnBelow(const StrategyID)               const;
     string                 B2_TheoCPnLHistFolder(const StrategyID)                             const;
     string                 B2_TheoPosFolder(const StrategyID)                                  const;
     bool                   B2_PersistTheoPosCPnL(const StrategyID)                             const;
@@ -178,7 +183,8 @@ class SystemConfig : boost::noncopyable
     int                    Get_B2_ChooseBestNRotationGroup(const StrategyID)                   const;
     int                    Get_B2_ActionTimeBefCloseInSec(const StrategyID)                    const;
     vector<int>            Get_B2_FilterSMAPeriod(const StrategyID)                            const;
-    bool                   Get_B2_MoveNextBestUpIfNoSignal(const StrategyID)                   const;
+    bool                   Get_B2_MoveNextBestGroupUpIfNoSignal(const StrategyID)              const;
+    bool                   Get_B2_MoveNextBestStkInGrpUpIfNoSignal(const StrategyID)           const;
     bool                   CheckIfHaltTrading(const string &,const YYYYMMDD &)                 const;
     bool                   CheckIfHalfDayTrading(const string &,const YYYYMMDD &)              const;
     bool                   GetCorpActionAdj(const string &,const YYYYMMDD &,double &,double &) const;
@@ -354,6 +360,11 @@ class SystemConfig : boost::noncopyable
     double                                             m_S11A_T1GumbelGaussSigalLimit;
     bool                                               m_B2_US1_HasEnabledMinCommissionCheck;
     int                                                m_B2_US1_HasEnabledRotationMode;
+    bool                                               m_B2_US1_RotationModeTradeHighestReturn;
+    Option<double>                                     m_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice;
+    Option<double>                                     m_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice;
+    Option<double>                                     m_B2_US1_LongOnlyWhenAvgPriceReturnAbove;
+    Option<double>                                     m_B2_US1_ShortOnlyWhenAvgPriceReturnBelow;
     string                                             m_B2_US1_TheoCPnLHistFolder;
     string                                             m_B2_US1_TheoPosFolder;
     bool                                               m_B2_US1_PersistTheoPosCPnL;
@@ -361,9 +372,15 @@ class SystemConfig : boost::noncopyable
     int                                                m_B2_US1_ChooseBestNRotationGroup;
     int                                                m_B2_US1_ActionTimeBefCloseInSec;
     vector<int>                                        m_B2_US1_FilterSMAPeriod;
-    bool                                               m_B2_US1_MoveNextBestUpIfNoSignal;
+    bool                                               m_B2_US1_MoveNextBestGroupUpIfNoSignal;
+    bool                                               m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal;
     bool                                               m_B2_US2_HasEnabledMinCommissionCheck;
     int                                                m_B2_US2_HasEnabledRotationMode;
+    bool                                               m_B2_US2_RotationModeTradeHighestReturn;
+    Option<double>                                     m_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice;
+    Option<double>                                     m_B2_US2_ShortOnlyWhenClosePriceAboveAvgPrice;
+    Option<double>                                     m_B2_US2_LongOnlyWhenAvgPriceReturnAbove;
+    Option<double>                                     m_B2_US2_ShortOnlyWhenAvgPriceReturnBelow;
     string                                             m_B2_US2_TheoCPnLHistFolder;
     string                                             m_B2_US2_TheoPosFolder;
     bool                                               m_B2_US2_PersistTheoPosCPnL;
@@ -371,9 +388,15 @@ class SystemConfig : boost::noncopyable
     int                                                m_B2_US2_ChooseBestNRotationGroup;
     int                                                m_B2_US2_ActionTimeBefCloseInSec;
     vector<int>                                        m_B2_US2_FilterSMAPeriod;
-    bool                                               m_B2_US2_MoveNextBestUpIfNoSignal;
+    bool                                               m_B2_US2_MoveNextBestGroupUpIfNoSignal;
+    bool                                               m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal;
     bool                                               m_B2_HK_HasEnabledMinCommissionCheck;
     int                                                m_B2_HK_HasEnabledRotationMode;
+    bool                                               m_B2_HK_RotationModeTradeHighestReturn;
+    Option<double>                                     m_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice;
+    Option<double>                                     m_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice;
+    Option<double>                                     m_B2_HK_LongOnlyWhenAvgPriceReturnAbove;
+    Option<double>                                     m_B2_HK_ShortOnlyWhenAvgPriceReturnBelow;
     string                                             m_B2_HK_TheoCPnLHistFolder;
     string                                             m_B2_HK_TheoPosFolder;
     bool                                               m_B2_HK_PersistTheoPosCPnL;
@@ -381,7 +404,8 @@ class SystemConfig : boost::noncopyable
     int                                                m_B2_HK_ChooseBestNRotationGroup;
     int                                                m_B2_HK_ActionTimeBefCloseInSec;
     vector<int>                                        m_B2_HK_FilterSMAPeriod;
-    bool                                               m_B2_HK_MoveNextBestUpIfNoSignal;
+    bool                                               m_B2_HK_MoveNextBestGroupUpIfNoSignal;
+    bool                                               m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal;
     string                                             m_SymbolsToBeUsedInAllSections;
 };
 

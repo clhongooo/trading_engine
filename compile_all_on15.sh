@@ -8,5 +8,6 @@ LSDIRO="/home/qy/Dropbox/nirvana/workspaceCN/loglibrary/Debug \
 for DIRO in $LSDIRO
 do
     cd $DIRO
+    make clean
     make
 done

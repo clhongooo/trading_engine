@@ -154,6 +154,11 @@ class StrategyB2 : public StrategyBase {
     vector<Acct>     m_TheoAcct;
     bool             m_PersistTheoPosCPnL;
     int              m_RotationMode;
+    bool             m_RotationModeTradeHighestReturn;
+    Option<double>   m_LongOnlyWhenClosePriceBelowAvgPrice;
+    Option<double>   m_ShortOnlyWhenClosePriceAboveAvgPrice;
+    Option<double>   m_LongOnlyWhenAvgPriceReturnAbove;
+    Option<double>   m_ShortOnlyWhenAvgPriceReturnBelow;
     int              m_ChooseBestNRotationGroup;
 
     //--------------------------------------------------
@@ -183,8 +188,8 @@ class StrategyB2 : public StrategyBase {
     vector<int>                               m_B2_FilterSMAPeriod;
     vector<Sma<double> >                      m_v_SMA_short;
     vector<Sma<double> >                      m_v_SMA_long;
-    bool                                      m_MoveNextBestUpIfNoSignal;
-
+    bool                                      m_MoveNextBestGroupUpIfNoSignal;
+    bool                                      m_MoveNextBestStkInGrpUpIfNoSignal;
 
     //--------------------------------------------------
     // Convenience pointers

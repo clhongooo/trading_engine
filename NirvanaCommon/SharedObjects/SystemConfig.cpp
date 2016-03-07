@@ -107,28 +107,46 @@ SystemConfig::SystemConfig() :
   m_S11A_T1GumbelGaussSigalLimit(0),
   m_B2_US1_HasEnabledMinCommissionCheck(true),
   m_B2_US1_HasEnabledRotationMode(0),
+  m_B2_US1_RotationModeTradeHighestReturn(0),
+  m_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice(Option<double>()),
+  m_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice(Option<double>()),
+  m_B2_US1_LongOnlyWhenAvgPriceReturnAbove(Option<double>()),
+  m_B2_US1_ShortOnlyWhenAvgPriceReturnBelow(Option<double>()),
   m_B2_US1_TheoCPnLHistFolder(""),
   m_B2_US1_TheoPosFolder(""),
   m_B2_US1_PersistTheoPosCPnL(false),
   m_B2_US1_ChooseBestNRotationGroup(1),
   m_B2_US1_ActionTimeBefCloseInSec(180),
-  m_B2_US1_MoveNextBestUpIfNoSignal(true),
+  m_B2_US1_MoveNextBestGroupUpIfNoSignal(true),
+  m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal(true),
   m_B2_US2_HasEnabledMinCommissionCheck(true),
   m_B2_US2_HasEnabledRotationMode(0),
+  m_B2_US2_RotationModeTradeHighestReturn(0),
+  m_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice(Option<double>()),
+  m_B2_US2_ShortOnlyWhenClosePriceAboveAvgPrice(Option<double>()),
+  m_B2_US2_LongOnlyWhenAvgPriceReturnAbove(Option<double>()),
+  m_B2_US2_ShortOnlyWhenAvgPriceReturnBelow(Option<double>()),
   m_B2_US2_TheoCPnLHistFolder(""),
   m_B2_US2_TheoPosFolder(""),
   m_B2_US2_PersistTheoPosCPnL(false),
   m_B2_US2_ChooseBestNRotationGroup(1),
   m_B2_US2_ActionTimeBefCloseInSec(180),
-  m_B2_US2_MoveNextBestUpIfNoSignal(true),
+  m_B2_US2_MoveNextBestGroupUpIfNoSignal(true),
+  m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal(true),
   m_B2_HK_HasEnabledMinCommissionCheck(true),
   m_B2_HK_HasEnabledRotationMode(0),
+  m_B2_HK_RotationModeTradeHighestReturn(0),
+  m_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice(Option<double>()),
+  m_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice(Option<double>()),
+  m_B2_HK_LongOnlyWhenAvgPriceReturnAbove(Option<double>()),
+  m_B2_HK_ShortOnlyWhenAvgPriceReturnBelow(Option<double>()),
   m_B2_HK_TheoCPnLHistFolder(""),
   m_B2_HK_TheoPosFolder(""),
   m_B2_HK_PersistTheoPosCPnL(false),
   m_B2_HK_ChooseBestNRotationGroup(1),
   m_B2_HK_ActionTimeBefCloseInSec(180),
-  m_B2_HK_MoveNextBestUpIfNoSignal(true),
+  m_B2_HK_MoveNextBestGroupUpIfNoSignal(true),
+  m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal(true),
   m_SymbolsToBeUsedInAllSections("")
 {
   m_Logger = Logger::Instance();
@@ -282,16 +300,22 @@ double                                 SystemConfig::Get_S11AT1GumbelGaussMargin
 double                                 SystemConfig::Get_S11AMonitoringIntervalInSec()                 const {  return m_S11A_MonitoringIntervalInSec;                }
 double                                 SystemConfig::Get_S11AT1GumbelGaussSignalLimit()                const {  return m_S11A_T1GumbelGaussSigalLimit;                }
 
-bool         SystemConfig::B2_HasEnabledMinCommissionCheck (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_HasEnabledMinCommissionCheck; else if (id == STY_B2_US2) return m_B2_US2_HasEnabledMinCommissionCheck; else if (id == STY_B2_HK) return m_B2_HK_HasEnabledMinCommissionCheck; }
-int          SystemConfig::B2_HasEnabledRotationMode       (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_HasEnabledRotationMode;       else if (id == STY_B2_US2) return m_B2_US2_HasEnabledRotationMode;       else if (id == STY_B2_HK) return m_B2_HK_HasEnabledRotationMode;       }
-string       SystemConfig::B2_TheoCPnLHistFolder           (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_TheoCPnLHistFolder;           else if (id == STY_B2_US2) return m_B2_US2_TheoCPnLHistFolder;           else if (id == STY_B2_HK) return m_B2_HK_TheoCPnLHistFolder;           }
-string       SystemConfig::B2_TheoPosFolder                (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_TheoPosFolder;                else if (id == STY_B2_US2) return m_B2_US2_TheoPosFolder;                else if (id == STY_B2_HK) return m_B2_HK_TheoPosFolder;                }
-bool         SystemConfig::B2_PersistTheoPosCPnL           (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_PersistTheoPosCPnL;           else if (id == STY_B2_US2) return m_B2_US2_PersistTheoPosCPnL;           else if (id == STY_B2_HK) return m_B2_HK_PersistTheoPosCPnL;           }
-vector<int>  SystemConfig::Get_B2_RotationGroup            (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_RotationGroup;                else if (id == STY_B2_US2) return m_B2_US2_RotationGroup;                else if (id == STY_B2_HK) return m_B2_HK_RotationGroup;                }
-int          SystemConfig::Get_B2_ChooseBestNRotationGroup (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_ChooseBestNRotationGroup;     else if (id == STY_B2_US2) return m_B2_US2_ChooseBestNRotationGroup;     else if (id == STY_B2_HK) return m_B2_HK_ChooseBestNRotationGroup;     }
-int          SystemConfig::Get_B2_ActionTimeBefCloseInSec  (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_ActionTimeBefCloseInSec;      else if (id == STY_B2_US2) return m_B2_US2_ActionTimeBefCloseInSec;      else if (id == STY_B2_HK) return m_B2_HK_ActionTimeBefCloseInSec;      }
-vector<int>  SystemConfig::Get_B2_FilterSMAPeriod          (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_FilterSMAPeriod;              else if (id == STY_B2_US2) return m_B2_US2_FilterSMAPeriod;              else if (id == STY_B2_HK) return m_B2_HK_FilterSMAPeriod;              }
-bool         SystemConfig::Get_B2_MoveNextBestUpIfNoSignal (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_MoveNextBestUpIfNoSignal;     else if (id == STY_B2_US2) return m_B2_US2_MoveNextBestUpIfNoSignal;     else if (id == STY_B2_HK) return m_B2_HK_MoveNextBestUpIfNoSignal;     }
+bool           SystemConfig::B2_HasEnabledMinCommissionCheck        (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_HasEnabledMinCommissionCheck;         else if (id == STY_B2_US2) return m_B2_US2_HasEnabledMinCommissionCheck;            else if (id == STY_B2_HK) return m_B2_HK_HasEnabledMinCommissionCheck;        }
+int            SystemConfig::B2_HasEnabledRotationMode              (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_HasEnabledRotationMode;               else if (id == STY_B2_US2) return m_B2_US2_HasEnabledRotationMode;                  else if (id == STY_B2_HK) return m_B2_HK_HasEnabledRotationMode;              }
+bool           SystemConfig::B2_RotationModeTradeHighestReturn      (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_RotationModeTradeHighestReturn;       else if (id == STY_B2_US2) return m_B2_US2_RotationModeTradeHighestReturn;          else if (id == STY_B2_HK) return m_B2_HK_RotationModeTradeHighestReturn;      }
+Option<double> SystemConfig::B2_LongOnlyWhenClosePriceBelowAvgPrice (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice;  else if (id == STY_B2_US2) return m_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice;     else if (id == STY_B2_HK) return m_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice; }
+Option<double> SystemConfig::B2_ShortOnlyWhenClosePriceAboveAvgPrice(const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice; else if (id == STY_B2_US2) return m_B2_US2_ShortOnlyWhenClosePriceAboveAvgPrice;    else if (id == STY_B2_HK) return m_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice;}
+Option<double> SystemConfig::B2_LongOnlyWhenAvgPriceReturnAbove     (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_LongOnlyWhenAvgPriceReturnAbove;      else if (id == STY_B2_US2) return m_B2_US2_LongOnlyWhenAvgPriceReturnAbove;         else if (id == STY_B2_HK) return m_B2_HK_LongOnlyWhenAvgPriceReturnAbove;     }
+Option<double> SystemConfig::B2_ShortOnlyWhenAvgPriceReturnBelow    (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_ShortOnlyWhenAvgPriceReturnBelow;     else if (id == STY_B2_US2) return m_B2_US2_ShortOnlyWhenAvgPriceReturnBelow;        else if (id == STY_B2_HK) return m_B2_HK_ShortOnlyWhenAvgPriceReturnBelow;    }
+string         SystemConfig::B2_TheoCPnLHistFolder                  (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_TheoCPnLHistFolder;                   else if (id == STY_B2_US2) return m_B2_US2_TheoCPnLHistFolder;                      else if (id == STY_B2_HK) return m_B2_HK_TheoCPnLHistFolder;                  }
+string         SystemConfig::B2_TheoPosFolder                       (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_TheoPosFolder;                        else if (id == STY_B2_US2) return m_B2_US2_TheoPosFolder;                           else if (id == STY_B2_HK) return m_B2_HK_TheoPosFolder;                       }
+bool           SystemConfig::B2_PersistTheoPosCPnL                  (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_PersistTheoPosCPnL;                   else if (id == STY_B2_US2) return m_B2_US2_PersistTheoPosCPnL;                      else if (id == STY_B2_HK) return m_B2_HK_PersistTheoPosCPnL;                  }
+vector<int>    SystemConfig::Get_B2_RotationGroup                   (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_RotationGroup;                        else if (id == STY_B2_US2) return m_B2_US2_RotationGroup;                           else if (id == STY_B2_HK) return m_B2_HK_RotationGroup;                       }
+int            SystemConfig::Get_B2_ChooseBestNRotationGroup        (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_ChooseBestNRotationGroup;             else if (id == STY_B2_US2) return m_B2_US2_ChooseBestNRotationGroup;                else if (id == STY_B2_HK) return m_B2_HK_ChooseBestNRotationGroup;            }
+int            SystemConfig::Get_B2_ActionTimeBefCloseInSec         (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_ActionTimeBefCloseInSec;              else if (id == STY_B2_US2) return m_B2_US2_ActionTimeBefCloseInSec;                 else if (id == STY_B2_HK) return m_B2_HK_ActionTimeBefCloseInSec;             }
+vector<int>    SystemConfig::Get_B2_FilterSMAPeriod                 (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_FilterSMAPeriod;                      else if (id == STY_B2_US2) return m_B2_US2_FilterSMAPeriod;                         else if (id == STY_B2_HK) return m_B2_HK_FilterSMAPeriod;                     }
+bool           SystemConfig::Get_B2_MoveNextBestGroupUpIfNoSignal   (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_MoveNextBestGroupUpIfNoSignal;        else if (id == STY_B2_US2) return m_B2_US2_MoveNextBestGroupUpIfNoSignal;           else if (id == STY_B2_HK) return m_B2_HK_MoveNextBestGroupUpIfNoSignal;       }
+bool           SystemConfig::Get_B2_MoveNextBestStkInGrpUpIfNoSignal(const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal;     else if (id == STY_B2_US2) return m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal;        else if (id == STY_B2_HK) return m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal;    }
 
 
 bool SystemConfig::ChkIfProceedStyForceExcnEvenIfNoMD(const string & symbol) const
@@ -471,59 +495,98 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_S11A_ParamFileT1GumbelGauss    )  m_S11A_ParamFileT1GumbelGauss      = STool::Trim(o_S11A_ParamFileT1GumbelGauss     .get());
   if(o_S11A_ParamFileT2Copula         )  m_S11A_ParamFileT2Copula           = STool::Trim(o_S11A_ParamFileT2Copula          .get());
 
-  boost::optional<bool>   o_B2_US1_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_US1.EnableMinCommissionCheck");
-  boost::optional<int>    o_B2_US1_HasEnabledRotationMode       = pt.get_optional<int>   ("Strategy_B2_US1.EnableRotationMode");
-  boost::optional<bool>   o_B2_US1_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_US1.PersistTheoPosCPnL");
-  boost::optional<int>    o_B2_US1_ChooseBestNRotationGroup     = pt.get_optional<int>   ("Strategy_B2_US1.ChooseBestNRotationGroup");
-  boost::optional<int>    o_B2_US1_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_US1.ActionTimeBefCloseInSec");
-  boost::optional<bool>   o_B2_US1_MoveNextBestUpIfNoSignal     = pt.get_optional<bool>  ("Strategy_B2_US1.MoveNextBestUpIfNoSignal");
-  boost::optional<string> o_B2_US1_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_US1.TheoCPnLHistFolder");
-  boost::optional<string> o_B2_US1_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_US1.TheoPosFolder");
+  boost::optional<bool>   o_B2_US1_HasEnabledMinCommissionCheck        = pt.get_optional<bool>    ("Strategy_B2_US1.EnableMinCommissionCheck");
+  boost::optional<int>    o_B2_US1_HasEnabledRotationMode              = pt.get_optional<int>     ("Strategy_B2_US1.EnableRotationMode");
+  boost::optional<bool>   o_B2_US1_RotationModeTradeHighestReturn      = pt.get_optional<bool>    ("Strategy_B2_US1.RotationModeTradeHighestReturn");
+  boost::optional<bool>   o_B2_US1_PersistTheoPosCPnL                  = pt.get_optional<bool>    ("Strategy_B2_US1.PersistTheoPosCPnL");
+  boost::optional<int>    o_B2_US1_ChooseBestNRotationGroup            = pt.get_optional<int>     ("Strategy_B2_US1.ChooseBestNRotationGroup");
+  boost::optional<int>    o_B2_US1_ActionTimeBefCloseInSec             = pt.get_optional<int>     ("Strategy_B2_US1.ActionTimeBefCloseInSec");
+  boost::optional<bool>   o_B2_US1_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B2_US1.MoveNextBestGroupUpIfNoSignal");
+  boost::optional<bool>   o_B2_US1_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B2_US1.MoveNextBestStkInGrpUpIfNoSignal");
+  boost::optional<string> o_B2_US1_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B2_US1.TheoCPnLHistFolder");
+  boost::optional<string> o_B2_US1_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_US1.TheoPosFolder");
 
-  if(o_B2_US1_HasEnabledMinCommissionCheck)  m_B2_US1_HasEnabledMinCommissionCheck  = o_B2_US1_HasEnabledMinCommissionCheck .get();
-  if(o_B2_US1_HasEnabledRotationMode      )  m_B2_US1_HasEnabledRotationMode        = o_B2_US1_HasEnabledRotationMode       .get();
-  if(o_B2_US1_PersistTheoPosCPnL          )  m_B2_US1_PersistTheoPosCPnL            = o_B2_US1_PersistTheoPosCPnL           .get();
-  if(o_B2_US1_ChooseBestNRotationGroup    )  m_B2_US1_ChooseBestNRotationGroup      = o_B2_US1_ChooseBestNRotationGroup     .get();
-  if(o_B2_US1_ActionTimeBefCloseInSec     )  m_B2_US1_ActionTimeBefCloseInSec       = o_B2_US1_ActionTimeBefCloseInSec      .get();
-  if(o_B2_US1_MoveNextBestUpIfNoSignal    )  m_B2_US1_MoveNextBestUpIfNoSignal      = o_B2_US1_MoveNextBestUpIfNoSignal     .get();
-  if(o_B2_US1_TheoCPnLHistFolder          )  m_B2_US1_TheoCPnLHistFolder            = STool::Trim(o_B2_US1_TheoCPnLHistFolder.get());
-  if(o_B2_US1_TheoPosFolder               )  m_B2_US1_TheoPosFolder                 = STool::Trim(o_B2_US1_TheoPosFolder     .get());
+  if(o_B2_US1_HasEnabledMinCommissionCheck        )  m_B2_US1_HasEnabledMinCommissionCheck         = o_B2_US1_HasEnabledMinCommissionCheck        .get();
+  if(o_B2_US1_HasEnabledRotationMode              )  m_B2_US1_HasEnabledRotationMode               = o_B2_US1_HasEnabledRotationMode              .get();
+  if(o_B2_US1_RotationModeTradeHighestReturn      )  m_B2_US1_RotationModeTradeHighestReturn       = o_B2_US1_RotationModeTradeHighestReturn      .get();
+  if(o_B2_US1_PersistTheoPosCPnL                  )  m_B2_US1_PersistTheoPosCPnL                   = o_B2_US1_PersistTheoPosCPnL                  .get();
+  if(o_B2_US1_ChooseBestNRotationGroup            )  m_B2_US1_ChooseBestNRotationGroup             = o_B2_US1_ChooseBestNRotationGroup            .get();
+  if(o_B2_US1_ActionTimeBefCloseInSec             )  m_B2_US1_ActionTimeBefCloseInSec              = o_B2_US1_ActionTimeBefCloseInSec             .get();
+  if(o_B2_US1_MoveNextBestGroupUpIfNoSignal       )  m_B2_US1_MoveNextBestGroupUpIfNoSignal        = o_B2_US1_MoveNextBestGroupUpIfNoSignal       .get();
+  if(o_B2_US1_MoveNextBestStkInGrpUpIfNoSignal    )  m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal     = o_B2_US1_MoveNextBestStkInGrpUpIfNoSignal    .get();
+  if(o_B2_US1_TheoCPnLHistFolder                  )  m_B2_US1_TheoCPnLHistFolder                   = STool::Trim(o_B2_US1_TheoCPnLHistFolder      .get());
+  if(o_B2_US1_TheoPosFolder                       )  m_B2_US1_TheoPosFolder                        = STool::Trim(o_B2_US1_TheoPosFolder           .get());
 
-  boost::optional<bool>   o_B2_US2_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_US2.EnableMinCommissionCheck");
-  boost::optional<int>    o_B2_US2_HasEnabledRotationMode       = pt.get_optional<int>   ("Strategy_B2_US2.EnableRotationMode");
-  boost::optional<bool>   o_B2_US2_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_US2.PersistTheoPosCPnL");
-  boost::optional<int>    o_B2_US2_ChooseBestNRotationGroup     = pt.get_optional<int>   ("Strategy_B2_US2.ChooseBestNRotationGroup");
-  boost::optional<int>    o_B2_US2_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_US2.ActionTimeBefCloseInSec");
-  boost::optional<bool>   o_B2_US2_MoveNextBestUpIfNoSignal     = pt.get_optional<bool>  ("Strategy_B2_US2.MoveNextBestUpIfNoSignal");
-  boost::optional<string> o_B2_US2_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_US2.TheoCPnLHistFolder");
-  boost::optional<string> o_B2_US2_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_US2.TheoPosFolder");
+  boost::optional<bool>   o_B2_US2_HasEnabledMinCommissionCheck        = pt.get_optional<bool>    ("Strategy_B2_US2.EnableMinCommissionCheck");
+  boost::optional<int>    o_B2_US2_HasEnabledRotationMode              = pt.get_optional<int>     ("Strategy_B2_US2.EnableRotationMode");
+  boost::optional<bool>   o_B2_US2_RotationModeTradeHighestReturn      = pt.get_optional<bool>    ("Strategy_B2_US2.RotationModeTradeHighestReturn");
+  boost::optional<bool>   o_B2_US2_PersistTheoPosCPnL                  = pt.get_optional<bool>    ("Strategy_B2_US2.PersistTheoPosCPnL");
+  boost::optional<int>    o_B2_US2_ChooseBestNRotationGroup            = pt.get_optional<int>     ("Strategy_B2_US2.ChooseBestNRotationGroup");
+  boost::optional<int>    o_B2_US2_ActionTimeBefCloseInSec             = pt.get_optional<int>     ("Strategy_B2_US2.ActionTimeBefCloseInSec");
+  boost::optional<bool>   o_B2_US2_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B2_US2.MoveNextBestGroupUpIfNoSignal");
+  boost::optional<bool>   o_B2_US2_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B2_US2.MoveNextBestStkInGrpUpIfNoSignal");
+  boost::optional<string> o_B2_US2_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B2_US2.TheoCPnLHistFolder");
+  boost::optional<string> o_B2_US2_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_US2.TheoPosFolder");
 
-  if(o_B2_US2_HasEnabledMinCommissionCheck)  m_B2_US2_HasEnabledMinCommissionCheck  = o_B2_US2_HasEnabledMinCommissionCheck .get();
-  if(o_B2_US2_HasEnabledRotationMode      )  m_B2_US2_HasEnabledRotationMode        = o_B2_US2_HasEnabledRotationMode       .get();
-  if(o_B2_US2_PersistTheoPosCPnL          )  m_B2_US2_PersistTheoPosCPnL            = o_B2_US2_PersistTheoPosCPnL           .get();
-  if(o_B2_US2_ChooseBestNRotationGroup    )  m_B2_US2_ChooseBestNRotationGroup      = o_B2_US2_ChooseBestNRotationGroup     .get();
-  if(o_B2_US2_ActionTimeBefCloseInSec     )  m_B2_US2_ActionTimeBefCloseInSec       = o_B2_US2_ActionTimeBefCloseInSec      .get();
-  if(o_B2_US2_MoveNextBestUpIfNoSignal    )  m_B2_US2_MoveNextBestUpIfNoSignal      = o_B2_US2_MoveNextBestUpIfNoSignal     .get();
-  if(o_B2_US2_TheoCPnLHistFolder          )  m_B2_US2_TheoCPnLHistFolder            = STool::Trim(o_B2_US2_TheoCPnLHistFolder.get());
-  if(o_B2_US2_TheoPosFolder               )  m_B2_US2_TheoPosFolder                 = STool::Trim(o_B2_US2_TheoPosFolder     .get());
+  if(o_B2_US2_HasEnabledMinCommissionCheck        )  m_B2_US2_HasEnabledMinCommissionCheck         = o_B2_US2_HasEnabledMinCommissionCheck        .get();
+  if(o_B2_US2_HasEnabledRotationMode              )  m_B2_US2_HasEnabledRotationMode               = o_B2_US2_HasEnabledRotationMode              .get();
+  if(o_B2_US2_RotationModeTradeHighestReturn      )  m_B2_US2_RotationModeTradeHighestReturn       = o_B2_US2_RotationModeTradeHighestReturn      .get();
+  if(o_B2_US2_PersistTheoPosCPnL                  )  m_B2_US2_PersistTheoPosCPnL                   = o_B2_US2_PersistTheoPosCPnL                  .get();
+  if(o_B2_US2_ChooseBestNRotationGroup            )  m_B2_US2_ChooseBestNRotationGroup             = o_B2_US2_ChooseBestNRotationGroup            .get();
+  if(o_B2_US2_ActionTimeBefCloseInSec             )  m_B2_US2_ActionTimeBefCloseInSec              = o_B2_US2_ActionTimeBefCloseInSec             .get();
+  if(o_B2_US2_MoveNextBestGroupUpIfNoSignal       )  m_B2_US2_MoveNextBestGroupUpIfNoSignal        = o_B2_US2_MoveNextBestGroupUpIfNoSignal       .get();
+  if(o_B2_US2_MoveNextBestStkInGrpUpIfNoSignal    )  m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal     = o_B2_US2_MoveNextBestStkInGrpUpIfNoSignal    .get();
+  if(o_B2_US2_TheoCPnLHistFolder                  )  m_B2_US2_TheoCPnLHistFolder                   = STool::Trim(o_B2_US2_TheoCPnLHistFolder      .get());
+  if(o_B2_US2_TheoPosFolder                       )  m_B2_US2_TheoPosFolder                        = STool::Trim(o_B2_US2_TheoPosFolder           .get());
 
-  boost::optional<bool>   o_B2_HK_HasEnabledMinCommissionCheck = pt.get_optional<bool>  ("Strategy_B2_HK.EnableMinCommissionCheck");
-  boost::optional<int>    o_B2_HK_HasEnabledRotationMode       = pt.get_optional<int>   ("Strategy_B2_HK.EnableRotationMode");
-  boost::optional<bool>   o_B2_HK_PersistTheoPosCPnL           = pt.get_optional<bool>  ("Strategy_B2_HK.PersistTheoPosCPnL");
-  boost::optional<int>    o_B2_HK_ChooseBestNRotationGroup     = pt.get_optional<int>   ("Strategy_B2_HK.ChooseBestNRotationGroup");
-  boost::optional<int>    o_B2_HK_ActionTimeBefCloseInSec      = pt.get_optional<int>   ("Strategy_B2_HK.ActionTimeBefCloseInSec");
-  boost::optional<bool>   o_B2_HK_MoveNextBestUpIfNoSignal     = pt.get_optional<bool>  ("Strategy_B2_HK.MoveNextBestUpIfNoSignal");
-  boost::optional<string> o_B2_HK_TheoCPnLHistFolder           = pt.get_optional<string>("Strategy_B2_HK.TheoCPnLHistFolder");
-  boost::optional<string> o_B2_HK_TheoPosFolder                = pt.get_optional<string>("Strategy_B2_HK.TheoPosFolder");
+  boost::optional<bool>   o_B2_HK_HasEnabledMinCommissionCheck        = pt.get_optional<bool>    ("Strategy_B2_HK.EnableMinCommissionCheck");
+  boost::optional<int>    o_B2_HK_HasEnabledRotationMode              = pt.get_optional<int>     ("Strategy_B2_HK.EnableRotationMode");
+  boost::optional<bool>   o_B2_HK_RotationModeTradeHighestReturn      = pt.get_optional<bool>    ("Strategy_B2_HK.RotationModeTradeHighestReturn");
+  boost::optional<bool>   o_B2_HK_PersistTheoPosCPnL                  = pt.get_optional<bool>    ("Strategy_B2_HK.PersistTheoPosCPnL");
+  boost::optional<int>    o_B2_HK_ChooseBestNRotationGroup            = pt.get_optional<int>     ("Strategy_B2_HK.ChooseBestNRotationGroup");
+  boost::optional<int>    o_B2_HK_ActionTimeBefCloseInSec             = pt.get_optional<int>     ("Strategy_B2_HK.ActionTimeBefCloseInSec");
+  boost::optional<bool>   o_B2_HK_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B2_HK.MoveNextBestGroupUpIfNoSignal");
+  boost::optional<bool>   o_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B2_HK.MoveNextBestStkInGrpUpIfNoSignal");
+  boost::optional<string> o_B2_HK_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B2_HK.TheoCPnLHistFolder");
+  boost::optional<string> o_B2_HK_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_HK.TheoPosFolder");
 
-  if(o_B2_HK_HasEnabledMinCommissionCheck)  m_B2_HK_HasEnabledMinCommissionCheck  = o_B2_HK_HasEnabledMinCommissionCheck .get();
-  if(o_B2_HK_HasEnabledRotationMode      )  m_B2_HK_HasEnabledRotationMode        = o_B2_HK_HasEnabledRotationMode       .get();
-  if(o_B2_HK_PersistTheoPosCPnL          )  m_B2_HK_PersistTheoPosCPnL            = o_B2_HK_PersistTheoPosCPnL           .get();
-  if(o_B2_HK_ChooseBestNRotationGroup    )  m_B2_HK_ChooseBestNRotationGroup      = o_B2_HK_ChooseBestNRotationGroup     .get();
-  if(o_B2_HK_ActionTimeBefCloseInSec     )  m_B2_HK_ActionTimeBefCloseInSec       = o_B2_HK_ActionTimeBefCloseInSec      .get();
-  if(o_B2_HK_MoveNextBestUpIfNoSignal    )  m_B2_HK_MoveNextBestUpIfNoSignal      = o_B2_HK_MoveNextBestUpIfNoSignal     .get();
-  if(o_B2_HK_TheoCPnLHistFolder          )  m_B2_HK_TheoCPnLHistFolder            = STool::Trim(o_B2_HK_TheoCPnLHistFolder.get());
-  if(o_B2_HK_TheoPosFolder               )  m_B2_HK_TheoPosFolder                 = STool::Trim(o_B2_HK_TheoPosFolder     .get());
+  if(o_B2_HK_HasEnabledMinCommissionCheck        )  m_B2_HK_HasEnabledMinCommissionCheck        = o_B2_HK_HasEnabledMinCommissionCheck        .get();
+  if(o_B2_HK_HasEnabledRotationMode              )  m_B2_HK_HasEnabledRotationMode              = o_B2_HK_HasEnabledRotationMode              .get();
+  if(o_B2_HK_RotationModeTradeHighestReturn      )  m_B2_HK_RotationModeTradeHighestReturn      = o_B2_HK_RotationModeTradeHighestReturn      .get();
+  if(o_B2_HK_PersistTheoPosCPnL                  )  m_B2_HK_PersistTheoPosCPnL                  = o_B2_HK_PersistTheoPosCPnL                  .get();
+  if(o_B2_HK_ChooseBestNRotationGroup            )  m_B2_HK_ChooseBestNRotationGroup            = o_B2_HK_ChooseBestNRotationGroup            .get();
+  if(o_B2_HK_ActionTimeBefCloseInSec             )  m_B2_HK_ActionTimeBefCloseInSec             = o_B2_HK_ActionTimeBefCloseInSec             .get();
+  if(o_B2_HK_MoveNextBestGroupUpIfNoSignal       )  m_B2_HK_MoveNextBestGroupUpIfNoSignal       = o_B2_HK_MoveNextBestGroupUpIfNoSignal       .get();
+  if(o_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    )  m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    = o_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    .get();
+  if(o_B2_HK_TheoCPnLHistFolder                  )  m_B2_HK_TheoCPnLHistFolder                  = STool::Trim(o_B2_HK_TheoCPnLHistFolder      .get());
+  if(o_B2_HK_TheoPosFolder                       )  m_B2_HK_TheoPosFolder                       = STool::Trim(o_B2_HK_TheoPosFolder           .get());
+
+
+  boost::optional<string> o_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice   = pt.get_optional<string>  ("Strategy_B2_US1.LongOnlyWhenClosePriceBelowAvgPrice");
+  boost::optional<string> o_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice  = pt.get_optional<string>  ("Strategy_B2_US1.ShortOnlyWhenClosePriceAboveAvgPrice");
+  boost::optional<string> o_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice   = pt.get_optional<string>  ("Strategy_B2_US2.LongOnlyWhenClosePriceBelowAvgPrice");
+  boost::optional<string> o_B2_US2_ShortOnlyWhenClosePriceAboveAvgPrice  = pt.get_optional<string>  ("Strategy_B2_US2.ShortOnlyWhenClosePriceAboveAvgPrice");
+  boost::optional<string> o_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice    = pt.get_optional<string>  ("Strategy_B2_HK.LongOnlyWhenClosePriceBelowAvgPrice");
+  boost::optional<string> o_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice   = pt.get_optional<string>  ("Strategy_B2_HK.ShortOnlyWhenClosePriceAboveAvgPrice");
+  if(o_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice ) { string s = STool::Trim(o_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice  .get()); if (s != "") m_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice  = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice) { string s = STool::Trim(o_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice .get()); if (s != "") m_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice ) { string s = STool::Trim(o_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice  .get()); if (s != "") m_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice  = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_US2_ShortOnlyWhenClosePriceAboveAvgPrice) { string s = STool::Trim(o_B2_US2_ShortOnlyWhenClosePriceAboveAvgPrice .get()); if (s != "") m_B2_US2_ShortOnlyWhenClosePriceAboveAvgPrice = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice )  { string s = STool::Trim(o_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice   .get()); if (s != "") m_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice   = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice)  { string s = STool::Trim(o_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice  .get()); if (s != "") m_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice  = Option<double>(boost::lexical_cast<double>(s));  }
+
+  boost::optional<string> o_B2_US1_LongOnlyWhenAvgPriceReturnAbove   = pt.get_optional<string>  ("Strategy_B2_US1.LongOnlyWhenAvgPriceReturnAbove");
+  boost::optional<string> o_B2_US1_ShortOnlyWhenAvpPriceReturnBelow  = pt.get_optional<string>  ("Strategy_B2_US1.ShortOnlyWhenAvpPriceReturnBelow");
+  boost::optional<string> o_B2_US2_LongOnlyWhenAvgPriceReturnAbove   = pt.get_optional<string>  ("Strategy_B2_US2.LongOnlyWhenAvgPriceReturnAbove");
+  boost::optional<string> o_B2_US2_ShortOnlyWhenAvpPriceReturnBelow  = pt.get_optional<string>  ("Strategy_B2_US2.ShortOnlyWhenAvpPriceReturnBelow");
+  boost::optional<string> o_B2_HK_LongOnlyWhenAvgPriceReturnAbove    = pt.get_optional<string>  ("Strategy_B2_HK.LongOnlyWhenAvgPriceReturnAbove");
+  boost::optional<string> o_B2_HK_ShortOnlyWhenAvpPriceReturnBelow   = pt.get_optional<string>  ("Strategy_B2_HK.ShortOnlyWhenAvpPriceReturnBelow");
+  if(o_B2_US1_LongOnlyWhenAvgPriceReturnAbove ) { string s = STool::Trim(o_B2_US1_LongOnlyWhenAvgPriceReturnAbove  .get()); if (s != "") m_B2_US1_LongOnlyWhenAvgPriceReturnAbove  = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_US1_ShortOnlyWhenAvpPriceReturnBelow) { string s = STool::Trim(o_B2_US1_ShortOnlyWhenAvpPriceReturnBelow .get()); if (s != "") m_B2_US1_ShortOnlyWhenAvgPriceReturnBelow = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_US2_LongOnlyWhenAvgPriceReturnAbove ) { string s = STool::Trim(o_B2_US2_LongOnlyWhenAvgPriceReturnAbove  .get()); if (s != "") m_B2_US2_LongOnlyWhenAvgPriceReturnAbove  = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_US2_ShortOnlyWhenAvpPriceReturnBelow) { string s = STool::Trim(o_B2_US2_ShortOnlyWhenAvpPriceReturnBelow .get()); if (s != "") m_B2_US2_ShortOnlyWhenAvgPriceReturnBelow = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_HK_LongOnlyWhenAvgPriceReturnAbove )  { string s = STool::Trim(o_B2_HK_LongOnlyWhenAvgPriceReturnAbove   .get()); if (s != "") m_B2_HK_LongOnlyWhenAvgPriceReturnAbove   = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_HK_ShortOnlyWhenAvpPriceReturnBelow)  { string s = STool::Trim(o_B2_HK_ShortOnlyWhenAvpPriceReturnBelow  .get()); if (s != "") m_B2_HK_ShortOnlyWhenAvgPriceReturnBelow  = Option<double>(boost::lexical_cast<double>(s));  }
 
   {
     boost::optional<string> o_B2_US1_FilterSMAPeriod = pt.get_optional<string>("Strategy_B2_US1.FilterSMAPeriod");

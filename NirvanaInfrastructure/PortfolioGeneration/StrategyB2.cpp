@@ -6,7 +6,8 @@ StrategyB2::StrategyB2() :
   m_B2_HasEnabledMinCommissionCheck(true),
   m_B2_WhetherToRetain(false),
   m_B2_ActionTimeBefCloseInSec(180),
-  m_MoveNextBestUpIfNoSignal(true),
+  m_MoveNextBestGroupUpIfNoSignal(true),
+  m_MoveNextBestStkInGrpUpIfNoSignal(true),
   // m_ES_SPY_Together_SPYidx(-1),
   // m_SPY_Px(NAN),
   // m_NoOfSgndESCtrtReqd(0),
@@ -527,15 +528,42 @@ void StrategyB2::ReadParam()
 
   //--------------------------------------------------
   m_RotationMode = m_SysCfg->B2_HasEnabledRotationMode(m_StyID);
-  m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationMode             %d", GetStrategyName(m_StyID).c_str(),  m_RotationMode                            );
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationMode %d", GetStrategyName(m_StyID).c_str(),  m_RotationMode);
+  m_RotationModeTradeHighestReturn = m_SysCfg->B2_RotationModeTradeHighestReturn(m_StyID);
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationModeTradeHighestReturn %s", GetStrategyName(m_StyID).c_str(), (m_RotationModeTradeHighestReturn?"true":"false"));
+
+  m_LongOnlyWhenClosePriceBelowAvgPrice = m_SysCfg->B2_LongOnlyWhenClosePriceBelowAvgPrice(m_StyID);
+  if (m_LongOnlyWhenClosePriceBelowAvgPrice.IsSome())
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenClosePriceBelowAvgPrice %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenClosePriceBelowAvgPrice.Get());
+  else
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenClosePriceBelowAvgPrice: Nil", GetStrategyName(m_StyID).c_str());
+  m_ShortOnlyWhenClosePriceAboveAvgPrice = m_SysCfg->B2_ShortOnlyWhenClosePriceAboveAvgPrice(m_StyID);
+  if (m_ShortOnlyWhenClosePriceAboveAvgPrice.IsSome())
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenClosePriceAboveAvgPrice %f", GetStrategyName(m_StyID).c_str(), m_ShortOnlyWhenClosePriceAboveAvgPrice.Get());
+  else
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenClosePriceAboveAvgPrice: Nil", GetStrategyName(m_StyID).c_str());
+
+  m_LongOnlyWhenAvgPriceReturnAbove = m_SysCfg->B2_LongOnlyWhenAvgPriceReturnAbove(m_StyID);
+  if (m_LongOnlyWhenAvgPriceReturnAbove.IsSome())
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenAvgPriceReturnAbove %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenAvgPriceReturnAbove.Get());
+  else
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenAvgPriceReturnAbove: Nil", GetStrategyName(m_StyID).c_str());
+  m_ShortOnlyWhenAvgPriceReturnBelow = m_SysCfg->B2_ShortOnlyWhenAvgPriceReturnBelow(m_StyID);
+  if (m_ShortOnlyWhenAvgPriceReturnBelow.IsSome())
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenAvgPriceReturnBelow %f", GetStrategyName(m_StyID).c_str(), m_ShortOnlyWhenAvgPriceReturnBelow.Get());
+  else
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenAvgPriceReturnBelow: Nil", GetStrategyName(m_StyID).c_str());
 
   if (m_RotationMode != 0)
   {
     m_ChooseBestNRotationGroup = m_SysCfg->Get_B2_ChooseBestNRotationGroup(m_StyID);
-    m_Logger->Write(Logger::INFO,"Strategy %s: m_ChooseBestNRotationGroup        %d", GetStrategyName(m_StyID).c_str(),  m_ChooseBestNRotationGroup                       );
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_ChooseBestNRotationGroup        %d", GetStrategyName(m_StyID).c_str(),  m_ChooseBestNRotationGroup);
 
-    m_MoveNextBestUpIfNoSignal = m_SysCfg->Get_B2_MoveNextBestUpIfNoSignal(m_StyID);
-    m_Logger->Write(Logger::INFO,"Strategy %s: m_MoveNextBestUpIfNoSignal        %d", GetStrategyName(m_StyID).c_str(),  m_MoveNextBestUpIfNoSignal                       );
+    m_MoveNextBestGroupUpIfNoSignal = m_SysCfg->Get_B2_MoveNextBestGroupUpIfNoSignal(m_StyID);
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_MoveNextBestGroupUpIfNoSignal        %d", GetStrategyName(m_StyID).c_str(),  m_MoveNextBestGroupUpIfNoSignal);
+
+    m_MoveNextBestStkInGrpUpIfNoSignal = m_SysCfg->Get_B2_MoveNextBestStkInGrpUpIfNoSignal(m_StyID);
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_MoveNextBestStkInGrpUpIfNoSignal        %d", GetStrategyName(m_StyID).c_str(),  m_MoveNextBestStkInGrpUpIfNoSignal);
 
     m_RotationGroup            = m_SysCfg->Get_B2_RotationGroup(m_StyID);
     FForEach (m_RotationGroup,[&](const int gid) { m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationGroup %d", GetStrategyName(m_StyID).c_str(), gid); });
@@ -544,7 +572,8 @@ void StrategyB2::ReadParam()
   {
     m_Logger->Write(Logger::INFO,"Strategy %s: Any m_ChooseBestNRotationGroup settings are ignored", GetStrategyName(m_StyID).c_str());
     m_Logger->Write(Logger::INFO,"Strategy %s: Any m_RotationGroup settings are ignored", GetStrategyName(m_StyID).c_str());
-    m_Logger->Write(Logger::INFO,"Strategy %s: Any m_MoveNextBestUpIfNoSignal settings are ignored", GetStrategyName(m_StyID).c_str());
+    m_Logger->Write(Logger::INFO,"Strategy %s: Any m_MoveNextBestGroupUpIfNoSignal settings are ignored", GetStrategyName(m_StyID).c_str());
+    m_Logger->Write(Logger::INFO,"Strategy %s: Any m_MoveNextBestStkInGrpUpIfNoSignal settings are ignored", GetStrategyName(m_StyID).c_str());
   }
 
 
@@ -1703,6 +1732,69 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   if      (m_AllowTrdDir[iTradSym] ==  1) m_dAggSignedQty = max(m_dAggSignedQty,(double)0);
   else if (m_AllowTrdDir[iTradSym] == -1) m_dAggSignedQty = min(m_dAggSignedQty,(double)0);
 
+
+  //--------------------------------------------------
+  // Close price relative to average price
+  //--------------------------------------------------
+  if (m_LongOnlyWhenClosePriceBelowAvgPrice.IsSome()
+      &&
+      STool::IsValidPriceOrVol(m_SymMidQuote) && !m_HistoricalAvgPx->empty())
+  {
+    double dClosePxAgstAvgPx = m_SymMidQuote / m_HistoricalAvgPx->back() - 1;
+    if (dClosePxAgstAvgPx > m_LongOnlyWhenClosePriceBelowAvgPrice.Get())
+    {
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to min(%f, 0). dClosePxAgstAvgPx %f",
+                      GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
+                      m_dAggSignedQty, dClosePxAgstAvgPx);
+      m_dAggSignedQty = min(m_dAggSignedQty,0.0);
+    }
+  }
+  if (m_ShortOnlyWhenClosePriceAboveAvgPrice.IsSome()
+      &&
+      STool::IsValidPriceOrVol(m_SymMidQuote) && !m_HistoricalAvgPx->empty())
+  {
+    double dClosePxAgstAvgPx = m_SymMidQuote / m_HistoricalAvgPx->back() - 1;
+    if (dClosePxAgstAvgPx < m_ShortOnlyWhenClosePriceAboveAvgPrice.Get())
+    {
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to max(%f, 0). dClosePxAgstAvgPx %f",
+                      GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
+                      m_dAggSignedQty, dClosePxAgstAvgPx);
+      m_dAggSignedQty = max(m_dAggSignedQty,0.0);
+    }
+  }
+
+  //--------------------------------------------------
+  // Average price return
+  //--------------------------------------------------
+  if (m_LongOnlyWhenAvgPriceReturnAbove.IsSome()
+      &&
+      !m_HistoricalAvgPx->size() >= 2)
+  {
+    double dAvgPxRtn = m_HistoricalAvgPx->back() / *(m_HistoricalAvgPx->end()-2) - 1;
+    if (dAvgPxRtn < m_LongOnlyWhenAvgPriceReturnAbove.Get())
+    {
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to min(%f, 0). dAvgPxRtn %f",
+                      GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
+                      m_dAggSignedQty, dAvgPxRtn);
+      m_dAggSignedQty = min(m_dAggSignedQty,0.0);
+    }
+  }
+  if (m_ShortOnlyWhenAvgPriceReturnBelow.IsSome()
+      &&
+      !m_HistoricalAvgPx->size() >= 2)
+  {
+    double dAvgPxRtn = m_HistoricalAvgPx->back() / *(m_HistoricalAvgPx->end()-2) - 1;
+    if (dAvgPxRtn > m_ShortOnlyWhenAvgPriceReturnBelow.Get())
+    {
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to max(%f, 0). dAvgPxRtn %f",
+                      GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
+                      m_dAggSignedQty, dAvgPxRtn);
+      m_dAggSignedQty = max(m_dAggSignedQty,0.0);
+    }
+  }
+
+
+
   // //--------------------------------------------------
   // // Special ES + SPY mode
   // //--------------------------------------------------
@@ -1816,7 +1908,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
     // calculate rolling return
     //--------------------------------------------------
-    double dRollingReturn = m_SymMidQuote / *(m_HistoricalAvgPx->end()-B2_ROTATION_NDAYRETURN);
+    double dRollingReturn = *(m_HistoricalAvgPx->end()-1) / *(m_HistoricalAvgPx->end()-1-B2_ROTATION_NDAYRETURN);
     m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s dRollingReturn = %f",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
@@ -2001,9 +2093,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             iRank++;
 
             //--------------------------------------------------
-            // if the option isn't set, we don't move the next best forward for trading
+            // if the option isn't set, we don't move the next best stock forward for trading
             //--------------------------------------------------
-            if (!m_MoveNextBestUpIfNoSignal && iRank > B2_ROTATION_PICKTOPSYM) break;
+            if (!m_MoveNextBestStkInGrpUpIfNoSignal && iRank > B2_ROTATION_PICKTOPSYM) break;
             //--------------------------------------------------
 
             m_Logger->Write(Logger::DEBUG,"Strategy %s: Rotation mode: Rotation group %d Rank %d m_AllAvbSymForRollingBasket.size() %d vSymWithSgnl %s",
@@ -2088,7 +2180,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                             tup.m_symbol().c_str());
           });
 
-          if (m_RotationMode == 1) FReverse(mGrpRtnAndLeadSym);
+          if (m_RotationModeTradeHighestReturn) FReverse(mGrpRtnAndLeadSym);
 
           FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
             m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (according to rotation scheme) mGrpRtnAndLeadSym: %f %s",
@@ -2101,7 +2193,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
           int iCnt = 0;
           while (true)
           {
-            if (!m_MoveNextBestUpIfNoSignal)
+            if (!m_MoveNextBestGroupUpIfNoSignal)
             {
               if (iCnt >= m_ChooseBestNRotationGroup) break;
             }
