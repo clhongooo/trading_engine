@@ -70,6 +70,17 @@ InitValType FFold(const Collection & col,InitValType init,BinOp op)
   return std::accumulate(col.begin(),col.end(),init,op);
 }
 
+
+  template <typename Collection>
+double FSum(const Collection & col)
+{
+  // return std::accumulate(col.begin(),col.end(),0.0);
+  double d = 0.0;
+  for (typename Collection::const_iterator it = col.begin(); it != col.end(); ++it) d += *it;
+  return d;
+}
+
+
 //--------------------------------------------------
 // Immutable Option class
 //--------------------------------------------------

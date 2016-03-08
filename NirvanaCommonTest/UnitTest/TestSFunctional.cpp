@@ -154,6 +154,20 @@ void TestSFunctional::RunTest()
     CPPUNIT_ASSERT(smom.GetOrElse("hh","ww",0) == 0);
   }
 
+  {
+    vector<double> v;
+    for (double i = 0; i < 100; ++i) v.push_back(i);
+    cout << FSum(v) << endl;
+    CPPUNIT_ASSERT(FSum(v) == 50*101);
+  }
+
+  {
+    vector<int> v;
+    for (int i = 0; i < 100; ++i) v.push_back(i);
+    cout << FSum(v) << endl;
+    CPPUNIT_ASSERT(FSum(v) == 50*101);
+  }
+
   return;
 }
 

@@ -982,8 +982,9 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
         omc.m_MDI_Port = STool::Trim(pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".ServerPort"));
 
         string s_MDI_SubscriptionSymbols = m_SymbolsToBeUsedInAllSections;
+        string s_MDI_SubscriptionSymbolsCutShort = s_MDI_SubscriptionSymbols.substr(0,1024);
         if (s_MDI_SubscriptionSymbols == "") s_MDI_SubscriptionSymbols = STool::Trim(pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionSymbols"));
-        if (s_MDI_SubscriptionSymbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d %s", otimdi, s_MDI_SubscriptionSymbols.c_str());
+        if (s_MDI_SubscriptionSymbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols (truncated to 1024) %d %s", otimdi, s_MDI_SubscriptionSymbolsCutShort.c_str());
         else m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d Nil.", otimdi);
 
         vector<string> vsub;
