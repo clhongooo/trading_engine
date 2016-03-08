@@ -114,7 +114,7 @@ void Logger::SetLogLevel(LogLevel lev)
 
 void Logger::Write(LogLevel lev, const char *fmt, ...)
 {
-  char buffer[10240];
+  char buffer[20480];
   va_list args;
   va_start (args, fmt);
   vsprintf (buffer, fmt, args);
