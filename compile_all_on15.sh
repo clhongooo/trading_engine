@@ -9,5 +9,5 @@ for DIRO in $LSDIRO
 do
     cd $DIRO
     make clean
-    make
+    make -j2 all
 done
