@@ -442,7 +442,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   m_SupplementaryBarM1Path             = STool::Trim(pt.get<string>   ("SystemSettings.SupplementaryBarM1Path"));
   m_PositionPersistenceFile            = STool::Trim(pt.get<string>   ("SystemSettings.PositionPersistenceFile"));
 
-  if (m_SymbolsToBeUsedInAllSections != "") m_Logger->Write(Logger::INFO,"SystemConfig: Read SymbolsToBeUsedInAllSections: %s", m_SymbolsToBeUsedInAllSections.c_str());
+  if (m_SymbolsToBeUsedInAllSections != "") m_Logger->Write(Logger::INFO,"SystemConfig: Read SymbolsToBeUsedInAllSections: (truncated to 1024) %s", m_SymbolsToBeUsedInAllSections.substr(0,1024).c_str());
   else m_Logger->Write(Logger::INFO,"SystemConfig: Read SymbolsToBeUsedInAllSections: Nil");
 
   m_SupplementaryBarLeadingZeroAdj     = pt.get<bool>           ("SystemSettings.SupplementaryBarFileLeadingZeroAdj");
@@ -718,7 +718,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
         {
           string s_TradedSym = m_SymbolsToBeUsedInAllSections;
           if (s_TradedSym == "") s_TradedSym = STool::Trim(pt.get<string>(sStratSession + ".TradedSymbols"));
-          if (s_TradedSym != "") m_Logger->Write(Logger::INFO,"SystemConfig: m_TradedSymbols %s %s", sStratSession.c_str(), s_TradedSym.c_str());
+          if (s_TradedSym != "") m_Logger->Write(Logger::INFO,"SystemConfig: %s m_TradedSymbols (truncated to 1024) %s", sStratSession.c_str(), s_TradedSym.substr(0,1024).c_str());
           else m_Logger->Write(Logger::INFO,"SystemConfig: m_TradedSymbols %s Nil", sStratSession.c_str());
 
           vector<string> vs;
@@ -983,7 +983,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
 
         string s_MDI_SubscriptionSymbols = m_SymbolsToBeUsedInAllSections;
         if (s_MDI_SubscriptionSymbols == "") s_MDI_SubscriptionSymbols = STool::Trim(pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionSymbols"));
-        if (s_MDI_SubscriptionSymbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols (truncated to 1024) %d %s", otimdi, s_MDI_SubscriptionSymbols.c_str());
+        if (s_MDI_SubscriptionSymbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: otimid %d s_MDI_SubscriptionSymbols (truncated to 1024) %s", otimdi, s_MDI_SubscriptionSymbols.substr(0,1024).c_str());
         else m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d Nil.", otimdi);
 
         vector<string> vsub;
@@ -1017,7 +1017,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
 
         string s_MDI_SubscriptionSymbols = m_SymbolsToBeUsedInAllSections;
         if (s_MDI_SubscriptionSymbols == "") s_MDI_SubscriptionSymbols = STool::Trim(pt.get<string>("MDI_" + boost::lexical_cast<string>(otimdi) + ".SubscriptionSymbols"));
-        if (s_MDI_SubscriptionSymbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d %s", otimdi, s_MDI_SubscriptionSymbols.c_str());
+        if (s_MDI_SubscriptionSymbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d (truncated to 1024) %s", otimdi, s_MDI_SubscriptionSymbols.substr(0,1024).c_str());
         else m_Logger->Write(Logger::INFO,"SystemConfig: s_MDI_SubscriptionSymbols %d Nil", otimdi);
 
         vector<string> vsub;
@@ -1227,7 +1227,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   {
     string sBarAggregationM1Symbols = m_SymbolsToBeUsedInAllSections;
     if (sBarAggregationM1Symbols == "") sBarAggregationM1Symbols = STool::Trim(pt.get<string>("MarketData.BarAggregationM1Symbols"));
-    if (sBarAggregationM1Symbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationM1Symbols %s", sBarAggregationM1Symbols.c_str());
+    if (sBarAggregationM1Symbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationM1Symbols (truncated to 1024) %s", sBarAggregationM1Symbols.substr(0,1024).c_str());
     else m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationM1Symbols Nil");
 
     vector<string> vs;
@@ -1243,7 +1243,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   {
     string sBarAggregationD1Symbols = m_SymbolsToBeUsedInAllSections;
     if (sBarAggregationD1Symbols == "") sBarAggregationD1Symbols = STool::Trim(pt.get<string>("MarketData.BarAggregationD1Symbols"));
-    if (sBarAggregationD1Symbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationD1Symbols %s", sBarAggregationD1Symbols.c_str());
+    if (sBarAggregationD1Symbols != "") m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationD1Symbols (truncated to 1024) %s", sBarAggregationD1Symbols.substr(0,1024).c_str());
     else m_Logger->Write(Logger::INFO,"SystemConfig: sBarAggregationD1Symbols Nil");
 
     vector<string> vs;
@@ -1261,7 +1261,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   {
     string sSymToBeWarmedUpWithDayBars = m_SymbolsToBeUsedInAllSections;
     if (sSymToBeWarmedUpWithDayBars == "") sSymToBeWarmedUpWithDayBars = STool::Trim(pt.get<string>("TechIndicators.SymToBeWarmedUpWithDayBars"));
-    if (sSymToBeWarmedUpWithDayBars != "") m_Logger->Write(Logger::INFO,"SystemConfig: sSymToBeWarmedUpWithDayBars %s", sSymToBeWarmedUpWithDayBars.c_str());
+    if (sSymToBeWarmedUpWithDayBars != "") m_Logger->Write(Logger::INFO,"SystemConfig: sSymToBeWarmedUpWithDayBars (truncated to 1024) %s", sSymToBeWarmedUpWithDayBars.substr(0,1024).c_str());
     else m_Logger->Write(Logger::INFO,"SystemConfig: sSymToBeWarmedUpWithDayBars Nil");
 
     vector<string> vs;
