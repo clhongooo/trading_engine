@@ -562,7 +562,9 @@ void PortfoliosAndOrders::OutputActualPortToPersistentPos(const char cOperation)
   //--------------------------------------------------
   boost::shared_lock<boost::shared_mutex> lock(m_acct_mutex);
 
-  ofstream fsPosPersist(m_SysCfg->Get_PositionPersistenceFile().c_str());
+  boost::scoped_ptr<ofstream> p_fsPosPersist;
+  if (cOperation == 'f') p_fsPosPersist.reset(new ofstream(m_SysCfg->Get_PositionPersistenceFile().c_str()));
+
   for (map<int,Acct >::iterator it = m_acct.begin(); it != m_acct.end(); ++it)
   {
     const int & port_id = it->first;
@@ -575,7 +577,7 @@ void PortfoliosAndOrders::OutputActualPortToPersistentPos(const char cOperation)
       const long signed_qty = it2->second;
       const double signed_notional = it->second.GetSignedNotional(symbol);
 
-      if (cOperation == 'f') fsPosPersist << port_id << "," << symbol << "," << signed_qty << "," << signed_notional << endl;
+      if (cOperation == 'f') *p_fsPosPersist << port_id << "," << symbol << "," << signed_qty << "," << signed_notional << endl;
 
       m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: m_acct: port_id = %d symbol = %s signed_qty = %d signed_notional = %f",
                       port_id,
@@ -585,7 +587,7 @@ void PortfoliosAndOrders::OutputActualPortToPersistentPos(const char cOperation)
     }
   }
 
-  if (cOperation == 'f') fsPosPersist.close();
+  if (cOperation == 'f') p_fsPosPersist->close();
 
   return;
 }

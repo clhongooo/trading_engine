@@ -151,6 +151,7 @@ void OrderExecutor::HandleTradeFeedRecv(const vector<string> & feedMsg)
   tf.m_price                = boost::lexical_cast<double>(feedMsg[5]);
   tf.m_qty                  = boost::lexical_cast<double>(feedMsg[6]);
   tf.m_buy_or_sell          = boost::lexical_cast<int>(feedMsg[7]);
+  tf.m_trade_id             = feedMsg[8];
 
   HandleTradeFeedRecv(tf);
 
