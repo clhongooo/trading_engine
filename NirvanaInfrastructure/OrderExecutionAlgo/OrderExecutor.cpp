@@ -253,7 +253,7 @@ void OrderExecutor::RunPersistPos()
     m_ThrdHlthMon->ReportHealthy(ID_ORDEREXEPERSISTPOS);
     m_PortAndOrders->WriteActualPortToPersistentPosFile();
     m_PortAndOrders->WriteActualPortToPersistentPosToLog();
-    sleep(5);
+    sleep(1);
   }
 }
 
