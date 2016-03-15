@@ -531,12 +531,17 @@ void StrategyB2::ReadParam()
   m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationMode %d", GetStrategyName(m_StyID).c_str(),  m_RotationMode);
   m_RotationModeTradeHighestReturn = m_SysCfg->B2_RotationModeTradeHighestReturn(m_StyID);
   m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationModeTradeHighestReturn %s", GetStrategyName(m_StyID).c_str(), (m_RotationModeTradeHighestReturn?"true":"false"));
+  m_RotationModeUseVolyAdjdReturn = m_SysCfg->B2_RotationModeUseVolyAdjdReturn(m_StyID);
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationModeUseVolyAdjdReturn %s", GetStrategyName(m_StyID).c_str(), (m_RotationModeUseVolyAdjdReturn?"true":"false"));
+  m_RotationModeUseNDayReturn = m_SysCfg->B2_RotationModeUseNDayReturn(m_StyID);
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationModeUseNDayReturn %d", GetStrategyName(m_StyID).c_str(), m_RotationModeUseNDayReturn);
 
   m_LongOnlyWhenClosePriceBelowAvgPrice = m_SysCfg->B2_LongOnlyWhenClosePriceBelowAvgPrice(m_StyID);
   if (m_LongOnlyWhenClosePriceBelowAvgPrice.IsSome())
     m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenClosePriceBelowAvgPrice %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenClosePriceBelowAvgPrice.Get());
   else
     m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenClosePriceBelowAvgPrice: Nil", GetStrategyName(m_StyID).c_str());
+
   m_ShortOnlyWhenClosePriceAboveAvgPrice = m_SysCfg->B2_ShortOnlyWhenClosePriceAboveAvgPrice(m_StyID);
   if (m_ShortOnlyWhenClosePriceAboveAvgPrice.IsSome())
     m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenClosePriceAboveAvgPrice %f", GetStrategyName(m_StyID).c_str(), m_ShortOnlyWhenClosePriceAboveAvgPrice.Get());
@@ -548,6 +553,7 @@ void StrategyB2::ReadParam()
     m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenAvgPriceReturnAbove %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenAvgPriceReturnAbove.Get());
   else
     m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenAvgPriceReturnAbove: Nil", GetStrategyName(m_StyID).c_str());
+
   m_ShortOnlyWhenAvgPriceReturnBelow = m_SysCfg->B2_ShortOnlyWhenAvgPriceReturnBelow(m_StyID);
   if (m_ShortOnlyWhenAvgPriceReturnBelow.IsSome())
     m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenAvgPriceReturnBelow %f", GetStrategyName(m_StyID).c_str(), m_ShortOnlyWhenAvgPriceReturnBelow.Get());
@@ -1569,15 +1575,19 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     m_map_dq_GKYZ[m_TradedSymbols[iTradSym]].push_back(m_dGKYZVal);
   }
 
-  if (m_map_dq_GKYZ[m_TradedSymbols[iTradSym]].empty() || std::isnan(m_dGKYZVal))
-  {
-    m_dAggUnsignedQty = m_NotionalAmt[iTradSym] / m_SymMidQuote;
-    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s GKYZ.size() %f GKYZ %f.", GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(), m_map_dq_GKYZ[m_TradedSymbols[iTradSym]].size(), m_dGKYZVal);
-  }
-  else
+  m_dAggUnsignedQty = m_NotionalAmt[iTradSym] / m_SymMidQuote;
+  m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s GKYZ.size() %d GKYZ %f m_dAggUnsignedQty (if not perform any volatility adj) %f.",
+                  GetStrategyName(m_StyID).c_str(),
+                  m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                  m_TradedSymbols[iTradSym].c_str(),
+                  m_map_dq_GKYZ[m_TradedSymbols[iTradSym]].size(),
+                  m_dGKYZVal,
+                  m_dAggUnsignedQty);
+
+  if (!(m_map_dq_GKYZ[m_TradedSymbols[iTradSym]].empty() || std::isnan(m_dGKYZVal) || m_MinAnnVolPsnSz[iTradSym] <= 0))
   {
     m_dAggUnsignedQty = m_NotionalAmt[iTradSym] / m_SymMidQuote * min(m_MinAnnVolPsnSz[iTradSym] / m_dGKYZVal,(double)1);
-    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s GKYZ %f.", GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),m_dGKYZVal);
+    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s m_dAggUnsignedQty (after volatility adj) %f GKYZ %f.", GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),m_dAggUnsignedQty,m_dGKYZVal);
   }
 
   //--------------------------------------------------
@@ -1890,13 +1900,13 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
     // check whether there is enough historical data
     //--------------------------------------------------
-    if (m_HistoricalAvgPx->size() < B2_ROTATION_NDAYRETURN)
+    if (m_HistoricalAvgPx->size() < m_RotationModeUseNDayReturn)
     {
       m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s Not enough data points to calculate %d-day return. %d",
                       GetStrategyName(m_StyID).c_str(),
                       m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                       m_TradedSymbols[iTradSym].c_str(),
-                      B2_ROTATION_NDAYRETURN,
+                      m_RotationModeUseNDayReturn,
                       m_HistoricalAvgPx->size());
 
       m_TargetTradeDir [iTradSym] = TD_NODIR;
@@ -1908,7 +1918,11 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
     // calculate rolling return
     //--------------------------------------------------
-    double dRollingReturn = *(m_HistoricalAvgPx->end()-1) / *(m_HistoricalAvgPx->end()-1-B2_ROTATION_NDAYRETURN);
+    double dRollingReturn = (*(m_HistoricalAvgPx->end()-1) / *(m_HistoricalAvgPx->end()-1-m_RotationModeUseNDayReturn)) - 1;
+    if (m_RotationModeUseVolyAdjdReturn)
+    {
+      dRollingReturn = dRollingReturn / TechIndicators::Instance()->GetGKYZValue(m_TradedSymbols[iTradSym]) * 100.0;
+    }
     m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s dRollingReturn = %f",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
@@ -1966,14 +1980,14 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                       GetStrategyName(m_StyID).c_str(),
                       m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                       m_TradedSymbols[iTradSym].c_str(),
-                      B2_ROTATION_NDAYRETURN);
+                      m_RotationModeUseNDayReturn);
       return;
     }
     m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s All %d-day returns are ready.",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                     m_TradedSymbols[iTradSym].c_str(),
-                    B2_ROTATION_NDAYRETURN);
+                    m_RotationModeUseNDayReturn);
 
     //--------------------------------------------------
     // check if all aggregate signed quantity are available
@@ -2263,7 +2277,17 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   //--------------------------------------------------
   if (m_StyID == STY_B2_HK && GetStyDomicileMkt() == SDM_HK)
   {
+    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s Before lot size round down: m_dAggSignedQty = %f",
+                    GetStrategyName(m_StyID).c_str(),
+                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                    m_TradedSymbols[iTradSym].c_str(),
+                    m_dAggSignedQty);
     m_dAggSignedQty = m_SysCfg->RoundDownLotSize(m_TradedSymbols[iTradSym],(long)m_dAggSignedQty);
+    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s After lot size round down: m_dAggSignedQty = %f",
+                    GetStrategyName(m_StyID).c_str(),
+                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                    m_TradedSymbols[iTradSym].c_str(),
+                    m_dAggSignedQty);
   }
 
   //--------------------------------------------------
@@ -2286,7 +2310,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       // the target quantity is too small, just make the quantity zero.
       // not worth keeping a tiny position here
       //--------------------------------------------------
-      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s m_dAggSignedQty will be adjusted to zero after considering commission impact. m_SymMidQuote = %f m_dAggSignedQty = %f",
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty will be adjusted to zero after considering commission impact. m_SymMidQuote = %f m_dAggSignedQty = %f",
                       GetStrategyName(m_StyID).c_str(),
                       m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                       m_TradedSymbols[iTradSym].c_str(),

@@ -172,6 +172,8 @@ class SystemConfig : boost::noncopyable
     bool                   B2_HasEnabledMinCommissionCheck(const StrategyID)                   const;
     int                    B2_HasEnabledRotationMode(const StrategyID)                         const;
     bool                   B2_RotationModeTradeHighestReturn(const StrategyID)                 const;
+    bool                   B2_RotationModeUseVolyAdjdReturn(const StrategyID)                  const;
+    int                    B2_RotationModeUseNDayReturn(const StrategyID)                      const;
     Option<double>         B2_LongOnlyWhenClosePriceBelowAvgPrice(const StrategyID)            const;
     Option<double>         B2_ShortOnlyWhenClosePriceAboveAvgPrice(const StrategyID)           const;
     Option<double>         B2_LongOnlyWhenAvgPriceReturnAbove(const StrategyID)                const;
@@ -361,6 +363,8 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_US1_HasEnabledMinCommissionCheck;
     int                                                m_B2_US1_HasEnabledRotationMode;
     bool                                               m_B2_US1_RotationModeTradeHighestReturn;
+    bool                                               m_B2_US1_RotationModeUseVolyAdjdReturn;
+    int                                                m_B2_US1_RotationModeUseNDayReturn;
     Option<double>                                     m_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice;
     Option<double>                                     m_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice;
     Option<double>                                     m_B2_US1_LongOnlyWhenAvgPriceReturnAbove;
@@ -377,6 +381,8 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_US2_HasEnabledMinCommissionCheck;
     int                                                m_B2_US2_HasEnabledRotationMode;
     bool                                               m_B2_US2_RotationModeTradeHighestReturn;
+    bool                                               m_B2_US2_RotationModeUseVolyAdjdReturn;
+    int                                                m_B2_US2_RotationModeUseNDayReturn;
     Option<double>                                     m_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice;
     Option<double>                                     m_B2_US2_ShortOnlyWhenClosePriceAboveAvgPrice;
     Option<double>                                     m_B2_US2_LongOnlyWhenAvgPriceReturnAbove;
@@ -393,6 +399,8 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_HK_HasEnabledMinCommissionCheck;
     int                                                m_B2_HK_HasEnabledRotationMode;
     bool                                               m_B2_HK_RotationModeTradeHighestReturn;
+    bool                                               m_B2_HK_RotationModeUseVolyAdjdReturn;
+    int                                                m_B2_HK_RotationModeUseNDayReturn;
     Option<double>                                     m_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice;
     Option<double>                                     m_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice;
     Option<double>                                     m_B2_HK_LongOnlyWhenAvgPriceReturnAbove;

@@ -30,7 +30,6 @@
 #define B2_PRICEMETH_AVGPXCLOSE 2
 
 #define B2_ROTATION_PICKTOPSYM 1
-#define B2_ROTATION_NDAYRETURN 1
 
 #define B2_COMMISSION_RATE_THRESH (double)0.005/(double)80
 
@@ -155,6 +154,8 @@ class StrategyB2 : public StrategyBase {
     bool             m_PersistTheoPosCPnL;
     int              m_RotationMode;
     bool             m_RotationModeTradeHighestReturn;
+    bool             m_RotationModeUseVolyAdjdReturn;
+    int              m_RotationModeUseNDayReturn;
     Option<double>   m_LongOnlyWhenClosePriceBelowAvgPrice;
     Option<double>   m_ShortOnlyWhenClosePriceAboveAvgPrice;
     Option<double>   m_LongOnlyWhenAvgPriceReturnAbove;
@@ -262,7 +263,7 @@ class StrategyB2 : public StrategyBase {
     vector<int>                                 m_RotationGroup;
     vector<map<YYYYMMDD,set<string> > >         m_AllAvbSymForRollingBasket;
     map<YYYYMMDD,set<string> >                  m_AllAvbSym;
-    vector<map<YYYYMMDD,vector<TupRetSym> > >  m_SymRankedByRollingReturn;
+    vector<map<YYYYMMDD,vector<TupRetSym> > >   m_SymRankedByRollingReturn;
     vector<map<YYYYMMDD,map<string,double> > >  m_SymAndRollingReturn;
     vector<map<YYYYMMDD,set<string> > >         m_MaintainPosWithinGrp;
     map<YYYYMMDD,vector<double> >               m_AvgRtnOfGrp;
