@@ -12,4 +12,5 @@ do
     make -j2 all
 done
 
-chmod 777 /home/qy/Dropbox/nirvana/workspaceCN/TradingEngine/Debug/TradingEngine
+cp /home/qy/Dropbox/nirvana/workspaceCN/TradingEngine/Debug/TradingEngine /tmp/TradingEngine
+chmod 777 /tmp/TradingEngine
