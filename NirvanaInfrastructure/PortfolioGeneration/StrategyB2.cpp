@@ -1259,12 +1259,12 @@ void StrategyB2::PerformTrainingJustBeforeTrading(const int iTradSym)
   //--------------------------------------------------
   if (m_B2_TrainingFreq == TradingStrategyConfig::OnceAtInitWarmup)
   {
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s (%d) Sym=%s m_B2_TrainingFreq = OnceAtInitWarmup",
+    m_Logger->Write(Logger::INFO,"Strategy %s: %s %s (%d) Sym=%s m_B2_TrainingFreq = OnceAtInitWarmup",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                     __FUNCTION__,__LINE__,
                     m_TradedSymbols[iTradSym].c_str());
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s (%d) Sym=%s AvgPx TrainUpParam() returned %s. m_p_map_BestParamSetBeta1Beta3AvgPx.size() = %d m_p_map_BestParamSetBeta2Beta4AvgPx.size() = %d LastTrainTime = %s",
+    m_Logger->Write(Logger::INFO,"Strategy %s: %s %s (%d) Sym=%s AvgPx TrainUpParam() returned %s. m_p_map_BestParamSetBeta1Beta3AvgPx.size() = %d m_p_map_BestParamSetBeta2Beta4AvgPx.size() = %d LastTrainTime = %s",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                     __FUNCTION__,__LINE__,
@@ -1274,7 +1274,7 @@ void StrategyB2::PerformTrainingJustBeforeTrading(const int iTradSym)
                     (*m_p_map_BestParamSetBeta2Beta4AvgPx).size(),
                     m_map_ymdhms_LastTrainTime[B2_METH_AVGPX][m_TradedSymbols[iTradSym]].ToStr().c_str()
                    );
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s (%d) Sym=%s Close TrainUpParam() returned %s. m_p_map_BestParamSetBeta1Beta3Close.size() = %d m_p_map_BestParamSetBeta2Beta4Close.size() = %d LastTrainTime = %s",
+    m_Logger->Write(Logger::INFO,"Strategy %s: %s %s (%d) Sym=%s Close TrainUpParam() returned %s. m_p_map_BestParamSetBeta1Beta3Close.size() = %d m_p_map_BestParamSetBeta2Beta4Close.size() = %d LastTrainTime = %s",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                     __FUNCTION__,__LINE__,
@@ -1576,7 +1576,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   }
 
   m_dAggUnsignedQty = m_NotionalAmt[iTradSym] / m_SymMidQuote;
-  m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s GKYZ.size() %d GKYZ %f m_dAggUnsignedQty (if not perform any volatility adj) %f.",
+  m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s GKYZ.size() %d GKYZ %f m_dAggUnsignedQty (if not perform any volatility adj) %f.",
                   GetStrategyName(m_StyID).c_str(),
                   m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                   m_TradedSymbols[iTradSym].c_str(),
@@ -1587,7 +1587,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   if (!(m_map_dq_GKYZ[m_TradedSymbols[iTradSym]].empty() || std::isnan(m_dGKYZVal) || m_MinAnnVolPsnSz[iTradSym] <= 0))
   {
     m_dAggUnsignedQty = m_NotionalAmt[iTradSym] / m_SymMidQuote * min(m_MinAnnVolPsnSz[iTradSym] / m_dGKYZVal,(double)1);
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s m_dAggUnsignedQty (after volatility adj) %f GKYZ %f.", GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),m_dAggUnsignedQty,m_dGKYZVal);
+    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggUnsignedQty (after volatility adj) %f GKYZ %f.", GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),m_dAggUnsignedQty,m_dGKYZVal);
   }
 
   //--------------------------------------------------
@@ -1644,7 +1644,12 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   //--------------------------------------------------
   if (m_KSBound[iTradSym] > 0 &&
       m_KSRange[iTradSym] > 0 &&
-      m_HistoricalAvgPxRtn->size() >= m_TrainingPeriodMax[iTradSym]
+      m_HistoricalAvgPxRtn->size() >= m_TrainingPeriodMax[iTradSym] &&
+      //--------------------------------------------------
+      // extra condition: only adjust size when price has gone down
+      //--------------------------------------------------
+      m_HistoricalAvgPx->size() > B2_KS_PRICE_FILTER_NDAYS+2 &&
+      m_HistoricalAvgPx->back() < *(m_HistoricalAvgPx->end() - B2_KS_PRICE_FILTER_NDAYS - 1)
      )
   {
     vector<double> vdPeriod1;
@@ -1657,7 +1662,13 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                     GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
                     vdPeriod1.size(), vdPeriod2.size(), ks);
 
+    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty (before KolmogorovSmirnov adjustment)  %f",
+                    GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(), m_dAggSignedQty);
+
     m_dAggSignedQty = m_dAggSignedQty * (min(max(m_KSBound[iTradSym]-ks,(double)0),m_KSRange[iTradSym])) / m_KSRange[iTradSym];
+
+    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty (after KolmogorovSmirnov adjustment)  %f",
+                    GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(), m_dAggSignedQty);
   }
   //--------------------------------------------------
 
@@ -2112,7 +2123,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             if (!m_MoveNextBestStkInGrpUpIfNoSignal && iRank > B2_ROTATION_PICKTOPSYM) break;
             //--------------------------------------------------
 
-            m_Logger->Write(Logger::DEBUG,"Strategy %s: Rotation mode: Rotation group %d Rank %d m_AllAvbSymForRollingBasket.size() %d vSymWithSgnl %s",
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: Rotation group %d Rank %d m_AllAvbSymForRollingBasket.size() %d vSymWithSgnl %s",
                             GetStrategyName(m_StyID).c_str(),
                             iRttnGrp,
                             iRank,
@@ -2122,7 +2133,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
           }
 
           FForEach(m_AllAvbSymForRollingBasket[iRttnGrp][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()], [&](const string & s) {
-            m_Logger->Write(Logger::DEBUG,"Strategy %s: Rotation mode: Available symbol for the group %d: %s", GetStrategyName(m_StyID).c_str(), iRttnGrp, s.c_str());
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: Available symbol for the group %d: %s", GetStrategyName(m_StyID).c_str(), iRttnGrp, s.c_str());
           });
 
         }
@@ -2277,13 +2288,13 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   //--------------------------------------------------
   if (m_StyID == STY_B2_HK && GetStyDomicileMkt() == SDM_HK)
   {
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s Before lot size round down: m_dAggSignedQty = %f",
+    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Before lot size round down: m_dAggSignedQty = %f",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                     m_TradedSymbols[iTradSym].c_str(),
                     m_dAggSignedQty);
     m_dAggSignedQty = m_SysCfg->RoundDownLotSize(m_TradedSymbols[iTradSym],(long)m_dAggSignedQty);
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s After lot size round down: m_dAggSignedQty = %f",
+    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s After lot size round down: m_dAggSignedQty = %f",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                     m_TradedSymbols[iTradSym].c_str(),
