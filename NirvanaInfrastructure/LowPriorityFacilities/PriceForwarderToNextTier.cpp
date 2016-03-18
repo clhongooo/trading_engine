@@ -35,7 +35,7 @@ void PriceForwarderToNextTier::Run()
   // Init for zmq
   //--------------------------------------------------
   {
-    //  Prepare our context and socket
+    // Prepare our context and socket
     m_zmqcontext.reset(new zmq::context_t(1));
     // m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_REQ));
     m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_PUSH));
