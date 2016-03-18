@@ -32,7 +32,10 @@
 #define B2_ROTATION_PICKTOPSYM 1
 
 #define B2_COMMISSION_RATE_THRESH (double)0.005/(double)80
+
 #define B2_KS_PRICE_FILTER_NDAYS 100
+#define B2_KS_PRICE_FILTER_RISE_ADJFACTOR 0.5
+#define B2_KS_PRICE_FILTER_FALL_ADJFACTOR 1
 
 class StrategyB2 : public StrategyBase {
   public:

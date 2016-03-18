@@ -1646,10 +1646,10 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       m_KSRange[iTradSym] > 0 &&
       m_HistoricalAvgPxRtn->size() >= m_TrainingPeriodMax[iTradSym] &&
       //--------------------------------------------------
-      // extra condition: only adjust size when price has gone down
+      // only adjust size when price has gone down
       //--------------------------------------------------
-      m_HistoricalAvgPx->size() > B2_KS_PRICE_FILTER_NDAYS+2 &&
-      m_HistoricalAvgPx->back() < *(m_HistoricalAvgPx->end() - B2_KS_PRICE_FILTER_NDAYS - 1)
+      m_HistoricalAvgPx->size() > B2_KS_PRICE_FILTER_NDAYS+2
+      //--------------------------------------------------
      )
   {
     vector<double> vdPeriod1;
@@ -1665,7 +1665,11 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty (before KolmogorovSmirnov adjustment)  %f",
                     GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(), m_dAggSignedQty);
 
-    m_dAggSignedQty = m_dAggSignedQty * (min(max(m_KSBound[iTradSym]-ks,(double)0),m_KSRange[iTradSym])) / m_KSRange[iTradSym];
+
+    if (m_HistoricalAvgPx->back() < *(m_HistoricalAvgPx->end() - B2_KS_PRICE_FILTER_NDAYS - 1))
+      m_dAggSignedQty = m_dAggSignedQty * (1 - B2_KS_PRICE_FILTER_FALL_ADJFACTOR) + m_dAggSignedQty * (B2_KS_PRICE_FILTER_FALL_ADJFACTOR) * (min(max(m_KSBound[iTradSym]-ks,(double)0),m_KSRange[iTradSym])) / m_KSRange[iTradSym];
+    else
+      m_dAggSignedQty = m_dAggSignedQty * (1 - B2_KS_PRICE_FILTER_RISE_ADJFACTOR) + m_dAggSignedQty * (B2_KS_PRICE_FILTER_RISE_ADJFACTOR) * (min(max(m_KSBound[iTradSym]-ks,(double)0),m_KSRange[iTradSym])) / m_KSRange[iTradSym];
 
     m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty (after KolmogorovSmirnov adjustment)  %f",
                     GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(), m_dAggSignedQty);
