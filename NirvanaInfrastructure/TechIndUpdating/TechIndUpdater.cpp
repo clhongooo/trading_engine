@@ -421,11 +421,13 @@ void TechIndUpdater::Run()
           //--------------------------------------------------
           // B2_US1
           // B2_US2
+          // B2_US3
           // B2_HK
           //--------------------------------------------------
           if (
             m_SysCfg->IsStrategyOn(STY_B2_US1) ||
             m_SysCfg->IsStrategyOn(STY_B2_US2) ||
+            m_SysCfg->IsStrategyOn(STY_B2_US3) ||
             m_SysCfg->IsStrategyOn(STY_B2_HK)
             )
           {

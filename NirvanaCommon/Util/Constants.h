@@ -57,6 +57,7 @@ enum StrategyID {
   STY_B2_US1,
   STY_B2_US2,
   STY_B2_HK,
+  STY_B2_US3,
   STY_ETFR,
   STY_S11A,
   STY_A1,

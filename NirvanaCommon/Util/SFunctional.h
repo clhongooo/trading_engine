@@ -76,7 +76,7 @@ double FSum(const Collection & col)
 {
   // return std::accumulate(col.begin(),col.end(),0.0);
   double d = 0.0;
-  for (typename Collection::const_iterator it = col.begin(); it != col.end(); ++it) d += *it;
+  for (typename Collection::const_iterator it = col.begin(); it != col.end(); ++it) d += (double)(*it);
   return d;
 }
 

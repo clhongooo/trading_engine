@@ -156,14 +156,14 @@ void TestSFunctional::RunTest()
 
   {
     vector<double> v;
-    for (double i = 0; i < 100; ++i) v.push_back(i);
+    for (double i = 1; i <= 100; ++i) v.push_back(i);
     cout << FSum(v) << endl;
     CPPUNIT_ASSERT(FSum(v) == 50*101);
   }
 
   {
     vector<int> v;
-    for (int i = 0; i < 100; ++i) v.push_back(i);
+    for (int i = 1; i <= 100; ++i) v.push_back(i);
     cout << FSum(v) << endl;
     CPPUNIT_ASSERT(FSum(v) == 50*101);
   }
