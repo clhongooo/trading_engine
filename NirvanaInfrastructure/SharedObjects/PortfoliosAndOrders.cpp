@@ -50,6 +50,31 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
   YYYYMMDDHHMMSS SystemTime = m_MarketData->GetSystemTimeHKT();
   m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d ExecStrat: %d ExecStrat param: %d. OID Details: %s.", SystemTime.ToStr().c_str(), symbol.c_str(), signed_qty, exec_strat, exec_strat_param.size(), oid_details.c_str());
 
+  //--------------------------------------------------
+  // signalfeed to zmq
+  //--------------------------------------------------
+  if (m_SysCfg->NextTierZMQIsOn())
+  {
+    double dP = NAN;
+    YYYYMMDDHHMMSS ymdhms;
+    if (m_MarketData->GetLatestTradePrice(symbol, dP, ymdhms))
+    {
+      string sSF = ConstructAugmentedSignalFeed(port_id,symbol,dP,signed_qty,"OID");
+      SendStringToNextTierThruZMQ(sSF);
+      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: ZMQ signalfeed: %s.",
+                      m_MarketData->GetSystemTimeHKT().ToStr().c_str(), sSF.c_str());
+    }
+    else if (m_MarketData->GetLatestMidQuote(symbol, dP, ymdhms))
+    {
+      string sSF = ConstructAugmentedSignalFeed(port_id,symbol,dP,signed_qty,"OID");
+      SendStringToNextTierThruZMQ(sSF);
+      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: ZMQ signalfeed: %s.",
+                      m_MarketData->GetSystemTimeHKT().ToStr().c_str(), sSF.c_str());
+    }
+
+  }
+
+  //--------------------------------------------------
   if (m_SysCfg->Get_OTIMode() == SystemConfig::OTI_RECORD)
   {
     double dMidQuote = NAN;
@@ -75,7 +100,9 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
 
     if (m_SysCfg->NextTierZMQIsOn())
     {
-      SendTFToNextTierThruZMQ(port_id, symbol, dMidQuote, signed_qty,"OID","TID");
+      SendStringToNextTierThruZMQ(sTF);
+      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: ZMQ tradefeed: %s.",
+                      m_MarketData->GetSystemTimeHKT().ToStr().c_str(), sTF.c_str());
     }
 
     m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d Price: %f.",
@@ -83,6 +110,7 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
 
     return true;
   }
+  //--------------------------------------------------
 
   // Get the limit time.
   int i_LimitTimeInMillisec = 0;
@@ -502,7 +530,10 @@ bool PortfoliosAndOrders::BookTradeFromOTI(const string & order_id, const string
   // report the trade to next tier through zmq
   //--------------------------------------------------
   if (m_SysCfg->NextTierZMQIsOn())
-    SendTFToNextTierThruZMQ(iPortID, sSymbol, price, signed_qty, oid, tid);
+  {
+    string sTF = ConstructAugmentedTradeFeed(iPortID, sSymbol, price, signed_qty, oid, tid);
+    SendStringToNextTierThruZMQ(sTF);
+  }
 
   return true;
 }
@@ -720,6 +751,16 @@ double PortfoliosAndOrders::AcctCheckPos(const int port_id, const string & symbo
   return it->second.Pos(symbol);
 }
 
+string PortfoliosAndOrders::ConstructAugmentedSignalFeed(const int port_id, const string & symbol, const double price, const long signed_qty, const string & oid)
+{
+  return m_MarketData->GetSystemTimeHKT().ToCashTimestampStr() + ",signalfeed,mktid," +
+    symbol + "," + oid + "," +
+    boost::lexical_cast<string>(price) + "," +
+    boost::lexical_cast<string>((long)abs(signed_qty)) + "," +
+    boost::lexical_cast<string>(signed_qty > 0 ? 1:2) + ",0," +
+    GetStrategyName(static_cast<StrategyID>(port_id));
+}
+
 string PortfoliosAndOrders::ConstructAugmentedTradeFeed(const int port_id, const string & symbol, const double price, const long signed_qty, const string & oid, const string & tid)
 {
   return m_MarketData->GetSystemTimeHKT().ToCashTimestampStr() + ",tradefeed,mktid," +
@@ -730,16 +771,14 @@ string PortfoliosAndOrders::ConstructAugmentedTradeFeed(const int port_id, const
     GetStrategyName(static_cast<StrategyID>(port_id));
 }
 
-void PortfoliosAndOrders::SendTFToNextTierThruZMQ(const int port_id, const string & symbol, const double price, const long signed_qty, const string & oid, const string & tid)
+void PortfoliosAndOrders::SendStringToNextTierThruZMQ(const string & s)
 {
   //--------------------------------------------------
   // Transmit through zmq
   //--------------------------------------------------
-  string sATF = ConstructAugmentedTradeFeed(port_id,symbol,price,signed_qty, oid, tid);
-
-  zmq::message_t zmq_msg(sATF.length()+1);
-  memcpy((void *)zmq_msg.data(), sATF.c_str(), sATF.length());
-  ((char *)zmq_msg.data())[sATF.length()] = '\0';
+  zmq::message_t zmq_msg(s.length()+1);
+  memcpy((void *)zmq_msg.data(), s.c_str(), s.length());
+  ((char *)zmq_msg.data())[s.length()] = '\0';
   m_zmqsocket->send(zmq_msg);
 }
 

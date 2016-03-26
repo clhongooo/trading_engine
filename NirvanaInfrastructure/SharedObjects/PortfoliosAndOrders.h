@@ -109,6 +109,7 @@ class PortfoliosAndOrders {
     void AcctClearPosChgFlagNoLock();
     double AcctCheckPos(const int,const string &);
     bool CheckIfSomeAcctPosChgd();
+    string ConstructAugmentedSignalFeed(const int,const string &,const double,const long,const string &);
     string ConstructAugmentedTradeFeed(const int,const string &,const double,const long,const string &,const string &);
 
     //--------------------------------------------------
@@ -161,7 +162,7 @@ class PortfoliosAndOrders {
     //--------------------------------------------------
     boost::scoped_ptr<zmq::context_t> m_zmqcontext;
     boost::scoped_ptr<zmq::socket_t> m_zmqsocket;
-    void SendTFToNextTierThruZMQ(const int,const string &,const double,const long,const string &,const string &);
+    void SendStringToNextTierThruZMQ(const string &);
     //--------------------------------------------------
 
 };
