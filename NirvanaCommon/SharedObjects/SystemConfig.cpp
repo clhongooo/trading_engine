@@ -334,6 +334,7 @@ string         SystemConfig::B2_TheoCPnLHistFolder                  (const Strat
 string         SystemConfig::B2_TheoPosFolder                       (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_TheoPosFolder;                        else if (id == STY_B2_US2) return m_B2_US2_TheoPosFolder;                           else if (id == STY_B2_US3) return m_B2_US3_TheoPosFolder;                           else if (id == STY_B2_HK) return m_B2_HK_TheoPosFolder;                       }
 bool           SystemConfig::B2_PersistTheoPosCPnL                  (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_PersistTheoPosCPnL;                   else if (id == STY_B2_US2) return m_B2_US2_PersistTheoPosCPnL;                      else if (id == STY_B2_US3) return m_B2_US3_PersistTheoPosCPnL;                      else if (id == STY_B2_HK) return m_B2_HK_PersistTheoPosCPnL;                  }
 vector<int>    SystemConfig::Get_B2_RotationGroup                   (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_RotationGroup;                        else if (id == STY_B2_US2) return m_B2_US2_RotationGroup;                           else if (id == STY_B2_US3) return m_B2_US3_RotationGroup;                           else if (id == STY_B2_HK) return m_B2_HK_RotationGroup;                       }
+vector<int>    SystemConfig::Get_B2_RoleOfSym                       (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_RoleOfSym;                            else if (id == STY_B2_US2) return m_B2_US2_RoleOfSym;                               else if (id == STY_B2_US3) return m_B2_US3_RoleOfSym;                               else if (id == STY_B2_HK) return m_B2_HK_RoleOfSym;                           }
 int            SystemConfig::Get_B2_ChooseBestNRotationGroup        (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_ChooseBestNRotationGroup;             else if (id == STY_B2_US2) return m_B2_US2_ChooseBestNRotationGroup;                else if (id == STY_B2_US3) return m_B2_US3_ChooseBestNRotationGroup;                else if (id == STY_B2_HK) return m_B2_HK_ChooseBestNRotationGroup;            }
 int            SystemConfig::Get_B2_ActionTimeBefCloseInSec         (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_ActionTimeBefCloseInSec;              else if (id == STY_B2_US2) return m_B2_US2_ActionTimeBefCloseInSec;                 else if (id == STY_B2_US3) return m_B2_US3_ActionTimeBefCloseInSec;                 else if (id == STY_B2_HK) return m_B2_HK_ActionTimeBefCloseInSec;             }
 vector<int>    SystemConfig::Get_B2_FilterSMAPeriod                 (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_FilterSMAPeriod;                      else if (id == STY_B2_US2) return m_B2_US2_FilterSMAPeriod;                         else if (id == STY_B2_US3) return m_B2_US3_FilterSMAPeriod;                         else if (id == STY_B2_HK) return m_B2_HK_FilterSMAPeriod;                     }
@@ -744,6 +745,59 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
       if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & sgid) { m_B2_HK_RotationGroup.push_back(boost::lexical_cast<int>(sgid)); });
     }
   }
+
+  //--------------------------------------------------
+
+  {
+    boost::optional<string> o_B2_US1_RoleOfSym = pt.get_optional<string>("Strategy_B2_US1.RoleOfSym");
+
+    if (o_B2_US1_RoleOfSym)
+    {
+      string s_B2_US1_RoleOfSym = o_B2_US1_RoleOfSym.get();
+      vector<string> vs;
+      boost::split(vs, s_B2_US1_RoleOfSym, boost::is_any_of(","));
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & irole) { m_B2_US1_RoleOfSym.push_back(boost::lexical_cast<int>(irole)); });
+    }
+  }
+
+  {
+    boost::optional<string> o_B2_US2_RoleOfSym = pt.get_optional<string>("Strategy_B2_US2.RoleOfSym");
+
+    if (o_B2_US2_RoleOfSym)
+    {
+      string s_B2_US2_RoleOfSym = o_B2_US2_RoleOfSym.get();
+      vector<string> vs;
+      boost::split(vs, s_B2_US2_RoleOfSym, boost::is_any_of(","));
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & irole) { m_B2_US2_RoleOfSym.push_back(boost::lexical_cast<int>(irole)); });
+    }
+  }
+
+  {
+    boost::optional<string> o_B2_US3_RoleOfSym = pt.get_optional<string>("Strategy_B2_US3.RoleOfSym");
+
+    if (o_B2_US3_RoleOfSym)
+    {
+      string s_B2_US3_RoleOfSym = o_B2_US3_RoleOfSym.get();
+      vector<string> vs;
+      boost::split(vs, s_B2_US3_RoleOfSym, boost::is_any_of(","));
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & irole) { m_B2_US3_RoleOfSym.push_back(boost::lexical_cast<int>(irole)); });
+    }
+  }
+
+  {
+    boost::optional<string> o_B2_HK_RoleOfSym = pt.get_optional<string>("Strategy_B2_HK.RoleOfSym");
+
+    if (o_B2_HK_RoleOfSym)
+    {
+      string s_B2_HK_RoleOfSym = o_B2_HK_RoleOfSym.get();
+      vector<string> vs;
+      boost::split(vs, s_B2_HK_RoleOfSym, boost::is_any_of(","));
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & irole) { m_B2_HK_RoleOfSym.push_back(boost::lexical_cast<int>(irole)); });
+    }
+  }
+
+  //--------------------------------------------------
+
 
   m_HKFEContFutRollFwdTime = HHMMSS(pt.get<int>("Strategy_Base.HKFEContFutRollFwdTime"));
   m_CMEContFutRollFwdTime  = HHMMSS(pt.get<int>("Strategy_Base.CMEContFutRollFwdTime"));

@@ -182,6 +182,7 @@ class SystemConfig : boost::noncopyable
     string                 B2_TheoPosFolder(const StrategyID)                                  const;
     bool                   B2_PersistTheoPosCPnL(const StrategyID)                             const;
     vector<int>            Get_B2_RotationGroup(const StrategyID)                              const;
+    vector<int>            Get_B2_RoleOfSym(const StrategyID)                                  const;
     int                    Get_B2_ChooseBestNRotationGroup(const StrategyID)                   const;
     int                    Get_B2_ActionTimeBefCloseInSec(const StrategyID)                    const;
     vector<int>            Get_B2_FilterSMAPeriod(const StrategyID)                            const;
@@ -373,6 +374,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_B2_US1_TheoPosFolder;
     bool                                               m_B2_US1_PersistTheoPosCPnL;
     vector<int>                                        m_B2_US1_RotationGroup;
+    vector<int>                                        m_B2_US1_RoleOfSym;
     int                                                m_B2_US1_ChooseBestNRotationGroup;
     int                                                m_B2_US1_ActionTimeBefCloseInSec;
     vector<int>                                        m_B2_US1_FilterSMAPeriod;
@@ -391,6 +393,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_B2_US2_TheoPosFolder;
     bool                                               m_B2_US2_PersistTheoPosCPnL;
     vector<int>                                        m_B2_US2_RotationGroup;
+    vector<int>                                        m_B2_US2_RoleOfSym;
     int                                                m_B2_US2_ChooseBestNRotationGroup;
     int                                                m_B2_US2_ActionTimeBefCloseInSec;
     vector<int>                                        m_B2_US2_FilterSMAPeriod;
@@ -409,6 +412,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_B2_US3_TheoPosFolder;
     bool                                               m_B2_US3_PersistTheoPosCPnL;
     vector<int>                                        m_B2_US3_RotationGroup;
+    vector<int>                                        m_B2_US3_RoleOfSym;
     int                                                m_B2_US3_ChooseBestNRotationGroup;
     int                                                m_B2_US3_ActionTimeBefCloseInSec;
     vector<int>                                        m_B2_US3_FilterSMAPeriod;
@@ -427,6 +431,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_B2_HK_TheoPosFolder;
     bool                                               m_B2_HK_PersistTheoPosCPnL;
     vector<int>                                        m_B2_HK_RotationGroup;
+    vector<int>                                        m_B2_HK_RoleOfSym;
     int                                                m_B2_HK_ChooseBestNRotationGroup;
     int                                                m_B2_HK_ActionTimeBefCloseInSec;
     vector<int>                                        m_B2_HK_FilterSMAPeriod;

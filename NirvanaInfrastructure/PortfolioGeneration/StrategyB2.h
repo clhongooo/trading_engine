@@ -262,9 +262,14 @@ class StrategyB2 : public StrategyBase {
     bool AggSgndQtyReadyForAllSym(const YYYYMMDD &);
     void AddNDayRollingReturn(const int,const YYYYMMDD &,const string &,const double);
     void AddAggSgndQty(const YYYYMMDD &,const string &,const double);
+    void AddAggSgndNotnl(const YYYYMMDD &,const int,const string &,const double);
     Option<string> GetSymInGrpRankByRet(const int,const YYYYMMDD &,const int,const ASC_DESC);
     double GetAvgRollgRetOfGrp(const int,const YYYYMMDD &);
+    double GetAvgAggSgndNotnlOfGrp(const int,const YYYYMMDD &);
     vector<int>                                 m_RotationGroup;
+    vector<int>                                 m_vRoleOfSym;
+    map<string,int>                             m_mapRoleOfSym;
+    vector<Option<string> >                     m_vGroupRepresentative;
     vector<map<YYYYMMDD,set<string> > >         m_AllAvbSymForRollingBasket;
     map<YYYYMMDD,set<string> >                  m_AllAvbSym;
     vector<map<YYYYMMDD,vector<TupRetSym> > >   m_SymRankedByRollingReturn;
@@ -274,6 +279,7 @@ class StrategyB2 : public StrategyBase {
     map<YYYYMMDD,vector<Option<string> > >      m_RttnGrpWithSgnl;
     map<YYYYMMDD,vector<TupRetSym> >            m_GrpRtnAndLeadingSym;
     map<YYYYMMDD,map<string,double> >           m_SymAggSgndQty;
+    map<YYYYMMDD,map<int,map<string,double> > > m_AggSgndNotnlOfSym;
     set<string>                                 m_StkPicks;
     SSet<YYYYMMDD>                              m_HasPerformedRotationLogic;
     //--------------------------------------------------
