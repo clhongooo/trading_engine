@@ -121,6 +121,7 @@ SystemConfig::SystemConfig() :
   m_B2_US1_ActionTimeBefCloseInSec(180),
   m_B2_US1_MoveNextBestGroupUpIfNoSignal(true),
   m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal(true),
+  m_B2_US1_AvgAggSgndNotnlThresh(0),
   m_B2_US2_HasEnabledMinCommissionCheck(true),
   m_B2_US2_HasEnabledRotationMode(0),
   m_B2_US2_RotationModeTradeHighestReturn(0),
@@ -137,6 +138,7 @@ SystemConfig::SystemConfig() :
   m_B2_US2_ActionTimeBefCloseInSec(180),
   m_B2_US2_MoveNextBestGroupUpIfNoSignal(true),
   m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal(true),
+  m_B2_US2_AvgAggSgndNotnlThresh(0),
   m_B2_US3_HasEnabledMinCommissionCheck(true),
   m_B2_US3_HasEnabledRotationMode(0),
   m_B2_US3_RotationModeTradeHighestReturn(0),
@@ -153,6 +155,7 @@ SystemConfig::SystemConfig() :
   m_B2_US3_ActionTimeBefCloseInSec(180),
   m_B2_US3_MoveNextBestGroupUpIfNoSignal(true),
   m_B2_US3_MoveNextBestStkInGrpUpIfNoSignal(true),
+  m_B2_US3_AvgAggSgndNotnlThresh(0),
   m_B2_HK_HasEnabledMinCommissionCheck(true),
   m_B2_HK_HasEnabledRotationMode(0),
   m_B2_HK_RotationModeTradeHighestReturn(0),
@@ -168,7 +171,10 @@ SystemConfig::SystemConfig() :
   m_B2_HK_ActionTimeBefCloseInSec(180),
   m_B2_HK_MoveNextBestGroupUpIfNoSignal(true),
   m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal(true),
-  m_SymbolsToBeUsedInAllSections("")
+  m_B2_HK_AvgAggSgndNotnlThresh(0),
+  m_SymbolsToBeUsedInAllSections(""),
+  m_MaxAllowedTradeNotional(0),
+  m_MaxAllowedTradeQty(0)
 {
   m_Logger = Logger::Instance();
   SetProgramStartTime();
@@ -340,6 +346,7 @@ int            SystemConfig::Get_B2_ActionTimeBefCloseInSec         (const Strat
 vector<int>    SystemConfig::Get_B2_FilterSMAPeriod                 (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_FilterSMAPeriod;                      else if (id == STY_B2_US2) return m_B2_US2_FilterSMAPeriod;                         else if (id == STY_B2_US3) return m_B2_US3_FilterSMAPeriod;                         else if (id == STY_B2_HK) return m_B2_HK_FilterSMAPeriod;                     }
 bool           SystemConfig::Get_B2_MoveNextBestGroupUpIfNoSignal   (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_MoveNextBestGroupUpIfNoSignal;        else if (id == STY_B2_US2) return m_B2_US2_MoveNextBestGroupUpIfNoSignal;           else if (id == STY_B2_US3) return m_B2_US3_MoveNextBestGroupUpIfNoSignal;           else if (id == STY_B2_HK) return m_B2_HK_MoveNextBestGroupUpIfNoSignal;       }
 bool           SystemConfig::Get_B2_MoveNextBestStkInGrpUpIfNoSignal(const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal;     else if (id == STY_B2_US2) return m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal;        else if (id == STY_B2_US3) return m_B2_US3_MoveNextBestStkInGrpUpIfNoSignal;        else if (id == STY_B2_HK) return m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal;    }
+double         SystemConfig::Get_B2_AvgAggSgndNotnlThresh           (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_AvgAggSgndNotnlThresh;                else if (id == STY_B2_US2) return m_B2_US2_AvgAggSgndNotnlThresh;                   else if (id == STY_B2_US3) return m_B2_US3_AvgAggSgndNotnlThresh;                   else if (id == STY_B2_HK) return m_B2_HK_AvgAggSgndNotnlThresh;               }
 
 
 bool SystemConfig::ChkIfProceedStyForceExcnEvenIfNoMD(const string & symbol) const
@@ -413,6 +420,15 @@ int SystemConfig::GetPriceFwdrToNextTierIntervalInSec() const
   return m_PriceFwdrIntervalInSec;
 }
 
+double SystemConfig::GetMaxAllowedTradeNotional() const
+{
+  return m_MaxAllowedTradeNotional;
+}
+long SystemConfig::GetMaxAllowedTradeQty() const
+{
+  return m_MaxAllowedTradeQty;
+}
+
 bool SystemConfig::CheckIfBarAggregationM1Symbol(const string & symbol) const
 {
   if (m_BarAggregationM1Symbols.find(symbol) == m_BarAggregationM1Symbols.end()) return false;
@@ -466,8 +482,14 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   m_SupplementaryBarM1Path             = STool::Trim(pt.get<string>   ("SystemSettings.SupplementaryBarM1Path"));
   m_PositionPersistenceFile            = STool::Trim(pt.get<string>   ("SystemSettings.PositionPersistenceFile"));
 
+  m_MaxAllowedTradeNotional            = pt.get<double>   ("SystemSettings.MaxAllowedTradeNotional");
+  m_MaxAllowedTradeQty                 = pt.get<long>     ("SystemSettings.MaxAllowedTradeQty");
+
   if (m_SymbolsToBeUsedInAllSections != "") m_Logger->Write(Logger::INFO,"SystemConfig: Read SymbolsToBeUsedInAllSections: (truncated to 1024) %s", m_SymbolsToBeUsedInAllSections.substr(0,1024).c_str());
   else m_Logger->Write(Logger::INFO,"SystemConfig: Read SymbolsToBeUsedInAllSections: Nil");
+
+  m_Logger->Write(Logger::INFO,"SystemConfig: MaxAllowedTradeNotional %f", m_MaxAllowedTradeNotional);
+  m_Logger->Write(Logger::INFO,"SystemConfig: MaxAllowedTradeQty %d", m_MaxAllowedTradeQty);
 
   m_SupplementaryBarLeadingZeroAdj     = pt.get<bool>           ("SystemSettings.SupplementaryBarFileLeadingZeroAdj");
   m_PositionPersistenceIsEnabled       = pt.get<bool>           ("SystemSettings.EnablePositionPersistence");
@@ -529,6 +551,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<int>    o_B2_US1_ActionTimeBefCloseInSec             = pt.get_optional<int>     ("Strategy_B2_US1.ActionTimeBefCloseInSec");
   boost::optional<bool>   o_B2_US1_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B2_US1.MoveNextBestGroupUpIfNoSignal");
   boost::optional<bool>   o_B2_US1_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B2_US1.MoveNextBestStkInGrpUpIfNoSignal");
+  boost::optional<double> o_B2_US1_AvgAggSgndNotnlThresh               = pt.get_optional<double>  ("Strategy_B2_US1.AvgAggSgndNotnlThresh");
   boost::optional<string> o_B2_US1_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B2_US1.TheoCPnLHistFolder");
   boost::optional<string> o_B2_US1_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_US1.TheoPosFolder");
 
@@ -542,6 +565,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US1_ActionTimeBefCloseInSec             )  m_B2_US1_ActionTimeBefCloseInSec              = o_B2_US1_ActionTimeBefCloseInSec             .get();
   if(o_B2_US1_MoveNextBestGroupUpIfNoSignal       )  m_B2_US1_MoveNextBestGroupUpIfNoSignal        = o_B2_US1_MoveNextBestGroupUpIfNoSignal       .get();
   if(o_B2_US1_MoveNextBestStkInGrpUpIfNoSignal    )  m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal     = o_B2_US1_MoveNextBestStkInGrpUpIfNoSignal    .get();
+  if(o_B2_US1_AvgAggSgndNotnlThresh               )  m_B2_US1_AvgAggSgndNotnlThresh                = o_B2_US1_AvgAggSgndNotnlThresh               .get();
   if(o_B2_US1_TheoCPnLHistFolder                  )  m_B2_US1_TheoCPnLHistFolder                   = STool::Trim(o_B2_US1_TheoCPnLHistFolder      .get());
   if(o_B2_US1_TheoPosFolder                       )  m_B2_US1_TheoPosFolder                        = STool::Trim(o_B2_US1_TheoPosFolder           .get());
 
@@ -555,6 +579,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<int>    o_B2_US2_ActionTimeBefCloseInSec             = pt.get_optional<int>     ("Strategy_B2_US2.ActionTimeBefCloseInSec");
   boost::optional<bool>   o_B2_US2_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B2_US2.MoveNextBestGroupUpIfNoSignal");
   boost::optional<bool>   o_B2_US2_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B2_US2.MoveNextBestStkInGrpUpIfNoSignal");
+  boost::optional<double> o_B2_US2_AvgAggSgndNotnlThresh               = pt.get_optional<double>  ("Strategy_B2_US2.AvgAggSgndNotnlThresh");
   boost::optional<string> o_B2_US2_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B2_US2.TheoCPnLHistFolder");
   boost::optional<string> o_B2_US2_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_US2.TheoPosFolder");
 
@@ -568,6 +593,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US2_ActionTimeBefCloseInSec             )  m_B2_US2_ActionTimeBefCloseInSec              = o_B2_US2_ActionTimeBefCloseInSec             .get();
   if(o_B2_US2_MoveNextBestGroupUpIfNoSignal       )  m_B2_US2_MoveNextBestGroupUpIfNoSignal        = o_B2_US2_MoveNextBestGroupUpIfNoSignal       .get();
   if(o_B2_US2_MoveNextBestStkInGrpUpIfNoSignal    )  m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal     = o_B2_US2_MoveNextBestStkInGrpUpIfNoSignal    .get();
+  if(o_B2_US2_AvgAggSgndNotnlThresh               )  m_B2_US2_AvgAggSgndNotnlThresh                = o_B2_US2_AvgAggSgndNotnlThresh               .get();
   if(o_B2_US2_TheoCPnLHistFolder                  )  m_B2_US2_TheoCPnLHistFolder                   = STool::Trim(o_B2_US2_TheoCPnLHistFolder      .get());
   if(o_B2_US2_TheoPosFolder                       )  m_B2_US2_TheoPosFolder                        = STool::Trim(o_B2_US2_TheoPosFolder           .get());
 
@@ -581,6 +607,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<int>    o_B2_US3_ActionTimeBefCloseInSec             = pt.get_optional<int>     ("Strategy_B2_US3.ActionTimeBefCloseInSec");
   boost::optional<bool>   o_B2_US3_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B2_US3.MoveNextBestGroupUpIfNoSignal");
   boost::optional<bool>   o_B2_US3_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B2_US3.MoveNextBestStkInGrpUpIfNoSignal");
+  boost::optional<double> o_B2_US3_AvgAggSgndNotnlThresh               = pt.get_optional<double>  ("Strategy_B2_US3.AvgAggSgndNotnlThresh");
   boost::optional<string> o_B2_US3_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B2_US3.TheoCPnLHistFolder");
   boost::optional<string> o_B2_US3_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_US3.TheoPosFolder");
 
@@ -594,6 +621,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US3_ActionTimeBefCloseInSec             )  m_B2_US3_ActionTimeBefCloseInSec              = o_B2_US3_ActionTimeBefCloseInSec             .get();
   if(o_B2_US3_MoveNextBestGroupUpIfNoSignal       )  m_B2_US3_MoveNextBestGroupUpIfNoSignal        = o_B2_US3_MoveNextBestGroupUpIfNoSignal       .get();
   if(o_B2_US3_MoveNextBestStkInGrpUpIfNoSignal    )  m_B2_US3_MoveNextBestStkInGrpUpIfNoSignal     = o_B2_US3_MoveNextBestStkInGrpUpIfNoSignal    .get();
+  if(o_B2_US3_AvgAggSgndNotnlThresh               )  m_B2_US3_AvgAggSgndNotnlThresh                = o_B2_US3_AvgAggSgndNotnlThresh               .get();
   if(o_B2_US3_TheoCPnLHistFolder                  )  m_B2_US3_TheoCPnLHistFolder                   = STool::Trim(o_B2_US3_TheoCPnLHistFolder      .get());
   if(o_B2_US3_TheoPosFolder                       )  m_B2_US3_TheoPosFolder                        = STool::Trim(o_B2_US3_TheoPosFolder           .get());
 
@@ -607,6 +635,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<int>    o_B2_HK_ActionTimeBefCloseInSec             = pt.get_optional<int>     ("Strategy_B2_HK.ActionTimeBefCloseInSec");
   boost::optional<bool>   o_B2_HK_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B2_HK.MoveNextBestGroupUpIfNoSignal");
   boost::optional<bool>   o_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B2_HK.MoveNextBestStkInGrpUpIfNoSignal");
+  boost::optional<double> o_B2_HK_AvgAggSgndNotnlThresh               = pt.get_optional<double>  ("Strategy_B2_HK.AvgAggSgndNotnlThresh");
   boost::optional<string> o_B2_HK_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B2_HK.TheoCPnLHistFolder");
   boost::optional<string> o_B2_HK_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_HK.TheoPosFolder");
 
@@ -620,6 +649,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_HK_ActionTimeBefCloseInSec             )  m_B2_HK_ActionTimeBefCloseInSec             = o_B2_HK_ActionTimeBefCloseInSec             .get();
   if(o_B2_HK_MoveNextBestGroupUpIfNoSignal       )  m_B2_HK_MoveNextBestGroupUpIfNoSignal       = o_B2_HK_MoveNextBestGroupUpIfNoSignal       .get();
   if(o_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    )  m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    = o_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    .get();
+  if(o_B2_HK_AvgAggSgndNotnlThresh               )  m_B2_HK_AvgAggSgndNotnlThresh               = o_B2_HK_AvgAggSgndNotnlThresh               .get();
   if(o_B2_HK_TheoCPnLHistFolder                  )  m_B2_HK_TheoCPnLHistFolder                  = STool::Trim(o_B2_HK_TheoCPnLHistFolder      .get());
   if(o_B2_HK_TheoPosFolder                       )  m_B2_HK_TheoPosFolder                       = STool::Trim(o_B2_HK_TheoPosFolder           .get());
 

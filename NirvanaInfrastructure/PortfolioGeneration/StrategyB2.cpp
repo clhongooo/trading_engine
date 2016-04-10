@@ -565,6 +565,9 @@ void StrategyB2::ReadParam()
     m_ChooseBestNRotationGroup = m_SysCfg->Get_B2_ChooseBestNRotationGroup(m_StyID);
     m_Logger->Write(Logger::INFO,"Strategy %s: m_ChooseBestNRotationGroup %d", GetStrategyName(m_StyID).c_str(),  m_ChooseBestNRotationGroup);
 
+    m_AvgAggSgndNotnlThresh = m_SysCfg->Get_B2_AvgAggSgndNotnlThresh(m_StyID);
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_AvgAggSgndNotnlThresh %f", GetStrategyName(m_StyID).c_str(),  m_AvgAggSgndNotnlThresh);
+
     m_MoveNextBestGroupUpIfNoSignal = m_SysCfg->Get_B2_MoveNextBestGroupUpIfNoSignal(m_StyID);
     m_Logger->Write(Logger::INFO,"Strategy %s: m_MoveNextBestGroupUpIfNoSignal %d", GetStrategyName(m_StyID).c_str(),  m_MoveNextBestGroupUpIfNoSignal);
 
@@ -601,6 +604,7 @@ void StrategyB2::ReadParam()
   else
   {
     m_Logger->Write(Logger::INFO,"Strategy %s: Any m_ChooseBestNRotationGroup settings are ignored", GetStrategyName(m_StyID).c_str());
+    m_Logger->Write(Logger::INFO,"Strategy %s: Any m_AvgAggSgndNotnlThresh settings are ignored", GetStrategyName(m_StyID).c_str());
     m_Logger->Write(Logger::INFO,"Strategy %s: Any m_RotationGroup settings are ignored", GetStrategyName(m_StyID).c_str());
     m_Logger->Write(Logger::INFO,"Strategy %s: Any m_vRoleOfSym settings are ignored", GetStrategyName(m_StyID).c_str());
     m_Logger->Write(Logger::INFO,"Strategy %s: Any m_MoveNextBestGroupUpIfNoSignal settings are ignored", GetStrategyName(m_StyID).c_str());
@@ -2196,10 +2200,6 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         }
         m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- Symbol with signal ---", GetStrategyName(m_StyID).c_str());
 
-        //--------------------------------------------------
-        // check the average strength indicator of each of the group,
-        // if it is smaller than the threshold, then remove all the symbols from the group
-        //--------------------------------------------------
         for (int iRttnGrp = m_RotationGroup.front(); iRttnGrp < m_RotationGroup.back()+1; ++iRttnGrp)
         {
           double dAvgSgndNotnlOfRttnGrp = GetAvgAggSgndNotnlOfGrp(iRttnGrp,m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
@@ -2208,10 +2208,22 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                           m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                           iRttnGrp, dAvgSgndNotnlOfRttnGrp);
 
+          if (
+            (m_RotationMode == 1 && dAvgSgndNotnlOfRttnGrp < m_AvgAggSgndNotnlThresh)
+            ||
+            (m_RotationMode == -1 && dAvgSgndNotnlOfRttnGrp > m_AvgAggSgndNotnlThresh)
+            )
+          {
+            //--------------------------------------------------
+            // check the average signed notional of each group,
+            // if it is smaller than the threshold, then remove all the symbols from the group
+            //--------------------------------------------------
+            vSymWithSgnl[iRttnGrp] = Option<string>();
+          }
           //--------------------------------------------------
           // check if the group has any representative
           //--------------------------------------------------
-          if (m_vGroupRepresentative[iRttnGrp].IsSome())
+          else if (m_vGroupRepresentative[iRttnGrp].IsSome())
           {
             vSymWithSgnl[iRttnGrp] = m_vGroupRepresentative[iRttnGrp];
             m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Group %d Setting symbol with signal with the representative group %s",
@@ -2328,7 +2340,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     }
 
     //--------------------------------------------------
-    // set 0 to trade position if this is not the stock that we should keep
+    // if not in the correct direction, set quantity to zero
     //--------------------------------------------------
     if (m_RotationMode == 1
         &&
@@ -2342,21 +2354,22 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     {
       m_dAggSignedQty = 0;
     }
-    else
+
+    //--------------------------------------------------
+    // set 0 to trade position if this is not the stock that we should keep
+    //--------------------------------------------------
+    if (m_StkPicks.find(m_TradedSymbols[iTradSym]) == m_StkPicks.end())
     {
-      if (m_StkPicks.find(m_TradedSymbols[iTradSym]) == m_StkPicks.end())
-      {
-        m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s is not the chosen one. Set position to 0.",
-                        GetStrategyName(m_StyID).c_str(),
-                        m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                        m_TradedSymbols[iTradSym].c_str());
+      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s is not the chosen one. Set position to 0.",
+                      GetStrategyName(m_StyID).c_str(),
+                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                      m_TradedSymbols[iTradSym].c_str());
 
-        m_TargetTradeDir [iTradSym] = TD_NODIR;
-        m_TargetAbsPos   [iTradSym] = 0;
-        *m_DoneEODTrade = true;
+      m_TargetTradeDir [iTradSym] = TD_NODIR;
+      m_TargetAbsPos   [iTradSym] = 0;
+      *m_DoneEODTrade = true;
 
-        return;
-      }
+      return;
     }
 
     //--------------------------------------------------

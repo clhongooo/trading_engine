@@ -188,6 +188,7 @@ class SystemConfig : boost::noncopyable
     vector<int>            Get_B2_FilterSMAPeriod(const StrategyID)                            const;
     bool                   Get_B2_MoveNextBestGroupUpIfNoSignal(const StrategyID)              const;
     bool                   Get_B2_MoveNextBestStkInGrpUpIfNoSignal(const StrategyID)           const;
+    double                 Get_B2_AvgAggSgndNotnlThresh(const StrategyID)                      const;
     bool                   CheckIfHaltTrading(const string &,const YYYYMMDD &)                 const;
     bool                   CheckIfHalfDayTrading(const string &,const YYYYMMDD &)              const;
     bool                   GetCorpActionAdj(const string &,const YYYYMMDD &,double &,double &) const;
@@ -196,6 +197,8 @@ class SystemConfig : boost::noncopyable
     bool                   IsPriceFwdrToNextTierOn()                                           const;
     int                    GetPriceFwdrToNextTierIntervalInSec()                               const;
 
+    double                 GetMaxAllowedTradeNotional()                                        const;
+    long                   GetMaxAllowedTradeQty()                                             const;
 
     //--------------------------------------------------
     // Convenience for Trading System config
@@ -380,6 +383,7 @@ class SystemConfig : boost::noncopyable
     vector<int>                                        m_B2_US1_FilterSMAPeriod;
     bool                                               m_B2_US1_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal;
+    double                                             m_B2_US1_AvgAggSgndNotnlThresh;
     bool                                               m_B2_US2_HasEnabledMinCommissionCheck;
     int                                                m_B2_US2_HasEnabledRotationMode;
     bool                                               m_B2_US2_RotationModeTradeHighestReturn;
@@ -399,6 +403,7 @@ class SystemConfig : boost::noncopyable
     vector<int>                                        m_B2_US2_FilterSMAPeriod;
     bool                                               m_B2_US2_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal;
+    double                                             m_B2_US2_AvgAggSgndNotnlThresh;
     bool                                               m_B2_US3_HasEnabledMinCommissionCheck;
     int                                                m_B2_US3_HasEnabledRotationMode;
     bool                                               m_B2_US3_RotationModeTradeHighestReturn;
@@ -418,6 +423,7 @@ class SystemConfig : boost::noncopyable
     vector<int>                                        m_B2_US3_FilterSMAPeriod;
     bool                                               m_B2_US3_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_US3_MoveNextBestStkInGrpUpIfNoSignal;
+    double                                             m_B2_US3_AvgAggSgndNotnlThresh;
     bool                                               m_B2_HK_HasEnabledMinCommissionCheck;
     int                                                m_B2_HK_HasEnabledRotationMode;
     bool                                               m_B2_HK_RotationModeTradeHighestReturn;
@@ -437,7 +443,16 @@ class SystemConfig : boost::noncopyable
     vector<int>                                        m_B2_HK_FilterSMAPeriod;
     bool                                               m_B2_HK_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal;
+    double                                             m_B2_HK_AvgAggSgndNotnlThresh;
     string                                             m_SymbolsToBeUsedInAllSections;
+
+
+
+    //--------------------------------------------------
+    // Global risk management for placing orders
+    //--------------------------------------------------
+    double   m_MaxAllowedTradeNotional;
+    long     m_MaxAllowedTradeQty;
 };
 
 #endif

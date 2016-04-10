@@ -51,35 +51,47 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
   m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d ExecStrat: %d ExecStrat param: %d. OID Details: %s.", SystemTime.ToStr().c_str(), symbol.c_str(), signed_qty, exec_strat, exec_strat_param.size(), oid_details.c_str());
 
   //--------------------------------------------------
+  // Get prices
+  //--------------------------------------------------
+  YYYYMMDDHHMMSS ymdhms;
+  double dTP = NAN;
+  double dMQ = NAN;
+  bool bTP = m_MarketData->GetLatestTradePrice(symbol, dTP, ymdhms);
+  bool bMQ = m_MarketData->GetLatestMidQuote(symbol, dMQ, ymdhms);
+  double dP = (bTP ? dTP : dMQ);
+
+  //--------------------------------------------------
+  // check maximum allowed notional and quantity
+  //--------------------------------------------------
+  if (
+    dP * abs(signed_qty) > m_SysCfg->GetMaxAllowedTradeNotional()
+    ||
+    abs(signed_qty) > m_SysCfg->GetMaxAllowedTradeQty()
+    )
+  {
+    m_Logger->Write(Logger::ERROR,"PortfoliosAndOrders: %s: Max allowed notional / qty exceeded: sym = %s notional = %f qty = %d.",
+                    m_MarketData->GetSystemTimeHKT().ToStr().c_str(),
+                    symbol.c_str(),
+                    dP * signed_qty,
+                    signed_qty);
+    return false;
+  }
+
+  //--------------------------------------------------
   // signalfeed to zmq
   //--------------------------------------------------
   if (m_SysCfg->NextTierZMQIsOn())
   {
-    double dP = NAN;
-    YYYYMMDDHHMMSS ymdhms;
-    if (m_MarketData->GetLatestTradePrice(symbol, dP, ymdhms))
-    {
-      string sSF = ConstructAugmentedSignalFeed(port_id,symbol,dP,signed_qty,"OID");
-      SendStringToNextTierThruZMQ(sSF);
-      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: ZMQ signalfeed: %s.",
-                      m_MarketData->GetSystemTimeHKT().ToStr().c_str(), sSF.c_str());
-    }
-    else if (m_MarketData->GetLatestMidQuote(symbol, dP, ymdhms))
-    {
-      string sSF = ConstructAugmentedSignalFeed(port_id,symbol,dP,signed_qty,"OID");
-      SendStringToNextTierThruZMQ(sSF);
-      m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: ZMQ signalfeed: %s.",
-                      m_MarketData->GetSystemTimeHKT().ToStr().c_str(), sSF.c_str());
-    }
-
+    string sSF = ConstructAugmentedSignalFeed(port_id,symbol,dP,signed_qty,"OID");
+    SendStringToNextTierThruZMQ(sSF);
+    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: ZMQ signalfeed: %s.",
+                    m_MarketData->GetSystemTimeHKT().ToStr().c_str(), sSF.c_str());
   }
 
   //--------------------------------------------------
   if (m_SysCfg->Get_OTIMode() == SystemConfig::OTI_RECORD)
   {
-    double dMidQuote = NAN;
-    YYYYMMDDHHMMSS ymdhms;
-    if (!m_MarketData->GetLatestMidQuote(symbol, dMidQuote, ymdhms))
+    if (!bMQ)
     {
       if (
         !m_SysCfg->ChkIfProceedStyForceExcnEvenIfNoMD(symbol)
@@ -93,9 +105,9 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
       }
     }
 
-    AcctTrade(port_id,symbol,signed_qty,dMidQuote);
+    AcctTrade(port_id,symbol,signed_qty,dMQ);
 
-    string sTF = ConstructAugmentedTradeFeed(port_id,symbol,dMidQuote,signed_qty,"OID","TID");
+    string sTF = ConstructAugmentedTradeFeed(port_id,symbol,dMQ,signed_qty,"OID","TID");
     m_Logger->Write(Logger::INFO,"%s", sTF.c_str());
 
     if (m_SysCfg->NextTierZMQIsOn())
@@ -106,7 +118,7 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
     }
 
     m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d Price: %f.",
-                    m_MarketData->GetSystemTimeHKT().ToStr().c_str(), symbol.c_str(), signed_qty, dMidQuote);
+                    m_MarketData->GetSystemTimeHKT().ToStr().c_str(), symbol.c_str(), signed_qty, dMQ);
 
     return true;
   }

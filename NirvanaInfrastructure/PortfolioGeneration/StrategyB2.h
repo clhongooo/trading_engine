@@ -165,6 +165,7 @@ class StrategyB2 : public StrategyBase {
     Option<double>   m_LongOnlyWhenAvgPriceReturnAbove;
     Option<double>   m_ShortOnlyWhenAvgPriceReturnBelow;
     int              m_ChooseBestNRotationGroup;
+    double           m_AvgAggSgndNotnlThresh;
 
     //--------------------------------------------------
     map<string,vector<double> >               m_map_HistoricalAvgPx;
