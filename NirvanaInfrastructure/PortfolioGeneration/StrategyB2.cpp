@@ -1979,7 +1979,8 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                     dRollingReturn);
 
     //--------------------------------------------------
-    // get the set of symbol whose position we will maintain (within the groups)
+    // sticky group: get the groups whose position we will maintain
+    // sticky stock: get the set of symbol whose position we will maintain (within the groups)
     //--------------------------------------------------
     if (
       (
@@ -1999,19 +2000,48 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       )
       )
     {
-      map<YYYYMMDD,set<string> >::iterator it = m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
-      if (it == m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].end())
       {
-        m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()] = set<string>();
-        it = m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+        //--------------------------------------------------
+        // sticky stock within group
+        //--------------------------------------------------
+        map<YYYYMMDD,set<string> >::iterator it = m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+        if (it == m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].end())
+        {
+          m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()] = set<string>();
+          it = m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+        }
+        it->second.insert(m_TradedSymbols[iTradSym]);
+        m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s has a position that we will maintain. Previous pos = %f Current (raw) m_dAggSignedQty = %f",
+                        GetStrategyName(m_StyID).c_str(),
+                        m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                        m_TradedSymbols[iTradSym].c_str(),
+                        GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]),
+                        m_dAggSignedQty);
       }
-      it->second.insert(m_TradedSymbols[iTradSym]);
-      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s has a position that we will maintain. Previous pos = %f Current (raw) m_dAggSignedQty = %f",
-                      GetStrategyName(m_StyID).c_str(),
-                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                      m_TradedSymbols[iTradSym].c_str(),
-                      GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]),
-                      m_dAggSignedQty);
+
+      {
+        //--------------------------------------------------
+        // sticky group
+        //--------------------------------------------------
+        map<YYYYMMDD,set<int> >::iterator it = m_MaintainGrp.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+        if (it == m_MaintainGrp.end())
+        {
+          m_MaintainGrp[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()] = set<int>();
+          it = m_MaintainGrp.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+        }
+        set<int> & setMtnGrp = it->second;
+        setMtnGrp.insert(m_RotationGroup[iTradSym]);
+
+        FForEach(setMtnGrp,[&](const int grp) {
+          m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s Sticky Group %d",
+                          GetStrategyName(m_StyID).c_str(),
+                          m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                          m_TradedSymbols[iTradSym].c_str(),
+                          grp);
+
+        });
+      }
+
     }
 
     //--------------------------------------------------
@@ -2258,11 +2288,11 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
         vector<TupRetSym> & mGrpRtnAndLeadSym = it->second;
 
-        for (int grp = 0; grp < m_RotationGroup.back()+1; ++grp)
+        for (int grp = m_RotationGroup.front(); grp < m_RotationGroup.back()+1; ++grp)
         {
           // if (vSymWithSgnl[grp].IsNone()) continue;
           if (std::isnan(vGrpRtn[grp])) continue;
-          mGrpRtnAndLeadSym.push_back(TupRetSym(vGrpRtn[grp],vSymWithSgnl[grp].GetOrElse("")));
+          mGrpRtnAndLeadSym.push_back(TupRetSym(vGrpRtn[grp],vSymWithSgnl[grp].GetOrElse(""),grp));
         }
 
         //--------------------------------------------------
@@ -2275,11 +2305,12 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
           int grp = 0;
           FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
-            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: mGrpRtnAndLeadSym: Group %d %f %s",
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: mGrpRtnAndLeadSym: Group %d %f %s %d",
                             GetStrategyName(m_StyID).c_str(),
                             grp,
                             tup.m_return,
-                            tup.m_symbol().c_str());
+                            tup.m_symbol().c_str(),
+                            tup.m_rttngrp);
             grp++;
           });
 
@@ -2288,21 +2319,65 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
           std::sort(mGrpRtnAndLeadSym.begin(), mGrpRtnAndLeadSym.end());
 
           FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
-            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (ascending order) mGrpRtnAndLeadSym: %f %s",
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (ascending order) mGrpRtnAndLeadSym: %f %s %d",
                             GetStrategyName(m_StyID).c_str(),
                             tup.m_return,
-                            tup.m_symbol().c_str());
+                            tup.m_symbol().c_str(),
+                            tup.m_rttngrp);
           });
 
           if (m_RotationModeTradeHighestReturn) FReverse(mGrpRtnAndLeadSym);
 
           FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
-            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (according to rotation scheme) mGrpRtnAndLeadSym: %f %s",
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (according to rotation scheme) mGrpRtnAndLeadSym: %f %s %d",
                             GetStrategyName(m_StyID).c_str(),
                             tup.m_return,
-                            tup.m_symbol().c_str());
+                            tup.m_symbol().c_str(),
+                            tup.m_rttngrp);
           });
           m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- mGrpRtnAndLeadSym ---", GetStrategyName(m_StyID).c_str());
+
+
+          {
+            //--------------------------------------------------
+            // sticky group: here we move sticky groups to the front
+            //--------------------------------------------------
+            vector<TupRetSym> newGrpRtnAndLeadSym;
+            map<YYYYMMDD,set<int> >::iterator it = m_MaintainGrp.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+            if (it != m_MaintainGrp.end())
+            {
+              const set<int> & setMtnGrp = it->second;
+
+              //--------------------------------------------------
+              // filter those sticky groups
+              //--------------------------------------------------
+              FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
+                if (setMtnGrp.find(tup.m_rttngrp) != setMtnGrp.end())
+                  newGrpRtnAndLeadSym.push_back(tup);
+              });
+              //--------------------------------------------------
+              // filter those non-sticky groups
+              //--------------------------------------------------
+              FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
+                if (setMtnGrp.find(tup.m_rttngrp) == setMtnGrp.end())
+                  newGrpRtnAndLeadSym.push_back(tup);
+              });
+
+              mGrpRtnAndLeadSym = newGrpRtnAndLeadSym;
+            }
+
+            FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
+              m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (after moving sticky group to front) mGrpRtnAndLeadSym: %f %s %d",
+                              GetStrategyName(m_StyID).c_str(),
+                              tup.m_return,
+                              tup.m_symbol().c_str(),
+                              tup.m_rttngrp);
+            });
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- mGrpRtnAndLeadSym ---", GetStrategyName(m_StyID).c_str());
+
+          }
+          //--------------------------------------------------
+
 
           int iCnt = 0;
           while (true)
@@ -2617,7 +2692,7 @@ void StrategyB2::AddNDayRollingReturn(const int gid, const YYYYMMDD & ymd, const
   // add now
   //--------------------------------------------------
   it1->second[sym] = ret;
-  it2->second.push_back(TupRetSym(ret, sym));
+  it2->second.push_back(TupRetSym(ret, sym, gid));
 
 }
 

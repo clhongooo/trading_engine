@@ -238,12 +238,14 @@ class StrategyB2 : public StrategyBase {
     typedef struct TupRetSym {
       double m_return;
       char _m_symbol[16];
-      TupRetSym(double r, const string s)
+      int m_rttngrp;
+      TupRetSym(double r, const string s, const int g)
       {
         m_return = r;
         // memset (_m_symbol,'\0',16);
         strcpy(_m_symbol,s.c_str());
         _m_symbol[s.length()] = '\0';
+        m_rttngrp = g;
       }
       string m_symbol() const
       {
@@ -254,6 +256,7 @@ class StrategyB2 : public StrategyBase {
       { if (this == &tup) return *this;
         m_return = tup.m_return;
         strcpy(_m_symbol,tup._m_symbol);
+        m_rttngrp = tup.m_rttngrp;
         return *this;
       }
     } TupRetSym;
@@ -276,6 +279,7 @@ class StrategyB2 : public StrategyBase {
     vector<map<YYYYMMDD,vector<TupRetSym> > >   m_SymRankedByRollingReturn;
     vector<map<YYYYMMDD,map<string,double> > >  m_SymAndRollingReturn;
     vector<map<YYYYMMDD,set<string> > >         m_MaintainPosWithinGrp;
+    map<YYYYMMDD,set<int> >                     m_MaintainGrp;
     map<YYYYMMDD,vector<double> >               m_AvgRtnOfGrp;
     map<YYYYMMDD,vector<Option<string> > >      m_RttnGrpWithSgnl;
     map<YYYYMMDD,vector<TupRetSym> >            m_GrpRtnAndLeadingSym;
