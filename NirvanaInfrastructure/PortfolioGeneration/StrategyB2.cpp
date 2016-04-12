@@ -1451,25 +1451,6 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 {
 
   //--------------------------------------------------
-  // to make sure that we have updated internal data before generating signals
-  //--------------------------------------------------
-  if (m_AllSymWithUpdateData[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].size() <
-      m_AllAvbSym[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].size())
-  {
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s Not finished updating internal data yet",
-                    GetStrategyName(m_StyID).c_str(),
-                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                    m_TradedSymbols[iTradSym].c_str());
-    FForEach(m_AllSymWithUpdateData[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()],[&](const string & sym) {
-      m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s With update internal data",
-                      GetStrategyName(m_StyID).c_str(),
-                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                      sym.c_str());
-    });
-    return;
-  }
-
-  //--------------------------------------------------
   m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Using parameters: m_beta_1 = %f, m_beta_2 = %f, m_beta_3 = %f, m_beta_4 = %f.",
                   GetStrategyName(m_StyID).c_str(),
                   m_p_ymdhms_SysTime_Local->ToStr().c_str(),
@@ -2000,6 +1981,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
       return;
     }
+
     //--------------------------------------------------
     // calculate rolling return
     //--------------------------------------------------
@@ -2081,7 +2063,6 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                           m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                           m_TradedSymbols[iTradSym].c_str(),
                           grp);
-
         });
       }
 
@@ -2136,6 +2117,24 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                     m_TradedSymbols[iTradSym].c_str());
 
+    //--------------------------------------------------
+    // check if we have updated internal data for all symbols before generating signals
+    //--------------------------------------------------
+    if (m_AllSymWithUpdateData[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].size() <
+        m_AllAvbSym[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].size())
+    {
+      m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s Not finished updating internal data yet",
+                      GetStrategyName(m_StyID).c_str(),
+                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                      m_TradedSymbols[iTradSym].c_str());
+      FForEach(m_AllSymWithUpdateData[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()],[&](const string & sym) {
+        m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s With update internal data",
+                        GetStrategyName(m_StyID).c_str(),
+                        m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                        sym.c_str());
+      });
+      return;
+    }
 
 
     //--------------------------------------------------
