@@ -837,14 +837,6 @@ void StrategyB2::SetConvenienceVarb(const int iTradSym)
     //--------------------------------------------------
   }
 
-  map<string,set<YYYYMMDD> >::iterator it3 = m_map_HistoricalPricesDates.find(m_TradedSymbols[iTradSym]);
-  if (it3 == m_map_HistoricalPricesDates.end())
-  {
-    m_map_HistoricalPricesDates[m_TradedSymbols[iTradSym]] = set<YYYYMMDD>();
-    it3 = m_map_HistoricalPricesDates.find(m_TradedSymbols[iTradSym]);
-  }
-  m_HistoricalPricesDates = &(it3->second);
-
   map<string,CountingFunction>::iterator it4a = m_map_HistoricalNumOfRisingDaysCountAvgPx.find(m_TradedSymbols[iTradSym]);
   if (it4a == m_map_HistoricalNumOfRisingDaysCountAvgPx.end())
   {
@@ -1039,7 +1031,20 @@ void StrategyB2::InitialWarmUp(const int iTradSym)
 
       m_HistoricalAvgPx->push_back(dAvgPx);
       m_HistoricalClose->push_back(vClose[i]);
-      m_HistoricalPricesDates->insert(vYMD[i]);
+
+      //--------------------------------------------------
+      {
+        YYYYMMDD ymd = vYMD[i];
+        map<YYYYMMDD,set<string> >::iterator it = m_AllSymWithUpdateData.find(ymd);
+        if (it == m_AllSymWithUpdateData.end())
+        {
+          m_AllSymWithUpdateData[ymd] = set<string>();
+          it = m_AllSymWithUpdateData.find(ymd);
+        }
+        it->second.insert(m_TradedSymbols[iTradSym]);
+      }
+      //--------------------------------------------------
+
       if (!m_B2_FilterSMAPeriod.empty())
       {
         if (m_B2_FilterSMAPeriod.size() == 2)
@@ -1087,6 +1092,7 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
   //--------------------------------------------------
   if (m_RotationMode != 0)
   {
+    //--------------------------------------------------
     if (m_AllAvbSymForRollingBasket[m_RotationGroup[iTradSym]].find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD()) == m_AllAvbSymForRollingBasket[m_RotationGroup[iTradSym]].end())
     {
       m_AllAvbSymForRollingBasket[m_RotationGroup[iTradSym]][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()] = set<string>();
@@ -1094,10 +1100,11 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
     //--------------------------------------------------
     // Only add those symbols with enough backtest data
     //--------------------------------------------------
-    if (m_map_HistoricalAvgPx[m_TradedSymbols[iTradSym]].size() >=  m_TrainingPeriodMax[iTradSym])
+    if (m_map_HistoricalAvgPx[m_TradedSymbols[iTradSym]].size() >= m_TrainingPeriodMax[iTradSym])
     {
       m_AllAvbSymForRollingBasket[m_RotationGroup[iTradSym]][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].insert(m_TradedSymbols[iTradSym]);
     }
+    //--------------------------------------------------
 
     {
       YYYYMMDD ymd = m_p_ymdhms_SysTime_Local->GetYYYYMMDD();
@@ -1109,7 +1116,6 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
       }
       if (m_HistoricalAvgPx->size() >= m_TrainingPeriodMax[iTradSym])
         it->second.insert(m_TradedSymbols[iTradSym]);
-
     }
   }
   //--------------------------------------------------
@@ -1130,7 +1136,8 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
                  );
 
   if (
-    m_HistoricalPricesDates->find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD()) == m_HistoricalPricesDates->end() &&
+    m_AllSymWithUpdateData[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].find(m_TradedSymbols[iTradSym]) ==
+    m_AllSymWithUpdateData[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].end() &&
     m_ymdhms_SysTime_HKT.GetHHMMSS() >= hmsStart &&
     m_ymdhms_SysTime_HKT.GetHHMMSS() <= hmsEnd
     )
@@ -1148,7 +1155,20 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
 
       m_HistoricalAvgPx->push_back(dAvgPx);
       m_HistoricalClose->push_back(m_SymMidQuote);
-      m_HistoricalPricesDates->insert(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+
+      //--------------------------------------------------
+      {
+        YYYYMMDD ymd = m_p_ymdhms_SysTime_Local->GetYYYYMMDD();
+        map<YYYYMMDD,set<string> >::iterator it = m_AllSymWithUpdateData.find(ymd);
+        if (it == m_AllSymWithUpdateData.end())
+        {
+          m_AllSymWithUpdateData[ymd] = set<string>();
+          it = m_AllSymWithUpdateData.find(ymd);
+        }
+        it->second.insert(m_TradedSymbols[iTradSym]);
+      }
+      //--------------------------------------------------
+
       if (!m_B2_FilterSMAPeriod.empty())
       {
         if (m_B2_FilterSMAPeriod.size() == 2)
@@ -1429,6 +1449,27 @@ void StrategyB2::DetermineRegime(const int iTradSym)
 
 void StrategyB2::PreTradePreparation(const int iTradSym)
 {
+
+  //--------------------------------------------------
+  // to make sure that we have updated internal data before generating signals
+  //--------------------------------------------------
+  if (m_AllSymWithUpdateData[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].size() <
+      m_AllAvbSym[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].size())
+  {
+    m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s Not finished updating internal data yet",
+                    GetStrategyName(m_StyID).c_str(),
+                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                    m_TradedSymbols[iTradSym].c_str());
+    FForEach(m_AllSymWithUpdateData[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()],[&](const string & sym) {
+      m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s With update internal data",
+                      GetStrategyName(m_StyID).c_str(),
+                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                      sym.c_str());
+    });
+    return;
+  }
+
+  //--------------------------------------------------
   m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Using parameters: m_beta_1 = %f, m_beta_2 = %f, m_beta_3 = %f, m_beta_4 = %f.",
                   GetStrategyName(m_StyID).c_str(),
                   m_p_ymdhms_SysTime_Local->ToStr().c_str(),
@@ -1963,11 +2004,13 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     // calculate rolling return
     //--------------------------------------------------
     double dRollingReturn = (m_HistoricalAvgPx->back() / *(m_HistoricalAvgPx->end()-1-m_RotationModeUseNDayReturn)) - 1;
-    m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s dRollingReturn (before voly adj) = %f",
+    m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s dRollingReturn (before voly adj) = %f m_HistoricalAvgPx %f %f",
                     GetStrategyName(m_StyID).c_str(),
                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                     m_TradedSymbols[iTradSym].c_str(),
-                    dRollingReturn);
+                    dRollingReturn,
+                    m_HistoricalAvgPx->back(),
+                    *(m_HistoricalAvgPx->end()-1-m_RotationModeUseVolyAdjdReturn));
     if (m_RotationModeUseVolyAdjdReturn)
     {
       dRollingReturn = dRollingReturn / TechIndicators::Instance()->GetGKYZValue(m_TradedSymbols[iTradSym]) * 100.0;
@@ -2574,7 +2617,6 @@ void StrategyB2::UnsetConvenienceVarb()
 
   m_HistoricalAvgPx                         = NULL;
   m_HistoricalClose                         = NULL;
-  m_HistoricalPricesDates                   = NULL;
   m_HistoricalNumNumOfRisingDaysCountAvgPx  = NULL;
   m_HistoricalNumNumOfRisingDaysCountClose  = NULL;
   m_p_map_BestParamSetBeta1Beta3AvgPx       = NULL;
@@ -2632,7 +2674,21 @@ bool StrategyB2::NDayRollingReturnReadyForAllSym(const int gid, const YYYYMMDD &
   {
     m_Logger->Write(Logger::DEBUG,"Strategy %s: gid = %d No of rolling return obtained = %d. Num of available symbols = %d",
                     GetStrategyName(m_StyID).c_str(), gid,
-                    mapTmp.size(), m_AllAvbSymForRollingBasket[gid][ymd].size());
+                    mapTmp.size(),
+                    m_AllAvbSymForRollingBasket[gid][ymd].size());
+
+    FForEach(mapTmp,[&](const std::pair<string,double> tup) {
+      m_Logger->Write(Logger::DEBUG,"Strategy %s: gid = %d Rolling return obtained for %s",
+                      GetStrategyName(m_StyID).c_str(), gid,
+                      tup.first.c_str());
+    });
+
+    FForEach(m_AllAvbSymForRollingBasket[gid][ymd],[&](const string & s) {
+      m_Logger->Write(Logger::DEBUG,"Strategy %s: gid = %d Available symbols %s",
+                      GetStrategyName(m_StyID).c_str(), gid,
+                      s.c_str());
+    });
+
     return false;
   }
 
@@ -2656,6 +2712,17 @@ bool StrategyB2::AggSgndQtyReadyForAllSym(const YYYYMMDD & ymd)
     m_Logger->Write(Logger::DEBUG,"Strategy %s: No of aggregate signed qty obtained = %d. Num of available symbols = %d",
                     GetStrategyName(m_StyID).c_str(),
                     mapTmp.size(), m_AllAvbSym[ymd].size());
+
+    FForEach(mapTmp,[&](const std::pair<string,double> tup) {
+      m_Logger->Write(Logger::DEBUG,"Strategy %s: Aggregate signed qty obtained for %s",
+                      GetStrategyName(m_StyID).c_str(), tup.first.c_str());
+    });
+
+    FForEach(m_AllAvbSym[ymd],[&](const string & s) {
+      m_Logger->Write(Logger::DEBUG,"Strategy %s: Available symbols %s",
+                      GetStrategyName(m_StyID).c_str(), s.c_str());
+    });
+
     return false;
   }
 

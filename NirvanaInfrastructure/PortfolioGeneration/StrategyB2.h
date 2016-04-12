@@ -172,7 +172,6 @@ class StrategyB2 : public StrategyBase {
     map<string,vector<double> >               m_map_HistoricalClose;
     map<string,vector<double> >               m_map_HistoricalAvgPxRtn;
     map<string,vector<double> >               m_map_HistoricalCloseRtn;
-    map<string,set<YYYYMMDD>  >               m_map_HistoricalPricesDates;
     map<string,CountingFunction>              m_map_HistoricalNumOfRisingDaysCountAvgPx;
     map<string,CountingFunction>              m_map_HistoricalNumOfRisingDaysCountClose;
 
@@ -204,7 +203,6 @@ class StrategyB2 : public StrategyBase {
     vector<double>   *            m_HistoricalClose;
     vector<double>   *            m_HistoricalAvgPxRtn;
     vector<double>   *            m_HistoricalCloseRtn;
-    set<YYYYMMDD>    *            m_HistoricalPricesDates;
     CountingFunction *            m_HistoricalNumNumOfRisingDaysCountAvgPx;
     CountingFunction *            m_HistoricalNumNumOfRisingDaysCountClose;
     map<double,vector<double> > * m_p_map_BestParamSetBeta1Beta3AvgPx;
@@ -276,6 +274,7 @@ class StrategyB2 : public StrategyBase {
     vector<Option<string> >                     m_vGroupRepresentative;
     vector<map<YYYYMMDD,set<string> > >         m_AllAvbSymForRollingBasket;
     map<YYYYMMDD,set<string> >                  m_AllAvbSym;
+    map<YYYYMMDD,set<string> >                  m_AllSymWithUpdateData;
     vector<map<YYYYMMDD,vector<TupRetSym> > >   m_SymRankedByRollingReturn;
     vector<map<YYYYMMDD,map<string,double> > >  m_SymAndRollingReturn;
     vector<map<YYYYMMDD,set<string> > >         m_MaintainPosWithinGrp;
