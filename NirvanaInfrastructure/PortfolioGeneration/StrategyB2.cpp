@@ -2314,7 +2314,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                             GetStrategyName(m_StyID).c_str(),
                             m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                             iRttnGrp,
-                            m_vGroupRepresentative[iRttnGrp].c_str());
+                            m_vGroupRepresentative[iRttnGrp].Get().c_str());
           }
 
         }
