@@ -23,11 +23,8 @@ then
     echo "7 ) zsun_b2spy_bkt_nmdi_noti"
     echo "8 ) zsun_b2ussht_bkt_nmdi_noti"
     echo "9 ) zsun_b2hk_bkt_nmdi_noti"
-    echo "10) cash_b26p_pprbkt_nmdi_noti"
-    echo "11) cash_b2spy_pprbkt_nmdi_noti"
     echo "12) b2bkt"
     echo "13) cash_b2hsi_bkt_nmdi_noti"
-    echo "14) b26p"
     echo "15) scenb2spy"
     echo "16) scenb2hyg"
     echo "17) testrollfwd"
@@ -45,11 +42,8 @@ then
     elif [[ $line -eq 7  ]]; then ARG1="zsun_b2spy_bkt_nmdi_noti"    
     elif [[ $line -eq 8  ]]; then ARG1="zsun_b2ussht_bkt_nmdi_noti"    
     elif [[ $line -eq 9  ]]; then ARG1="zsun_b2hk_bkt_nmdi_noti"     
-    elif [[ $line -eq 10 ]]; then ARG1="cash_b26p_pprbkt_nmdi_noti"  
-    elif [[ $line -eq 11 ]]; then ARG1="cash_b2spy_pprbkt_nmdi_noti" 
     elif [[ $line -eq 12 ]]; then ARG1="b2bkt"                       
     elif [[ $line -eq 13 ]]; then ARG1="cash_b2hsi_bkt_nmdi_noti"    
-    elif [[ $line -eq 14 ]]; then ARG1="b26p"                        
     elif [[ $line -eq 15 ]]; then ARG1="scenb2spy"                   
     elif [[ $line -eq 16 ]]; then ARG1="scenb2hyg"                   
     elif [[ $line -eq 17 ]]; then ARG1="testrollfwd"                 
@@ -127,16 +121,6 @@ then
     $RUNCMD "/home/qy/Dropbox/nirvana/conf/zsun_b2hk_bkt_nmdi_noti.ini"
     exit
 fi
-if [[ $ARG1 == "cash_b26p_pprbkt_nmdi_noti" ]]
-then
-    $RUNCMD "/home/qy/Dropbox/nirvana/conf/cash_b26p_pprbkt_nmdi_noti.ini"
-    exit
-fi
-if [[ $ARG1 == "cash_b2spy_pprbkt_nmdi_noti" ]]
-then
-    $RUNCMD "/home/qy/Dropbox/nirvana/conf/cash_b2spy_pprbkt_nmdi_noti.ini"
-    exit
-fi
 if [[ $ARG1 == "b2bkt" ]]
 then
     SYM=$ARG2
@@ -147,11 +131,6 @@ fi
 if [[ $ARG1 == "cash_b2hsi_bkt_nmdi_noti" ]]
 then
     $RUNCMD "/home/qy/Dropbox/nirvana/conf/cash_b2hsi_bkt_nmdi_noti.ini"
-    exit
-fi
-if [[ $ARG1 == "b26p" ]]
-then
-    $RUNCMD "/home/qy/Dropbox/nirvana/conf/scentest_b2_6pdt.ini"
     exit
 fi
 if [[ $ARG1 == "scenb2spy" ]]

@@ -169,7 +169,7 @@ void MDI_Acknowledgement::WaitForAck()
     //--------------------------------------------------
     boost::this_thread::sleep(boost::posix_time::milliseconds(1));
     lCnt++;
-    if (lCnt % 5000 == 0)
+    if (lCnt % 20000 == 0)
     {
       for (int sty = STY_NIR; sty != STY_LAST; sty++)
       {

@@ -83,8 +83,10 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
   if (m_SysCfg->NextTierZMQIsOn())
   {
     string sSF = ConstructAugmentedSignalFeed(port_id,symbol,dP,signed_qty,"OID");
+    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: (before sending) ZMQ signalfeed: %s.",
+                    m_MarketData->GetSystemTimeHKT().ToStr().c_str(), sSF.c_str());
     SendStringToNextTierThruZMQ(sSF);
-    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: ZMQ signalfeed: %s.",
+    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: (after sending) ZMQ signalfeed: %s.",
                     m_MarketData->GetSystemTimeHKT().ToStr().c_str(), sSF.c_str());
   }
 
