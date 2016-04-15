@@ -1755,6 +1755,10 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         &&
         m_B2_FilterSMAPeriod.size() == 2
         &&
+        m_v_SMA_short[iTradSym].Ready()
+        &&
+        m_v_SMA_long[iTradSym].Ready()
+        &&
         m_HistoricalAvgPx->back() < m_v_SMA_short[iTradSym].Value()
         &&
         m_HistoricalAvgPx->back() < m_v_SMA_long[iTradSym].Value())
@@ -1768,6 +1772,10 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
              &&
              m_B2_FilterSMAPeriod.size() == 1
              &&
+             m_v_SMA_short[iTradSym].Ready()
+             &&
+             m_v_SMA_long[iTradSym].Ready()
+             &&
              m_HistoricalAvgPx->back() < m_v_SMA_long[iTradSym].Value())
     {
       m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because of the SMA filters. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f",
@@ -1778,6 +1786,10 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     else if (m_RotationMode == -1
              &&
              m_B2_FilterSMAPeriod.size() == 2
+             &&
+             m_v_SMA_short[iTradSym].Ready()
+             &&
+             m_v_SMA_long[iTradSym].Ready()
              &&
              m_HistoricalAvgPx->back() > m_v_SMA_short[iTradSym].Value()
              &&
@@ -1792,6 +1804,8 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
              &&
              m_B2_FilterSMAPeriod.size() == 1
              &&
+             m_v_SMA_long[iTradSym].Ready()
+             &&
              m_HistoricalAvgPx->back() > m_v_SMA_long[iTradSym].Value())
     {
       m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to zero because of the SMA filters. m_dAggSignedQty (bef adj) = %f Avg Px = %f SMA = %f",
@@ -1799,13 +1813,13 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                       m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_long[iTradSym].Value());
       m_dAggSignedQty = 0;
     }
-    else if (m_B2_FilterSMAPeriod.size() == 2)
+    else if (m_B2_FilterSMAPeriod.size() == 2 && m_v_SMA_long[iTradSym].Ready())
     {
       m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty = %f Avg Px = %f SMA = %f SMA = %f",
                       GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
                       m_dAggSignedQty, m_HistoricalAvgPx->back(), m_v_SMA_short[iTradSym].Value(), m_v_SMA_long[iTradSym].Value());
     }
-    else if (m_B2_FilterSMAPeriod.size() == 1)
+    else if (m_B2_FilterSMAPeriod.size() == 1 && m_v_SMA_long[iTradSym].Ready())
     {
       m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty = %f Avg Px = %f SMA = %f",
                       GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
