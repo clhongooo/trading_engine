@@ -17,6 +17,7 @@
 #include "ThreadHealthMonitor.h"
 #include "Exchange.h"
 #include "PeriodicTask.h"
+#include "STool.h"
 
 class TechIndUpdater {
   public:

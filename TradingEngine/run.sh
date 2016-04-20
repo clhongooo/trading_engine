@@ -19,10 +19,13 @@ then
     echo "3 ) r9"
     echo "4 ) r7"
     echo "5 ) b1hkf"
+    echo
     echo "6 ) zsun_b2spy_pprbkt_nmdi_noti"
     echo "7 ) zsun_b2spy_bkt_nmdi_noti"
+    echo
     echo "8 ) zsun_b2ussht_bkt_nmdi_noti"
     echo "9 ) zsun_b2hk_bkt_nmdi_noti"
+    echo
     echo "12) b2bkt"
     echo "13) cash_b2hsi_bkt_nmdi_noti"
     echo "15) scenb2spy"

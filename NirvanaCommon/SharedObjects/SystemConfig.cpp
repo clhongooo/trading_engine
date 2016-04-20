@@ -29,6 +29,7 @@ SystemConfig::SystemConfig() :
   m_HKIntradaySeasonalityPath(""),
   m_HKIntradaySeasonalityWindow(44),
   m_PositionPersistenceFile(""),
+  m_LoadItrdHighLowFromIB(""),
   m_PositionPersistenceIsEnabled(false),
   m_S11A_ParamFileHistSDCorrel(""),
   m_S11A_ParamFileHSIHHIIV(""),
@@ -106,6 +107,7 @@ SystemConfig::SystemConfig() :
   m_S11A_MonitoringIntervalInSec(0),
   m_S11A_T1GumbelGaussSigalLimit(0),
   m_B2_US1_HasEnabledMinCommissionCheck(true),
+  m_B2_US1_CommissionRateThreshold(0),
   m_B2_US1_HasEnabledRotationMode(0),
   m_B2_US1_RotationModeTradeHighestReturn(0),
   m_B2_US1_RotationModeUseVolyAdjdReturn(true),
@@ -123,6 +125,7 @@ SystemConfig::SystemConfig() :
   m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal(true),
   m_B2_US1_AvgAggSgndNotnlThresh(0),
   m_B2_US2_HasEnabledMinCommissionCheck(true),
+  m_B2_US2_CommissionRateThreshold(0),
   m_B2_US2_HasEnabledRotationMode(0),
   m_B2_US2_RotationModeTradeHighestReturn(0),
   m_B2_US2_RotationModeUseVolyAdjdReturn(true),
@@ -140,6 +143,7 @@ SystemConfig::SystemConfig() :
   m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal(true),
   m_B2_US2_AvgAggSgndNotnlThresh(0),
   m_B2_US3_HasEnabledMinCommissionCheck(true),
+  m_B2_US3_CommissionRateThreshold(0),
   m_B2_US3_HasEnabledRotationMode(0),
   m_B2_US3_RotationModeTradeHighestReturn(0),
   m_B2_US3_RotationModeUseVolyAdjdReturn(true),
@@ -157,6 +161,7 @@ SystemConfig::SystemConfig() :
   m_B2_US3_MoveNextBestStkInGrpUpIfNoSignal(true),
   m_B2_US3_AvgAggSgndNotnlThresh(0),
   m_B2_HK_HasEnabledMinCommissionCheck(true),
+  m_B2_HK_CommissionRateThreshold(0),
   m_B2_HK_HasEnabledRotationMode(0),
   m_B2_HK_RotationModeTradeHighestReturn(0),
   m_B2_HK_RotationModeUseNDayReturn(2),
@@ -272,6 +277,7 @@ bool                                   SystemConfig::Get_HKIntradaySeasonalityOn
 string                                 SystemConfig::Get_HKIntradaySeasonalityPath()                   const {  return m_HKIntradaySeasonalityPath;                   }
 int                                    SystemConfig::Get_HKIntradaySeasonalityWindow()                 const {  return m_HKIntradaySeasonalityWindow;                 }
 string                                 SystemConfig::Get_PositionPersistenceFile()                     const {  return m_PositionPersistenceFile;                     }
+string                                 SystemConfig::Get_LoadItrdHighLowFromIB()                       const {  return m_LoadItrdHighLowFromIB;                       }
 bool                                   SystemConfig::PositionPersistenceIsEnabled()                    const {  return m_PositionPersistenceIsEnabled;                }
 string                                 SystemConfig::Get_S11AParamFileHistSDCorrel()                   const {  return m_S11A_ParamFileHistSDCorrel;                  }
 string                                 SystemConfig::Get_S11AParamFileHSIHHIIV()                       const {  return m_S11A_ParamFileHSIHHIIV;                      }
@@ -328,6 +334,7 @@ double                                 SystemConfig::Get_S11AMonitoringIntervalI
 double                                 SystemConfig::Get_S11AT1GumbelGaussSignalLimit()                const {  return m_S11A_T1GumbelGaussSigalLimit;                }
 
 bool           SystemConfig::B2_HasEnabledMinCommissionCheck        (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_HasEnabledMinCommissionCheck;         else if (id == STY_B2_US2) return m_B2_US2_HasEnabledMinCommissionCheck;            else if (id == STY_B2_US3) return m_B2_US3_HasEnabledMinCommissionCheck;            else if (id == STY_B2_HK) return m_B2_HK_HasEnabledMinCommissionCheck;        }
+double         SystemConfig::B2_CommissionRateThreshold             (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_CommissionRateThreshold;              else if (id == STY_B2_US2) return m_B2_US2_CommissionRateThreshold;                 else if (id == STY_B2_US3) return m_B2_US3_CommissionRateThreshold;                 else if (id == STY_B2_HK) return m_B2_HK_CommissionRateThreshold;             }
 int            SystemConfig::B2_HasEnabledRotationMode              (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_HasEnabledRotationMode;               else if (id == STY_B2_US2) return m_B2_US2_HasEnabledRotationMode;                  else if (id == STY_B2_US3) return m_B2_US3_HasEnabledRotationMode;                  else if (id == STY_B2_HK) return m_B2_HK_HasEnabledRotationMode;              }
 bool           SystemConfig::B2_RotationModeTradeHighestReturn      (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_RotationModeTradeHighestReturn;       else if (id == STY_B2_US2) return m_B2_US2_RotationModeTradeHighestReturn;          else if (id == STY_B2_US3) return m_B2_US3_RotationModeTradeHighestReturn;          else if (id == STY_B2_HK) return m_B2_HK_RotationModeTradeHighestReturn;      }
 bool           SystemConfig::B2_RotationModeUseVolyAdjdReturn       (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_RotationModeUseVolyAdjdReturn;        else if (id == STY_B2_US2) return m_B2_US2_RotationModeUseVolyAdjdReturn;           else if (id == STY_B2_US3) return m_B2_US3_RotationModeUseVolyAdjdReturn;           else if (id == STY_B2_HK) return m_B2_HK_RotationModeUseVolyAdjdReturn;       }
@@ -481,6 +488,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   m_SupplementaryBarD1Path             = STool::Trim(pt.get<string>   ("SystemSettings.SupplementaryBarD1Path"));
   m_SupplementaryBarM1Path             = STool::Trim(pt.get<string>   ("SystemSettings.SupplementaryBarM1Path"));
   m_PositionPersistenceFile            = STool::Trim(pt.get<string>   ("SystemSettings.PositionPersistenceFile"));
+  m_LoadItrdHighLowFromIB              = STool::Trim(pt.get<string>   ("SystemSettings.LoadItrdHighLowFromIB"));
 
   m_MaxAllowedTradeNotional            = pt.get<double>   ("SystemSettings.MaxAllowedTradeNotional");
   m_MaxAllowedTradeQty                 = pt.get<long>     ("SystemSettings.MaxAllowedTradeQty");
@@ -542,6 +550,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_S11A_ParamFileT2Copula         )  m_S11A_ParamFileT2Copula           = STool::Trim(o_S11A_ParamFileT2Copula          .get());
 
   boost::optional<bool>   o_B2_US1_HasEnabledMinCommissionCheck        = pt.get_optional<bool>    ("Strategy_B2_US1.EnableMinCommissionCheck");
+  boost::optional<double> o_B2_US1_CommissionRateThreshold             = pt.get_optional<double>  ("Strategy_B2_US1.CommissionRateThreshold");
   boost::optional<int>    o_B2_US1_HasEnabledRotationMode              = pt.get_optional<int>     ("Strategy_B2_US1.EnableRotationMode");
   boost::optional<bool>   o_B2_US1_RotationModeTradeHighestReturn      = pt.get_optional<bool>    ("Strategy_B2_US1.RotationModeTradeHighestReturn");
   boost::optional<bool>   o_B2_US1_RotationModeUseVolyAdjdReturn       = pt.get_optional<bool>    ("Strategy_B2_US1.RotationModeUseVolyAdjdReturn");
@@ -556,6 +565,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_US1_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_US1.TheoPosFolder");
 
   if(o_B2_US1_HasEnabledMinCommissionCheck        )  m_B2_US1_HasEnabledMinCommissionCheck         = o_B2_US1_HasEnabledMinCommissionCheck        .get();
+  if(o_B2_US1_CommissionRateThreshold             )  m_B2_US1_CommissionRateThreshold              = o_B2_US1_CommissionRateThreshold             .get();
   if(o_B2_US1_HasEnabledRotationMode              )  m_B2_US1_HasEnabledRotationMode               = o_B2_US1_HasEnabledRotationMode              .get();
   if(o_B2_US1_RotationModeTradeHighestReturn      )  m_B2_US1_RotationModeTradeHighestReturn       = o_B2_US1_RotationModeTradeHighestReturn      .get();
   if(o_B2_US1_RotationModeUseVolyAdjdReturn       )  m_B2_US1_RotationModeUseVolyAdjdReturn        = o_B2_US1_RotationModeUseVolyAdjdReturn       .get();
@@ -570,6 +580,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US1_TheoPosFolder                       )  m_B2_US1_TheoPosFolder                        = STool::Trim(o_B2_US1_TheoPosFolder           .get());
 
   boost::optional<bool>   o_B2_US2_HasEnabledMinCommissionCheck        = pt.get_optional<bool>    ("Strategy_B2_US2.EnableMinCommissionCheck");
+  boost::optional<double> o_B2_US2_CommissionRateThreshold             = pt.get_optional<double>  ("Strategy_B2_US2.CommissionRateThreshold");
   boost::optional<int>    o_B2_US2_HasEnabledRotationMode              = pt.get_optional<int>     ("Strategy_B2_US2.EnableRotationMode");
   boost::optional<bool>   o_B2_US2_RotationModeTradeHighestReturn      = pt.get_optional<bool>    ("Strategy_B2_US2.RotationModeTradeHighestReturn");
   boost::optional<bool>   o_B2_US2_RotationModeUseVolyAdjdReturn       = pt.get_optional<bool>    ("Strategy_B2_US2.RotationModeUseVolyAdjdReturn");
@@ -584,6 +595,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_US2_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_US2.TheoPosFolder");
 
   if(o_B2_US2_HasEnabledMinCommissionCheck        )  m_B2_US2_HasEnabledMinCommissionCheck         = o_B2_US2_HasEnabledMinCommissionCheck        .get();
+  if(o_B2_US2_CommissionRateThreshold             )  m_B2_US2_CommissionRateThreshold              = o_B2_US2_CommissionRateThreshold             .get();
   if(o_B2_US2_HasEnabledRotationMode              )  m_B2_US2_HasEnabledRotationMode               = o_B2_US2_HasEnabledRotationMode              .get();
   if(o_B2_US2_RotationModeTradeHighestReturn      )  m_B2_US2_RotationModeTradeHighestReturn       = o_B2_US2_RotationModeTradeHighestReturn      .get();
   if(o_B2_US2_RotationModeUseVolyAdjdReturn       )  m_B2_US2_RotationModeUseVolyAdjdReturn        = o_B2_US2_RotationModeUseVolyAdjdReturn       .get();
@@ -598,6 +610,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US2_TheoPosFolder                       )  m_B2_US2_TheoPosFolder                        = STool::Trim(o_B2_US2_TheoPosFolder           .get());
 
   boost::optional<bool>   o_B2_US3_HasEnabledMinCommissionCheck        = pt.get_optional<bool>    ("Strategy_B2_US3.EnableMinCommissionCheck");
+  boost::optional<double> o_B2_US3_CommissionRateThreshold             = pt.get_optional<double>  ("Strategy_B2_US3.CommissionRateThreshold");
   boost::optional<int>    o_B2_US3_HasEnabledRotationMode              = pt.get_optional<int>     ("Strategy_B2_US3.EnableRotationMode");
   boost::optional<bool>   o_B2_US3_RotationModeTradeHighestReturn      = pt.get_optional<bool>    ("Strategy_B2_US3.RotationModeTradeHighestReturn");
   boost::optional<bool>   o_B2_US3_RotationModeUseVolyAdjdReturn       = pt.get_optional<bool>    ("Strategy_B2_US3.RotationModeUseVolyAdjdReturn");
@@ -612,6 +625,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_US3_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_US3.TheoPosFolder");
 
   if(o_B2_US3_HasEnabledMinCommissionCheck        )  m_B2_US3_HasEnabledMinCommissionCheck         = o_B2_US3_HasEnabledMinCommissionCheck        .get();
+  if(o_B2_US3_CommissionRateThreshold             )  m_B2_US3_CommissionRateThreshold              = o_B2_US3_CommissionRateThreshold             .get();
   if(o_B2_US3_HasEnabledRotationMode              )  m_B2_US3_HasEnabledRotationMode               = o_B2_US3_HasEnabledRotationMode              .get();
   if(o_B2_US3_RotationModeTradeHighestReturn      )  m_B2_US3_RotationModeTradeHighestReturn       = o_B2_US3_RotationModeTradeHighestReturn      .get();
   if(o_B2_US3_RotationModeUseVolyAdjdReturn       )  m_B2_US3_RotationModeUseVolyAdjdReturn        = o_B2_US3_RotationModeUseVolyAdjdReturn       .get();
@@ -626,6 +640,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US3_TheoPosFolder                       )  m_B2_US3_TheoPosFolder                        = STool::Trim(o_B2_US3_TheoPosFolder           .get());
 
   boost::optional<bool>   o_B2_HK_HasEnabledMinCommissionCheck        = pt.get_optional<bool>    ("Strategy_B2_HK.EnableMinCommissionCheck");
+  boost::optional<double> o_B2_HK_CommissionRateThreshold             = pt.get_optional<double>  ("Strategy_B2_HK.CommissionRateThreshold");
   boost::optional<int>    o_B2_HK_HasEnabledRotationMode              = pt.get_optional<int>     ("Strategy_B2_HK.EnableRotationMode");
   boost::optional<bool>   o_B2_HK_RotationModeTradeHighestReturn      = pt.get_optional<bool>    ("Strategy_B2_HK.RotationModeTradeHighestReturn");
   boost::optional<bool>   o_B2_HK_RotationModeUseVolyAdjdReturn       = pt.get_optional<bool>    ("Strategy_B2_HK.RotationModeUseVolyAdjdReturn");
@@ -640,6 +655,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_HK_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_HK.TheoPosFolder");
 
   if(o_B2_HK_HasEnabledMinCommissionCheck        )  m_B2_HK_HasEnabledMinCommissionCheck        = o_B2_HK_HasEnabledMinCommissionCheck        .get();
+  if(o_B2_HK_CommissionRateThreshold             )  m_B2_HK_CommissionRateThreshold             = o_B2_HK_CommissionRateThreshold             .get();
   if(o_B2_HK_HasEnabledRotationMode              )  m_B2_HK_HasEnabledRotationMode              = o_B2_HK_HasEnabledRotationMode              .get();
   if(o_B2_HK_RotationModeTradeHighestReturn      )  m_B2_HK_RotationModeTradeHighestReturn      = o_B2_HK_RotationModeTradeHighestReturn      .get();
   if(o_B2_HK_RotationModeUseVolyAdjdReturn       )  m_B2_HK_RotationModeUseVolyAdjdReturn       = o_B2_HK_RotationModeUseVolyAdjdReturn       .get();

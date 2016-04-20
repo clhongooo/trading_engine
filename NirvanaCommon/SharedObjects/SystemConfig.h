@@ -95,6 +95,7 @@ class SystemConfig : boost::noncopyable
     string                 Get_HKIntradaySeasonalityPath()       const;
     int                    Get_HKIntradaySeasonalityWindow()     const;
     string                 Get_PositionPersistenceFile()         const;
+    string                 Get_LoadItrdHighLowFromIB()           const;
     bool                   PositionPersistenceIsEnabled()        const;
     string                 Get_S11AParamFileHistSDCorrel()       const;
     string                 Get_S11AParamFileHSIHHIIV()           const;
@@ -170,6 +171,7 @@ class SystemConfig : boost::noncopyable
     double                 Get_S11AMonitoringIntervalInSec()                                   const;
     double                 Get_S11AT1GumbelGaussSignalLimit()                                  const;
     bool                   B2_HasEnabledMinCommissionCheck(const StrategyID)                   const;
+    double                 B2_CommissionRateThreshold(const StrategyID)                        const;
     int                    B2_HasEnabledRotationMode(const StrategyID)                         const;
     bool                   B2_RotationModeTradeHighestReturn(const StrategyID)                 const;
     bool                   B2_RotationModeUseVolyAdjdReturn(const StrategyID)                  const;
@@ -276,6 +278,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_HKIntradaySeasonalityPath;
     int                                                m_HKIntradaySeasonalityWindow;
     string                                             m_PositionPersistenceFile;
+    string                                             m_LoadItrdHighLowFromIB;
     bool                                               m_PositionPersistenceIsEnabled;
     string                                             m_S11A_ParamFileHistSDCorrel;
     string                                             m_S11A_ParamFileHSIHHIIV;
@@ -365,6 +368,7 @@ class SystemConfig : boost::noncopyable
     double                                             m_S11A_MonitoringIntervalInSec;
     double                                             m_S11A_T1GumbelGaussSigalLimit;
     bool                                               m_B2_US1_HasEnabledMinCommissionCheck;
+    double                                             m_B2_US1_CommissionRateThreshold;
     int                                                m_B2_US1_HasEnabledRotationMode;
     bool                                               m_B2_US1_RotationModeTradeHighestReturn;
     bool                                               m_B2_US1_RotationModeUseVolyAdjdReturn;
@@ -385,6 +389,7 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal;
     double                                             m_B2_US1_AvgAggSgndNotnlThresh;
     bool                                               m_B2_US2_HasEnabledMinCommissionCheck;
+    double                                             m_B2_US2_CommissionRateThreshold;
     int                                                m_B2_US2_HasEnabledRotationMode;
     bool                                               m_B2_US2_RotationModeTradeHighestReturn;
     bool                                               m_B2_US2_RotationModeUseVolyAdjdReturn;
@@ -405,6 +410,7 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal;
     double                                             m_B2_US2_AvgAggSgndNotnlThresh;
     bool                                               m_B2_US3_HasEnabledMinCommissionCheck;
+    double                                             m_B2_US3_CommissionRateThreshold;
     int                                                m_B2_US3_HasEnabledRotationMode;
     bool                                               m_B2_US3_RotationModeTradeHighestReturn;
     bool                                               m_B2_US3_RotationModeUseVolyAdjdReturn;
@@ -425,6 +431,7 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_US3_MoveNextBestStkInGrpUpIfNoSignal;
     double                                             m_B2_US3_AvgAggSgndNotnlThresh;
     bool                                               m_B2_HK_HasEnabledMinCommissionCheck;
+    double                                             m_B2_HK_CommissionRateThreshold;
     int                                                m_B2_HK_HasEnabledRotationMode;
     bool                                               m_B2_HK_RotationModeTradeHighestReturn;
     bool                                               m_B2_HK_RotationModeUseVolyAdjdReturn;

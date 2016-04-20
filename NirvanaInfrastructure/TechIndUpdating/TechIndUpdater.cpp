@@ -62,6 +62,33 @@ void TechIndUpdater::Run()
   vector<long> m_S11A_T2MAPeriods              = m_SysCfg->Get_S11AT2MAPeriods();
 
 
+  //--------------------------------------------------
+  // Load intraday high low from IB
+  // AGG,110.94,110.95,110.95,110.97,110.75,,,,
+  // BND,83.11,83.12,83.12,83.14,82.93,,,,
+  // LQD,119.46,119.47,119.47,119.48,119.14,,,,
+  // TLT,131.98,131.99,131.98,132.16,131.25,,,,
+  //--------------------------------------------------
+  const string sLoadItrdHighLowFromIB = m_SysCfg->Get_LoadItrdHighLowFromIB();
+  if (sLoadItrdHighLowFromIB != "")
+  {
+    deque<string> dqS;
+    STool::ReadFile(sLoadItrdHighLowFromIB, dqS);
+
+    FForEach(dqS,[&](const string sLine) {
+      vector<string> vs;
+      boost::split(vs, sLine, boost::is_any_of(","));
+
+      if (vs[0] == "Contract" ||
+          vs[4] == "NoMD" ||
+          vs[5] == "NoMD" ||
+          vs[0] == "" ||
+          vs[4] == "" ||
+          vs[5] == "") return;
+      m_TechInd->AddDayOHLC(vs[0],boost::lexical_cast<double>(vs[4]));
+      m_TechInd->AddDayOHLC(vs[0],boost::lexical_cast<double>(vs[5]));
+    });
+  }
 
 
   //--------------------------------------------------

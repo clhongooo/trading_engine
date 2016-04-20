@@ -560,6 +560,8 @@ void StrategyB2::ReadParam()
   else
     m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenAvgPriceReturnBelow: Nil", GetStrategyName(m_StyID).c_str());
 
+  m_Logger->Write(Logger::INFO,"Strategy %s: B2_CommissionRateThreshold %f", GetStrategyName(m_StyID).c_str(), m_SysCfg->B2_CommissionRateThreshold(m_StyID));
+
   if (m_RotationMode != 0)
   {
     m_ChooseBestNRotationGroup = m_SysCfg->Get_B2_ChooseBestNRotationGroup(m_StyID);
@@ -2149,12 +2151,12 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     if (m_AllSymWithUpdateData[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].size() <
         m_AllAvbSym[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].size())
     {
-      m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s Not all symbols have up-to-date internal data",
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Not all symbols have up-to-date internal data",
                       GetStrategyName(m_StyID).c_str(),
                       m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                       m_TradedSymbols[iTradSym].c_str());
       FForEach(m_AllSymWithUpdateData[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()],[&](const string & sym) {
-        m_Logger->Write(Logger::DEBUG,"Strategy %s: %s Sym=%s With update internal data",
+        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s With update internal data",
                         GetStrategyName(m_StyID).c_str(),
                         m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                         sym.c_str());
@@ -2373,7 +2375,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
           int grp = 0;
           FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
-            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: mGrpRtnAndLeadSym: Group %d %f %s %d",
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: mGrpRtnAndLeadSym: Group %d %f %s (Grp %d)",
                             GetStrategyName(m_StyID).c_str(),
                             grp,
                             tup.m_return,
@@ -2387,7 +2389,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
           std::sort(mGrpRtnAndLeadSym.begin(), mGrpRtnAndLeadSym.end());
 
           FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
-            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (ascending order) mGrpRtnAndLeadSym: %f %s %d",
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (ascending order) mGrpRtnAndLeadSym: %f %s (Grp %d)",
                             GetStrategyName(m_StyID).c_str(),
                             tup.m_return,
                             tup.m_symbol().c_str(),
@@ -2397,7 +2399,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
           if (m_RotationModeTradeHighestReturn) FReverse(mGrpRtnAndLeadSym);
 
           FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
-            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (according to rotation scheme) mGrpRtnAndLeadSym: %f %s %d",
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (according to rotation scheme) mGrpRtnAndLeadSym: %f %s (Grp %d)",
                             GetStrategyName(m_StyID).c_str(),
                             tup.m_return,
                             tup.m_symbol().c_str(),
@@ -2435,7 +2437,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             }
 
             FForEach(mGrpRtnAndLeadSym,[&](const TupRetSym & tup) {
-              m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (after moving sticky group to front) mGrpRtnAndLeadSym: %f %s %d",
+              m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: (after moving sticky group to front) mGrpRtnAndLeadSym: %f %s (Grp %d)",
                               GetStrategyName(m_StyID).c_str(),
                               tup.m_return,
                               tup.m_symbol().c_str(),
@@ -2574,7 +2576,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         CommissionCalculator::USSTK,
         CommissionCalculator::SPOT,
         m_SymMidQuote,
-        m_dAggSignedQty) / (m_SymMidQuote * abs(m_dAggSignedQty)) > B2_COMMISSION_RATE_THRESH
+        m_dAggSignedQty) / (m_SymMidQuote * abs(m_dAggSignedQty)) > m_SysCfg->B2_CommissionRateThreshold(m_StyID)
       )
     {
       //--------------------------------------------------
@@ -2605,7 +2607,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         CommissionCalculator::USSTK,
         CommissionCalculator::SPOT,
         m_SymMidQuote,
-        dAbsDeltaQty) / (m_SymMidQuote * dAbsDeltaQty) <= B2_COMMISSION_RATE_THRESH
+        dAbsDeltaQty) / (m_SymMidQuote * dAbsDeltaQty) <= m_SysCfg->B2_CommissionRateThreshold(m_StyID)
     )
     )
   {
@@ -2669,7 +2671,7 @@ void StrategyB2::ParamSanityCheck()
       m_RotationGroup.size() != m_vRoleOfSym.size()
       )
     {
-      m_Logger->Write(Logger::DEBUG,"Strategy %s: Failed sanity test", GetStrategyName(m_StyID).c_str());
+      m_Logger->Write(Logger::ERROR,"Strategy %s: Failed sanity test", GetStrategyName(m_StyID).c_str());
       sleep(1);
       exit(1);
     }
@@ -2687,7 +2689,7 @@ bool StrategyB2::NDayRollingReturnReadyForAllSym(const int gid, const YYYYMMDD &
   map<YYYYMMDD,map<string,double> >::iterator it = m_SymAndRollingReturn[gid].find(ymd);
   if (it == m_SymAndRollingReturn[gid].end())
   {
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: Date %s not found in m_SymAndRollingReturn. gid = %d",
+    m_Logger->Write(Logger::INFO,"Strategy %s: Date %s not found in m_SymAndRollingReturn. gid = %d",
                     GetStrategyName(m_StyID).c_str(), ymd.ToStr().c_str(),
                     gid);
     return false;
@@ -2697,19 +2699,19 @@ bool StrategyB2::NDayRollingReturnReadyForAllSym(const int gid, const YYYYMMDD &
 
   if (mapTmp.size() < m_AllAvbSymForRollingBasket[gid][ymd].size())
   {
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: gid = %d No of rolling return obtained = %d. Num of available symbols = %d",
+    m_Logger->Write(Logger::INFO,"Strategy %s: gid = %d No of rolling return obtained = %d. Num of available symbols = %d",
                     GetStrategyName(m_StyID).c_str(), gid,
                     mapTmp.size(),
                     m_AllAvbSymForRollingBasket[gid][ymd].size());
 
     FForEach(mapTmp,[&](const std::pair<string,double> tup) {
-      m_Logger->Write(Logger::DEBUG,"Strategy %s: gid = %d Rolling return obtained for %s",
+      m_Logger->Write(Logger::INFO,"Strategy %s: gid = %d Rolling return obtained for %s",
                       GetStrategyName(m_StyID).c_str(), gid,
                       tup.first.c_str());
     });
 
     FForEach(m_AllAvbSymForRollingBasket[gid][ymd],[&](const string & s) {
-      m_Logger->Write(Logger::DEBUG,"Strategy %s: gid = %d Available symbols %s",
+      m_Logger->Write(Logger::INFO,"Strategy %s: gid = %d Available symbols %s",
                       GetStrategyName(m_StyID).c_str(), gid,
                       s.c_str());
     });
@@ -2725,7 +2727,7 @@ bool StrategyB2::AggSgndQtyReadyForAllSym(const YYYYMMDD & ymd)
   map<YYYYMMDD,map<string,double> >::iterator it = m_SymAggSgndQty.find(ymd);
   if (it == m_SymAggSgndQty.end())
   {
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: Date %s not found in m_SymAggSgndQty.",
+    m_Logger->Write(Logger::INFO,"Strategy %s: Date %s not found in m_SymAggSgndQty.",
                     GetStrategyName(m_StyID).c_str(), ymd.ToStr().c_str());
     return false;
   }
@@ -2734,17 +2736,17 @@ bool StrategyB2::AggSgndQtyReadyForAllSym(const YYYYMMDD & ymd)
 
   if (mapTmp.size() < m_AllAvbSym[ymd].size())
   {
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: No of aggregate signed qty obtained = %d. Num of available symbols = %d",
+    m_Logger->Write(Logger::INFO,"Strategy %s: No of aggregate signed qty obtained = %d. Num of available symbols = %d",
                     GetStrategyName(m_StyID).c_str(),
                     mapTmp.size(), m_AllAvbSym[ymd].size());
 
     FForEach(mapTmp,[&](const std::pair<string,double> tup) {
-      m_Logger->Write(Logger::DEBUG,"Strategy %s: Aggregate signed qty obtained for %s",
+      m_Logger->Write(Logger::INFO,"Strategy %s: Aggregate signed qty obtained for %s",
                       GetStrategyName(m_StyID).c_str(), tup.first.c_str());
     });
 
     FForEach(m_AllAvbSym[ymd],[&](const string & s) {
-      m_Logger->Write(Logger::DEBUG,"Strategy %s: Available symbols %s",
+      m_Logger->Write(Logger::INFO,"Strategy %s: Available symbols %s",
                       GetStrategyName(m_StyID).c_str(), s.c_str());
     });
 
