@@ -554,6 +554,12 @@ void StrategyB2::ReadParam()
   else
     m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenAvgPriceReturnAbove: Nil", GetStrategyName(m_StyID).c_str());
 
+  m_LongOnlyWhenGrpAvgReturnAbove = m_SysCfg->B2_LongOnlyWhenAvgPriceReturnAbove(m_StyID);
+  if (m_LongOnlyWhenGrpAvgReturnAbove.IsSome())
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenGrpAvgReturnAbove %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenGrpAvgReturnAbove.Get());
+  else
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenGrpAvgReturnAbove: Nil", GetStrategyName(m_StyID).c_str());
+
   m_ShortOnlyWhenAvgPriceReturnBelow = m_SysCfg->B2_ShortOnlyWhenAvgPriceReturnBelow(m_StyID);
   if (m_ShortOnlyWhenAvgPriceReturnBelow.IsSome())
     m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenAvgPriceReturnBelow %f", GetStrategyName(m_StyID).c_str(), m_ShortOnlyWhenAvgPriceReturnBelow.Get());
@@ -2460,7 +2466,36 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             {
               if (m_StkPicks.size() >= m_ChooseBestNRotationGroup) break;
             }
-            if (mGrpRtnAndLeadSym[iCnt].m_symbol() != "") m_StkPicks.insert(mGrpRtnAndLeadSym[iCnt].m_symbol());
+
+            //--------------------------------------------------
+            // if there is a choosen symbol in the group
+            // and
+            // if the group return is at least positive
+            // then pick the stock
+            //--------------------------------------------------
+            if (mGrpRtnAndLeadSym[iCnt].m_symbol() != "")
+            {
+              if (m_LongOnlyWhenGrpAvgReturnAbove.IsNone())
+              {
+                m_StkPicks.insert(mGrpRtnAndLeadSym[iCnt].m_symbol());
+              }
+              else
+              {
+                if (mGrpRtnAndLeadSym[iCnt].m_return > m_LongOnlyWhenGrpAvgReturnAbove.Get())
+                {
+                  m_StkPicks.insert(mGrpRtnAndLeadSym[iCnt].m_symbol());
+                }
+                else
+                {
+                  m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Stock %s is not picked because group return is smaller than threshold %f",
+                                  GetStrategyName(m_StyID).c_str(),
+                                  m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                                  mGrpRtnAndLeadSym[iCnt].m_symbol().c_str(),
+                                  m_LongOnlyWhenGrpAvgReturnAbove.Get());
+                }
+              }
+            }
+
             iCnt++;
             if (iCnt >= mGrpRtnAndLeadSym.size()) break;
           }

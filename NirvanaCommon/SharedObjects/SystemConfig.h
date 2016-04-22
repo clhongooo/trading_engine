@@ -179,6 +179,7 @@ class SystemConfig : boost::noncopyable
     Option<double>         B2_LongOnlyWhenClosePriceBelowAvgPrice(const StrategyID)            const;
     Option<double>         B2_ShortOnlyWhenClosePriceAboveAvgPrice(const StrategyID)           const;
     Option<double>         B2_LongOnlyWhenAvgPriceReturnAbove(const StrategyID)                const;
+    Option<double>         B2_LongOnlyWhenGrpAvgReturnAbove(const StrategyID)                  const;
     Option<double>         B2_ShortOnlyWhenAvgPriceReturnBelow(const StrategyID)               const;
     string                 B2_TheoCPnLHistFolder(const StrategyID)                             const;
     string                 B2_TheoPosFolder(const StrategyID)                                  const;
@@ -376,6 +377,7 @@ class SystemConfig : boost::noncopyable
     Option<double>                                     m_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice;
     Option<double>                                     m_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice;
     Option<double>                                     m_B2_US1_LongOnlyWhenAvgPriceReturnAbove;
+    Option<double>                                     m_B2_US1_LongOnlyWhenGrpAvgReturnAbove;
     Option<double>                                     m_B2_US1_ShortOnlyWhenAvgPriceReturnBelow;
     string                                             m_B2_US1_TheoCPnLHistFolder;
     string                                             m_B2_US1_TheoPosFolder;
@@ -397,6 +399,7 @@ class SystemConfig : boost::noncopyable
     Option<double>                                     m_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice;
     Option<double>                                     m_B2_US2_ShortOnlyWhenClosePriceAboveAvgPrice;
     Option<double>                                     m_B2_US2_LongOnlyWhenAvgPriceReturnAbove;
+    Option<double>                                     m_B2_US2_LongOnlyWhenGrpAvgReturnAbove;
     Option<double>                                     m_B2_US2_ShortOnlyWhenAvgPriceReturnBelow;
     string                                             m_B2_US2_TheoCPnLHistFolder;
     string                                             m_B2_US2_TheoPosFolder;
@@ -418,6 +421,7 @@ class SystemConfig : boost::noncopyable
     Option<double>                                     m_B2_US3_LongOnlyWhenClosePriceBelowAvgPrice;
     Option<double>                                     m_B2_US3_ShortOnlyWhenClosePriceAboveAvgPrice;
     Option<double>                                     m_B2_US3_LongOnlyWhenAvgPriceReturnAbove;
+    Option<double>                                     m_B2_US3_LongOnlyWhenGrpAvgReturnAbove;
     Option<double>                                     m_B2_US3_ShortOnlyWhenAvgPriceReturnBelow;
     string                                             m_B2_US3_TheoCPnLHistFolder;
     string                                             m_B2_US3_TheoPosFolder;
@@ -439,6 +443,7 @@ class SystemConfig : boost::noncopyable
     Option<double>                                     m_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice;
     Option<double>                                     m_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice;
     Option<double>                                     m_B2_HK_LongOnlyWhenAvgPriceReturnAbove;
+    Option<double>                                     m_B2_HK_LongOnlyWhenGrpAvgReturnAbove;
     Option<double>                                     m_B2_HK_ShortOnlyWhenAvgPriceReturnBelow;
     string                                             m_B2_HK_TheoCPnLHistFolder;
     string                                             m_B2_HK_TheoPosFolder;

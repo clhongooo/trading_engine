@@ -115,6 +115,7 @@ SystemConfig::SystemConfig() :
   m_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice(Option<double>()),
   m_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice(Option<double>()),
   m_B2_US1_LongOnlyWhenAvgPriceReturnAbove(Option<double>()),
+  m_B2_US1_LongOnlyWhenGrpAvgReturnAbove(Option<double>()),
   m_B2_US1_ShortOnlyWhenAvgPriceReturnBelow(Option<double>()),
   m_B2_US1_TheoCPnLHistFolder(""),
   m_B2_US1_TheoPosFolder(""),
@@ -133,6 +134,7 @@ SystemConfig::SystemConfig() :
   m_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice(Option<double>()),
   m_B2_US2_ShortOnlyWhenClosePriceAboveAvgPrice(Option<double>()),
   m_B2_US2_LongOnlyWhenAvgPriceReturnAbove(Option<double>()),
+  m_B2_US2_LongOnlyWhenGrpAvgReturnAbove(Option<double>()),
   m_B2_US2_ShortOnlyWhenAvgPriceReturnBelow(Option<double>()),
   m_B2_US2_TheoCPnLHistFolder(""),
   m_B2_US2_TheoPosFolder(""),
@@ -151,6 +153,7 @@ SystemConfig::SystemConfig() :
   m_B2_US3_LongOnlyWhenClosePriceBelowAvgPrice(Option<double>()),
   m_B2_US3_ShortOnlyWhenClosePriceAboveAvgPrice(Option<double>()),
   m_B2_US3_LongOnlyWhenAvgPriceReturnAbove(Option<double>()),
+  m_B2_US3_LongOnlyWhenGrpAvgReturnAbove(Option<double>()),
   m_B2_US3_ShortOnlyWhenAvgPriceReturnBelow(Option<double>()),
   m_B2_US3_TheoCPnLHistFolder(""),
   m_B2_US3_TheoPosFolder(""),
@@ -168,6 +171,7 @@ SystemConfig::SystemConfig() :
   m_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice(Option<double>()),
   m_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice(Option<double>()),
   m_B2_HK_LongOnlyWhenAvgPriceReturnAbove(Option<double>()),
+  m_B2_HK_LongOnlyWhenGrpAvgReturnAbove(Option<double>()),
   m_B2_HK_ShortOnlyWhenAvgPriceReturnBelow(Option<double>()),
   m_B2_HK_TheoCPnLHistFolder(""),
   m_B2_HK_TheoPosFolder(""),
@@ -342,6 +346,7 @@ int            SystemConfig::B2_RotationModeUseNDayReturn           (const Strat
 Option<double> SystemConfig::B2_LongOnlyWhenClosePriceBelowAvgPrice (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice;  else if (id == STY_B2_US2) return m_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice;     else if (id == STY_B2_US3) return m_B2_US3_LongOnlyWhenClosePriceBelowAvgPrice;     else if (id == STY_B2_HK) return m_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice; }
 Option<double> SystemConfig::B2_ShortOnlyWhenClosePriceAboveAvgPrice(const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice; else if (id == STY_B2_US2) return m_B2_US2_ShortOnlyWhenClosePriceAboveAvgPrice;    else if (id == STY_B2_US3) return m_B2_US3_ShortOnlyWhenClosePriceAboveAvgPrice;    else if (id == STY_B2_HK) return m_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice;}
 Option<double> SystemConfig::B2_LongOnlyWhenAvgPriceReturnAbove     (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_LongOnlyWhenAvgPriceReturnAbove;      else if (id == STY_B2_US2) return m_B2_US2_LongOnlyWhenAvgPriceReturnAbove;         else if (id == STY_B2_US3) return m_B2_US3_LongOnlyWhenAvgPriceReturnAbove;         else if (id == STY_B2_HK) return m_B2_HK_LongOnlyWhenAvgPriceReturnAbove;     }
+Option<double> SystemConfig::B2_LongOnlyWhenGrpAvgReturnAbove       (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_LongOnlyWhenGrpAvgReturnAbove;        else if (id == STY_B2_US2) return m_B2_US2_LongOnlyWhenGrpAvgReturnAbove;           else if (id == STY_B2_US3) return m_B2_US3_LongOnlyWhenGrpAvgReturnAbove;           else if (id == STY_B2_HK) return m_B2_HK_LongOnlyWhenGrpAvgReturnAbove;       }
 Option<double> SystemConfig::B2_ShortOnlyWhenAvgPriceReturnBelow    (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_ShortOnlyWhenAvgPriceReturnBelow;     else if (id == STY_B2_US2) return m_B2_US2_ShortOnlyWhenAvgPriceReturnBelow;        else if (id == STY_B2_US3) return m_B2_US3_ShortOnlyWhenAvgPriceReturnBelow;        else if (id == STY_B2_HK) return m_B2_HK_ShortOnlyWhenAvgPriceReturnBelow;    }
 string         SystemConfig::B2_TheoCPnLHistFolder                  (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_TheoCPnLHistFolder;                   else if (id == STY_B2_US2) return m_B2_US2_TheoCPnLHistFolder;                      else if (id == STY_B2_US3) return m_B2_US3_TheoCPnLHistFolder;                      else if (id == STY_B2_HK) return m_B2_HK_TheoCPnLHistFolder;                  }
 string         SystemConfig::B2_TheoPosFolder                       (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_TheoPosFolder;                        else if (id == STY_B2_US2) return m_B2_US2_TheoPosFolder;                           else if (id == STY_B2_US3) return m_B2_US3_TheoPosFolder;                           else if (id == STY_B2_HK) return m_B2_HK_TheoPosFolder;                       }
@@ -703,6 +708,15 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US3_ShortOnlyWhenAvgPriceReturnBelow) { string s = STool::Trim(o_B2_US3_ShortOnlyWhenAvgPriceReturnBelow .get()); if (s != "") m_B2_US3_ShortOnlyWhenAvgPriceReturnBelow = Option<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_HK_LongOnlyWhenAvgPriceReturnAbove )  { string s = STool::Trim(o_B2_HK_LongOnlyWhenAvgPriceReturnAbove   .get()); if (s != "") m_B2_HK_LongOnlyWhenAvgPriceReturnAbove   = Option<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_HK_ShortOnlyWhenAvgPriceReturnBelow)  { string s = STool::Trim(o_B2_HK_ShortOnlyWhenAvgPriceReturnBelow  .get()); if (s != "") m_B2_HK_ShortOnlyWhenAvgPriceReturnBelow  = Option<double>(boost::lexical_cast<double>(s));  }
+
+  boost::optional<string> o_B2_US1_LongOnlyWhenGrpAvgReturnAbove   = pt.get_optional<string>  ("Strategy_B2_US1.LongOnlyWhenGrpAvgReturnAbove");
+  boost::optional<string> o_B2_US2_LongOnlyWhenGrpAvgReturnAbove   = pt.get_optional<string>  ("Strategy_B2_US2.LongOnlyWhenGrpAvgReturnAbove");
+  boost::optional<string> o_B2_US3_LongOnlyWhenGrpAvgReturnAbove   = pt.get_optional<string>  ("Strategy_B2_US3.LongOnlyWhenGrpAvgReturnAbove");
+  boost::optional<string> o_B2_HK_LongOnlyWhenGrpAvgReturnAbove    = pt.get_optional<string>  ("Strategy_B2_HK.LongOnlyWhenGrpAvgReturnAbove");
+  if(o_B2_US1_LongOnlyWhenGrpAvgReturnAbove ) { string s = STool::Trim(o_B2_US1_LongOnlyWhenGrpAvgReturnAbove  .get()); if (s != "") m_B2_US1_LongOnlyWhenGrpAvgReturnAbove  = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_US2_LongOnlyWhenGrpAvgReturnAbove ) { string s = STool::Trim(o_B2_US2_LongOnlyWhenGrpAvgReturnAbove  .get()); if (s != "") m_B2_US2_LongOnlyWhenGrpAvgReturnAbove  = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_US3_LongOnlyWhenGrpAvgReturnAbove ) { string s = STool::Trim(o_B2_US3_LongOnlyWhenGrpAvgReturnAbove  .get()); if (s != "") m_B2_US3_LongOnlyWhenGrpAvgReturnAbove  = Option<double>(boost::lexical_cast<double>(s));  }
+  if(o_B2_HK_LongOnlyWhenGrpAvgReturnAbove )  { string s = STool::Trim(o_B2_HK_LongOnlyWhenGrpAvgReturnAbove   .get()); if (s != "") m_B2_HK_LongOnlyWhenGrpAvgReturnAbove   = Option<double>(boost::lexical_cast<double>(s));  }
 
   {
     boost::optional<string> o_B2_US1_FilterSMAPeriod = pt.get_optional<string>("Strategy_B2_US1.FilterSMAPeriod");
