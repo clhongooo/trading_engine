@@ -2606,6 +2606,11 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   {
 
     if (
+      //--------------------------------------------------
+      // if position is to be set to zero, do it! ignore commission impact
+      //--------------------------------------------------
+      abs(m_dAggSignedQty) > NIR_EPSILON
+      &&
       CommissionCalculator::CalcCommission(
         CommissionCalculator::IB,
         CommissionCalculator::USSTK,
@@ -2633,6 +2638,11 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   double dAbsDeltaQty = abs(m_dAggSignedQty - GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]));
   if (
     !m_B2_HasEnabledMinCommissionCheck
+    ||
+    //--------------------------------------------------
+    // if position is to be set to zero, do it! ignore commission impact
+    //--------------------------------------------------
+    abs(m_dAggSignedQty) < NIR_EPSILON
     ||
     (
       m_B2_HasEnabledMinCommissionCheck
