@@ -170,20 +170,29 @@ string HKFE::GetSymbol(char cInstr, int iK, int iY, int iM)
 
 bool HKFE::IsCall(const string &sSym)
 {
-  if (sSym.length() < 9) return false;
-  if (sSym.at(0) == 'C') return true; else return false;
+  if (sSym.length() <= 5) return false;
+  char c = sSym.at(sSym.length()-2);
+
+  if (c == 'A' || c == 'B' || c == 'C' || c == 'D' || c == 'E' || c == 'F' || c == 'G' || c == 'H' || c == 'I' || c == 'J' || c == 'K' || c == 'L') return true;
+  else return false;
 }
 
 bool HKFE::IsPut(const string &sSym)
 {
-  if (sSym.length() < 9) return false;
-  if (sSym.at(0) == 'P') return true; else return false;
+  if (sSym.length() <= 5) return false;
+  char c = sSym.at(sSym.length()-2);
+
+  if (c == 'M' || c == 'N' || c == 'O' || c == 'P' || c == 'Q' || c == 'R' || c == 'S' || c == 'T' || c == 'U' || c == 'V' || c == 'W' || c == 'X') return true;
+  else return false;
 }
 
 bool HKFE::IsFut(const string &sSym)
 {
-  if (sSym.length() < 9) return false;
-  if (sSym.at(0) == 'F') return true; else return false;
+  if (sSym.length() != 5) return false;
+  char c = sSym.at(3);
+
+  if (c == 'F' || c == 'G' || c == 'H' || c == 'J' || c == 'K' || c == 'M' || c == 'N' || c == 'Q' || c == 'U' || c == 'V' || c == 'X' || c == 'Z') return true;
+  else return false;
 }
 
 
@@ -191,18 +200,20 @@ double HKFE::GetStrike(const string &sSym)
 {
   if (!IsCall(sSym) && !IsPut(sSym)) return -1;
 
-  string sK;
-  Tokenizer tz(sSym);
-  if (tz.NextToken()) tz.GetToken();
-  if (tz.NextToken())
-  {
-    sK = tz.GetToken();
-    return STool::ToDbl(sK);
-  }
-  else
-  {
-    return -1;
-  }
+  // string sK;
+  // Tokenizer tz(sSym);
+  // if (tz.NextToken()) tz.GetToken();
+  // if (tz.NextToken())
+  // {
+  //   sK = tz.GetToken();
+  //   return STool::ToDbl(sK);
+  // }
+  // else
+  // {
+  //   return -1;
+  // }
+
+  return STool::ToDbl(sSym.substr(3,sSym.length()-3-2));
 }
 
 
@@ -788,4 +799,3 @@ double HKFE::GetContractMultiplier(const string & symbol)
   else if (sSubStr == UNDERLYING_MHI || sSubStr == UNDERLYING_MCH) return 10;
   else                                                             return NAN;
 }
-

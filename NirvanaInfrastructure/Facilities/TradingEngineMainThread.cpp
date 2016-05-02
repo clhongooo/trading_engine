@@ -126,6 +126,7 @@ void TradingEngineMainThread::RunMainThread()
   boost::scoped_ptr<StrategyB2_US2>     styB2_US2;
   boost::scoped_ptr<StrategyB2_US3>     styB2_US3;
   boost::scoped_ptr<StrategyB2_HK>      styB2_HK;
+  boost::scoped_ptr<StrategyNIR1>       styNIR1;
   boost::scoped_ptr<StrategyR7>         styR7;
   boost::scoped_ptr<StrategyR9>         styR9;
   // boost::scoped_ptr<StrategyA1>         styA1;
@@ -206,6 +207,13 @@ void TradingEngineMainThread::RunMainThread()
     styB2_HK.reset(new StrategyB2_HK());
     m_thread_group.add_thread(new boost::thread(&StrategyB2_HK::Run, styB2_HK.get()));
     p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_HK"); usleep(100000);
+  }
+
+  if (p_SysCfg->IsStrategyOn(STY_NIR1))
+  {
+    styNIR1.reset(new StrategyNIR1());
+    m_thread_group.add_thread(new boost::thread(&StrategyNIR1::Run, styNIR1.get()));
+    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyNIR1"); usleep(100000);
   }
 
   if (p_SysCfg->IsStrategyOn(STY_R7))

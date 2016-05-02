@@ -157,6 +157,7 @@ class YYYYMMDD
   YYYYMMDD(int iA);
   YYYYMMDD(const string &s);
   YYYYMMDD(const YMD &ymd);
+  YYYYMMDD(const int,const int,const int);
 
   // setter and getter
   void Set(const string &s);
@@ -279,6 +280,7 @@ class HHMMSS
   HHMMSS(int iA);
   HHMMSS(const string &s);
   HHMMSS(const HMS &hms);
+  HHMMSS(const int,const int,const int);
 
   // setter
   void Set(const string &s);
@@ -488,6 +490,7 @@ class YYYYMMDDHHMMSS
   YYYYMMDDHHMMSS(const YMD &,const HMS &);
   YYYYMMDDHHMMSS(const YYYYMMDD &,const HHMMSS &);
   YYYYMMDDHHMMSS(const string &,const string &);
+  YYYYMMDDHHMMSS(const int, const int, const int, const int, const int, const int);
   void Set(const YYYYMMDD &,const HHMMSS &);
   void Set(const YYYYMMDDHHMMSS &);
   void Set(const YMDHMS &);

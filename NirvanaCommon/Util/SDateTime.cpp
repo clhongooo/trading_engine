@@ -62,6 +62,10 @@ YYYYMMDD::YYYYMMDD(const string &s)
 {
   Set(s);
 }
+YYYYMMDD::YYYYMMDD(const int y,const int m,const int d)
+{
+  Set(y,m,d);
+}
 
 void YYYYMMDD::Set(const string &s)
 {
@@ -197,6 +201,10 @@ HHMMSS::HHMMSS(int iA)
 {
   if (iA < 0) _iHMS = -1;
   else _iHMS = iA;
+}
+HHMMSS::HHMMSS(const int h,const int m,const int s)
+{
+  Set(h,m,s);
 }
 HHMM::HHMM(int iA)
 {
@@ -599,6 +607,12 @@ YYYYMMDDHHMMSS::YYYYMMDDHHMMSS(const string & ymd,const string & hms)
 {
   _ymd.Set(ymd);
   _hms.Set(hms);
+}
+
+YYYYMMDDHHMMSS::YYYYMMDDHHMMSS(const int y, const int m, const int d, const int h, const int min, const int s)
+{
+  _ymd.Set(y,m,d);
+  _hms.Set(h,min,s);
 }
 
 void YYYYMMDDHHMMSS::Set(const YYYYMMDD & ymd,const HHMMSS & hms)
