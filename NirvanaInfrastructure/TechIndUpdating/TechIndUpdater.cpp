@@ -70,6 +70,8 @@ void TechIndUpdater::Run()
   // TLT,131.98,131.99,131.98,132.16,131.25,,,,
   //--------------------------------------------------
   const string sLoadItrdHighLowFromIB = m_SysCfg->Get_LoadItrdHighLowFromIB();
+
+  m_Logger->Write(Logger::INFO,"TechIndUpdater: Get_LoadItrdHighLowFromIB [%s]", sLoadItrdHighLowFromIB.c_str());
   if (sLoadItrdHighLowFromIB != "")
   {
     deque<string> dqS;

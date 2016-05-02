@@ -1,6 +1,19 @@
 #include <TradingEngineMainThread.h>
 
-TradingEngineMainThread::TradingEngineMainThread(const string & sConfPath) : m_ConfigPath(sConfPath), m_FinishedInit(false)
+TradingEngineMainThread::TradingEngineMainThread
+(const char * sConfPath) :
+  m_ConfigPath(string(sConfPath)),
+  m_ItrdHighLowFromIB(""),
+  m_FinishedInit(false)
+{
+}
+
+TradingEngineMainThread::TradingEngineMainThread
+(const char * sConfPath,
+ const char * sItrdHighLowFromIB) :
+  m_ConfigPath(string(sConfPath)),
+  m_ItrdHighLowFromIB(string(sItrdHighLowFromIB)),
+  m_FinishedInit(false)
 {
 }
 
@@ -23,6 +36,7 @@ void TradingEngineMainThread::RunMainThread()
   //--------------------------------------------------
   p_SysCfg = SystemConfig::Instance();
   p_SysCfg->ReadConfig(sConfigPath);
+  if (m_ItrdHighLowFromIB != "") p_SysCfg->SetItrdHighLowFromIB(m_ItrdHighLowFromIB);
 
   //--------------------------------------------------
   p_Logger = Logger::Instance();

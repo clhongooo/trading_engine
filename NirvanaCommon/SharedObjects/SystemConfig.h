@@ -82,6 +82,8 @@ class SystemConfig : boost::noncopyable
     void SetProgramStartTime();
     boost::posix_time::ptime GetProgramStartTime() const;
 
+    void SetItrdHighLowFromIB(const string &);
+
     SDateTime::TIMEZONE    GetDefaultTimeZone()                  const;
     const unsigned short   GetSystemServicePort()                const;
     string                 Get_Main_Log_Path()                   const;

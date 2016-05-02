@@ -236,6 +236,11 @@ void SystemConfig::SetProgramStartTime()
   m_ProgramStartTime = boost::posix_time::microsec_clock::local_time();
 }
 
+void SystemConfig::SetItrdHighLowFromIB(const string & sItrdHighLowFromIB)
+{
+  m_LoadItrdHighLowFromIB = sItrdHighLowFromIB;
+}
+
 SDateTime::TIMEZONE SystemConfig::GetDefaultTimeZone() const
 {
   return  m_DefaultTimeZone;

@@ -52,12 +52,14 @@
 
 class TradingEngineMainThread {
   public:
-    TradingEngineMainThread(const string &);
+    TradingEngineMainThread(const char *);
+    TradingEngineMainThread(const char *, const char *);
     virtual ~TradingEngineMainThread();
     void RunMainThread();
     bool HasFinishedInit();
 
     string m_ConfigPath;
+    string m_ItrdHighLowFromIB;
 
     boost::shared_ptr<SystemConfig>                p_SysCfg;
     boost::shared_ptr<Logger>                      p_Logger;
