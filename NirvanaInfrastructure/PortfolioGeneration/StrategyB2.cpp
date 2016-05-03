@@ -750,6 +750,7 @@ void StrategyB2::ReadParam()
   FForEach (m_TradedSymbols,[&](const string & sym) {
     m_PTask_PrintStyActionTimeToken[sym] = m_PTask_PrintStyActionTime.GetNewTokenAndSetIntervalInSec(60);
   });
+  m_PTask_PrintAllAvbSymToken = m_PTask_PrintAllAvbSym.GetNewTokenAndSetIntervalInSec(300);
 
   if (!m_B2_FilterSMAPeriod.empty())
   {
@@ -1122,8 +1123,14 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
         m_AllAvbSym[ymd] = set<string>();
         it = m_AllAvbSym.find(ymd);
       }
+      //--------------------------------------------------
+      // strategy base will only call UpdateInternalData() for that symbol only if there is price update for that symbol
+      //--------------------------------------------------
       if (m_HistoricalAvgPx->size() >= m_TrainingPeriodMax[iTradSym])
         it->second.insert(m_TradedSymbols[iTradSym]);
+
+      if (m_PTask_PrintAllAvbSym.CheckIfItIsTimeToWakeUp(m_PTask_PrintAllAvbSymToken,m_ymdhms_SysTime_HKT))
+        FForEach(it->second,[&](const string & sym) { m_Logger->Write(Logger::INFO,"Strategy %s: m_AllAvbSym %s", GetStrategyName(m_StyID).c_str(), sym.c_str()); });
     }
   }
   //--------------------------------------------------

@@ -143,8 +143,10 @@ class StrategyB2 : public StrategyBase {
 
 
     //--------------------------------------------------
-    PeriodicTask   m_PTask_PrintStyActionTime;
+    PeriodicTask    m_PTask_PrintStyActionTime;
+    PeriodicTask    m_PTask_PrintAllAvbSym;
     map<string,int> m_PTask_PrintStyActionTimeToken;
+    int             m_PTask_PrintAllAvbSymToken;
     //--------------------------------------------------
 
 
