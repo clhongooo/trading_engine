@@ -21,6 +21,11 @@ void StrategyNIR1::ReadParam()
                   GetStrategyName(m_StyID).c_str(),
                   m_MaturityYYYYMMDD);
 
+  FForEach(m_TradedSymbols,[&](const string & symbol) {
+    long lPos = GetPrevTheoSgndPos(symbol);
+    if (lPos != 0) m_map_SgndPos.AddOrUpdate(symbol, lPos);
+  });
+
 }
 
 void StrategyNIR1::ParamSanityCheck()
@@ -58,8 +63,6 @@ void StrategyNIR1::UpdateInternalDataTrng(const int iTradSym)
 
 void StrategyNIR1::UpdateInternalData(const int iTradSym)
 {
-  m_MidQuote.AddOrUpdate(m_TradedSymbols[iTradSym], m_SymMidQuote);
-  m_SgndPos.AddOrUpdate(m_TradedSymbols[iTradSym], GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]));
   if (m_HKFE->IsFut(m_TradedSymbols[iTradSym])) m_UnderlyingMQ = m_SymMidQuote;
 }
 
@@ -77,17 +80,20 @@ void StrategyNIR1::DetermineRegime(const int iTradSym)
 void StrategyNIR1::PreTradePreparation(const int iTradSym)
 {
   double dPortfolioDelta = 0;
+  double dNetPremiumDollar = 0;
+  bool bMQAllReady = true;
 
-  // vector<std::pair<string,int> > vSgndPos = m_SgndPos.ToVector();
 
-  vector<std::pair<string,int> > vSgndPos;
-  vSgndPos.push_back(std::pair<string,int>("HSIK6",1));
-  vSgndPos.push_back(std::pair<string,int>("HSI20000Q6",1));
+  vector<std::pair<string,int> > vSgndPos = m_map_SgndPos.ToVector();
+  // FForEach(vSgndPos,[&](const std::pair<string,int> sym_sgndpos) {
+  //   m_Logger->Write(Logger::INFO,"StrategyNIR1: %s m_map_SgndPos %s",
+  //                   m_ymdhms_SysTime_HKT.ToStr().c_str(),
+  //                   sym_sgndpos.first.c_str());
+  // });
 
-  // m_Logger->Write(Logger::INFO,"StrategyNIR1: IsCall %s", m_HKFE->IsCall("HSI20000Q6")?"T":"F");
-  // m_Logger->Write(Logger::INFO,"StrategyNIR1: IsPut %s", m_HKFE->IsPut("HSI20000Q6")?"T":"F");
-  // m_Logger->Write(Logger::INFO,"StrategyNIR1: IsFut %s", m_HKFE->IsFut("HSIK6")?"T":"F");
-
+  // vector<std::pair<string,int> > vSgndPos;
+  // vSgndPos.push_back(std::pair<string,int>("HSIK6",1));
+  // vSgndPos.push_back(std::pair<string,int>("HSI20000Q6",1));
 
   FForEach(vSgndPos,[&](const std::pair<string,int> sym_sgndpos) {
     if (sym_sgndpos.second == 0) return;
@@ -95,9 +101,32 @@ void StrategyNIR1::PreTradePreparation(const int iTradSym)
     const string & symbol = sym_sgndpos.first;
     const double iSgndPos = sym_sgndpos.second;
 
-    Option<double> oMQ = m_MidQuote.Get(symbol);
-    if (oMQ.IsNone()) return;
-    double dMQ = oMQ.Get();
+    //--------------------------------------------------
+    // ad-hoc
+    //--------------------------------------------------
+    double dBid = NAN;
+    double dAsk = NAN;
+    double dMQ  = NAN;
+    YYYYMMDDHHMMSS ymdhms;
+    if (
+      !MarketData::Instance()->GetLatestBestBidAskMid(symbol,dBid,dAsk,dMQ,ymdhms)
+      ||
+      m_ymdhms_SysTime_HKT - ymdhms > 3600
+      ||
+      abs(dMQ) < NIR_EPSILON
+      ||
+      abs(dBid) < NIR_EPSILON
+      ||
+      abs(dAsk) < NIR_EPSILON
+      ||
+      !STool::IsValidPriceOrVol(dBid)
+      ||
+      !STool::IsValidPriceOrVol(dAsk)
+      )
+    {
+      bMQAllReady = false;
+      return;
+    }
 
     if (m_HKFE->IsFut(symbol))
     {
@@ -121,6 +150,7 @@ void StrategyNIR1::PreTradePreparation(const int iTradSym)
                       dTau,
                       dDelta);
       dPortfolioDelta += (double)iSgndPos * dDelta * m_HKFE->GetContractMultiplier(symbol) / 50.0;
+      dNetPremiumDollar += (double)iSgndPos * dMQ * m_HKFE->GetContractMultiplier(symbol);
     }
     else if (m_HKFE->IsPut(symbol)) 
     {
@@ -140,17 +170,77 @@ void StrategyNIR1::PreTradePreparation(const int iTradSym)
                       dTau,
                       dDelta);
       dPortfolioDelta += (double)iSgndPos * dDelta * m_HKFE->GetContractMultiplier(symbol) / 50.0;
+      dNetPremiumDollar += (double)iSgndPos * dMQ * m_HKFE->GetContractMultiplier(symbol);
     }
 
   });
 
+  if (bMQAllReady)
+  {
+    m_Logger->Write(Logger::INFO,"StrategyNIR1: %s Portfolio Delta %f Net Premium $ %.0f",
+                    m_ymdhms_SysTime_HKT.ToStr().c_str(),
+                    dPortfolioDelta,
+                    dNetPremiumDollar);
+  }
+  else
+  {
+    m_Logger->Write(Logger::INFO,"StrategyNIR1: %s Portfolio Delta cannot be calculated.",
+                    m_ymdhms_SysTime_HKT.ToStr().c_str());
+  }
 
-  m_Logger->Write(Logger::INFO,"StrategyNIR1: %s %s Portfolio Delta %f",
-                  m_ymdhms_SysTime_HKT.ToStr().c_str(),
-                  m_TradedSymbols[iTradSym].c_str(),
-                  dPortfolioDelta);
+  {
+    //--------------------------------------------------
+    // vertical spread net premium
+    //--------------------------------------------------
+    const long lUpperStrike1 = round((m_UnderlyingMQ+1000.0)/200.0) * 200;
+    const long lUpperStrike2 = lUpperStrike1 + 400;
+    const string sBullSpreadSymbol1 = "HSI" + boost::lexical_cast<string>(lUpperStrike1) + "E6";
+    const string sBullSpreadSymbol2 = "HSI" + boost::lexical_cast<string>(lUpperStrike2) + "E6";
+    double dUpperStrike1MQ = NAN;
+    double dUpperStrike2MQ = NAN;
 
+    double dMQ = NAN;
+    YYYYMMDDHHMMSS ymdhms;
 
+    if (!MarketData::Instance()->GetLatestMidQuote(sBullSpreadSymbol1,dMQ,ymdhms)) return;
+    dUpperStrike1MQ = dMQ;
+
+    if (!MarketData::Instance()->GetLatestMidQuote(sBullSpreadSymbol2,dMQ,ymdhms)) return;
+    dUpperStrike2MQ = dMQ;
+
+    m_Logger->Write(Logger::INFO,"StrategyNIR1: %s Bull Spread: %s %s Net Premium = %f",
+                    m_ymdhms_SysTime_HKT.ToStr().c_str(),
+                    sBullSpreadSymbol1.c_str(),
+                    sBullSpreadSymbol2.c_str(),
+                    dUpperStrike1MQ - dUpperStrike2MQ);
+  }
+  
+  {
+    //--------------------------------------------------
+    // vertical spread net premium
+    //--------------------------------------------------
+    const long lLowerStrike1 = round((m_UnderlyingMQ-1000.0)/200.0) * 200;
+    const long lLowerStrike2 = lLowerStrike1 - 400;
+    const string sBullSpreadSymbol1 = "HSI" + boost::lexical_cast<string>(lLowerStrike1) + "Q6";
+    const string sBullSpreadSymbol2 = "HSI" + boost::lexical_cast<string>(lLowerStrike2) + "Q6";
+    double dLowerStrike1MQ = NAN;
+    double dLowerStrike2MQ = NAN;
+
+    double dMQ = NAN;
+    YYYYMMDDHHMMSS ymdhms;
+
+    if (!MarketData::Instance()->GetLatestMidQuote(sBullSpreadSymbol1,dMQ,ymdhms)) return;
+    dLowerStrike1MQ = dMQ;
+
+    if (!MarketData::Instance()->GetLatestMidQuote(sBullSpreadSymbol2,dMQ,ymdhms)) return;
+    dLowerStrike2MQ = dMQ;
+
+    m_Logger->Write(Logger::INFO,"StrategyNIR1: %s Bear Spread: %s %s Net Premium = %f",
+                    m_ymdhms_SysTime_HKT.ToStr().c_str(),
+                    sBullSpreadSymbol1.c_str(),
+                    sBullSpreadSymbol2.c_str(),
+                    dLowerStrike1MQ - dLowerStrike2MQ);
+  }
 
 
 }

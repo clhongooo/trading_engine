@@ -7,6 +7,7 @@
 #include "StrategyBase.h"
 #include "NumberPosition.h"
 #include "BlackScholes.h"
+#include "MarketData.h"
 
 class StrategyNIR1 : public StrategyBase {
   public:
@@ -36,8 +37,7 @@ class StrategyNIR1 : public StrategyBase {
     //--------------------------------------------------
     // Strategy objects
     //--------------------------------------------------
-    SMap<string,double> m_MidQuote;
-    SMap<string,int>    m_SgndPos;
+    SMap<string,int>    m_map_SgndPos;
     int                 m_MaturityYYYYMMDD;
     double              m_UnderlyingMQ;
 

@@ -127,6 +127,8 @@ void DataAggregator::OnTCPConnect()
 {
   m_Logger->Write(Logger::INFO,"DataAggregator: Connected to ATU MDI (id=%d)", m_Aggregator_Identity);
 
+  usleep(500000);
+
   vector<string> vsubsym = m_SysCfg->GetMDISubscriptionSymbols(m_Aggregator_Identity);
   string sstart          = m_SysCfg->GetMDISubscriptionStartDate(m_Aggregator_Identity);
   string send            = m_SysCfg->GetMDISubscriptionEndDate(m_Aggregator_Identity);

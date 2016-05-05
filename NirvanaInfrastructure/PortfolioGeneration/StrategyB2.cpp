@@ -554,7 +554,7 @@ void StrategyB2::ReadParam()
   else
     m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenAvgPriceReturnAbove: Nil", GetStrategyName(m_StyID).c_str());
 
-  m_LongOnlyWhenGrpAvgReturnAbove = m_SysCfg->B2_LongOnlyWhenAvgPriceReturnAbove(m_StyID);
+  m_LongOnlyWhenGrpAvgReturnAbove = m_SysCfg->B2_LongOnlyWhenGrpAvgReturnAbove(m_StyID);
   if (m_LongOnlyWhenGrpAvgReturnAbove.IsSome())
     m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenGrpAvgReturnAbove %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenGrpAvgReturnAbove.Get());
   else
@@ -577,10 +577,10 @@ void StrategyB2::ReadParam()
     m_Logger->Write(Logger::INFO,"Strategy %s: m_AvgAggSgndNotnlThresh %f", GetStrategyName(m_StyID).c_str(),  m_AvgAggSgndNotnlThresh);
 
     m_MoveNextBestGroupUpIfNoSignal = m_SysCfg->Get_B2_MoveNextBestGroupUpIfNoSignal(m_StyID);
-    m_Logger->Write(Logger::INFO,"Strategy %s: m_MoveNextBestGroupUpIfNoSignal %d", GetStrategyName(m_StyID).c_str(),  m_MoveNextBestGroupUpIfNoSignal);
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_MoveNextBestGroupUpIfNoSignal %s", GetStrategyName(m_StyID).c_str(),  (m_MoveNextBestGroupUpIfNoSignal?"true":"false"));
 
     m_MoveNextBestStkInGrpUpIfNoSignal = m_SysCfg->Get_B2_MoveNextBestStkInGrpUpIfNoSignal(m_StyID);
-    m_Logger->Write(Logger::INFO,"Strategy %s: m_MoveNextBestStkInGrpUpIfNoSignal %d", GetStrategyName(m_StyID).c_str(),  m_MoveNextBestStkInGrpUpIfNoSignal);
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_MoveNextBestStkInGrpUpIfNoSignal %s", GetStrategyName(m_StyID).c_str(),  (m_MoveNextBestStkInGrpUpIfNoSignal?"true":"false"));
 
     m_RotationGroup = m_SysCfg->Get_B2_RotationGroup(m_StyID);
     FForEach (m_RotationGroup,[&](const int gid) { m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationGroup %d", GetStrategyName(m_StyID).c_str(), gid); });
@@ -948,7 +948,7 @@ bool StrategyB2::SkipSubseqProcessingForSymbol(const int iTradSym, string & sCom
 
   if (m_PTask_PrintStyActionTime.CheckIfItIsTimeToWakeUp(m_PTask_PrintStyActionTimeToken[m_TradedSymbols[iTradSym]],m_ymdhms_SysTime_HKT))
   {
-    m_Logger->Write(Logger::INFO,"Strategy %s: Sym=%s will only proceed when time (currently %s) is between %s and %s",
+    m_Logger->Write(Logger::INFO,"Strategy %s: Sym=%s Current time %s Action time between %s and %s",
                     GetStrategyName(m_StyID).c_str(),
                     m_TradedSymbols[iTradSym].c_str(),
                     m_ymdhms_SysTime_HKT.GetHHMMSS().ToStr_().c_str(),
@@ -1162,7 +1162,8 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
     double dClose = TechIndicators::Instance()->GetDayClose(m_TradedSymbols[iTradSym]);
     if (!std::isnan(dHigh) && !std::isnan(dLow) && !std::isnan(dClose) && abs(m_ymdhms_SysTime_HKT - m_ymdhms_midquote) < 10)
     {
-      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Getting aggregated daily high low close: High = %f Low = %f Close = %f MidQuote = %f.", GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(), dHigh, dLow, dClose, m_SymMidQuote);
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Getting aggregated daily high low close: High = %f Low = %f Close = %f MidQuote = %f.",
+                      GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(), dHigh, dLow, dClose, m_SymMidQuote);
       double dAvgPx = (dHigh+dLow+m_SymMidQuote)/(double)3;
 
       if (!m_HistoricalAvgPx->empty()) m_HistoricalNumNumOfRisingDaysCountAvgPx->Add(dAvgPx >= m_HistoricalAvgPx->back());
@@ -1885,7 +1886,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   //--------------------------------------------------
   if (m_LongOnlyWhenAvgPriceReturnAbove.IsSome()
       &&
-      !m_HistoricalAvgPx->size() >= 2)
+      m_HistoricalAvgPx->size() >= 2)
   {
     double dAvgPxRtn = m_HistoricalAvgPx->back() / *(m_HistoricalAvgPx->end()-2) - 1;
     if (dAvgPxRtn < m_LongOnlyWhenAvgPriceReturnAbove.Get())
@@ -1898,7 +1899,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   }
   if (m_ShortOnlyWhenAvgPriceReturnBelow.IsSome()
       &&
-      !m_HistoricalAvgPx->size() >= 2)
+      m_HistoricalAvgPx->size() >= 2)
   {
     double dAvgPxRtn = m_HistoricalAvgPx->back() / *(m_HistoricalAvgPx->end()-2) - 1;
     if (dAvgPxRtn > m_ShortOnlyWhenAvgPriceReturnBelow.Get())
@@ -2176,7 +2177,6 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       });
       return;
     }
-
 
     //--------------------------------------------------
     // if not performed the rotation logic, do it now, but do it once only
@@ -2582,7 +2582,6 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                         m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                         m_TradedSymbols[iTradSym].c_str(),
                         m_dAggSignedQty);
-
       }
     }
 
