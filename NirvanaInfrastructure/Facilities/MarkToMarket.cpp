@@ -112,7 +112,8 @@ void MarkToMarket::Run()
         {
           for (map<string,long>::iterator it = mPort.begin(); it != mPort.end(); ++it)
           {
-            fsHoldingsLog << GetStrategyName(sid) << "\t" << sid << "\t" << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << ymdhms_MDITime.GetHHMMSS().ToInt() << "\t" << it->first << "\t" << it->second << endl;
+            if (it->second != 0)
+              fsHoldingsLog << GetStrategyName(sid) << "\t" << sid << "\t" << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << ymdhms_MDITime.GetHHMMSS().ToInt() << "\t" << it->first << "\t" << it->second << endl;
 
             m_Logger->Write(Logger::INFO,"Strategy %s:HoldingsLog:\t%d\t%s\t%s\t%d", GetStrategyName(sid).c_str(), sid, ymdhms_MDITime.ToStr().c_str(), it->first.c_str(), it->second);
           }
@@ -129,9 +130,9 @@ void MarkToMarket::Run()
     // output the sum of PnL of all strategies
     //--------------------------------------------------
     if (abs(dOverallCPnL) > NIR_EPSILON &&
-        m_Overall_MTM_Done.find(ymdhms_MDITime.GetYYYYMMDD().ToInt()) == m_Overall_MTM_Done.end())
+      m_Overall_MTM_Done.find(ymdhms_MDITime.GetYYYYMMDD().ToInt()) == m_Overall_MTM_Done.end())
     {
-      fsMTMLog << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << setprecision(2) << fixed << dOverallCPnL << endl;
+      fsMTMLog << ymdhms_MDITime.ToStr() << "\t" << setprecision(2) << fixed << dOverallCPnL << endl;
       m_Overall_MTM_Done.insert(ymdhms_MDITime.GetYYYYMMDD().ToInt());
     }
     //--------------------------------------------------

@@ -37,8 +37,6 @@ class MDI_Acknowledgement {
     MDI_Acknowledgement& operator=(MDI_Acknowledgement const&){};
     static boost::weak_ptr<MDI_Acknowledgement> m_pInstance;
 
-
-
     bool CheckIfAllAckRecvdLock();
     bool CheckIfAllAckRecvdNoLock();
     void ResetRecvAckLock();
@@ -65,7 +63,6 @@ class MDI_Acknowledgement {
     // boost::condition_variable m_cvAck;
     // void NotifyConsumers();
     //--------------------------------------------------
-
 
 };
 
