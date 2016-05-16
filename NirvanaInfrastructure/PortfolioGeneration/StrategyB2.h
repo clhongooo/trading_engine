@@ -35,6 +35,8 @@
 #define B2_KS_PRICE_FILTER_RISE_ADJFACTOR 0.5
 #define B2_KS_PRICE_FILTER_FALL_ADJFACTOR 1
 
+#define B2_SKIPMACHLEARNING false
+
 class StrategyB2 : public StrategyBase {
   public:
     typedef struct {

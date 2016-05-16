@@ -1220,6 +1220,8 @@ void StrategyB2::UpdateInternalData(const int iTradSym)
 
 void StrategyB2::DoTraining(const int iTradSym)
 {
+  if (B2_SKIPMACHLEARNING) return;
+
   // SetParamAdjAmt(SML_ADJ_BETA12, BIG_ADJ_BETA12, SML_ADJ_BETA34, BIG_ADJ_BETA34);
   SetParamBetaRange(
     m_beta_1_start[iTradSym],
@@ -1457,7 +1459,7 @@ void StrategyB2::DetermineRegime(const int iTradSym)
   if (m_HistoricalAvgPx->back() >= *(m_HistoricalAvgPx->end()-2)) *m_bRisingRegimeAvgPx = true;
   if (m_HistoricalClose->back() >= *(m_HistoricalClose->end()-2)) *m_bRisingRegimeClose = true;
 
-  m_Logger->Write(Logger::INFO,"Strategy %s: : %s Sym=%s m_bRisingRegimeAvgPx = %s m_bRisingRegimeClose = %s",
+  m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_bRisingRegimeAvgPx = %s m_bRisingRegimeClose = %s",
                   GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),(*m_bRisingRegimeAvgPx?"True":"False"),(*m_bRisingRegimeClose?"True":"False"));
 
 }
@@ -1520,123 +1522,126 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   m_dStrengthCountClose = 0;
   m_map_TotSharpeOfMethod.clear();
 
-  for (unsigned int iAorC = 0; iAorC < 2; ++iAorC)
-  {
-    double & dStrengthCount = (iAorC == 0 ? m_dStrengthCountAvgPx : m_dStrengthCountClose);
-    bool & m_bTrainRet = (iAorC == 0 ? *m_bTrainRetAvgPx : *m_bTrainRetClose);
-    bool & bRisingRegime = (iAorC == 0 ? *m_bRisingRegimeAvgPx : *m_bRisingRegimeClose);
-    map<double,vector<double> > & m_p_map_BestParamSetBeta1Beta3 = (iAorC == 0 ? *m_p_map_BestParamSetBeta1Beta3AvgPx : *m_p_map_BestParamSetBeta1Beta3Close);
-    map<double,vector<double> > & m_p_map_BestParamSetBeta2Beta4 = (iAorC == 0 ? *m_p_map_BestParamSetBeta2Beta4AvgPx : *m_p_map_BestParamSetBeta2Beta4Close);
-    vector<double> * m_Historical = (iAorC == 0 ? m_HistoricalAvgPx : m_HistoricalClose);
-    long & lNumOfTrngCombn = (iAorC == 0 ? m_lNumOfTrngCombnAvgPx : m_lNumOfTrngCombnClose);
-
-    //--------------------------------------------------
-    m_map_TotSharpeOfMethod[iAorC] = 0;
-    //--------------------------------------------------
-
-    //--------------------------------------------------
-    if (m_bTrainRet)
+  if (!B2_SKIPMACHLEARNING)
+  { 
+    for (unsigned int iAorC = 0; iAorC < 2; ++iAorC)
     {
-      double b1 = 0;
-      double b2 = 0;
-      double b3 = 0;
-      double b4 = 0;
+      double & dStrengthCount = (iAorC == 0 ? m_dStrengthCountAvgPx : m_dStrengthCountClose);
+      bool & m_bTrainRet = (iAorC == 0 ? *m_bTrainRetAvgPx : *m_bTrainRetClose);
+      bool & bRisingRegime = (iAorC == 0 ? *m_bRisingRegimeAvgPx : *m_bRisingRegimeClose);
+      map<double,vector<double> > & m_p_map_BestParamSetBeta1Beta3 = (iAorC == 0 ? *m_p_map_BestParamSetBeta1Beta3AvgPx : *m_p_map_BestParamSetBeta1Beta3Close);
+      map<double,vector<double> > & m_p_map_BestParamSetBeta2Beta4 = (iAorC == 0 ? *m_p_map_BestParamSetBeta2Beta4AvgPx : *m_p_map_BestParamSetBeta2Beta4Close);
+      vector<double> * m_Historical = (iAorC == 0 ? m_HistoricalAvgPx : m_HistoricalClose);
+      long & lNumOfTrngCombn = (iAorC == 0 ? m_lNumOfTrngCombnAvgPx : m_lNumOfTrngCombnClose);
 
-      if ( (bRisingRegime && !m_p_map_BestParamSetBeta1Beta3.empty()) ||
-          (!bRisingRegime && !m_p_map_BestParamSetBeta2Beta4.empty())   )
+      //--------------------------------------------------
+      m_map_TotSharpeOfMethod[iAorC] = 0;
+      //--------------------------------------------------
+
+      //--------------------------------------------------
+      if (m_bTrainRet)
       {
-        int iCnt = 0;
-        map<double,vector<double> >::iterator it_rising  = m_p_map_BestParamSetBeta1Beta3.end();
-        map<double,vector<double> >::iterator it_falling = m_p_map_BestParamSetBeta2Beta4.end();
+        double b1 = 0;
+        double b2 = 0;
+        double b3 = 0;
+        double b4 = 0;
 
-        if (bRisingRegime)
-          it_rising--;
-        else
-          it_falling--;
-
-        while (
-          (bRisingRegime  && it_rising  != m_p_map_BestParamSetBeta1Beta3.begin()) ||
-          (!bRisingRegime && it_falling != m_p_map_BestParamSetBeta2Beta4.begin())
-          )
+        if ( (bRisingRegime && !m_p_map_BestParamSetBeta1Beta3.empty()) ||
+            (!bRisingRegime && !m_p_map_BestParamSetBeta2Beta4.empty())   )
         {
+          int iCnt = 0;
+          map<double,vector<double> >::iterator it_rising  = m_p_map_BestParamSetBeta1Beta3.end();
+          map<double,vector<double> >::iterator it_falling = m_p_map_BestParamSetBeta2Beta4.end();
 
-          if (bRisingRegime)
-          {
-            b1 = it_rising->second[0];
-            b3 = it_rising->second[1];
-          }
-          else
-          {
-            b2 = it_falling->second[0];
-            b4 = it_falling->second[1];
-          }
-
-          double dEstimate     = 0;
-          double dAvgPnL       = 0;
-          double dSharpe       = 0;
-          double dSquaredError = 0;
-
-          if (GetEstimate(m_TrainingPeriod1[iTradSym],b1,b2,b3,b4,*m_Historical,*m_HistoricalClose,&dSquaredError,&dAvgPnL,&dSharpe,&dEstimate,m_WeightScheme[iTradSym],false))
-          {
-            if (dEstimate > 0)
-            {
-              dStrengthCount += 1;
-            }
-            else if (dEstimate < 0)
-            {
-              dStrengthCount -= 1;
-            }
-
-            m_map_TotSharpeOfMethod[iAorC] += dSharpe;
-
-            m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s %s Selected from the set of best parameters: m_beta_1 = %f, m_beta_2 = %f, m_beta_3 = %f, m_beta_4 = %f. dSquaredError = %f. dAvgPnL = %f. dSharpe = %f.",
-                            GetStrategyName(m_StyID).c_str(),
-                            m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                            m_TradedSymbols[iTradSym].c_str(),
-                            (iAorC == 0 ? "AvgPx" : "Close"),
-                            b1,b2,b3,b4,dSquaredError,dAvgPnL,dSharpe);
-          }
-          iCnt++;
-          if ((iCnt+1) >= m_PropOfBestParam[iTradSym] / (double)100 * (double)lNumOfTrngCombn) break;
-          if ( bRisingRegime && iCnt >= m_p_map_BestParamSetBeta1Beta3.size()) break;
-          if (!bRisingRegime && iCnt >= m_p_map_BestParamSetBeta2Beta4.size()) break;
           if (bRisingRegime)
             it_rising--;
           else
             it_falling--;
+
+          while (
+            (bRisingRegime  && it_rising  != m_p_map_BestParamSetBeta1Beta3.begin()) ||
+            (!bRisingRegime && it_falling != m_p_map_BestParamSetBeta2Beta4.begin())
+            )
+          {
+
+            if (bRisingRegime)
+            {
+              b1 = it_rising->second[0];
+              b3 = it_rising->second[1];
+            }
+            else
+            {
+              b2 = it_falling->second[0];
+              b4 = it_falling->second[1];
+            }
+
+            double dEstimate     = 0;
+            double dAvgPnL       = 0;
+            double dSharpe       = 0;
+            double dSquaredError = 0;
+
+            if (GetEstimate(m_TrainingPeriod1[iTradSym],b1,b2,b3,b4,*m_Historical,*m_HistoricalClose,&dSquaredError,&dAvgPnL,&dSharpe,&dEstimate,m_WeightScheme[iTradSym],false))
+            {
+              if (dEstimate > 0)
+              {
+                dStrengthCount += 1;
+              }
+              else if (dEstimate < 0)
+              {
+                dStrengthCount -= 1;
+              }
+
+              m_map_TotSharpeOfMethod[iAorC] += dSharpe;
+
+              m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s %s Selected from the set of best parameters: m_beta_1 = %f, m_beta_2 = %f, m_beta_3 = %f, m_beta_4 = %f. dSquaredError = %f. dAvgPnL = %f. dSharpe = %f.",
+                              GetStrategyName(m_StyID).c_str(),
+                              m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                              m_TradedSymbols[iTradSym].c_str(),
+                              (iAorC == 0 ? "AvgPx" : "Close"),
+                              b1,b2,b3,b4,dSquaredError,dAvgPnL,dSharpe);
+            }
+            iCnt++;
+            if ((iCnt+1) >= m_PropOfBestParam[iTradSym] / (double)100 * (double)lNumOfTrngCombn) break;
+            if ( bRisingRegime && iCnt >= m_p_map_BestParamSetBeta1Beta3.size()) break;
+            if (!bRisingRegime && iCnt >= m_p_map_BestParamSetBeta2Beta4.size()) break;
+            if (bRisingRegime)
+              it_rising--;
+            else
+              it_falling--;
+          }
+          m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s %s Selected a set of %d parameters in total.",
+                          GetStrategyName(m_StyID).c_str(),
+                          m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                          m_TradedSymbols[iTradSym].c_str(),
+                          (iAorC == 0 ? "AvgPx" : "Close"),
+                          iCnt);
         }
-        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s %s Selected a set of %d parameters in total.",
-                        GetStrategyName(m_StyID).c_str(),
-                        m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                        m_TradedSymbols[iTradSym].c_str(),
-                        (iAorC == 0 ? "AvgPx" : "Close"),
-                        iCnt);
+        else
+        {
+          m_Logger->Write(Logger::INFO,"Strategy %s: Sym=%s %s %s m_p_map_BestParamSet empty.",
+                          GetStrategyName(m_StyID).c_str(), m_TradedSymbols[iTradSym].c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), (iAorC == 0 ? "AvgPx" : "Close"));
+        }
+
       }
       else
       {
-        m_Logger->Write(Logger::INFO,"Strategy %s: Sym=%s %s %s m_p_map_BestParamSet empty.",
-                        GetStrategyName(m_StyID).c_str(), m_TradedSymbols[iTradSym].c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), (iAorC == 0 ? "AvgPx" : "Close"));
+        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s %s (%d) %s m_bTrainRet is false.",
+                        GetStrategyName(m_StyID).c_str(),
+                        m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                        m_TradedSymbols[iTradSym].c_str(),
+                        __FUNCTION__,
+                        __LINE__,
+                        (iAorC == 0 ? "AvgPx" : "Close"));
       }
-
-    }
-    else
-    {
-      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s %s (%d) %s m_bTrainRet is false.",
+      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s %s dStrengthCount = %f lNumOfTrngCombn = %d",
                       GetStrategyName(m_StyID).c_str(),
-                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                      m_TradedSymbols[iTradSym].c_str(),
-                      __FUNCTION__,
-                      __LINE__,
-                      (iAorC == 0 ? "AvgPx" : "Close"));
+                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
+                      (iAorC == 0 ? "AvgPx" : "Close"),
+                      dStrengthCount,
+                      dStrengthCount,
+                      lNumOfTrngCombn,
+                      lNumOfTrngCombn);
     }
-    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s %s dStrengthCount = %f lNumOfTrngCombn = %d",
-                    GetStrategyName(m_StyID).c_str(),
-                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
-                    (iAorC == 0 ? "AvgPx" : "Close"),
-                    dStrengthCount,
-                    dStrengthCount,
-                    lNumOfTrngCombn,
-                    lNumOfTrngCombn);
   }
 
   //--------------------------------------------------
@@ -1717,6 +1722,13 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     m_dAggSignedQty =
       round(m_dAggUnsignedQty * m_dStrengthCountAvgPx / (m_PropOfBestParam[iTradSym] / (double)100 * (double)m_lNumOfTrngCombnAvgPx));
   }
+
+  //--------------------------------------------------
+  if (B2_SKIPMACHLEARNING)
+  {
+    m_dAggSignedQty = round(m_NotionalAmt[iTradSym] / m_SymMidQuote);
+  }
+  //--------------------------------------------------
 
   //--------------------------------------------------
   // KolmogorovSmirnov

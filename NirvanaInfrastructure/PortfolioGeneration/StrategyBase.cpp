@@ -103,7 +103,7 @@ void StrategyBase::GetFutFrontMonthSymbols()
   {
     m_Logger->Write(Logger::INFO,"Strategy %s: Front month symbols: %s %s",
                     GetStrategyName(m_StyID).c_str(),
-                    m_ymdhms_SysTime_HKT.ToStr().c_str(),
+                    m_ymdhms_SysTime_Domicile.ToStr().c_str(),
                     m_FutFrontMthSym[i].c_str());
   }
 
@@ -223,7 +223,7 @@ void StrategyBase::PlaceOrder(const int iTradSym)
 
   m_Logger->Write(Logger::INFO,"Strategy %s: SignalLog:\t%s\t%s\tTgtSgndPos\t%d\tTradeDir\t%d\tNotnlAmt\t%f",
                   GetStrategyName(m_StyID).c_str(),
-                  m_ymdhms_SysTime_HKT.ToStr().c_str(),
+                  m_ymdhms_SysTime_Domicile.ToStr().c_str(),
                   m_TargetTradedSym[iTradSym].c_str(),
                   lTargetSgndPos,
                   m_TargetTradeDir[iTradSym],
@@ -317,7 +317,7 @@ void StrategyBase::TradeRelatedProcedure(const int iTradSym)
 
     m_Logger->Write(Logger::INFO,"Strategy %s: %s %s Theoretical position size in regular contract. %f",
                     GetStrategyName(m_StyID).c_str(),
-                    m_ymdhms_SysTime_HKT.ToStr().c_str(),
+                    m_ymdhms_SysTime_Domicile.ToStr().c_str(),
                     m_TradedSymbols[iTradSym].c_str(),
                     m_TargetAbsPos[iTradSym]);
 
@@ -332,7 +332,7 @@ void StrategyBase::TradeRelatedProcedure(const int iTradSym)
 
     m_Logger->Write(Logger::INFO,"Strategy %s: Trade regular contract. %s %s %d",
                     GetStrategyName(m_StyID).c_str(),
-                    m_ymdhms_SysTime_HKT.ToStr().c_str(),
+                    m_ymdhms_SysTime_Domicile.ToStr().c_str(),
                     m_TradedSymbols[iTradSym].c_str(),
                     lSugCtrtSize);
 
@@ -345,7 +345,7 @@ void StrategyBase::TradeRelatedProcedure(const int iTradSym)
 
     m_Logger->Write(Logger::INFO,"Strategy %s: Trade mini contract. %s %s %d",
                     GetStrategyName(m_StyID).c_str(),
-                    m_ymdhms_SysTime_HKT.ToStr().c_str(),
+                    m_ymdhms_SysTime_Domicile.ToStr().c_str(),
                     m_TradedSymbols[iTradSym].c_str(),
                     lSugCtrtSize);
 
@@ -468,7 +468,8 @@ void StrategyBase::EndOfDayTrainingRoutine(const int iTradSym, const map<HHMMSS,
   //--------------------------------------------------
   for (map<HHMMSS,double>::const_iterator it = map_HistDataInTimeBucket.begin(); it != map_HistDataInTimeBucket.end(); ++it)
   {
-    m_Logger->Write(Logger::DEBUG,"Strategy %s: EOD Training: SysTime: %s %s HistTime: %s HistPrice = %f",GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_HKT.ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(), it->first.ToStr_().c_str(), it->second);
+    m_Logger->Write(Logger::DEBUG,"Strategy %s: EOD Training: SysTime: %s %s HistTime: %s HistPrice = %f",
+                    GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_Domicile.ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(), it->first.ToStr_().c_str(), it->second);
     m_SymMidQuote = it->second;
     UpdateInternalDataTrng(iTradSym);
     AdjustSamplingInterval(iTradSym);
@@ -513,6 +514,8 @@ void StrategyBase::Run()
 
     m_ymdhms_SysTime_HKT = m_MarketData->GetSystemTimeHKT();
     m_ymdhms_SysTime_EST = m_MarketData->GetSystemTimeEST();
+    if (m_StyDomicileMkt == SDM_US) m_ymdhms_SysTime_Domicile = m_ymdhms_SysTime_EST;
+    else m_ymdhms_SysTime_Domicile = m_ymdhms_SysTime_HKT;
 
     if (!m_SysCfg->IsStrategyOn(m_StyID))
     {
@@ -545,7 +548,7 @@ void StrategyBase::Run()
       {
         m_Logger->Write(Logger::INFO,"Strategy %s: %s PrevTheoSgndPos for symbol %s = %f",
                         GetStrategyName(m_StyID).c_str(),
-                        m_ymdhms_SysTime_HKT.ToStr().c_str(),
+                        m_ymdhms_SysTime_Domicile.ToStr().c_str(),
                         m_TradedSymbols[iTradSym].c_str(),
                         GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]));
       }
@@ -612,7 +615,8 @@ void StrategyBase::Run()
         string sSkipReason;
         if (SkipSubseqProcessingForSymbol(iTradSym,sSkipReason))
         {
-          m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s Skip reason: %s", GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_HKT.ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),sSkipReason.c_str());
+          m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s Skip reason: %s",
+                          GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_Domicile.ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),sSkipReason.c_str());
           continue;
         }
 
@@ -656,7 +660,7 @@ void StrategyBase::Run()
             FForEach (setSyncGrp,[&](const string & s) { sGrp += s + ","; });
             m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s Not all symbols in the synchronized group are up-to-date. %s",
                             GetStrategyName(m_StyID).c_str(),
-                            m_ymdhms_SysTime_HKT.ToStr().c_str(),
+                            m_ymdhms_SysTime_Domicile.ToStr().c_str(),
                             m_TradedSymbols[iTradSym].c_str(),
                             sGrp.c_str());
             continue;
@@ -698,7 +702,8 @@ void StrategyBase::Run()
           {
             if (GetPrevTheoSgndPos(m_PreviousTradedSym[iTradSym]) != 0)
             {
-              m_Logger->Write(Logger::INFO,"Strategy %s: Automatically close outstanding positions as this is outside our allowed trading time. %s %s", GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_HKT.ToStr().c_str(),m_PreviousTradedSym[iTradSym].c_str());
+              m_Logger->Write(Logger::INFO,"Strategy %s: Automatically close outstanding positions as this is outside our allowed trading time. %s %s",
+                              GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_Domicile.ToStr().c_str(),m_PreviousTradedSym[iTradSym].c_str());
               m_TargetTradeDir [iTradSym] = TD_NODIR;
               m_TargetAbsPos   [iTradSym] = 0;
               m_TargetTradedSym[iTradSym] = m_PreviousTradedSym[iTradSym];
@@ -713,7 +718,8 @@ void StrategyBase::Run()
 
             long lSugCtrtSize = m_RegularMiniCtrtMgr.GetSuggestedCtrtSize(m_TradedSymbols[iTradSym]);
 
-            m_Logger->Write(Logger::INFO,"Strategy %s: Automatically close outstanding positions as this is outside our allowed trading time. %s %s", GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_HKT.ToStr().c_str(),m_PreviousTradedSym[iTradSym].c_str());
+            m_Logger->Write(Logger::INFO,"Strategy %s: Automatically close outstanding positions as this is outside our allowed trading time. %s %s",
+                            GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_Domicile.ToStr().c_str(),m_PreviousTradedSym[iTradSym].c_str());
             m_TargetTradeDir [iTradSym] = (lSugCtrtSize > 0 ? TD_LONG : TD_SHORT);
             m_TargetAbsPos   [iTradSym] = abs(lSugCtrtSize);
             m_TargetTradedSym[iTradSym] = m_PreviousTradedSym[iTradSym];
@@ -756,7 +762,7 @@ double StrategyBase::GetPrevTheoSgndPos(const string & sym)
       while (std::isnan(dActPos))
       {
         m_Logger->Write(Logger::INFO,"Strategy %s: %s Oops. m_PortAndOrders->GetActualSignedPosition(m_StyID, sym) returning NAN",
-                        GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_HKT.ToStr().c_str());
+                        GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_Domicile.ToStr().c_str());
         usleep(500000);
         dActPos = m_PortAndOrders->GetActualSignedPosition(m_StyID, sym);
       }

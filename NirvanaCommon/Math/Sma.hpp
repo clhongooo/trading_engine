@@ -21,6 +21,7 @@ class Sma : public DataQue<T>
 
   public:
     Sma();
+    Sma(int);
     Sma(int,bool);
     void Reset(int,bool);
     bool Ready() const;
@@ -31,6 +32,12 @@ class Sma : public DataQue<T>
 Sma<T>::Sma()
 {
   Reset(0,false);
+}
+
+  template <typename T>
+Sma<T>::Sma(int iS)
+{
+  Reset(iS,true);
 }
 
   template <typename T>

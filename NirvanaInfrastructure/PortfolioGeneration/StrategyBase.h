@@ -91,6 +91,7 @@ class StrategyBase {
     vector<double>   m_TargetAbsPos;
     YYYYMMDDHHMMSS   m_ymdhms_SysTime_HKT;
     YYYYMMDDHHMMSS   m_ymdhms_SysTime_EST;
+    YYYYMMDDHHMMSS   m_ymdhms_SysTime_Domicile;
     HHMMSS           m_hmsStyGlobalMTMTime;
     HMS              m_hms_StyMrngOpen;
     HMS              m_hms_StyMrngClose;
