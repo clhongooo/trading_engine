@@ -43,7 +43,7 @@
 #define B2_HYPOTHESIS_SMA     3
 #define B2_HYPOTHESIS         B2_HYPOTHESIS_TAYLOR
 
-#define B2_SETPOSSIZETOZEROIFLESSTHAN 0.5
+#define B2_SETPOSSIZETOFULLORZERO 0.5
 
 class StrategyB2 : public StrategyBase {
   public:

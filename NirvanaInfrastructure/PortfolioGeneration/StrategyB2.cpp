@@ -2395,24 +2395,24 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   }
 
   //--------------------------------------------------
-  if (B2_SKIPMACHLEARNING) m_dAggSignedQty = round(m_NotionalAmt[iTradSym] / m_SymMidQuote);
-  //--------------------------------------------------
-
-  //--------------------------------------------------
   // Taylor has 2 hypothesis
   //--------------------------------------------------
   if (B2_HYPOTHESIS == B2_HYPOTHESIS_TAYLOR)
   {
     m_dAggSignedQty = m_dAggSignedQty / 2.0;
     double dFullQty = round(m_NotionalAmt[iTradSym] / m_SymMidQuote);
-    if (m_dAggSignedQty < B2_SETPOSSIZETOZEROIFLESSTHAN * dFullQty)
-    {
       //--------------------------------------------------
       // no reason to hold position if position is too small, let others use the place
       //--------------------------------------------------
+    if (m_dAggSignedQty < B2_SETPOSSIZETOFULLORZERO * dFullQty)
       m_dAggSignedQty = 0;
-    }
+    else
+      m_dAggSignedQty = dFullQty;
   }
+  //--------------------------------------------------
+
+  //--------------------------------------------------
+  if (B2_SKIPMACHLEARNING) m_dAggSignedQty = round(m_NotionalAmt[iTradSym] / m_SymMidQuote);
   //--------------------------------------------------
 
   //--------------------------------------------------
