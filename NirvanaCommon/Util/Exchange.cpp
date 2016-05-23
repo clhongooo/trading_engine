@@ -58,6 +58,11 @@ HHMMSS Exchange::GetTimeNSecBefClose(const string & symbol, const YYYYMMDD & ymd
   return m_TrdgHr.GetTimeNSecBefClose(symbol, ymd, iSecBefClose);
 }
 
+HHMMSS Exchange::GetTimeNSecAftOpen(const string & symbol, const YYYYMMDD & ymd, const int iSecAftOpen)
+{
+  return m_TrdgHr.GetTimeNSecAftOpen(symbol, ymd, iSecAftOpen);
+}
+
 bool Exchange::IsNewDay(const string & symbol, const YYYYMMDDHHMMSS & ymdhmsCurTimeHKT, const YYYYMMDDHHMMSS & ymdhmsLastMonTimeHKT)
 {
   //--------------------------------------------------

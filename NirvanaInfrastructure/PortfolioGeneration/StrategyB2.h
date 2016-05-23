@@ -22,13 +22,6 @@
 #include "SystemState.h"
 #include "Sma.hpp"
 
-
-#define B2_METH_AVGPX 0
-#define B2_METH_CLOSE 1
-
-#define B2_PRICEMETH_AVGPX      1
-#define B2_PRICEMETH_AVGPXCLOSE 2
-
 #define B2_ROTATION_PICKTOPSYM 1
 
 #define B2_KS_PRICE_FILTER_NDAYS 100
@@ -37,13 +30,16 @@
 
 #define B2_SKIPMACHLEARNING false
 
-#define B2_HYPOTHESIS_TAYLOR  1
-#define B2_HYPOTHESIS_TAYLOR1 11
-#define B2_HYPOTHESIS_TAYLOR2 12
-#define B2_HYPOTHESIS_SMA     3
-#define B2_HYPOTHESIS         B2_HYPOTHESIS_TAYLOR
+#define B2_HYPOTHESIS_TAYLOR               1
+#define B2_HYPOTHESIS_TAYLOR1_TRDATCLOSE   11
+#define B2_HYPOTHESIS_TAYLOR2_TRDATCLOSE   12
+#define B2_HYPOTHESIS_TAYLOR1_TRDATOPEN    13
+#define B2_HYPOTHESIS_SMA                  3
+#define B2_HYPOTHESIS                      B2_HYPOTHESIS_TAYLOR
 
 #define B2_SETPOSSIZETOFULLORZERO 0.5
+#define B2_TRADEATOPEN_ON  false
+#define B2_TRADEATCLOSE_ON true
 
 class StrategyB2 : public StrategyBase {
   public:
@@ -55,6 +51,7 @@ class StrategyB2 : public StrategyBase {
       double beta_4;
       const vector<double> * v_hist_trfpx;
       const vector<double> * v_hist_close;
+      const vector<double> * v_hist_openavg;
       double * pdAvgSquaredError;
       double * pdAvgPnL;
       double * pdSharpe;
@@ -64,16 +61,39 @@ class StrategyB2 : public StrategyBase {
       int hypothesis;
     } GetEstParam;
 
+    //--------------------------------------------------
+    // BestParam
+    // because the objective (e.g. Sharpe ratio) of 2 different hypotheses can be exactly the same
+    // we cannot simply use a map for sorting them
+    //--------------------------------------------------
+    typedef struct TupObjParamVec {
+      double m_obj;
+      int m_paramvecidx;
+      TupObjParamVec(double o, const int i)
+      {
+        m_obj = o;
+        m_paramvecidx = i;
+      }
+      bool operator<(const TupObjParamVec & rhs) const { return this->m_obj < rhs.m_obj; }
+      TupObjParamVec & operator=(const TupObjParamVec & tup)
+      { if (this == &tup) return *this;
+        m_obj = tup.m_obj;
+        m_paramvecidx = tup.m_paramvecidx;
+        return *this;
+      }
+    } TupObjParamVec;
+
     enum TRAINMODE {TM_MINSQERR=0,TM_MAXPROFIT=1,TM_MAXSHARPE=2};
     StrategyB2();
     virtual ~StrategyB2();
 
-    bool GetEstimate(const double, const double, const double, const double, const double, const vector<double> &, const vector<double> &, double *, double *, double *, double *, WEIGHTING_SCHEME ws, const double, const int);
+    bool GetEstimate(const double, const double, const double, const double, const double, const vector<double> &, const vector<double> &, const vector<double> &, double *, double *, double *, double *, WEIGHTING_SCHEME ws, const double, const int);
     bool GetEstimate(const GetEstParam &);
-    double CalcPredictionTaylor(const vector<double> &,const int,const double,const double,const double,const double,const int);
+    double CalcPredictionTaylorTrdAtOpen(const vector<double> &,const vector<double> &,const int,const double,const double,const double,const double,const int);
+    double CalcPredictionTaylorTrdAtClose(const vector<double> &,const int,const double,const double,const double,const double,const int);
     double CalcPredictionSMA(const vector<double> &,const int,const double,const double,const double,const double);
-    bool TrainUpParamTaylor(const string &,const YYYYMMDDHHMMSS &, const double, const double, const double, const double, double &, double &, double &, double &, const vector<double> &, const vector<double> &, const CountingFunction &, const TRAINMODE, const WEIGHTING_SCHEME, map<double,vector<double> > &, map<double,vector<double> > &, map<double,vector<double> > &, map<double,vector<double> > &, const double);
-    bool TrainUpParamSMA(const string &,const YYYYMMDDHHMMSS &, const double, const double, const double, const double, double &, double &, double &, double &, const vector<double> &, const vector<double> &, const CountingFunction &, const TRAINMODE, const WEIGHTING_SCHEME, map<double,vector<double> > &, map<double,vector<double> > &, const double);
+    bool TrainUpParamTaylor( const string &, const YYYYMMDDHHMMSS &, const double, const double, const double, const double, const vector<double> &, const vector<double> &, const vector<double> &, const CountingFunction &, const TRAINMODE, const WEIGHTING_SCHEME, vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, const double);
+    // bool TrainUpParamSMA(const string &,const YYYYMMDDHHMMSS &, const double, const double, const double, const double, const vector<double> &, const vector<double> &, const CountingFunction &, const TRAINMODE, const WEIGHTING_SCHEME, map<double,vector<double> > &, map<double,vector<double> > &, const double);
     void SetParamBetaRange(const double, const double, const double, const double, const double, const double, const double, const double, const double, const double, const double, const double);
     void DoTraining(const int);
 
@@ -123,11 +143,6 @@ class StrategyB2 : public StrategyBase {
     //--------------------------------------------------
     // Strategy objects
     //--------------------------------------------------
-    vector<double>           m_beta_1;
-    vector<double>           m_beta_2;
-    vector<double>           m_beta_3;
-    vector<double>           m_beta_4;
-
     vector<double>           m_NotionalAmt;
     vector<int>              m_PriceMode;
     vector<double>           m_CurbInSmpRtn;
@@ -161,6 +176,8 @@ class StrategyB2 : public StrategyBase {
     PeriodicTask    m_PTask_PrintAllAvbSym;
     map<string,int> m_PTask_PrintStyActionTimeToken;
     int             m_PTask_PrintAllAvbSymToken;
+    PeriodicTask    m_PTask_PrintTrainingResult;
+    int             m_PTask_PrintTrainingResultToken;
     //--------------------------------------------------
 
 
@@ -181,34 +198,45 @@ class StrategyB2 : public StrategyBase {
     Option<double>   m_ShortOnlyWhenAvgPriceReturnBelow;
     int              m_ChooseBestNRotationGroup;
     double           m_AvgAggSgndNotnlThresh;
+    HHMMSS           m_hms_OpenStart;
+    HHMMSS           m_hms_OpenEnd;
+    HHMMSS           m_hms_CloseStart;
+    HHMMSS           m_hms_CloseEnd;
+    set<string>      m_TradedSymbolsTradeAtOpen;
 
     //--------------------------------------------------
     map<string,vector<double> >               m_map_HistoricalAvgPx;
     map<string,vector<double> >               m_map_HistoricalClose;
+    map<string,vector<double> >               m_map_HistoricalOpenAvg;
     map<string,vector<double> >               m_map_HistoricalAvgPxRtn;
     map<string,vector<double> >               m_map_HistoricalCloseRtn;
     map<string,CountingFunction>              m_map_HistoricalNumOfRisingDaysCountAvgPx;
-    map<string,CountingFunction>              m_map_HistoricalNumOfRisingDaysCountClose;
 
-    map<string,map<double,vector<double> > >  m_map_BestParamSetBeta1Beta3AvgPx_hypo1;
-    map<string,map<double,vector<double> > >  m_map_BestParamSetBeta2Beta4AvgPx_hypo1;
-    map<string,map<double,vector<double> > >  m_map_BestParamSetBeta1Beta3Close_hypo1;
-    map<string,map<double,vector<double> > >  m_map_BestParamSetBeta2Beta4Close_hypo1;
-    map<string,map<double,vector<double> > >  m_map_BestParamSetBeta1Beta3AvgPx_hypo2;
-    map<string,map<double,vector<double> > >  m_map_BestParamSetBeta2Beta4AvgPx_hypo2;
-    map<string,map<double,vector<double> > >  m_map_BestParamSetBeta1Beta3Close_hypo2;
-    map<string,map<double,vector<double> > >  m_map_BestParamSetBeta2Beta4Close_hypo2;
+    map<string,vector<TupObjParamVec> >  m_map_vec_BestParamSetBeta1Beta3AvgPx_trdatopen_hypo1;
+    map<string,vector<TupObjParamVec> >  m_map_vec_BestParamSetBeta2Beta4AvgPx_trdatopen_hypo1;
+    map<string,vector<TupObjParamVec> >  m_map_vec_BestParamSetBeta1Beta3AvgPx_trdatclose_hypo1;
+    map<string,vector<TupObjParamVec> >  m_map_vec_BestParamSetBeta2Beta4AvgPx_trdatclose_hypo1;
+    map<string,vector<TupObjParamVec> >  m_map_vec_BestParamSetBeta1Beta3AvgPx_trdatclose_hypo2;
+    map<string,vector<TupObjParamVec> >  m_map_vec_BestParamSetBeta2Beta4AvgPx_trdatclose_hypo2;
+
+    map<string,map<int,vector<double> > >  m_map_map_BestParamSetBeta1Beta3AvgPx_trdatopen_hypo1;
+    map<string,map<int,vector<double> > >  m_map_map_BestParamSetBeta2Beta4AvgPx_trdatopen_hypo1;
+    map<string,map<int,vector<double> > >  m_map_map_BestParamSetBeta1Beta3AvgPx_trdatclose_hypo1;
+    map<string,map<int,vector<double> > >  m_map_map_BestParamSetBeta2Beta4AvgPx_trdatclose_hypo1;
+    map<string,map<int,vector<double> > >  m_map_map_BestParamSetBeta1Beta3AvgPx_trdatclose_hypo2;
+    map<string,map<int,vector<double> > >  m_map_map_BestParamSetBeta2Beta4AvgPx_trdatclose_hypo2;
+
     map<string,deque<double> >                m_map_dq_GKYZ;
+    map<string,bool>                          m_map_DoneSODTrade;
     map<string,bool>                          m_map_DoneEODTrade;
     map<string,bool>                          m_map_bTrainRetAvgPx;
-    map<string,bool>                          m_map_bTrainRetClose;
     map<string,bool>                          m_map_bRisingRegimeAvgPx;
-    map<string,bool>                          m_map_bRisingRegimeClose;
-    map<int,double>                           m_map_TotSharpeOfMethod;
+    double                                    m_TotSharpeOfMethod;
     bool                                      m_B2_HasEnabledMinCommissionCheck;
     bool                                      m_B2_WhetherToRetain;
     TradingStrategyConfig::TrainingFreq       m_B2_TrainingFreq;
     int                                       m_B2_ActionTimeBefCloseInSec;
+    int                                       m_B2_ActionTimeAftOpenInSec;
     vector<int>                               m_B2_FilterSMAPeriod;
     vector<Sma<double> >                      m_v_SMA_short;
     vector<Sma<double> >                      m_v_SMA_long;
@@ -220,27 +248,33 @@ class StrategyB2 : public StrategyBase {
     //--------------------------------------------------
     vector<double>   *            m_HistoricalAvgPx;
     vector<double>   *            m_HistoricalClose;
+    vector<double>   *            m_HistoricalOpenAvg;
     vector<double>   *            m_HistoricalAvgPxRtn;
     vector<double>   *            m_HistoricalCloseRtn;
-    CountingFunction *            m_HistoricalNumNumOfRisingDaysCountAvgPx;
-    CountingFunction *            m_HistoricalNumNumOfRisingDaysCountClose;
-    map<double,vector<double> > * m_p_map_BestParamSetBeta1Beta3AvgPx_hypo1;
-    map<double,vector<double> > * m_p_map_BestParamSetBeta2Beta4AvgPx_hypo1;
-    map<double,vector<double> > * m_p_map_BestParamSetBeta1Beta3Close_hypo1;
-    map<double,vector<double> > * m_p_map_BestParamSetBeta2Beta4Close_hypo1;
-    map<double,vector<double> > * m_p_map_BestParamSetBeta1Beta3AvgPx_hypo2;
-    map<double,vector<double> > * m_p_map_BestParamSetBeta2Beta4AvgPx_hypo2;
-    map<double,vector<double> > * m_p_map_BestParamSetBeta1Beta3Close_hypo2;
-    map<double,vector<double> > * m_p_map_BestParamSetBeta2Beta4Close_hypo2;
+    CountingFunction *            m_HistoricalNumOfRisingDaysCountAvgPx;
+
+    vector<TupObjParamVec> * m_p_vec_BestParamSetBeta1Beta3AvgPx_trdatopen_hypo1;
+    vector<TupObjParamVec> * m_p_vec_BestParamSetBeta2Beta4AvgPx_trdatopen_hypo1;
+    vector<TupObjParamVec> * m_p_vec_BestParamSetBeta1Beta3AvgPx_trdatclose_hypo1;
+    vector<TupObjParamVec> * m_p_vec_BestParamSetBeta2Beta4AvgPx_trdatclose_hypo1;
+    vector<TupObjParamVec> * m_p_vec_BestParamSetBeta1Beta3AvgPx_trdatclose_hypo2;
+    vector<TupObjParamVec> * m_p_vec_BestParamSetBeta2Beta4AvgPx_trdatclose_hypo2;
+
+    map<int,vector<double> > * m_p_map_BestParamSetBeta1Beta3AvgPx_trdatopen_hypo1;
+    map<int,vector<double> > * m_p_map_BestParamSetBeta2Beta4AvgPx_trdatopen_hypo1;
+    map<int,vector<double> > * m_p_map_BestParamSetBeta1Beta3AvgPx_trdatclose_hypo1;
+    map<int,vector<double> > * m_p_map_BestParamSetBeta2Beta4AvgPx_trdatclose_hypo1;
+    map<int,vector<double> > * m_p_map_BestParamSetBeta1Beta3AvgPx_trdatclose_hypo2;
+    map<int,vector<double> > * m_p_map_BestParamSetBeta2Beta4AvgPx_trdatclose_hypo2;
+
+    bool *                        m_DoneSODTrade;
     bool *                        m_DoneEODTrade;
     bool *                        m_bTrainRetAvgPx;
     bool *                        m_bTrainRetClose;
     bool *                        m_bRisingRegimeAvgPx;
-    bool *                        m_bRisingRegimeClose;
-    double                        m_dStrengthCountAvgPx;
-    double                        m_dStrengthCountClose;
+    double                        m_dStrengthCountTrdAtClose;
+    double                        m_dStrengthCountTrdAtOpen;
     long                          m_lNumOfTrngCombnAvgPx;
-    long                          m_lNumOfTrngCombnClose;
     double                        m_dAggUnsignedQty;
     double                        m_dAggSignedQty;
     double                        m_dGKYZVal;
@@ -297,7 +331,8 @@ class StrategyB2 : public StrategyBase {
     vector<Option<string> >                     m_vGroupRepresentative;
     vector<map<YYYYMMDD,set<string> > >         m_AllAvbSymForRollingBasket;
     map<YYYYMMDD,set<string> >                  m_AllAvbSym;
-    map<YYYYMMDD,set<string> >                  m_AllSymWithUpdateData;
+    map<YYYYMMDD,set<string> >                  m_AllSymWithUpdateDataAtClose;
+    map<YYYYMMDD,set<string> >                  m_AllSymWithUpdateDataAtOpen;
     vector<map<YYYYMMDD,vector<TupRetSym> > >   m_SymRankedByRollingReturn;
     vector<map<YYYYMMDD,map<string,double> > >  m_SymAndRollingReturn;
     vector<map<YYYYMMDD,set<string> > >         m_MaintainPosWithinGrp;

@@ -43,6 +43,7 @@ class TradingHours {
     bool IsTradingHourStartEndBreakBuffer(const string &,const YYYYMMDD &, const HHMMSS &,const int,const int,const int);
     //--------------------------------------------------
     HHMMSS GetTimeNSecBefClose(const string &,const YYYYMMDD &,const int);
+    HHMMSS GetTimeNSecAftOpen(const string &,const YYYYMMDD &,const int);
     //--------------------------------------------------
     bool IsCfgFileLoaded() const;
 

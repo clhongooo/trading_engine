@@ -107,6 +107,24 @@ void TestExchange::RunTest()
     CPPUNIT_ASSERT(pExchg->GetTimeNSecBefClose("BOGUS2",YYYYMMDD("2013-04-08"),5*60) == HHMMSS());
     CPPUNIT_ASSERT(pExchg->GetTimeNSecBefClose("BOGUS2",YYYYMMDD("1900-01-01"),5*60) == HHMMSS());
     CPPUNIT_ASSERT(pExchg->GetTimeNSecBefClose("BOGUS2",YYYYMMDD("2015-12-31"),5*60) == HHMMSS());
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecBefClose("BOGUSUS",YYYYMMDD("2013-04-08"),5*60) == HHMMSS(35500));
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecBefClose("BOGUSUS",YYYYMMDD("1900-01-01"),5*60) == HHMMSS());
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecBefClose("BOGUSUS",YYYYMMDD("2015-12-31"),5*60) == HHMMSS(35500));
+  }
+  {
+    pExchg->LoadTradingHours("./UnitTest/trading_hours.txt");
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("HSI",YYYYMMDD("2013-04-08"),5*60) == HHMMSS(93500));
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("HSI",YYYYMMDD("1900-01-01"),5*60) == HHMMSS());
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("HSI",YYYYMMDD("2015-12-31"),5*60) == HHMMSS(93500));
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("BOGUS",YYYYMMDD("2013-04-08"),5*60) == HHMMSS(100500));
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("BOGUS",YYYYMMDD("1900-01-01"),5*60) == HHMMSS());
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("BOGUS",YYYYMMDD("2015-12-31"),5*60) == HHMMSS(100500));
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("BOGUS2",YYYYMMDD("2013-04-08"),5*60) == HHMMSS());
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("BOGUS2",YYYYMMDD("1900-01-01"),5*60) == HHMMSS());
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("BOGUS2",YYYYMMDD("2015-12-31"),5*60) == HHMMSS());
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("BOGUSUS",YYYYMMDD("2013-04-08"),5*60) == HHMMSS(93500));
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("BOGUSUS",YYYYMMDD("1900-01-01"),5*60) == HHMMSS());
+    CPPUNIT_ASSERT(pExchg->GetTimeNSecAftOpen("BOGUSUS",YYYYMMDD("2015-12-31"),5*60) == HHMMSS(93500));
   }
   //--------------------------------------------------
 

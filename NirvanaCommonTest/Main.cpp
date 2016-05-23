@@ -118,11 +118,11 @@ int main ( int argc, const char* argv[] )
   // utTestRunner.addTest(TestCPnLHist::suite());
   // utTestRunner.addTest(TestKolmogorovSmirnov::suite());
   // utTestRunner.addTest(TestNYSECME::suite());
-  // utTestRunner.addTest(TestTradingHours::suite());
-  // utTestRunner.addTest(TestExchange::suite());
+  utTestRunner.addTest(TestTradingHours::suite());
+  utTestRunner.addTest(TestExchange::suite());
   // utTestRunner.addTest(TestPeriodicTask::suite());
   // utTestRunner.addTest(TestRglrMiniCtrtMgr::suite());
-  utTestRunner.addTest(TestSFunctional::suite());
+  // utTestRunner.addTest(TestSFunctional::suite());
   utTestRunner.run();
 
   cout << "Finished." << endl;

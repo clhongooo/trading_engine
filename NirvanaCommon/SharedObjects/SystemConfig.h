@@ -190,10 +190,12 @@ class SystemConfig : boost::noncopyable
     vector<int>            Get_B2_RoleOfSym(const StrategyID)                                  const;
     int                    Get_B2_ChooseBestNRotationGroup(const StrategyID)                   const;
     int                    Get_B2_ActionTimeBefCloseInSec(const StrategyID)                    const;
+    int                    Get_B2_ActionTimeAftOpenInSec(const StrategyID)                     const;
     vector<int>            Get_B2_FilterSMAPeriod(const StrategyID)                            const;
     bool                   Get_B2_MoveNextBestGroupUpIfNoSignal(const StrategyID)              const;
     bool                   Get_B2_MoveNextBestStkInGrpUpIfNoSignal(const StrategyID)           const;
     double                 Get_B2_AvgAggSgndNotnlThresh(const StrategyID)                      const;
+    set<string>            Get_B2_TradedSymTradeAtOpen(const StrategyID)                       const;
     bool                   CheckIfHaltTrading(const string &,const YYYYMMDD &)                 const;
     bool                   CheckIfHalfDayTrading(const string &,const YYYYMMDD &)              const;
     bool                   GetCorpActionAdj(const string &,const YYYYMMDD &,double &,double &) const;
@@ -388,10 +390,12 @@ class SystemConfig : boost::noncopyable
     vector<int>                                        m_B2_US1_RoleOfSym;
     int                                                m_B2_US1_ChooseBestNRotationGroup;
     int                                                m_B2_US1_ActionTimeBefCloseInSec;
+    int                                                m_B2_US1_ActionTimeAftOpenInSec;
     vector<int>                                        m_B2_US1_FilterSMAPeriod;
     bool                                               m_B2_US1_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal;
     double                                             m_B2_US1_AvgAggSgndNotnlThresh;
+    set<string>                                        m_B2_US1_TradedSymbolsTradeAtOpen;
     bool                                               m_B2_US2_HasEnabledMinCommissionCheck;
     double                                             m_B2_US2_CommissionRateThreshold;
     int                                                m_B2_US2_HasEnabledRotationMode;
@@ -410,10 +414,12 @@ class SystemConfig : boost::noncopyable
     vector<int>                                        m_B2_US2_RoleOfSym;
     int                                                m_B2_US2_ChooseBestNRotationGroup;
     int                                                m_B2_US2_ActionTimeBefCloseInSec;
+    int                                                m_B2_US2_ActionTimeAftOpenInSec;
     vector<int>                                        m_B2_US2_FilterSMAPeriod;
     bool                                               m_B2_US2_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal;
     double                                             m_B2_US2_AvgAggSgndNotnlThresh;
+    set<string>                                        m_B2_US2_TradedSymbolsTradeAtOpen;
     bool                                               m_B2_US3_HasEnabledMinCommissionCheck;
     double                                             m_B2_US3_CommissionRateThreshold;
     int                                                m_B2_US3_HasEnabledRotationMode;
@@ -432,10 +438,12 @@ class SystemConfig : boost::noncopyable
     vector<int>                                        m_B2_US3_RoleOfSym;
     int                                                m_B2_US3_ChooseBestNRotationGroup;
     int                                                m_B2_US3_ActionTimeBefCloseInSec;
+    int                                                m_B2_US3_ActionTimeAftOpenInSec;
     vector<int>                                        m_B2_US3_FilterSMAPeriod;
     bool                                               m_B2_US3_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_US3_MoveNextBestStkInGrpUpIfNoSignal;
     double                                             m_B2_US3_AvgAggSgndNotnlThresh;
+    set<string>                                        m_B2_US3_TradedSymbolsTradeAtOpen;
     bool                                               m_B2_HK_HasEnabledMinCommissionCheck;
     double                                             m_B2_HK_CommissionRateThreshold;
     int                                                m_B2_HK_HasEnabledRotationMode;
@@ -454,10 +462,12 @@ class SystemConfig : boost::noncopyable
     vector<int>                                        m_B2_HK_RoleOfSym;
     int                                                m_B2_HK_ChooseBestNRotationGroup;
     int                                                m_B2_HK_ActionTimeBefCloseInSec;
+    int                                                m_B2_HK_ActionTimeAftOpenInSec;
     vector<int>                                        m_B2_HK_FilterSMAPeriod;
     bool                                               m_B2_HK_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal;
     double                                             m_B2_HK_AvgAggSgndNotnlThresh;
+    set<string>                                        m_B2_HK_TradedSymbolsTradeAtOpen;
     string                                             m_SymbolsToBeUsedInAllSections;
 
 

@@ -376,6 +376,131 @@ HHMMSS TradingHours::GetTimeNSecBefClose(const string & symbol, const YYYYMMDD &
   return HHMMSS();
 }
 
+//--------------------------------------------------
+// TODO code is duplicating IsTradingHourPrivate
+//--------------------------------------------------
+HHMMSS TradingHours::GetTimeNSecAftOpen(const string & symbol, const YYYYMMDD & ymd, const int iSecAftOpen)
+{
+  map<string,Date_TradingHours>::const_iterator it = m_map_Sym_DateTrdgHour.find(symbol);
+  if (it == m_map_Sym_DateTrdgHour.end()) return HHMMSS();
+
+  const vector<YYYYMMDD>   & vYYYYMMDD    = it->second.m_vYYYYMMDD;
+  const vector<Time_Range> & vTimeRange   = it->second.m_vTimeRange;
+
+  if (vYYYYMMDD.empty() || ymd < vYYYYMMDD[0]) return HHMMSS();
+
+  //--------------------------------------------------
+  // Mutable
+  //--------------------------------------------------
+  vector<YYYYMMDD>::const_iterator it_vYYYYMMDD;
+  int iDateIdx = 0;
+
+  //--------------------------------------------------
+  // Check last memoized index before binary search
+  //--------------------------------------------------
+  map<string,int>::iterator itMem = m_Memoized_DateIdx.find(symbol);
+  if (itMem == m_Memoized_DateIdx.end())
+  {
+    it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
+    if (it_vYYYYMMDD != vYYYYMMDD.end())
+    {
+      iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+    }
+    else
+    {
+      if (vYYYYMMDD.empty()) HHMMSS();
+      else iDateIdx = vYYYYMMDD.size()-1;
+    }
+  }
+  else
+  {
+    const int iIdx = itMem->second;
+    if (iIdx < vYYYYMMDD.size())
+    {
+      if (
+        (iIdx > 0)
+        &&
+        (vYYYYMMDD[iIdx  ] >= ymd &&
+         vYYYYMMDD[iIdx-1] <  ymd)
+        )
+      {
+        //--------------------------------------------------
+        // Still usable, so no need to search again
+        //--------------------------------------------------
+        it_vYYYYMMDD = vYYYYMMDD.begin() + iIdx;
+        iDateIdx     = iIdx;
+      }
+      else
+      {
+        it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
+        if (it_vYYYYMMDD != vYYYYMMDD.end())
+        {
+          iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+        }
+        else
+        {
+          if (vYYYYMMDD.empty()) HHMMSS();
+          else iDateIdx = vYYYYMMDD.size()-1;
+        }
+      }
+    }
+  }
+
+  //--------------------------------------------------
+  // Memoize
+  //--------------------------------------------------
+  m_Memoized_DateIdx[symbol] = iDateIdx;
+
+  //--------------------------------------------------
+  // Immutable
+  //--------------------------------------------------
+  vector<YYYYMMDD>::const_iterator cit_vYYYYMMDD = it_vYYYYMMDD;
+  const int ciDateIdx = iDateIdx;
+
+  if (cit_vYYYYMMDD != vYYYYMMDD.end() && *cit_vYYYYMMDD == ymd)
+  {
+    //--------------------------------------------------
+    // Spot on : date
+    //--------------------------------------------------
+    HMS hmsCloseTime(vTimeRange[ciDateIdx].m_CloseTime);
+
+    //--------------------------------------------------
+    // Get all the start times
+    //--------------------------------------------------
+    vector<HHMMSS> vhmsAllStartTime;
+    for (int i = 0; i < vTimeRange[ciDateIdx].m_Time.size(); ++i)
+    {
+      if (vTimeRange[ciDateIdx].m_Prop[i] == 'S')
+        vhmsAllStartTime.push_back(vTimeRange[ciDateIdx].m_Time[i]);
+    }
+
+    sort(vhmsAllStartTime.begin(), vhmsAllStartTime.end());
+
+    HMS hmsOpenTime;
+    hmsOpenTime.Invalidate();
+    FForEach(vhmsAllStartTime,[&](const HHMMSS & hms) { if (!hmsOpenTime.IsValid() && hms > hmsCloseTime) hmsOpenTime.Set(hms); });
+
+    if (!hmsOpenTime.IsValid()) hmsOpenTime.Set(vhmsAllStartTime[0]);
+
+    hmsOpenTime.AddSecond(iSecAftOpen);
+    return hmsOpenTime; 
+  }
+  else
+  {
+    //--------------------------------------------------
+    // Follow the trading hour of the date immediately before
+    //--------------------------------------------------
+    if (cit_vYYYYMMDD != vYYYYMMDD.begin())
+    {
+      cit_vYYYYMMDD--;
+      return GetTimeNSecAftOpen(symbol, *cit_vYYYYMMDD, iSecAftOpen);
+    }
+  }
+
+  return HHMMSS();
+}
+
+
 
 bool TradingHours::ReturnDefault()
 {

@@ -20,6 +20,7 @@ class Exchange {
     bool IsTradingHour(const string &, const YYYYMMDDHHMMSS &);
     bool IsTradingHour(const string &, const YYYYMMDDHHMMSS &, const int, const int, const int);
     HHMMSS GetTimeNSecBefClose(const string &, const YYYYMMDD &, const int);
+    HHMMSS GetTimeNSecAftOpen(const string &, const YYYYMMDD &, const int);
     bool IsNewDay(const string &, const YYYYMMDDHHMMSS &, const YYYYMMDDHHMMSS &);
     bool IsRegularFutCtrt(const string &);
     bool IsMiniFutCtrt(const string &);
