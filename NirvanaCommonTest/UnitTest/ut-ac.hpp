@@ -219,6 +219,21 @@ int TestAcct()
 	ut.Assert(ac.CheckIfPosChgd() == false, __FILE__,__FUNCTION__,__LINE__);
 
 
+  //--------------------------------------------------
+  // Test mtm by symbol
+  //--------------------------------------------------
+	ac.Reset();
+  ac.Trade("SPY",100,200);
+  ac.Trade("SPY",-100,210);
+  ac.Trade("QQQ",100,200);
+  ac.Trade("QQQ",-100,190);
+  map<string,double> map_sym_mtm = ac.GetSymbolsAndMTMPnL();
+	ut.Assert(map_sym_mtm["SPY"] == 1000, __FILE__,__FUNCTION__,__LINE__);
+	ut.Assert(map_sym_mtm["QQQ"] == -1000, __FILE__,__FUNCTION__,__LINE__);
+	ut.Assert(map_sym_mtm.size() == 2, __FILE__,__FUNCTION__,__LINE__);
+
+
+
 	ut.PrintResult();
 
 	return 0;

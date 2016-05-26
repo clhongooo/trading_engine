@@ -10,6 +10,7 @@ Acct::Acct() :
 void Acct::Reset()
 {
   m_dCPnL = 0;
+  m_map_sym_cpnl.clear();
   m_AggPx.clear();
   m_Pos.clear();
   m_PosChgd = false;
@@ -26,10 +27,19 @@ double Acct::GetCPnL()
   map<string,long>::iterator itm;
   for (itm = m_Pos.begin(); itm != m_Pos.end(); ++itm)
   {
+    const string & symbol = itm->first;
     if (itm->second == 0)
     {
-      vSym.push_back(itm->first);
-      m_dCPnL -= m_AggPx[itm->first];
+      vSym.push_back(symbol);
+      m_dCPnL -= m_AggPx[symbol];
+
+      map<string,double>::iterator it = m_map_sym_cpnl.find(symbol);
+      if (it == m_map_sym_cpnl.end())
+      {
+        m_map_sym_cpnl[symbol] = 0;
+        it = m_map_sym_cpnl.find(symbol);
+      }
+      it->second -= m_AggPx[symbol];
     }
   }
   vector<string>::iterator itv;
@@ -204,5 +214,12 @@ void Acct::WriteToFile(const string & sPosPersistFile)
 
   fsPosPersist.close();
   return;
+}
+
+
+map<string,double> Acct::GetSymbolsAndMTMPnL()
+{
+  GetCPnL();
+  return m_map_sym_cpnl;
 }
 

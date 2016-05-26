@@ -20,6 +20,7 @@ class Acct
 		double GetSignedNotional(const string &);
     const map<string,long> & GetPortfolio();
     set<string> GetSymbolsWithPos();
+    map<string,double> GetSymbolsAndMTMPnL();
     bool CheckIfPosChgd();
 
     //--------------------------------------------------
@@ -47,6 +48,7 @@ class Acct
 
 	private:
     double             m_dCPnL;
+    map<string,double> m_map_sym_cpnl;
 		map<string,double> m_AggPx;
 		map<string,long>   m_Pos;
 		map<string,double> m_PxForMTM;

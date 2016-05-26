@@ -68,6 +68,7 @@ class PortfoliosAndOrders {
     bool Trade(const int,const string &,const long,const bool,const string &);
 
     bool Get_MTM_CPnL(const int,double &);
+    map<string,double> GetSymbolsAndMTMPnL(const int);
     double GetCPnL(const int);
     void ProvidePriceForMTM(const int,const string &,const double);
     set<string> GetSymbolsWithPos(const int);

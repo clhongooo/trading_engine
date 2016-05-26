@@ -41,6 +41,10 @@
 #define B2_TRADEATOPEN_ON  false
 #define B2_TRADEATCLOSE_ON true
 
+#define B2_CURBOUTLIERMODE_FIXED 1
+#define B2_CURBOUTLIERMODE_PCTL  2
+#define B2_CURBOUTLIERMODE       B2_CURBOUTLIERMODE_FIXED
+
 class StrategyB2 : public StrategyBase {
   public:
     typedef struct {
@@ -57,7 +61,8 @@ class StrategyB2 : public StrategyBase {
       double * pdSharpe;
       double * pdFinalEstimate;
       WEIGHTING_SCHEME ws;
-      double curbInSmpReturn;
+      double outlierLowerBound;
+      double outlierUpperBound;
       int hypothesis;
     } GetEstParam;
 
@@ -87,15 +92,16 @@ class StrategyB2 : public StrategyBase {
     StrategyB2();
     virtual ~StrategyB2();
 
-    bool GetEstimate(const double, const double, const double, const double, const double, const vector<double> &, const vector<double> &, const vector<double> &, double *, double *, double *, double *, WEIGHTING_SCHEME ws, const double, const int);
+    bool GetEstimate(const double, const double, const double, const double, const double, const vector<double> &, const vector<double> &, const vector<double> &, double *, double *, double *, double *, WEIGHTING_SCHEME ws, const double, const double, const int);
     bool GetEstimate(const GetEstParam &);
     double CalcPredictionTaylorTrdAtOpen(const vector<double> &,const vector<double> &,const int,const double,const double,const double,const double,const int);
     double CalcPredictionTaylorTrdAtClose(const vector<double> &,const int,const double,const double,const double,const double,const int);
     double CalcPredictionSMA(const vector<double> &,const int,const double,const double,const double,const double);
-    bool TrainUpParamTaylor( const string &, const YYYYMMDDHHMMSS &, const double, const double, const double, const double, const vector<double> &, const vector<double> &, const vector<double> &, const CountingFunction &, const TRAINMODE, const WEIGHTING_SCHEME, vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, const double);
+    bool TrainUpParamTaylor( const string &, const YYYYMMDDHHMMSS &, const double, const double, const vector<double> &, const vector<double> &, const vector<double> &, const vector<double> &, const CountingFunction &, const TRAINMODE, const WEIGHTING_SCHEME, vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &,  vector<TupObjParamVec> &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, map<int,vector<double> > &, const double);
     // bool TrainUpParamSMA(const string &,const YYYYMMDDHHMMSS &, const double, const double, const double, const double, const vector<double> &, const vector<double> &, const CountingFunction &, const TRAINMODE, const WEIGHTING_SCHEME, map<double,vector<double> > &, map<double,vector<double> > &, const double);
     void SetParamBetaRange(const double, const double, const double, const double, const double, const double, const double, const double, const double, const double, const double, const double);
     void DoTraining(const int);
+    bool GetOutliers(const vector<double> &, const int, const double, double &, double &);
 
   protected:
 
@@ -145,15 +151,15 @@ class StrategyB2 : public StrategyBase {
     //--------------------------------------------------
     vector<double>           m_NotionalAmt;
     vector<int>              m_PriceMode;
-    vector<double>           m_CurbInSmpRtn;
+    vector<double>           m_CurbInSmpOutlier;
     vector<int>              m_AllowTrdDir;
     vector<double>           m_KSBound;
     vector<double>           m_KSRange;
     vector<double>           m_MinAnnVolPsnSz;
     vector<double>           m_TrainingPeriod1;
     vector<double>           m_TrainingPeriod2;
-    vector<double>           m_TrainingPeriod3;
-    vector<double>           m_TrainingPeriod4;
+    // vector<double>           m_TrainingPeriod3;
+    // vector<double>           m_TrainingPeriod4;
     vector<double>           m_TrainingPeriodMax;
     vector<double>           m_beta_1_start;
     vector<double>           m_beta_1_end;
@@ -211,6 +217,8 @@ class StrategyB2 : public StrategyBase {
     map<string,vector<double> >               m_map_HistoricalAvgPxRtn;
     map<string,vector<double> >               m_map_HistoricalCloseRtn;
     map<string,CountingFunction>              m_map_HistoricalNumOfRisingDaysCountAvgPx;
+    map<string,double>                        m_map_OutlierLowerBound;
+    map<string,double>                        m_map_OutlierUpperBound;
 
     map<string,vector<TupObjParamVec> >  m_map_vec_BestParamSetBeta1Beta3AvgPx_trdatopen_hypo1;
     map<string,vector<TupObjParamVec> >  m_map_vec_BestParamSetBeta2Beta4AvgPx_trdatopen_hypo1;
@@ -272,6 +280,9 @@ class StrategyB2 : public StrategyBase {
     bool *                        m_bTrainRetAvgPx;
     bool *                        m_bTrainRetClose;
     bool *                        m_bRisingRegimeAvgPx;
+    double *                      m_dOutlierLowerBound;
+    double *                      m_dOutlierUpperBound;
+
     double                        m_dStrengthCountTrdAtClose;
     double                        m_dStrengthCountTrdAtOpen;
     long                          m_lNumOfTrngCombnAvgPx;

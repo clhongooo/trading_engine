@@ -135,7 +135,9 @@ void TechIndUpdater::Run()
 
         if (!m_SysCfg->CheckIfSymToBeWarmedUpWithDayBars(sym)) continue;
 
+        m_Logger->Write(Logger::INFO,"TechIndUpdater: GetSuppD1BarOHLCVInDateRange before %s %d", __FILE__, __LINE__);
         m_MarketData->GetSuppD1BarOHLCVInDateRange(sym, YYYYMMDD(19000101), m_ymdhms_SysTimeHKT.GetYYYYMMDD(), vYMD, vOpen, vHigh, vLow, vClose, vVol);
+        m_Logger->Write(Logger::INFO,"TechIndUpdater: GetSuppD1BarOHLCVInDateRange after %s %d", __FILE__, __LINE__);
 
         if (!vYMD.empty() && (m_ymdhms_SysTimeHKT.GetYYYYMMDD() > vYMD.back() && m_ymdhms_SysTimeHKT.GetYYYYMMDD() - vYMD.back() > 5))
         {

@@ -24,6 +24,7 @@ void MarkToMarket::Run()
   // Init path
   //--------------------------------------------------
   ofstream fsMTMLog(m_SysCfg->Get_MTM_Log_Path().c_str());
+  ofstream fsMTMBySymLog(m_SysCfg->Get_MTMBySym_Log_Path().c_str());
   ofstream fsHoldingsLog(m_SysCfg->Get_Holdings_Log_Path().c_str());
 
   for (int sty = STY_NIR; sty != STY_LAST; sty++)
@@ -105,6 +106,16 @@ void MarkToMarket::Run()
         }
 
         //--------------------------------------------------
+        // get the PnL per strategy per symbol
+        //--------------------------------------------------
+        map<string,double> map_sym_mtm = m_PortAndOrders->GetSymbolsAndMTMPnL(sid);
+        FForEach(map_sym_mtm,[&](const std::pair<string,double> & tup)
+        {
+          fsMTMBySymLog << GetStrategyName(sid) << "\t" << sid << "\t" << ymdhms_MDITime.GetYYYYMMDD().ToInt() << "\t" << ymdhms_MDITime.GetHHMMSS().ToInt() << "\t" << tup.first << "\t" << tup.second << endl;
+        });
+
+
+        //--------------------------------------------------
         // get actual portfolio
         //--------------------------------------------------
         map<string,long> mPort;
@@ -141,6 +152,7 @@ void MarkToMarket::Run()
   }
 
   fsMTMLog.close();
+  fsMTMBySymLog.close();
   fsHoldingsLog.close();
 
   m_Logger->Write(Logger::NOTICE,"MarkToMarket has ended.");

@@ -876,7 +876,9 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
   vector<double> & vClose,
   vector<long> & vVol)
 {
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
   boost::unique_lock<boost::shared_mutex> lock(m_SupplementaryDayBarMutex);
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
 
   //--------------------------------------------------
   // Lazy initialization

@@ -323,6 +323,16 @@ bool PortfoliosAndOrders::Get_MTM_CPnL(const int port_id, double & mtm_cpnl)
   return it->second.Get_MTM_CPnL(mtm_cpnl);
 }
 
+map<string,double> PortfoliosAndOrders::GetSymbolsAndMTMPnL(const int port_id)
+{
+  boost::unique_lock<boost::shared_mutex> lock(m_acct_mutex);
+
+  map<int,Acct>::iterator it = m_acct.find(port_id);
+  if (it == m_acct.end()) return map<string,double>();
+
+  return it->second.GetSymbolsAndMTMPnL();
+}
+
 double PortfoliosAndOrders::GetCPnL(const int port_id)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_acct_mutex);

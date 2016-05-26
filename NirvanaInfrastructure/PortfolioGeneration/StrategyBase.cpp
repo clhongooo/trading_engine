@@ -564,8 +564,8 @@ void StrategyBase::Run()
         &&
         (
           (!m_MarketData->GetLatestMidQuote(m_TradedSymbols[iTradSym],m_SymMidQuote,m_ymdhms_midquote))
-          ||
-          (abs(m_ymdhms_SysTime_HKT - m_ymdhms_midquote) > 20)
+          // ||
+          // (abs(m_ymdhms_SysTime_HKT - m_ymdhms_midquote) > 20)
         )
         )
       {
@@ -639,20 +639,19 @@ void StrategyBase::Run()
         {
           set<string> setSyncGrp = m_SysCfg->GetSynchronizedSymbols(m_StyID,m_TradedSymbols[iTradSym]);
           bool b1OrMoreStale = false;
-          FForEach (setSyncGrp,[&](const string & sym)
-                    {
-                      double dMQ = 0;
-                      YYYYMMDDHHMMSS ymdhms_mq;
-                      if (!m_MarketData->GetLatestMidQuote(sym,dMQ,ymdhms_mq)) b1OrMoreStale = true;
-                      if (m_ymdhms_SysTime_HKT - ymdhms_mq > m_SysCfg->GetSynchronizedSymbolsSec(m_StyID))
-                      {
-                        m_Logger->Write(Logger::DEBUG,"Strategy %s: %s in the synchronized group is out-of-date. %s",
-                                        GetStrategyName(m_StyID).c_str(),
-                                        sym.c_str(),
-                                        ymdhms_mq.ToStr().c_str());
-                        b1OrMoreStale = true;
-                      }
-                    });
+          FForEach (setSyncGrp,[&](const string & sym) {
+            double dMQ = 0;
+            YYYYMMDDHHMMSS ymdhms_mq;
+            if (!m_MarketData->GetLatestMidQuote(sym,dMQ,ymdhms_mq)) b1OrMoreStale = true;
+            if (m_ymdhms_SysTime_HKT - ymdhms_mq > m_SysCfg->GetSynchronizedSymbolsSec(m_StyID))
+            {
+              m_Logger->Write(Logger::DEBUG,"Strategy %s: %s in the synchronized group is out-of-date. %s",
+                              GetStrategyName(m_StyID).c_str(),
+                              sym.c_str(),
+                              ymdhms_mq.ToStr().c_str());
+              b1OrMoreStale = true;
+            }
+          });
 
           if (b1OrMoreStale)
           {

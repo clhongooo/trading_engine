@@ -88,6 +88,7 @@ class SystemConfig : boost::noncopyable
     const unsigned short   GetSystemServicePort()                const;
     string                 Get_Main_Log_Path()                   const;
     string                 Get_MTM_Log_Path()                    const;
+    string                 Get_MTMBySym_Log_Path()               const;
     string                 Get_Exec_Log_Path()                   const;
     string                 Get_Holdings_Log_Path()               const;
     string                 Get_SupplementaryBarD1Path()          const;
@@ -274,6 +275,7 @@ class SystemConfig : boost::noncopyable
     unsigned short                                     m_SystemServicePort;
     string                                             m_MainLogPath;
     string                                             m_MTMLogPath;
+    string                                             m_MTMBySymLogPath;
     string                                             m_ExecLogPath;
     string                                             m_MTMHoldingsLogPath;
     string                                             m_SupplementaryBarD1Path;

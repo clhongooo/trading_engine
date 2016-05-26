@@ -1,4 +1,4 @@
-// #include "UnitTest/ut-ac.hpp"
+#include "UnitTest/ut-ac.hpp"
 // #include "UnitTest/ut-atr.hpp"
 // #include "UnitTest/ut-bisec.hpp"
 // #include "UnitTest/ut-bp.hpp"
@@ -66,7 +66,7 @@ int main ( int argc, const char* argv[] )
 {
   cout << "Starting Unit Tests..." << endl;
 
-  // TestAcct();
+  TestAcct();
   // TestATR();
   // TestBisec();
   // TestBP();
@@ -118,8 +118,8 @@ int main ( int argc, const char* argv[] )
   // utTestRunner.addTest(TestCPnLHist::suite());
   // utTestRunner.addTest(TestKolmogorovSmirnov::suite());
   // utTestRunner.addTest(TestNYSECME::suite());
-  utTestRunner.addTest(TestTradingHours::suite());
-  utTestRunner.addTest(TestExchange::suite());
+  // utTestRunner.addTest(TestTradingHours::suite());
+  // utTestRunner.addTest(TestExchange::suite());
   // utTestRunner.addTest(TestPeriodicTask::suite());
   // utTestRunner.addTest(TestRglrMiniCtrtMgr::suite());
   // utTestRunner.addTest(TestSFunctional::suite());

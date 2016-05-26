@@ -20,6 +20,7 @@ SystemConfig::SystemConfig() :
   m_ConfigPath("nirvana.ini"),
   m_MainLogPath("nirvana.log"),
   m_MTMLogPath("nirvana_mtm.log"),
+  m_MTMBySymLogPath("nirvana_mtm_bysym.log"),
   m_ExecLogPath("nirvana_exec.log"),
   m_MTMHoldingsLogPath("nirvana_mtm_holdings.log"),
   m_SupplementaryBarD1Path(""),
@@ -281,6 +282,7 @@ SystemConfig::OTIMode                  SystemConfig::Get_OTIMode()              
 bool                                   SystemConfig::NextTierZMQIsOn()                                 const {  return m_NextTierZMQIsOn;                             }
 string                                 SystemConfig::Get_Main_Log_Path()                               const {  return m_MainLogPath;                                 }
 string                                 SystemConfig::Get_MTM_Log_Path()                                const {  return m_MTMLogPath;                                  }
+string                                 SystemConfig::Get_MTMBySym_Log_Path()                           const {  return m_MTMBySymLogPath;                             }
 string                                 SystemConfig::Get_Exec_Log_Path()                               const {  return m_ExecLogPath;                                 }
 string                                 SystemConfig::Get_Holdings_Log_Path()                           const {  return m_MTMHoldingsLogPath;                          }
 string                                 SystemConfig::Get_SupplementaryBarD1Path()                      const {  return m_SupplementaryBarD1Path;                      }
@@ -499,6 +501,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   m_SymbolsToBeUsedInAllSections       = STool::Trim(pt.get<string>   ("SystemSettings.SymbolsToBeUsedInAllSections"));
   m_MainLogPath                        = STool::Trim(pt.get<string>   ("SystemSettings.LogPath"));
   m_MTMLogPath                         = STool::Trim(pt.get<string>   ("SystemSettings.MTMLogPath"));
+  m_MTMBySymLogPath                    = STool::Trim(pt.get<string>   ("SystemSettings.MTMBySymLogPath"));
   m_ExecLogPath                        = STool::Trim(pt.get<string>   ("SystemSettings.ExecLogPath"));
   m_MTMHoldingsLogPath                 = STool::Trim(pt.get<string>   ("SystemSettings.HoldingsLogPath"));
   m_SupplementaryBarD1Path             = STool::Trim(pt.get<string>   ("SystemSettings.SupplementaryBarD1Path"));
