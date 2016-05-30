@@ -45,6 +45,8 @@
 #define B2_CURBOUTLIERMODE_PCTL  2
 #define B2_CURBOUTLIERMODE       B2_CURBOUTLIERMODE_FIXED
 
+#define B2_MIN_INSMP_SHARPEREQ   0
+
 class StrategyB2 : public StrategyBase {
   public:
     typedef struct {

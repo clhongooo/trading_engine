@@ -505,14 +505,16 @@ bool StrategyB2::TrainUpParamTaylor(
         dSecTermAdj        = m_b4_adj;
       }
 
+      //--------------------------------------------------
+      dPrelimAvgPnL1      .clear();
+      // dPrelimAvgPnL2      .clear();
+      // dPrelimAvgPnL3      .clear();
+      dPrelimSharpe1      .clear();
+      dPrelimSquaredError1.clear();
+
+
       for (double bFir = dFirTermLowerBound; bFir <= dFirTermUpperBound; bFir += dFirTermAdj)
       {
-        dPrelimAvgPnL1      .clear();
-        // dPrelimAvgPnL2      .clear();
-        // dPrelimAvgPnL3      .clear();
-        dPrelimSharpe1      .clear();
-        dPrelimSquaredError1.clear();
-
         for (double bSec = dSecTermLowerBound; bSec <= dSecTermUpperBound; bSec += dSecTermAdj)
         {
           dPrelimAvgPnL1      .push_back(NAN);
@@ -521,11 +523,15 @@ bool StrategyB2::TrainUpParamTaylor(
           dPrelimSharpe1      .push_back(NAN);
           dPrelimSquaredError1.push_back(NAN);
         }
+      }
 
-        //--------------------------------------------------
-        int iCnt = 0;
-        boost::thread_group thdgrp;
+      //--------------------------------------------------
+      int iCnt = 0;
+      boost::thread_group thdgrp;
+      //--------------------------------------------------
 
+      for (double bFir = dFirTermLowerBound; bFir <= dFirTermUpperBound; bFir += dFirTermAdj)
+      {
         for (double bSec = dSecTermLowerBound; bSec <= dSecTermUpperBound; bSec += dSecTermAdj)
         {
 
@@ -609,11 +615,14 @@ bool StrategyB2::TrainUpParamTaylor(
           // thdgrp.add_thread(new boost::thread(boost::bind(&StrategyB2::GetEstimate, this, gep2)));
           // thdgrp.add_thread(new boost::thread(boost::bind(&StrategyB2::GetEstimate, this, gep3)));
         }
+      }
 
-        thdgrp.join_all();
+      thdgrp.join_all();
 
-        //--------------------------------------------------
-        iCnt = 0;
+      //--------------------------------------------------
+      iCnt = 0;
+      for (double bFir = dFirTermLowerBound; bFir <= dFirTermUpperBound; bFir += dFirTermAdj)
+      {
         for (double bSec = dSecTermLowerBound; bSec <= dSecTermUpperBound; bSec += dSecTermAdj)
         {
 
@@ -1785,7 +1794,7 @@ void StrategyB2::DoTraining(const int iTradSym)
 {
   if (B2_SKIPMACHLEARNING) return;
 
-  if (m_mapRoleOfSym[m_TradedSymbols[iTradSym]] == 0)
+  if (m_RotationMode != 0 && m_mapRoleOfSym[m_TradedSymbols[iTradSym]] == 0)
   {
     m_Logger->Write(Logger::INFO,"Strategy %s: %s %s (%d) Sym=%s Just an indicator symbol, will not do training.",
                     GetStrategyName(m_StyID).c_str(),
@@ -2203,7 +2212,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
                   if (GetEstimate(m_TrainingPeriod1[iTradSym],b1,b2,b3,b4,*m_HistoricalAvgPx,*m_HistoricalClose,*m_HistoricalOpenAvg,&dSquaredError,&dAvgPnL,&dSharpe,&dEstimate,m_WeightScheme[iTradSym],*m_dOutlierLowerBound,*m_dOutlierUpperBound,B2_HYPOTHESIS_TAYLOR1_TRDATOPEN))
                   {
-                    if (dSharpe > 0)
+                    if (dSharpe > B2_MIN_INSMP_SHARPEREQ)
                     {
                       if (dEstimate > 0)
                       {
@@ -2214,9 +2223,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                         m_dStrengthCountTrdAtOpen -= 1;
                       }
                     }
-
                     m_TotSharpeOfMethod += dSharpe;
-
                     m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Selected from the set of best parameters: m_beta_1 = %f, m_beta_2 = %f, m_beta_3 = %f, m_beta_4 = %f. dSquaredError = %f. dAvgPnL = %f. dSharpe = %f.",
                                     GetStrategyName(m_StyID).c_str(),
                                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
@@ -2438,6 +2445,20 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                   else
                     it_falling--;
 
+
+                  //--------------------------------------------------
+                  vector<double> vdEstimate;
+                  vector<double> vdAvgPnL;
+                  vector<double> vdSharpe;
+                  vector<double> vdSquaredError;
+                  vdEstimate     .insert(vdEstimate    .begin(), lNumOfTrngCombn, 0 );
+                  vdAvgPnL       .insert(vdAvgPnL      .begin(), lNumOfTrngCombn, 0 );
+                  vdSharpe       .insert(vdSharpe      .begin(), lNumOfTrngCombn, 0 );
+                  vdSquaredError .insert(vdSquaredError.begin(), lNumOfTrngCombn, 0 );
+
+                  //--------------------------------------------------
+                  boost::thread_group thdgrp;
+
                   while (
                     (*m_bRisingRegimeAvgPx  && it_rising  != m_p_vec_BestParamSetBeta1Beta3->begin()) ||
                     (!*m_bRisingRegimeAvgPx && it_falling != m_p_vec_BestParamSetBeta2Beta4->begin())
@@ -2456,33 +2477,33 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                       b4 = round((*m_p_map_BestParamSetBeta2Beta4)[it_falling->m_paramvecidx][1]*dScale)/dScale;
                     }
 
-                    double dEstimate     = 0;
-                    double dAvgPnL       = 0;
-                    double dSharpe       = 0;
-                    double dSquaredError = 0;
 
-                    if (GetEstimate(m_TrainingPeriod1[iTradSym],b1,b2,b3,b4,*m_HistoricalAvgPx,*m_HistoricalClose,*m_HistoricalOpenAvg,&dSquaredError,&dAvgPnL,&dSharpe,&dEstimate,m_WeightScheme[iTradSym],*m_dOutlierLowerBound,*m_dOutlierUpperBound,iTaylorIdx))
-                    {
-                      if (dSharpe > 0)
-                      {
-                        if (dEstimate > 0)
-                        {
-                          dStrengthCount += 1;
-                        }
-                        else if (dEstimate < 0)
-                        {
-                          dStrengthCount -= 1;
-                        }
-                      }
+                    GetEstParam gep;
+                    gep.trainingperiod       =  m_TrainingPeriod1[iTradSym];
+                    gep.beta_1               =  b1;
+                    gep.beta_2               =  b2;
+                    gep.beta_3               =  b3;
+                    gep.beta_4               =  b4;
+                    gep.v_hist_trfpx         =  m_HistoricalAvgPx;
+                    gep.v_hist_close         =  m_HistoricalClose;
+                    gep.v_hist_openavg       =  m_HistoricalOpenAvg;
+                    gep.pdAvgSquaredError    =  &(vdSquaredError[iCnt]);
+                    gep.pdAvgPnL             =  &(vdAvgPnL[iCnt]);
+                    gep.pdSharpe             =  &(vdSharpe[iCnt]);
+                    gep.pdFinalEstimate      =  &(vdEstimate[iCnt]);
+                    gep.ws                   =  m_WeightScheme[iTradSym];
+                    gep.outlierLowerBound    =  *m_dOutlierLowerBound;
+                    gep.outlierUpperBound    =  *m_dOutlierUpperBound;
+                    gep.hypothesis           =  iTaylorIdx;
 
-                      m_TotSharpeOfMethod += dSharpe;
 
-                      m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Selected from the set of best parameters: m_beta_1 = %f, m_beta_2 = %f, m_beta_3 = %f, m_beta_4 = %f. dSquaredError = %f. dAvgPnL = %f. dSharpe = %f.",
-                                      GetStrategyName(m_StyID).c_str(),
-                                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                                      m_TradedSymbols[iTradSym].c_str(),
-                                      b1,b2,b3,b4,dSquaredError,dAvgPnL,dSharpe);
-                    }
+                    thdgrp.add_thread(new boost::thread(boost::bind(&StrategyB2::GetEstimate, this, gep)));
+
+                    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Selected from the set of best parameters: m_beta_1 = %f, m_beta_2 = %f, m_beta_3 = %f, m_beta_4 = %f",
+                                    GetStrategyName(m_StyID).c_str(),
+                                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                                    m_TradedSymbols[iTradSym].c_str(),
+                                    b1,b2,b3,b4);
                     iCnt++;
                     if ((iCnt+1) >= m_PropOfBestParam[iTradSym] / (double)100 * (double)lNumOfTrngCombn) break;
                     if ( *m_bRisingRegimeAvgPx && iCnt >= m_p_map_BestParamSetBeta1Beta3->size()) break;
@@ -2492,6 +2513,36 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                     else
                       it_falling--;
                   }
+
+                  thdgrp.join_all();
+
+                  //--------------------------------------------------
+                  // checking result
+                  //--------------------------------------------------
+                  const int iTotCnt = iCnt;
+                  for (int i = 0; i < iTotCnt; ++i)
+                  {
+                    if (vdSharpe[i] > B2_MIN_INSMP_SHARPEREQ)
+                    {
+                      if (vdEstimate[i] > NIR_EPSILON)
+                      {
+                        dStrengthCount += 1;
+                      }
+                      else if (vdEstimate[i] < -NIR_EPSILON)
+                      {
+                        dStrengthCount -= 1;
+                      }
+                    }
+                    m_TotSharpeOfMethod += vdSharpe[i];
+                    m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s vdSquaredError %f vdAvgPnL %f vdSharpe %f",
+                                    GetStrategyName(m_StyID).c_str(),
+                                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                                    m_TradedSymbols[iTradSym].c_str(),
+                                    vdSquaredError[i],vdAvgPnL[i],vdSharpe[i]);
+                  }
+
+                  //--------------------------------------------------
+
                   m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Selected a set of %d parameters in total.",
                                   GetStrategyName(m_StyID).c_str(),
                                   m_p_ymdhms_SysTime_Local->ToStr().c_str(),
@@ -2578,7 +2629,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             //
             //       if (GetEstimate(m_TrainingPeriod1[iTradSym],b1,b2,b3,b4,*m_HistoricalAvgPx,*m_HistoricalClose,*m_HistoricalOpenAvg,&dSquaredError,&dAvgPnL,&dSharpe,&dEstimate,m_WeightScheme[iTradSym],*m_dOutlierLowerBound,*m_dOutlierUpperBound,B2_HYPOTHESIS_SMA))
             //       {
-            //         if (dSharpe > 0)
+            //         if (dSharpe > B2_MIN_INSMP_SHARPEREQ)
             //         {
             //           if (dEstimate > 0)
             //           {
@@ -2695,11 +2746,11 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       //--------------------------------------------------
       // no reason to hold position if position is too small, let others use the place
       //--------------------------------------------------
-      double dFullQty = round(m_NotionalAmt[iTradSym] / m_SymMidQuote);
-      if (m_dAggSignedQty < B2_SETPOSSIZETOFULLORZERO * dFullQty)
+      double dAbsFullQty = round(m_NotionalAmt[iTradSym] / m_SymMidQuote);
+      if (abs(m_dAggSignedQty) < B2_SETPOSSIZETOFULLORZERO * dAbsFullQty)
         m_dAggSignedQty = 0;
       else
-        m_dAggSignedQty = dFullQty;
+        m_dAggSignedQty = (m_dAggSignedQty > 0 ? 1 : -1) * dAbsFullQty;
 
       m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty (after adj by B2_SETPOSSIZETOFULLORZERO) %f",
                       GetStrategyName(m_StyID).c_str(),
@@ -2712,13 +2763,14 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
 
     //--------------------------------------------------
-    if (B2_SKIPMACHLEARNING) m_dAggSignedQty = round(m_NotionalAmt[iTradSym] / m_SymMidQuote);
+    if (B2_SKIPMACHLEARNING) m_dAggSignedQty = (m_dAggSignedQty > 0 ? 1 : -1) * round(m_NotionalAmt[iTradSym] / m_SymMidQuote);
     //--------------------------------------------------
 
     //--------------------------------------------------
     // KolmogorovSmirnov
     //--------------------------------------------------
-    if (m_KSBound[iTradSym] > 0 &&
+    if (!B2_SKIPMACHLEARNING &&
+        m_KSBound[iTradSym] > 0 &&
         m_KSRange[iTradSym] > 0 &&
         m_HistoricalAvgPxRtn->size() >= m_TrainingPeriodMax[iTradSym] &&
         //--------------------------------------------------
