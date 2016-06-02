@@ -1913,6 +1913,8 @@ void StrategyB2::DoTraining(const int iTradSym)
 
 void StrategyB2::PerformTrainingJustBeforeTrading(const int iTradSym)
 {
+  if (B2_SKIPMACHLEARNING) return;
+
   //--------------------------------------------------
   // if don't want to miss the last data point (which is today) in our training, should do the training here.
   // if want to leave enough time for many symbols to train, train after initial warmup
@@ -2408,6 +2410,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
               double & dStrengthCount = m_dStrengthCountTrdAtClose;
               bool & m_bTrainRet = *m_bTrainRetAvgPx;
               long & lNumOfTrngCombn = m_lNumOfTrngCombnAvgPx;
+              const long lMaxStren = m_PropOfBestParam[iTradSym] / (double)100 * (double)lNumOfTrngCombn;
 
               //--------------------------------------------------
               m_TotSharpeOfMethod = 0;
@@ -2505,7 +2508,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                                     m_TradedSymbols[iTradSym].c_str(),
                                     b1,b2,b3,b4);
                     iCnt++;
-                    if ((iCnt+1) >= m_PropOfBestParam[iTradSym] / (double)100 * (double)lNumOfTrngCombn) break;
+                    if ((iCnt+1) >= lMaxStren) break;
                     if ( *m_bRisingRegimeAvgPx && iCnt >= m_p_map_BestParamSetBeta1Beta3->size()) break;
                     if (!*m_bRisingRegimeAvgPx && iCnt >= m_p_map_BestParamSetBeta2Beta4->size()) break;
                     if (*m_bRisingRegimeAvgPx)
@@ -2565,11 +2568,14 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                                 __FUNCTION__,
                                 __LINE__);
               }
-              m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s dStrengthCount = %f lNumOfTrngCombn = %d",
+              m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s dStrengthCount (x2) %f Max Stren (x1) %d Max Stren (x2) %d",
                               GetStrategyName(m_StyID).c_str(),
-                              m_p_ymdhms_SysTime_Local->ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
+                              m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                              m_TradedSymbols[iTradSym].c_str(),
                               dStrengthCount,
-                              lNumOfTrngCombn);
+                              lMaxStren,
+                              lMaxStren*2
+                              );
 
               iTaylorIdx++;
             }
@@ -2734,7 +2740,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
     // Taylor has 2 hypothesis
     //--------------------------------------------------
-    if (B2_HYPOTHESIS == B2_HYPOTHESIS_TAYLOR)
+    if (!B2_SKIPMACHLEARNING
+        &&
+        B2_HYPOTHESIS == B2_HYPOTHESIS_TAYLOR)
     {
       m_dAggSignedQty = m_dAggSignedQty / 2.0;
       m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty (after div by 2 because of 2 Taylor hypotheses) %f",
@@ -2750,7 +2758,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       if (abs(m_dAggSignedQty) < B2_SETPOSSIZETOFULLORZERO * dAbsFullQty)
         m_dAggSignedQty = 0;
       else
-        m_dAggSignedQty = (m_dAggSignedQty > 0 ? 1 : -1) * dAbsFullQty;
+        m_dAggSignedQty = (m_dAggSignedQty >= 0 ? 1 : -1) * dAbsFullQty;
 
       m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty (after adj by B2_SETPOSSIZETOFULLORZERO) %f",
                       GetStrategyName(m_StyID).c_str(),
@@ -2763,7 +2771,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
 
     //--------------------------------------------------
-    if (B2_SKIPMACHLEARNING) m_dAggSignedQty = (m_dAggSignedQty > 0 ? 1 : -1) * round(m_NotionalAmt[iTradSym] / m_SymMidQuote);
+    if (B2_SKIPMACHLEARNING) m_dAggSignedQty = round(m_NotionalAmt[iTradSym] / m_SymMidQuote);
     //--------------------------------------------------
 
     //--------------------------------------------------
@@ -3098,65 +3106,68 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       // sticky group: get the groups whose position we will maintain
       // sticky stock: get the set of symbol whose position we will maintain (within the groups)
       //--------------------------------------------------
-      if (
-        (
-          m_RotationMode == 1
-          &&
-          GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]) > 0
-          &&
-          m_dAggSignedQty > 0
-        )
-        || 
-        (
-          m_RotationMode == -1
-          &&
-          GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]) < 0
-          &&
-          m_dAggSignedQty < 0
-        )
-        )
+      if (B2_STICINESS_ON)
       {
+        if (
+          (
+            m_RotationMode == 1
+            &&
+            GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]) > 0
+            &&
+            m_dAggSignedQty > 0
+          )
+          || 
+          (
+            m_RotationMode == -1
+            &&
+            GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]) < 0
+            &&
+            m_dAggSignedQty < 0
+          )
+          )
         {
-          //--------------------------------------------------
-          // sticky stock within group
-          //--------------------------------------------------
-          map<YYYYMMDD,set<string> >::iterator it = m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
-          if (it == m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].end())
           {
-            m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()] = set<string>();
-            it = m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
-          }
-          it->second.insert(m_TradedSymbols[iTradSym]);
-          m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s has a position that we will maintain. Previous pos = %f Current (raw) m_dAggSignedQty = %f",
-                          GetStrategyName(m_StyID).c_str(),
-                          m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                          m_TradedSymbols[iTradSym].c_str(),
-                          GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]),
-                          m_dAggSignedQty);
-        }
-
-        {
-          //--------------------------------------------------
-          // sticky group
-          //--------------------------------------------------
-          map<YYYYMMDD,set<int> >::iterator it = m_MaintainGrp.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
-          if (it == m_MaintainGrp.end())
-          {
-            m_MaintainGrp[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()] = set<int>();
-            it = m_MaintainGrp.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
-          }
-          set<int> & setMtnGrp = it->second;
-          setMtnGrp.insert(m_RotationGroup[iTradSym]);
-
-          FForEach(setMtnGrp,[&](const int grp) {
-            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s Sticky Group %d",
+            //--------------------------------------------------
+            // sticky stock within group
+            //--------------------------------------------------
+            map<YYYYMMDD,set<string> >::iterator it = m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+            if (it == m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].end())
+            {
+              m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()] = set<string>();
+              it = m_MaintainPosWithinGrp[m_RotationGroup[iTradSym]].find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+            }
+            it->second.insert(m_TradedSymbols[iTradSym]);
+            m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s has a position that we will maintain. Previous pos = %f Current (raw) m_dAggSignedQty = %f",
                             GetStrategyName(m_StyID).c_str(),
                             m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                             m_TradedSymbols[iTradSym].c_str(),
-                            grp);
-          });
-        }
+                            GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]),
+                            m_dAggSignedQty);
+          }
 
+          {
+            //--------------------------------------------------
+            // sticky group
+            //--------------------------------------------------
+            map<YYYYMMDD,set<int> >::iterator it = m_MaintainGrp.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+            if (it == m_MaintainGrp.end())
+            {
+              m_MaintainGrp[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()] = set<int>();
+              it = m_MaintainGrp.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+            }
+            set<int> & setMtnGrp = it->second;
+            setMtnGrp.insert(m_RotationGroup[iTradSym]);
+
+            FForEach(setMtnGrp,[&](const int grp) {
+              m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s Sticky Group %d",
+                              GetStrategyName(m_StyID).c_str(),
+                              m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                              m_TradedSymbols[iTradSym].c_str(),
+                              grp);
+            });
+          }
+
+        }
       }
 
       //--------------------------------------------------

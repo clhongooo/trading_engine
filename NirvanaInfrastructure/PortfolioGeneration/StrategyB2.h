@@ -29,6 +29,8 @@
 #define B2_KS_PRICE_FILTER_FALL_ADJFACTOR 1
 
 #define B2_SKIPMACHLEARNING false
+#define B2_STICINESS_ON     true
+#define B2_MIN_INSMP_SHARPEREQ   -0.03
 
 #define B2_HYPOTHESIS_TAYLOR               1
 #define B2_HYPOTHESIS_TAYLOR1_TRDATCLOSE   11
@@ -44,8 +46,6 @@
 #define B2_CURBOUTLIERMODE_FIXED 1
 #define B2_CURBOUTLIERMODE_PCTL  2
 #define B2_CURBOUTLIERMODE       B2_CURBOUTLIERMODE_FIXED
-
-#define B2_MIN_INSMP_SHARPEREQ   0
 
 class StrategyB2 : public StrategyBase {
   public:
