@@ -181,8 +181,8 @@ void StrategyBase::PlaceOrder(const int iTradSym)
 
   if (lSignedQtyToTrade != 0)
   {
-    m_Logger->Write(Logger::INFO,"Strategy %s: PlaceOrder: Target symbol: %s |Qty| = %d Buy/Sell = %d",
-                    GetStrategyName(m_StyID).c_str(), m_TargetTradedSym[iTradSym].c_str(), lTargetUnsgndPos, m_TargetTradeDir[iTradSym]);
+    m_Logger->Write(Logger::INFO,"Strategy %s: PlaceOrder: Target symbol: %s |Qty| = %d Buy/Sell = %d lSignedQtyToTrade = %d GetPrevTheoSgndPos = %f",
+                    GetStrategyName(m_StyID).c_str(), m_TargetTradedSym[iTradSym].c_str(), lTargetUnsgndPos, m_TargetTradeDir[iTradSym], lSignedQtyToTrade, GetPrevTheoSgndPos(m_TargetTradedSym[iTradSym]));
 
     double dMQ = 0;
     YYYYMMDDHHMMSS ymdhms_mq;
@@ -836,7 +836,7 @@ void StrategyBase::StyInitAndChecking()
   ReadParam();
   ParamSanityCheck();
 
-  if (m_iNumOfParam < 0 || m_ParamVector.size() % m_iNumOfParam != 0)
+  if (m_iNumOfParam < 0)
   {
     m_Logger->Write(Logger::ERROR,"Strategy %s: Wrong parameter vector. the number of fields is incorrect. Exiting.", GetStrategyName(m_StyID).c_str());
     sleep(1);

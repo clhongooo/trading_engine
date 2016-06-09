@@ -71,6 +71,18 @@ class STool
     static bool IsNumber(const string &);
     static string GetNthItemFromCSV(const string &,const int);
     static double Sign(const double);
+    template<typename T>
+      static string MkString(vector<T> v)
+      {
+        if (!v.empty())
+        {
+          std::ostringstream oss;
+          std::copy(v.begin(), v.end()-1, std::ostream_iterator<T>(oss, ",")); // Convert all but the last element to avoid a trailing ","
+          oss << v.back(); // Now add the last element with no delimiter
+          return oss.str();
+        }
+        else return "";
+      }
 
 };
 

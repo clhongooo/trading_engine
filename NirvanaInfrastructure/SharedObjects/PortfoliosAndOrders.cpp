@@ -50,6 +50,13 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
   YYYYMMDDHHMMSS SystemTime = m_MarketData->GetSystemTimeHKT();
   m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d ExecStrat: %d ExecStrat param: %d. OID Details: %s.", SystemTime.ToStr().c_str(), symbol.c_str(), signed_qty, exec_strat, exec_strat_param.size(), oid_details.c_str());
 
+  if (signed_qty == 0)
+  {
+    m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: %s: Trade: %s Qty: %d Not trading because qty is zero.",
+                    SystemTime.ToStr().c_str(), symbol.c_str(), signed_qty);
+    return false; 
+  }
+
   //--------------------------------------------------
   // Get prices
   //--------------------------------------------------
