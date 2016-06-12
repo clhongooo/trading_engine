@@ -51,6 +51,8 @@ double StrategyB2::CalcPredictionTaylorTrdAtClose(const vector<double> & v_hist_
   double dFirBeta = (v_hist_trfpx[idx] > v_hist_trfpx[idx-1] ? beta_1 : beta_2);
   double dSecBeta = (v_hist_trfpx[idx] > v_hist_trfpx[idx-1] ? beta_3 : beta_4);
 
+  if (abs(dFirBeta) <= NIR_EPSILON && abs(dSecBeta) <= NIR_EPSILON) return NAN;
+
   double dTaylor1 = 0;
   double dTaylor2 = 0;
 
@@ -119,6 +121,7 @@ bool StrategyB2::GetEstimate(
   double dPnL = 0;
   double dTotalWeight = 0;
   double dAvgSquaredError = 0;
+  int iActualPeriod = 0;
 
   int iEndingIdx = 0;
   iEndingIdx = v_hist_trfpx.size()-1;
@@ -154,6 +157,7 @@ bool StrategyB2::GetEstimate(
 
         acc(dPnL, boost::accumulators::weight = dWeight);
       }
+      iActualPeriod++;
     }
   }
 
@@ -168,7 +172,10 @@ bool StrategyB2::GetEstimate(
   }
   if (pdSharpe)
   {
-    *pdSharpe = boost::accumulators::mean(acc) / sqrt(boost::accumulators::variance(acc));
+    if (B2_FAVOUR_LONG_TRNG_PRD)
+      *pdSharpe = boost::accumulators::mean(acc) / sqrt(boost::accumulators::variance(acc)) * ((double)iActualPeriod);
+    else
+      *pdSharpe = boost::accumulators::mean(acc) / sqrt(boost::accumulators::variance(acc));
   }
   //--------------------------------------------------
   // Final estimate
@@ -213,9 +220,7 @@ bool StrategyB2::TrainUpParamTaylor(
 
   if (
     trainingperiodmin > v_hist_trfpx.size() ||
-    trainingperiodmax > v_hist_trfpx.size() ||
-    trainingperiodmin > countingfunc.Size() ||
-    trainingperiodmax > countingfunc.Size()
+    trainingperiodmin > countingfunc.Size()
     )
   {
     m_Logger->Write(Logger::DEBUG,"StrategyB1: %s::%s (%d) %s TrainUpParamTaylor exits: Not enough historical data for the training periods. v_hist_trfpx.size() %d",
@@ -241,8 +246,8 @@ bool StrategyB2::TrainUpParamTaylor(
   m_dbl_BestParamSetBeta2Beta4AvgPx_trdatclose_hypo1[symbol].clear();
   m_dbl_BestParamSetBeta1Beta3AvgPx_trdatclose_hypo2[symbol].clear();
   m_dbl_BestParamSetBeta2Beta4AvgPx_trdatclose_hypo2[symbol].clear();
-  m_RiseRegimeAvgSharpeOfEachTraingPeriod[symbol].clear();
-  m_FallRegimeAvgSharpeOfEachTraingPeriod[symbol].clear();
+  m_RiseRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol].clear();
+  m_FallRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol].clear();
 
   int iTaylorIdx = B2_HYPOTHESIS_TAYLOR1_TRDATCLOSE;
   while (iTaylorIdx <= B2_HYPOTHESIS_TAYLOR2_TRDATCLOSE)
@@ -344,10 +349,12 @@ bool StrategyB2::TrainUpParamTaylor(
         if      (rising_or_falling == 0) dTrainingPeriodToUse = countingfunc.HowManyElemFromTailToAccum(iTrngPrd);
         else if (rising_or_falling == 1) dTrainingPeriodToUse = countingfunc.HowManyElemFromTailToAccumOpp(iTrngPrd);
 
-        m_Logger->Write(Logger::INFO,"StrategyB2: %s %s Looping rising / falling regime = %d. Using training period %f.",
+        m_Logger->Write(Logger::INFO,"StrategyB2: %s %s Looping rising / falling regime = %d. iTaylorIdx %d iTrngPrd %d Using training period %f",
                         ymdhms.ToStr().c_str(),
                         symbol.c_str(),
                         rising_or_falling,
+                        iTaylorIdx,
+                        iTrngPrd,
                         dTrainingPeriodToUse);
 
 
@@ -443,7 +450,6 @@ bool StrategyB2::TrainUpParamTaylor(
 
         //--------------------------------------------------
         iCnt = 0;
-        double dAvgSharpeOfAllParamCombination = 0;
         for (double bFir = dFirTermLowerBound; bFir <= dFirTermUpperBound; bFir += dFirTermAdj)
         {
           for (double bSec = dSecTermLowerBound; bSec <= dSecTermUpperBound; bSec += dSecTermAdj)
@@ -475,8 +481,6 @@ bool StrategyB2::TrainUpParamTaylor(
               (*mapvecdblBestParamSetBeta2Beta4)[iBestParamIdxToUse] = vTmp;
             }
 
-            dAvgSharpeOfAllParamCombination += dPrelimSharpe1[iCnt];
-
             m_Logger->Write(Logger::DEBUG,"StrategyB2: %s %s Looped parameters: rising_or_falling %d vectupBestParamBeta1Beta3.size() %d mapvecdblBestParamSetBeta1Beta3.size() %d vectupBestParamBeta2Beta4.size() %d mapvecdblBestParamSetBeta2Beta4.size() %d beta_1 = %f, beta_2 = %f, beta_3 = %f, beta_4 = %f, dPrelimSquaredError = %f. dPrelimAvgPnL = %f. dPrelimSharpe = %f. iTaylorIdx = %d",
                             ymdhms.ToStr().c_str(),
                             symbol.c_str(),
@@ -493,24 +497,58 @@ bool StrategyB2::TrainUpParamTaylor(
         }
 
         //--------------------------------------------------
-        // calculate the average Sharpe
+        // calculate the average Sharpe of the best N percent
         //--------------------------------------------------
-        dAvgSharpeOfAllParamCombination = dAvgSharpeOfAllParamCombination / (double)iCnt;
-        if (rising_or_falling == 0)
+        if (tm == TM_MAXSHARPE)
         {
-          if (m_RiseRegimeAvgSharpeOfEachTraingPeriod.find(symbol) == m_RiseRegimeAvgSharpeOfEachTraingPeriod.end())
-            m_RiseRegimeAvgSharpeOfEachTraingPeriod[symbol] = map<double,int>();
-          m_RiseRegimeAvgSharpeOfEachTraingPeriod[symbol][dAvgSharpeOfAllParamCombination] = iTrngPrd;
+          if (rising_or_falling == 0)
+          {
+            std::sort(vectupBestParamBeta1Beta3->begin(), vectupBestParamBeta1Beta3->end());
+            const int iNumOfBestParamToTake = m_PropOfBestParam / (double)100 * (double)(vectupBestParamBeta1Beta3->size());
+            const int iEndIdx = vectupBestParamBeta1Beta3->size()-1;
+            double dAvgSharpeOfBestCombinations = 0;
+            for (int i = iEndIdx; i > iEndIdx-iNumOfBestParamToTake; --i)
+              dAvgSharpeOfBestCombinations += (*vectupBestParamBeta1Beta3)[i].m_obj;
+            dAvgSharpeOfBestCombinations = dAvgSharpeOfBestCombinations / iNumOfBestParamToTake;
+
+            if (m_RiseRegimeAvgSharpeOfBestPropInEachTraingPeriod.find(symbol) == m_RiseRegimeAvgSharpeOfBestPropInEachTraingPeriod.end())
+              m_RiseRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol] = map<double,int>();
+            m_RiseRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol][dAvgSharpeOfBestCombinations] = iTrngPrd;
+          }
+          else if (rising_or_falling == 1)
+          {
+            std::sort(vectupBestParamBeta2Beta4->begin(), vectupBestParamBeta2Beta4->end());
+            const int iNumOfBestParamToTake = m_PropOfBestParam / (double)100 * (double)(vectupBestParamBeta2Beta4->size());
+            const int iEndIdx = vectupBestParamBeta2Beta4->size()-1;
+            double dAvgSharpeOfBestCombinations = 0;
+            for (int i = iEndIdx; i > iEndIdx-iNumOfBestParamToTake; --i)
+              dAvgSharpeOfBestCombinations += (*vectupBestParamBeta2Beta4)[i].m_obj;
+            dAvgSharpeOfBestCombinations = dAvgSharpeOfBestCombinations / iNumOfBestParamToTake;
+
+            if (m_FallRegimeAvgSharpeOfBestPropInEachTraingPeriod.find(symbol) == m_FallRegimeAvgSharpeOfBestPropInEachTraingPeriod.end())
+              m_FallRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol] = map<double,int>();
+            m_FallRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol][dAvgSharpeOfBestCombinations] = iTrngPrd;
+          }
         }
-        else if (rising_or_falling == 1)
+        else
         {
-          if (m_FallRegimeAvgSharpeOfEachTraingPeriod.find(symbol) == m_FallRegimeAvgSharpeOfEachTraingPeriod.end())
-            m_FallRegimeAvgSharpeOfEachTraingPeriod[symbol] = map<double,int>();
-          m_FallRegimeAvgSharpeOfEachTraingPeriod[symbol][dAvgSharpeOfAllParamCombination] = iTrngPrd;
+          m_Logger->Write(Logger::ERROR,"StrategyB2: %s %s TrainUpParamTaylor: tm != TM_MAXSHARPE. Please check.",
+                          ymdhms.ToStr().c_str(),
+                          symbol.c_str());
         }
         //--------------------------------------------------
 
-      }
+      } // looping regime
+
+      m_Logger->Write(Logger::INFO,"StrategyB2: %s %s TrainUpParamTaylor: Looping Training period %d vectupBestParamBeta1Beta3.size() %d mapvecdblBestParamSetBeta1Beta3.size() %d vectupBestParamBeta2Beta4.size() %d mapvecdblBestParamSetBeta2Beta4.size() %d iTaylorIdx = %d",
+                      ymdhms.ToStr().c_str(),
+                      symbol.c_str(),
+                      iTrngPrd,
+                      vectupBestParamBeta1Beta3->size(),
+                      mapvecdblBestParamSetBeta1Beta3->size(),
+                      vectupBestParamBeta2Beta4->size(),
+                      mapvecdblBestParamSetBeta2Beta4->size(),
+                      iTaylorIdx);
 
     } // for loop through training periods
 
@@ -519,49 +557,59 @@ bool StrategyB2::TrainUpParamTaylor(
   } // while (iTaylorIdx)
 
   //--------------------------------------------------
-  // what is the best training period?
+  // 1. what is the best training period?
+  // 2. what is the best Sharpe in each regime?
   //--------------------------------------------------
-  if (!m_RiseRegimeAvgSharpeOfEachTraingPeriod[symbol].empty())
+  m_BestAvgSharpeOfBestPropRiseRegime[symbol] = NAN;
+  m_BestAvgSharpeOfBestPropFallRegime[symbol] = NAN;
+  if (!m_RiseRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol].empty())
   {
-    map<double,int>::iterator it = m_RiseRegimeAvgSharpeOfEachTraingPeriod[symbol].end();
+    map<double,int>::iterator it = m_RiseRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol].end();
     it--;
     m_RiseRegimeBestTrainingPeriod[symbol] = it->second;
     AddAvgSharpeOfSym(iTradSym,
                       it->first,
                       B2_RISEREGIME);
+    if (std::isnan(m_BestAvgSharpeOfBestPropRiseRegime[symbol])) m_BestAvgSharpeOfBestPropRiseRegime[symbol] = it->first;
+    else if (m_BestAvgSharpeOfBestPropRiseRegime[symbol] < it->first) m_BestAvgSharpeOfBestPropRiseRegime[symbol] = it->first;
   }
 
-  if (!m_FallRegimeAvgSharpeOfEachTraingPeriod[symbol].empty())
+  if (!m_FallRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol].empty())
   {
-    map<double,int>::iterator it = m_FallRegimeAvgSharpeOfEachTraingPeriod[symbol].end();
+    map<double,int>::iterator it = m_FallRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol].end();
     it--;
     m_FallRegimeBestTrainingPeriod[symbol] = it->second;
     AddAvgSharpeOfSym(iTradSym,
                       it->first,
                       B2_FALLREGIME);
+    if (std::isnan(m_BestAvgSharpeOfBestPropFallRegime[symbol])) m_BestAvgSharpeOfBestPropFallRegime[symbol] = it->first;
+    else if (m_BestAvgSharpeOfBestPropFallRegime[symbol] < it->first) m_BestAvgSharpeOfBestPropFallRegime[symbol] = it->first;
   }
 
-  FForEach(m_RiseRegimeAvgSharpeOfEachTraingPeriod[symbol],[&](const std::pair<double,int> kv) {
-    m_Logger->Write(Logger::INFO,"StrategyB2: %s %s m_RiseRegimeAvgSharpeOfEachTraingPeriod %f %d",
+  FForEach(m_RiseRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol],[&](const std::pair<double,int> kv) {
+    m_Logger->Write(Logger::INFO,"StrategyB2: %s %s m_RiseRegimeAvgSharpeOfBestPropInEachTraingPeriod %f %d",
                     ymdhms.ToStr().c_str(),
                     symbol.c_str(),
                     kv.first,
                     kv.second
                    );
   });
-  FForEach(m_FallRegimeAvgSharpeOfEachTraingPeriod[symbol],[&](const std::pair<double,int> kv) {
-    m_Logger->Write(Logger::INFO,"StrategyB2: %s %s m_FallRegimeAvgSharpeOfEachTraingPeriod %f %d",
+  FForEach(m_FallRegimeAvgSharpeOfBestPropInEachTraingPeriod[symbol],[&](const std::pair<double,int> kv) {
+    m_Logger->Write(Logger::INFO,"StrategyB2: %s %s m_FallRegimeAvgSharpeOfBestPropInEachTraingPeriod %f %d",
                     ymdhms.ToStr().c_str(),
                     symbol.c_str(),
                     kv.first,
                     kv.second
                    );
   });
-  m_Logger->Write(Logger::INFO,"StrategyB2: %s %s m_RiseRegimeBestTrainingPeriod %d m_FallRegimeBestTrainingPeriod %d",
+
+  m_Logger->Write(Logger::INFO,"StrategyB2: %s %s m_RiseRegimeBestTrainingPeriod %d m_FallRegimeBestTrainingPeriod %d m_BestAvgSharpeOfBestPropRiseRegime %f m_BestAvgSharpeOfBestPropFallRegime %f",
                   ymdhms.ToStr().c_str(),
                   symbol.c_str(),
                   m_RiseRegimeBestTrainingPeriod[symbol],
-                  m_FallRegimeBestTrainingPeriod[symbol]
+                  m_FallRegimeBestTrainingPeriod[symbol],
+                  m_BestAvgSharpeOfBestPropRiseRegime[symbol],
+                  m_BestAvgSharpeOfBestPropFallRegime[symbol]
                  );
   //--------------------------------------------------
 
@@ -1508,15 +1556,15 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
   //--------------------------------------------------
   if (*m_bRisingRegime)
   {
-    m_lNumOfTrngCombnAvgPx =
-      ((m_beta_1_end - m_beta_1_start) / m_beta_1_incremt + 1) *
-      ((m_beta_3_end - m_beta_3_start) / m_beta_3_incremt + 1);
+    m_lNumOfTrngCombn =
+      (((m_beta_1_end - m_beta_1_start) / m_beta_1_incremt) + 1) *
+      (((m_beta_3_end - m_beta_3_start) / m_beta_3_incremt) + 1);
   }
   else
   {
-    m_lNumOfTrngCombnAvgPx =
-      ((m_beta_2_end - m_beta_2_start) / m_beta_2_incremt + 1) *
-      ((m_beta_4_end - m_beta_4_start) / m_beta_4_incremt + 1);
+    m_lNumOfTrngCombn =
+      (((m_beta_2_end - m_beta_2_start) / m_beta_2_incremt) + 1) *
+      (((m_beta_4_end - m_beta_4_start) / m_beta_4_incremt) + 1);
   }
   //--------------------------------------------------
 
@@ -1596,7 +1644,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
         double & dStrengthCount = m_dStrengthCountTrdAtClose;
         bool & m_bTrainRet = *m_bTrainRetAvgPx;
-        long & lNumOfTrngCombn = m_lNumOfTrngCombnAvgPx;
+        long & lNumOfTrngCombn = m_lNumOfTrngCombn;
         const long lMaxStren = m_PropOfBestParam / (double)100 * (double)lNumOfTrngCombn;
 
         //--------------------------------------------------
@@ -1679,11 +1727,11 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
               thdgrp.add_thread(new boost::thread(boost::bind(&StrategyB2::GetEstimate, this, gep)));
 
-              m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Selected from the set of best parameters: m_beta_1 = %f, m_beta_2 = %f, m_beta_3 = %f, m_beta_4 = %f",
+              m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s Selected from the set of best parameters: m_beta_1 = %f, m_beta_2 = %f, m_beta_3 = %f, m_beta_4 = %f lMaxStren %d lNumOfTrngCombn %d",
                               GetStrategyName(m_StyID).c_str(),
                               m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                               m_TradedSymbols[iTradSym].c_str(),
-                              b1,b2,b3,b4);
+                              b1,b2,b3,b4,lMaxStren,lNumOfTrngCombn);
               iCnt++;
               if ((iCnt+1) >= lMaxStren) break;
               if ( *m_bRisingRegime && iCnt >= map_dbl_BestParamSetBeta1Beta3->size()) break;
@@ -1790,7 +1838,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
     //--------------------------------------------------
     m_dAggSignedQty =
-      round(m_dAggUnsignedQty * m_dStrengthCountTrdAtClose / (m_PropOfBestParam / (double)100 * (double)m_lNumOfTrngCombnAvgPx));
+      round(m_dAggUnsignedQty * m_dStrengthCountTrdAtClose / (m_PropOfBestParam / (double)100 * (double)m_lNumOfTrngCombn));
 
     //--------------------------------------------------
     // Taylor has 2 hypothesis
@@ -2286,40 +2334,121 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             }
           }
 
-          //--------------------------------------------------
-          FReverse(m_SymRankedByAvgSharpeRiseRgm);
-          std::sort(m_SymRankedByAvgSharpeRiseRgm.begin(), m_SymRankedByAvgSharpeRiseRgm.end());
-          FReverse(m_SymRankedByAvgSharpeRiseRgm);
-          FReverse(m_SymRankedByAvgSharpeFallRgm);
-          std::sort(m_SymRankedByAvgSharpeFallRgm.begin(), m_SymRankedByAvgSharpeFallRgm.end());
-          FReverse(m_SymRankedByAvgSharpeFallRgm);
-          m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: --- m_SymRankedByAvgSharpe ---",
-                          GetStrategyName(m_StyID).c_str(),
-                          m_p_ymdhms_SysTime_Local->ToStr().c_str());
-          FForEach(m_SymRankedByAvgSharpeRiseRgm,[&](const TupAvgSharpeSymIdx & tup) {
-            m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: m_SymRankedByAvgSharpeRiseRgm [Group %d] %s %f",
+          if (!B2_SKIPMACHLEARNING)
+          {
+            //--------------------------------------------------
+            // sort stocks by in-sample Sharpe ratio
+            //--------------------------------------------------
+            FReverse(m_SymRankedByAvgSharpeRiseRgm);
+            std::sort(m_SymRankedByAvgSharpeRiseRgm.begin(), m_SymRankedByAvgSharpeRiseRgm.end());
+            FReverse(m_SymRankedByAvgSharpeRiseRgm);
+            FReverse(m_SymRankedByAvgSharpeFallRgm);
+            std::sort(m_SymRankedByAvgSharpeFallRgm.begin(), m_SymRankedByAvgSharpeFallRgm.end());
+            FReverse(m_SymRankedByAvgSharpeFallRgm);
+            m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: --- m_SymRankedByAvgSharpe (begin) ---",
                             GetStrategyName(m_StyID).c_str(),
-                            m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                            m_RotationGroup[tup.m_symidx],
-                            m_TradedSymbols[tup.m_symidx].c_str(),
-                            tup.m_avgsharpe);
-          });
-          FForEach(m_SymRankedByAvgSharpeFallRgm,[&](const TupAvgSharpeSymIdx & tup) {
-            m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: m_SymRankedByAvgSharpeFallRgm [Group %d] %s %f",
+                            m_p_ymdhms_SysTime_Local->ToStr().c_str());
+            FForEach(m_SymRankedByAvgSharpeRiseRgm,[&](const TupAvgSharpeSymIdx & tup) {
+              m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: m_SymRankedByAvgSharpeRiseRgm [Group %d] %s %f",
+                              GetStrategyName(m_StyID).c_str(),
+                              m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                              m_RotationGroup[tup.m_symidx],
+                              m_TradedSymbols[tup.m_symidx].c_str(),
+                              tup.m_avgsharpe);
+            });
+            FForEach(m_SymRankedByAvgSharpeFallRgm,[&](const TupAvgSharpeSymIdx & tup) {
+              m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: m_SymRankedByAvgSharpeFallRgm [Group %d] %s %f",
+                              GetStrategyName(m_StyID).c_str(),
+                              m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                              m_RotationGroup[tup.m_symidx],
+                              m_TradedSymbols[tup.m_symidx].c_str(),
+                              tup.m_avgsharpe);
+            });
+            m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: --- m_SymRankedByAvgSharpe (end) ---",
                             GetStrategyName(m_StyID).c_str(),
-                            m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                            m_RotationGroup[tup.m_symidx],
-                            m_TradedSymbols[tup.m_symidx].c_str(),
-                            tup.m_avgsharpe);
-          });
-          m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: --- m_SymRankedByAvgSharpe ---",
-                          GetStrategyName(m_StyID).c_str(),
-                          m_p_ymdhms_SysTime_Local->ToStr().c_str());
-          //--------------------------------------------------
+                            m_p_ymdhms_SysTime_Local->ToStr().c_str());
+            //--------------------------------------------------
 
+            //--------------------------------------------------
+            // calculate the in-sample Sharpe threshold
+            // we always start from the full set m_BestAvgSharpe, and not the truncated m_SymRankedByAvgSharpe
+            //--------------------------------------------------
+            {
+              vector<double> vtmp;
+              map<string,double>::iterator it = m_BestAvgSharpeOfBestPropRiseRegime.begin();
+              for (map<string,double>::iterator it = m_BestAvgSharpeOfBestPropRiseRegime.begin(); it != m_BestAvgSharpeOfBestPropRiseRegime.end(); ++it)
+                vtmp.push_back(it->second);
+              std::sort(vtmp.begin(),vtmp.end());
+              m_AvgSharpeThresholdRiseRegime = vtmp[vtmp.size()/B2_MIN_SHARPE_THHD_FILTER];
+            }
+            {
+              vector<double> vtmp;
+              map<string,double>::iterator it = m_BestAvgSharpeOfBestPropFallRegime.begin();
+              for (map<string,double>::iterator it = m_BestAvgSharpeOfBestPropFallRegime.begin(); it != m_BestAvgSharpeOfBestPropFallRegime.end(); ++it)
+                vtmp.push_back(it->second);
+              std::sort(vtmp.begin(),vtmp.end());
+              m_AvgSharpeThresholdFallRegime = vtmp[vtmp.size()/B2_MIN_SHARPE_THHD_FILTER];
+            }
+            //--------------------------------------------------
+
+            //--------------------------------------------------
+            // erase stocks with a low in-sample Sharpe
+            // there maybe no reason to pick a symbol / group that has a too low in-sample Sharpe
+            //--------------------------------------------------
+            {
+              vector<TupAvgSharpeSymIdx>::iterator it = m_SymRankedByAvgSharpeRiseRgm.begin();
+              while (it != m_SymRankedByAvgSharpeRiseRgm.end())
+              {
+                if (m_BestAvgSharpeOfBestPropRiseRegime[m_TradedSymbols[it->m_symidx]] < m_AvgSharpeThresholdRiseRegime)
+                {
+                  m_SymRankedByAvgSharpeRiseRgm.erase(it,m_SymRankedByAvgSharpeRiseRgm.end());
+                  break;
+                }
+                it++;
+              }
+            }
+            {
+              vector<TupAvgSharpeSymIdx>::iterator it = m_SymRankedByAvgSharpeFallRgm.begin();
+              while (it != m_SymRankedByAvgSharpeFallRgm.end())
+              {
+                if (m_BestAvgSharpeOfBestPropFallRegime[m_TradedSymbols[it->m_symidx]] < m_AvgSharpeThresholdFallRegime)
+                {
+                  m_SymRankedByAvgSharpeFallRgm.erase(it,m_SymRankedByAvgSharpeFallRgm.end());
+                  break;
+                }
+                it++;
+              }
+            }
+            m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: --- m_SymRankedByAvgSharpe (after removing symbols with poor Sharpe ratio) (begin) ---",
+                            GetStrategyName(m_StyID).c_str(),
+                            m_p_ymdhms_SysTime_Local->ToStr().c_str());
+            FForEach(m_SymRankedByAvgSharpeRiseRgm,[&](const TupAvgSharpeSymIdx & tup) {
+              m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: m_SymRankedByAvgSharpeRiseRgm [Group %d] %s %f",
+                              GetStrategyName(m_StyID).c_str(),
+                              m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                              m_RotationGroup[tup.m_symidx],
+                              m_TradedSymbols[tup.m_symidx].c_str(),
+                              tup.m_avgsharpe);
+            });
+            FForEach(m_SymRankedByAvgSharpeFallRgm,[&](const TupAvgSharpeSymIdx & tup) {
+              m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: m_SymRankedByAvgSharpeFallRgm [Group %d] %s %f",
+                              GetStrategyName(m_StyID).c_str(),
+                              m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                              m_RotationGroup[tup.m_symidx],
+                              m_TradedSymbols[tup.m_symidx].c_str(),
+                              tup.m_avgsharpe);
+            });
+            m_Logger->Write(Logger::INFO,"Strategy %s: %s Rotation mode: --- m_SymRankedByAvgSharpe (after removing symbols with poor Sharpe ratio) (end) ---",
+                            GetStrategyName(m_StyID).c_str(),
+                            m_p_ymdhms_SysTime_Local->ToStr().c_str());
+            //--------------------------------------------------
+          }
 
           for (int iRttnGrp = 0; iRttnGrp < B2_ROTATION_GROUP_MAX; ++iRttnGrp)
           {
+            //--------------------------------------------------
+            // for each group, select stocks 1 by 1 by in-sample Sharpe or return
+            //--------------------------------------------------
             int iRank = 1;
             while (
               vSymWithSgnl[iRttnGrp].IsNone()
@@ -2330,28 +2459,39 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             {
               ASC_DESC ad;
               if (m_RotationMode == 1)
-                ad = AD_DESCENDING;
+              {
+                if (B2_PURE_ROTATN_FOLW_LEADER) ad = AD_DESCENDING;
+                else ad = AD_ASCENDING;
+              }
               else if (m_RotationMode == -1)
-                ad = AD_ASCENDING;
-
-              // Option<string> o_sym = GetSymInGrpWithRank(m_SymRankedByRollingReturn,
-              //                                             iRttnGrp,
-              //                                             m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
-              //                                             iRank,
-              //                                             ad);
+              {
+                if (B2_PURE_ROTATN_FOLW_LEADER) ad = AD_ASCENDING;
+                else ad = AD_DESCENDING;
+              }
 
               Option<string> o_sym;
-              if (*m_bRisingRegime)
+              if (B2_SKIPMACHLEARNING)
               {
-                o_sym = GetSymInGrpWithRank(m_SymRankedByAvgSharpeRiseRgm,
+                o_sym = GetSymInGrpWithRank(m_SymRankedByRollingReturn,
                                             iRttnGrp,
-                                            iRank);
+                                            m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
+                                            iRank,
+                                            ad);
               }
               else
               {
-                o_sym = GetSymInGrpWithRank(m_SymRankedByAvgSharpeFallRgm,
-                                            iRttnGrp,
-                                            iRank);
+                if (*m_bRisingRegime)
+                {
+                  o_sym = GetSymInGrpWithRank(m_SymRankedByAvgSharpeRiseRgm,
+                                              iRttnGrp,
+                                              iRank);
+                }
+                else
+                {
+                  o_sym = GetSymInGrpWithRank(m_SymRankedByAvgSharpeFallRgm,
+                                              iRttnGrp,
+                                              iRank);
+                }
               }
 
               if (o_sym.IsSome())
@@ -2433,7 +2573,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         }
 
         //--------------------------------------------------
-        // sort the groups (with stock positions) by their returns
+        // sort the groups (with positive stock positions) by their returns
         //--------------------------------------------------
         {
           map<YYYYMMDD,vector<Option<string> > >::iterator it1 = m_RttnGrpWithSgnl.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
@@ -2557,9 +2697,6 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
               //--------------------------------------------------
               // if there is a choosen symbol in the group
-              // and
-              // if the group return is at least positive
-              // then pick the stock
               //--------------------------------------------------
               if (mGrpRtnAndLeadSym[iCnt].m_symbol() != "")
               {
@@ -2569,6 +2706,10 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                 }
                 else
                 {
+                  //--------------------------------------------------
+                  // if the group average return does not reach the threshold, then don't pick the stock
+                  // *** so this should override group and stock stickiness ***
+                  //--------------------------------------------------
                   if (mGrpRtnAndLeadSym[iCnt].m_return > m_LongOnlyWhenGrpAvgReturnAbove.Get())
                   {
                     m_StkPicks.insert(mGrpRtnAndLeadSym[iCnt].m_symbol());

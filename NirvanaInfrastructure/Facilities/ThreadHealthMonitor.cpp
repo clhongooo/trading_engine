@@ -73,7 +73,7 @@ void ThreadHealthMonitor::Run()
       if (!m_SysIsHealthy) m_Logger->Write(Logger::NOTICE, "ThreadHealthMonitor: Some threads have not reported health for more than %d seconds. Please check.", UNHEALTHY_THRESHOLD_IN_SEC);
     }
 
-    for (unsigned int i = 0; i < 5; ++i)
+    for (unsigned int i = 0; i < 30; ++i)
     {
       if (m_SystemState->ChkIfThreadShouldStop()) break;
       sleep(1);

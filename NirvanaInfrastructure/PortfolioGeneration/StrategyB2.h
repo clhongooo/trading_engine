@@ -29,9 +29,6 @@
 #define B2_KS_PRICE_FILTER_RISE_ADJFACTOR 0.5
 #define B2_KS_PRICE_FILTER_FALL_ADJFACTOR 1
 
-#define B2_SKIPMACHLEARNING false
-#define B2_STICINESS_ON     true
-
 #define B2_HYPOTHESIS_TAYLOR               1
 #define B2_HYPOTHESIS_TAYLOR1_TRDATCLOSE   11
 #define B2_HYPOTHESIS_TAYLOR2_TRDATCLOSE   12
@@ -45,6 +42,13 @@
 
 #define B2_RISEREGIME   0
 #define B2_FALLREGIME   1
+
+#define B2_FAVOUR_LONG_TRNG_PRD true
+#define B2_MIN_SHARPE_THHD_FILTER 2
+
+#define B2_SKIPMACHLEARNING true
+#define B2_STICINESS_ON     false
+#define B2_PURE_ROTATN_FOLW_LEADER true
 
 class StrategyB2 : public StrategyBase {
   public:
@@ -238,8 +242,12 @@ class StrategyB2 : public StrategyBase {
     vector<Sma<double> >                 m_v_SMA_long;
     bool                                 m_MoveNextBestGroupUpIfNoSignal;
     bool                                 m_MoveNextBestStkInGrpUpIfNoSignal;
-    map<string,map<double,int> >         m_RiseRegimeAvgSharpeOfEachTraingPeriod;
-    map<string,map<double,int> >         m_FallRegimeAvgSharpeOfEachTraingPeriod;
+    map<string,map<double,int> >         m_RiseRegimeAvgSharpeOfBestPropInEachTraingPeriod;
+    map<string,map<double,int> >         m_FallRegimeAvgSharpeOfBestPropInEachTraingPeriod;
+    map<string,double>                   m_BestAvgSharpeOfBestPropRiseRegime;
+    map<string,double>                   m_BestAvgSharpeOfBestPropFallRegime;
+    double                               m_AvgSharpeThresholdRiseRegime;
+    double                               m_AvgSharpeThresholdFallRegime;
     map<string,int>                      m_RiseRegimeBestTrainingPeriod;
     map<string,int>                      m_FallRegimeBestTrainingPeriod;
 
@@ -263,7 +271,7 @@ class StrategyB2 : public StrategyBase {
 
     double                m_dStrengthCountTrdAtClose;
     double                m_dStrengthCountTrdAtOpen;
-    long                  m_lNumOfTrngCombnAvgPx;
+    long                  m_lNumOfTrngCombn;
     double                m_dAggUnsignedQty;
     double                m_dAggSignedQty;
     double                m_dGKYZVal;
