@@ -46,8 +46,8 @@
 #define B2_FAVOUR_LONG_TRNG_PRD true
 #define B2_MIN_SHARPE_THHD_FILTER 2
 
-#define B2_SKIPMACHLEARNING true
-#define B2_STICINESS_ON     false
+#define B2_SKIPMACHLEARNING false
+#define B2_STICINESS_ON     true
 #define B2_PURE_ROTATN_FOLW_LEADER true
 
 class StrategyB2 : public StrategyBase {
