@@ -22,7 +22,7 @@
 #include "SystemState.h"
 #include "Sma.hpp"
 
-#define B2_ROTATION_GROUP_MAX  30
+#define B2_ROTATION_GROUP_MAX  38
 #define B2_ROTATION_PICKTOPSYM 1
 
 #define B2_KS_PRICE_FILTER_NDAYS 100

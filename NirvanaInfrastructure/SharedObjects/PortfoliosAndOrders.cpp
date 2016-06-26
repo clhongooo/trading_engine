@@ -68,23 +68,6 @@ bool PortfoliosAndOrders::TradeUltimate(const int port_id, const string & symbol
   double dP = (bTP ? dTP : dMQ);
 
   //--------------------------------------------------
-  // check maximum allowed notional and quantity
-  //--------------------------------------------------
-  if (
-    dP * abs(signed_qty) > m_SysCfg->GetMaxAllowedTradeNotional()
-    ||
-    abs(signed_qty) > m_SysCfg->GetMaxAllowedTradeQty()
-    )
-  {
-    m_Logger->Write(Logger::ERROR,"PortfoliosAndOrders: %s: Max allowed notional / qty exceeded: sym = %s notional = %f qty = %d.",
-                    m_MarketData->GetSystemTimeHKT().ToStr().c_str(),
-                    symbol.c_str(),
-                    dP * signed_qty,
-                    signed_qty);
-    return false;
-  }
-
-  //--------------------------------------------------
   // signalfeed to zmq
   //--------------------------------------------------
   if (m_SysCfg->NextTierZMQIsOn())

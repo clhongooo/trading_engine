@@ -171,55 +171,27 @@ void StrategyBase::PlaceOrder(const int iTradSym)
   //--------------------------------------------------
 
   double dTargetSgndPos = 0;
-
   if      (m_TargetTradeDir[iTradSym] == TD_LONG ) dTargetSgndPos =  abs(m_TargetAbsPos[iTradSym]);
   else if (m_TargetTradeDir[iTradSym] == TD_SHORT) dTargetSgndPos = -abs(m_TargetAbsPos[iTradSym]);
+
+  //--------------------------------------------------
+  double dMQ = 0;
+  YYYYMMDDHHMMSS ymdhms_mq;
+  bool bRetGLMQ = m_MarketData->GetLatestMidQuote(m_TargetTradedSym[iTradSym],dMQ,ymdhms_mq);
+  //--------------------------------------------------
 
   long lTargetSgndPos    = (long)round(dTargetSgndPos);
   long lTargetUnsgndPos  = (long)abs(round(dTargetSgndPos));
   long lSignedQtyToTrade = (long)round(dTargetSgndPos-GetPrevTheoSgndPos(m_TargetTradedSym[iTradSym]));
 
-  if (lSignedQtyToTrade != 0)
-  {
-    m_Logger->Write(Logger::INFO,"Strategy %s: PlaceOrder: Target symbol: %s |Qty| = %d Buy/Sell = %d lSignedQtyToTrade = %d GetPrevTheoSgndPos = %f",
-                    GetStrategyName(m_StyID).c_str(), m_TargetTradedSym[iTradSym].c_str(), lTargetUnsgndPos, m_TargetTradeDir[iTradSym], lSignedQtyToTrade, GetPrevTheoSgndPos(m_TargetTradedSym[iTradSym]));
-
-    double dMQ = 0;
-    YYYYMMDDHHMMSS ymdhms_mq;
-    bool bRet = m_MarketData->GetLatestMidQuote(m_TargetTradedSym[iTradSym],dMQ,ymdhms_mq);
-
-    //--------------------------------------------------
-    // if no data was ever received, don't do any trade
-    //--------------------------------------------------
-    if (bRet || m_SysCfg->ChkIfProceedStyForceExcnEvenIfNoMD(m_TradedSymbols[iTradSym]) )
-    {
-      if (m_StyRunMode == SRM_BKT_OR_LIVE)
-      {
-        m_PortAndOrders->Trade(m_StyID, m_TargetTradedSym[iTradSym], lSignedQtyToTrade);
-      }
-      else if (m_StyRunMode == SRM_TRNG)
-      {
-        m_TrainingAcct.Trade(m_TargetTradedSym[iTradSym],lSignedQtyToTrade,dMQ);
-      }
-      if (ContFut::IsSymContFut(m_TradedSymbols[iTradSym]))
-      {
-        //--------------------------------------------------
-        // Update the continuous futures position as well
-        //--------------------------------------------------
-        double dPrevTheoSgndPosOfContFut = GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]);
-        SetPrevTheoSgndPos(m_TradedSymbols[iTradSym],lSignedQtyToTrade+dPrevTheoSgndPosOfContFut);
-      }
-      SetPrevTheoSgndPos(m_TargetTradedSym[iTradSym],dTargetSgndPos);
-    }
-
-    m_PreviousTradedSym[iTradSym] = m_TargetTradedSym[iTradSym];
-  }
+  //--------------------------------------------------
+  m_Logger->Write(Logger::INFO,"Strategy %s: PlaceOrder: Target symbol: %s |Qty| = %d Buy/Sell = %d lSignedQtyToTrade = %d GetPrevTheoSgndPos = %f",
+                  GetStrategyName(m_StyID).c_str(), m_TargetTradedSym[iTradSym].c_str(), lTargetUnsgndPos, m_TargetTradeDir[iTradSym], lSignedQtyToTrade, GetPrevTheoSgndPos(m_TargetTradedSym[iTradSym]));
 
   (*m_fsSignalLog) << GetStrategyName(m_StyID) << "\t" << m_ymdhms_SysTime_HKT.GetYYYYMMDD().ToInt() << "\t" <<
     m_ymdhms_SysTime_HKT.GetHHMMSS().ToInt() << "\t" << m_TargetTradedSym[iTradSym] << "\tTgtSgndPos\t" <<
     lTargetSgndPos << "\tTradeDir\t" << m_TargetTradeDir[iTradSym] <<
     "\tNotnlAmt\t" << m_SymMidQuote * lTargetSgndPos << endl;
-
 
   m_Logger->Write(Logger::INFO,"Strategy %s: SignalLog:\t%s\t%s\tTgtSgndPos\t%d\tTradeDir\t%d\tNotnlAmt\t%f",
                   GetStrategyName(m_StyID).c_str(),
@@ -228,6 +200,58 @@ void StrategyBase::PlaceOrder(const int iTradSym)
                   lTargetSgndPos,
                   m_TargetTradeDir[iTradSym],
                   m_SymMidQuote * lTargetSgndPos);
+
+  //--------------------------------------------------
+  if (!bRetGLMQ && !m_SysCfg->ChkIfProceedStyForceExcnEvenIfNoMD(m_TradedSymbols[iTradSym]))
+  {
+    m_Logger->Write(Logger::ERROR,"StrategyBase: %s: Price not available can't check notional amount, therefore won't trade: sym = %s",
+                    m_MarketData->GetSystemTimeHKT().ToStr().c_str(),
+                    m_TradedSymbols[iTradSym].c_str());
+    return;
+  }
+  //--------------------------------------------------
+
+  //--------------------------------------------------
+  // check maximum allowed notional and quantity
+  //--------------------------------------------------
+  if (
+    dMQ * abs(lSignedQtyToTrade) > m_SysCfg->GetMaxAllowedTradeNotional()
+    ||
+    abs(lSignedQtyToTrade) > m_SysCfg->GetMaxAllowedTradeQty()
+    )
+  {
+    m_Logger->Write(Logger::ERROR,"StrategyBase: %s: Max allowed notional / qty exceeded: sym = %s notional = %f qty = %d.",
+                    m_MarketData->GetSystemTimeHKT().ToStr().c_str(),
+                    m_TradedSymbols[iTradSym].c_str(),
+                    dMQ * lSignedQtyToTrade,
+                    lSignedQtyToTrade);
+    return;
+  }
+  //--------------------------------------------------
+
+
+  if (lSignedQtyToTrade != 0)
+  {
+    if (m_StyRunMode == SRM_BKT_OR_LIVE)
+    {
+      m_PortAndOrders->Trade(m_StyID, m_TargetTradedSym[iTradSym], lSignedQtyToTrade);
+    }
+    else if (m_StyRunMode == SRM_TRNG)
+    {
+      m_TrainingAcct.Trade(m_TargetTradedSym[iTradSym],lSignedQtyToTrade,dMQ);
+    }
+    if (ContFut::IsSymContFut(m_TradedSymbols[iTradSym]))
+    {
+      //--------------------------------------------------
+      // Update the continuous futures position as well
+      //--------------------------------------------------
+      double dPrevTheoSgndPosOfContFut = GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]);
+      SetPrevTheoSgndPos(m_TradedSymbols[iTradSym],lSignedQtyToTrade+dPrevTheoSgndPosOfContFut);
+    }
+    SetPrevTheoSgndPos(m_TargetTradedSym[iTradSym],dTargetSgndPos);
+
+    m_PreviousTradedSym[iTradSym] = m_TargetTradedSym[iTradSym];
+  }
 
 }
 
