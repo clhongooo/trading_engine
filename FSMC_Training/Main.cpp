@@ -56,7 +56,7 @@ int main(int argc, char **argv)
   //------------------------------------------
   // Read stock file list
   deque<string> dqStockListFile;
-  dqStockListFile = STool::ReadFile(sStockListFile.c_str());
+  STool::ReadFile(sStockListFile.c_str(), dqStockListFile);
   if (dqStockListFile.empty()) return 0;
   //------------------------------------------
 
@@ -178,9 +178,9 @@ int main(int argc, char **argv)
       sPath += "/";
       sPath += sCode;
       sPath += "_";
-      sPath += ymdTrngStartDate.ToStrYYYYMMDD();
+      sPath += ymdTrngStartDate.ToStr();
       sPath += "_";
-      sPath += ymdTrngEndDate.ToStrYYYYMMDD();
+      sPath += ymdTrngEndDate.ToStr();
       deque<double> dq_dStateMean;
       deque<double> dq_dStateVariance;
       deque<double> dq_dStateSkewness;
