@@ -43,7 +43,7 @@ all: FSMC_Training
 FSMC_Training: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"/home/qy/Dropbox/nirvana/workspaceCN/NirvanaCommon/Debug" -o "FSMC_Training" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"/home/qy/workspaceCN/NirvanaCommon/Debug" -o "FSMC_Training" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

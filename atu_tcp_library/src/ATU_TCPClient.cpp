@@ -9,14 +9,6 @@ ATU_TCPClient::ATU_TCPClient() :
 		m_isReady(false),
 		m_shutDown(false),
 		m_logfeed_call_back_func(NULL) {
-  //--------------------------------------------------
-  // Sunny added - [start]
-  //--------------------------------------------------
-  cout << "ATU TCP Client: SVN revision no. (ATU TCP Client): "   << string(__SVN_REV__)       << endl;
-  cout << "ATU TCP Client: SVN revision no. (Entire workspace): " << string(__SVN_WKSPC_REV__) << endl;
-  //--------------------------------------------------
-  // Sunny added - [end]
-  //--------------------------------------------------
 	init();
 }
 ATU_TCPClient::ATU_TCPClient(string server, string port) : 

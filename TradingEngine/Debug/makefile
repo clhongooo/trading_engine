@@ -43,7 +43,7 @@ all: TradingEngine
 TradingEngine: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L/usr/lib64 -L"/home/qy/Dropbox/nirvana/workspaceCN/NirvanaInfrastructure/Debug" -L"/home/qy/Dropbox/nirvana/workspaceCN/atu_tcp_library/Debug" -L/usr/lib -L/usr/local/pantheios/lib -L/usr/local/lib -o "TradingEngine" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L/usr/lib64 -L"/home/qy/workspaceCN/NirvanaInfrastructure/Debug" -L"/home/qy/workspaceCN/atu_tcp_library/Debug" -L/usr/lib -L/usr/local/pantheios/lib -L/usr/local/lib -o "TradingEngine" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

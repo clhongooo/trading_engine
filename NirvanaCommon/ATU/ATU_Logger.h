@@ -12,7 +12,7 @@
 #include <cstdarg>
 using namespace std;
 using namespace ost;
-// #define __LOGSOURCE__ string(__FILE__)+","+string(__FUNCTION__)+","+boost::lexical_cast<string>(__LINE__)+",VER"+__SVN_REV__
+#define __LOGSOURCE__ string(__FILE__)+","+string(__FUNCTION__)+","+boost::lexical_cast<string>(__LINE__) //+",VER"+__SVN_REV__
 #define LOG_MAX_LENGTH 10000
 typedef struct {
 	enum LogLevel {EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG};
