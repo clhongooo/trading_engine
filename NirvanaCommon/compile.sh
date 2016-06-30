@@ -6,8 +6,8 @@ rm -f *.a
 if [[ $1 == "c" ||  $2 == "c" ]]
 then
     make clean
-    make -j2 all
+    make -j6 all
 else
-    make -j3 all
+    make -j6 all
 fi
 

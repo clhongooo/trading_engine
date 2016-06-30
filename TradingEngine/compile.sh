@@ -7,9 +7,9 @@ then
     if [[ $2 == "c" ]]
     then
         make clean
-        make -j2 all
+        make -j6 all
     else
-        make -j2 all
+        make -j6 all
     fi
 fi
 
@@ -19,9 +19,9 @@ then
     if [[ $2 == "c" ]]
     then
         make clean
-        make -j2 all
+        make -j6 all
     else
-        make -j2 all
+        make -j6 all
     fi
 fi
 
