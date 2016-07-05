@@ -913,11 +913,25 @@ void StrategyB2::StartOfDayInit()
   m_StkPicks.clear();
 
   //--------------------------------------------------
-  // they give HKT
+  // HKT entered in config file
   //--------------------------------------------------
-  m_hms_OpenStart.Set(m_Exchg->GetTimeNSecAftOpen (m_TradedSymbols[0],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),0));
-  m_hms_OpenEnd.Set(m_Exchg->GetTimeNSecAftOpen (m_TradedSymbols[0],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),m_B2_ActionTimeAftOpenInSec));
-  if (m_hms_OpenStart > m_hms_OpenEnd) m_hms_OpenStart.Set(0,0,0);
+  if (m_B2_ActionTimeAftOpenInSec > 0)
+  {
+    //--------------------------------------------------
+    // SOD trading enabled
+    //--------------------------------------------------
+    m_hms_OpenStart.Set(m_Exchg->GetTimeNSecAftOpen (m_TradedSymbols[0],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),0));
+    m_hms_OpenEnd.Set(m_Exchg->GetTimeNSecAftOpen (m_TradedSymbols[0],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),m_B2_ActionTimeAftOpenInSec));
+    if (m_hms_OpenStart > m_hms_OpenEnd) m_hms_OpenStart.Set(0,0,0);
+  }
+  else
+  {
+    //--------------------------------------------------
+    // SOD trading disabled
+    //--------------------------------------------------
+    m_hms_OpenStart.Set(0,0,0);
+    m_hms_OpenEnd.Set(0,0,0);
+  }
   m_hms_CloseStart.Set(m_Exchg->GetTimeNSecBefClose(m_TradedSymbols[0],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),m_B2_ActionTimeBefCloseInSec));
   m_hms_CloseEnd.Set(m_Exchg->GetTimeNSecBefClose(m_TradedSymbols[0],m_ymdhms_SysTime_HKT.GetYYYYMMDD(),0));
 
