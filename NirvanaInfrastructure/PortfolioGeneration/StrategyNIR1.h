@@ -15,6 +15,7 @@ class StrategyNIR1 : public StrategyBase {
     virtual ~StrategyNIR1();
 
   protected:
+    virtual void StrategySetup();
     virtual void ReadParam();
     virtual void ParamSanityCheck();
     virtual void StartOfDayInit();

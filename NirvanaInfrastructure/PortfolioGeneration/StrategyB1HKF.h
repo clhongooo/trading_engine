@@ -18,6 +18,7 @@ class StrategyB1_HKF : public StrategyB1 {
     virtual ~StrategyB1_HKF();
 
   protected:
+    virtual void StrategySetup();
     virtual void ReadParam();
     virtual void ParamSanityCheck();
     virtual void StartOfDayInit();

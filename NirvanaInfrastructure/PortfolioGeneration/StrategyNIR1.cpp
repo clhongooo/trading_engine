@@ -14,6 +14,10 @@ StrategyNIR1::~StrategyNIR1()
 {
 }
 
+void StrategyNIR1::StrategySetup()
+{
+}
+
 void StrategyNIR1::ReadParam()
 {
   m_MaturityYYYYMMDD = (int)m_ParamVector[0];

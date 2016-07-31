@@ -46,6 +46,7 @@ class StrategyBase {
     void SetTradeRelatedParam(const int iTradSym, const TRADEDIR td, const double abspos);
     double GetPrevTheoSgndPos(const string &);
 
+    virtual void StrategySetup() = 0;
     virtual void ReadParam() = 0;
     virtual void ParamSanityCheck() = 0;
     virtual void StartOfDayInit() = 0;

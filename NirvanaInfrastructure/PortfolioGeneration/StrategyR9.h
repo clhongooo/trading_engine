@@ -14,6 +14,7 @@ class StrategyR9 : public StrategyBase {
     virtual ~StrategyR9();
 
   protected:
+    virtual void StrategySetup();
     virtual void ReadParam();
     virtual void ParamSanityCheck();
     virtual void StartOfDayInit();

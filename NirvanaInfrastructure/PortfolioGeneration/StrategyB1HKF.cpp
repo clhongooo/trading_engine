@@ -16,6 +16,10 @@ StrategyB1_HKF::~StrategyB1_HKF()
 }
 
 
+void StrategyB1_HKF::StrategySetup()
+{
+}
+
 void StrategyB1_HKF::ReadParam()
 {
   //--------------------------------------------------

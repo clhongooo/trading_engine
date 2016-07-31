@@ -11,6 +11,7 @@ class StrategyTest : public StrategyBase {
     virtual ~StrategyTest();
 
   protected:
+    virtual void StrategySetup() {}
     virtual void ReadParam() {}
     virtual void ParamSanityCheck() {}
     virtual void StartOfDayInit() {}

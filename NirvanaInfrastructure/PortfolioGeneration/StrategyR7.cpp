@@ -14,6 +14,10 @@ StrategyR7::~StrategyR7()
 {
 }
 
+void StrategyR7::StrategySetup()
+{
+}
+
 void StrategyR7::ReadParam()
 {
   m_EntryThreshold.clear();

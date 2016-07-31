@@ -674,6 +674,23 @@ void StrategyB2::ReadRotationGroupFile(const string & file)
   return;
 }
 
+
+void StrategyB2::StrategySetup()
+{
+  //--------------------------------------------------
+  // Init for zmq
+  //--------------------------------------------------
+  // Prepare our context and socket
+  m_zmqcontext.reset(new zmq::context_t(1));
+  m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_REQ));
+
+  string sZMQMDIPPort = m_SysCfg->Get_B2_Arima_ZMQ_IP_Port(m_StyID);
+  m_Logger->Write(Logger::INFO,"StrategyB2: Initializing ZMQ connection. ZMQ IP Port = %s", sZMQMDIPPort.c_str());
+  string sConn = "tcp://"+sZMQMDIPPort;
+  m_zmqsocket->connect(sConn.c_str());
+
+}
+
 void StrategyB2::ReadParam()
 {
   //--------------------------------------------------
@@ -694,36 +711,46 @@ void StrategyB2::ReadParam()
   m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationModeUseNDayReturn %d", GetStrategyName(m_StyID).c_str(), m_RotationModeUseNDayReturn);
 
   m_LongOnlyWhenClosePriceBelowAvgPrice = m_SysCfg->B2_LongOnlyWhenClosePriceBelowAvgPrice(m_StyID);
-  if (m_LongOnlyWhenClosePriceBelowAvgPrice.IsSome())
-    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenClosePriceBelowAvgPrice %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenClosePriceBelowAvgPrice.Get());
+  if (m_LongOnlyWhenClosePriceBelowAvgPrice)
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenClosePriceBelowAvgPrice %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenClosePriceBelowAvgPrice.get());
   else
     m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenClosePriceBelowAvgPrice: Nil", GetStrategyName(m_StyID).c_str());
 
   m_ShortOnlyWhenClosePriceAboveAvgPrice = m_SysCfg->B2_ShortOnlyWhenClosePriceAboveAvgPrice(m_StyID);
-  if (m_ShortOnlyWhenClosePriceAboveAvgPrice.IsSome())
-    m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenClosePriceAboveAvgPrice %f", GetStrategyName(m_StyID).c_str(), m_ShortOnlyWhenClosePriceAboveAvgPrice.Get());
+  if (m_ShortOnlyWhenClosePriceAboveAvgPrice)
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenClosePriceAboveAvgPrice %f", GetStrategyName(m_StyID).c_str(), m_ShortOnlyWhenClosePriceAboveAvgPrice.get());
   else
     m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenClosePriceAboveAvgPrice: Nil", GetStrategyName(m_StyID).c_str());
 
   m_LongOnlyWhenAvgPriceReturnAbove = m_SysCfg->B2_LongOnlyWhenAvgPriceReturnAbove(m_StyID);
-  if (m_LongOnlyWhenAvgPriceReturnAbove.IsSome())
-    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenAvgPriceReturnAbove %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenAvgPriceReturnAbove.Get());
+  if (m_LongOnlyWhenAvgPriceReturnAbove)
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenAvgPriceReturnAbove %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenAvgPriceReturnAbove.get());
   else
     m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenAvgPriceReturnAbove: Nil", GetStrategyName(m_StyID).c_str());
 
   m_LongOnlyWhenGrpAvgReturnAbove = m_SysCfg->B2_LongOnlyWhenGrpAvgReturnAbove(m_StyID);
-  if (m_LongOnlyWhenGrpAvgReturnAbove.IsSome())
-    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenGrpAvgReturnAbove %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenGrpAvgReturnAbove.Get());
+  if (m_LongOnlyWhenGrpAvgReturnAbove)
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenGrpAvgReturnAbove %f", GetStrategyName(m_StyID).c_str(), m_LongOnlyWhenGrpAvgReturnAbove.get());
   else
     m_Logger->Write(Logger::INFO,"Strategy %s: m_LongOnlyWhenGrpAvgReturnAbove: Nil", GetStrategyName(m_StyID).c_str());
 
   m_ShortOnlyWhenAvgPriceReturnBelow = m_SysCfg->B2_ShortOnlyWhenAvgPriceReturnBelow(m_StyID);
-  if (m_ShortOnlyWhenAvgPriceReturnBelow.IsSome())
-    m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenAvgPriceReturnBelow %f", GetStrategyName(m_StyID).c_str(), m_ShortOnlyWhenAvgPriceReturnBelow.Get());
+  if (m_ShortOnlyWhenAvgPriceReturnBelow)
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenAvgPriceReturnBelow %f", GetStrategyName(m_StyID).c_str(), m_ShortOnlyWhenAvgPriceReturnBelow.get());
   else
     m_Logger->Write(Logger::INFO,"Strategy %s: m_ShortOnlyWhenAvgPriceReturnBelow: Nil", GetStrategyName(m_StyID).c_str());
 
   m_Logger->Write(Logger::INFO,"Strategy %s: B2_CommissionRateThreshold %f", GetStrategyName(m_StyID).c_str(), m_SysCfg->B2_CommissionRateThreshold(m_StyID));
+
+  m_PerformCppTaylor = m_SysCfg->Get_B2_PerformCppTaylor(m_StyID);
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_PerformCppTaylor %s",
+                  GetStrategyName(m_StyID).c_str(), (m_PerformCppTaylor ? "true" : "false"));
+
+  m_TaylorWeight = m_SysCfg->Get_B2_TaylorWeight(m_StyID);
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_TaylorWeight %f", GetStrategyName(m_StyID).c_str(), m_TaylorWeight);
+
+  m_ArimaWeight = m_SysCfg->Get_B2_ArimaWeight(m_StyID);
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_ArimaWeight %f", GetStrategyName(m_StyID).c_str(), m_ArimaWeight);
 
   if (m_RotationMode != 0)
   {
@@ -741,7 +768,6 @@ void StrategyB2::ReadParam()
 
     m_RotationGroupFile = m_SysCfg->Get_B2_RotationGroupFile(m_StyID);
     m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationGroupFile %s", GetStrategyName(m_StyID).c_str(), m_RotationGroupFile.c_str());
-
     ReadRotationGroupFile(m_RotationGroupFile);
 
     m_vRoleOfSym = m_SysCfg->Get_B2_RoleOfSym(m_StyID);
@@ -775,6 +801,8 @@ void StrategyB2::ReadParam()
     m_AllAvbSymForRollingBasket  .insert(m_AllAvbSymForRollingBasket  .begin(), B2_ROTATION_GROUP_MAX, map<YYYYMMDD,set<string> >        () );
     m_SymRankedByRollingReturn   .insert(m_SymRankedByRollingReturn   .begin(), B2_ROTATION_GROUP_MAX, map<YYYYMMDD,vector<TupRetSym> >  () );
     m_SymAndRollingReturn        .insert(m_SymAndRollingReturn        .begin(), B2_ROTATION_GROUP_MAX, map<YYYYMMDD,map<string,double> > () );
+    m_SymRankedByArimaReturn     .insert(m_SymRankedByArimaReturn     .begin(), B2_ROTATION_GROUP_MAX, map<YYYYMMDD,vector<TupRetSym> >  () );
+    m_SymAndArimaReturn          .insert(m_SymAndArimaReturn          .begin(), B2_ROTATION_GROUP_MAX, map<YYYYMMDD,map<string,double> > () );
     m_MaintainPosWithinGrp       .insert(m_MaintainPosWithinGrp       .begin(), B2_ROTATION_GROUP_MAX, map<YYYYMMDD,set<string> >        () );
   }
   //--------------------------------------------------
@@ -900,6 +928,9 @@ void StrategyB2::StartOfDayInit()
     {
       m_RotationGroup.clear();
       m_RotationGroup.insert(m_RotationGroup.begin(),it->second.begin(),it->second.end());
+      m_SymRotationGroup.clear();
+      for (int i = 0; i < it->second.size(); ++i)
+        m_SymRotationGroup[m_TradedSymbols[i]] = it->second[i];
     }
   }
   //--------------------------------------------------
@@ -1426,7 +1457,7 @@ bool StrategyB2::GetOutliers(const vector<double> & v_hist_avgpxrtn, const int t
 
 void StrategyB2::DoTraining(const int iTradSym)
 {
-  if (B2_SKIPMACHLEARNING) return;
+  if (!m_PerformCppTaylor) return;
 
   if (m_RotationMode != 0 && m_mapRoleOfSym[m_TradedSymbols[iTradSym]] == 0)
   {
@@ -1484,7 +1515,7 @@ void StrategyB2::DoTraining(const int iTradSym)
 
 void StrategyB2::PerformTrainingJustBeforeTrading(const int iTradSym)
 {
-  if (B2_SKIPMACHLEARNING) return;
+  if (!m_PerformCppTaylor) return;
 
   //--------------------------------------------------
   // if don't want to miss the last data point (which is today) in our training, should do the training here.
@@ -1609,7 +1640,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     m_dStrengthCountTrdAtClose = 0;
     m_TotSharpeOfMethod = 0;
 
-    if (!B2_SKIPMACHLEARNING)
+    if (m_PerformCppTaylor)
     {
       int iTaylorIdx = B2_HYPOTHESIS_TAYLOR1_TRDATCLOSE;
 
@@ -1859,7 +1890,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
     // Taylor has 2 hypothesis
     //--------------------------------------------------
-    if (!B2_SKIPMACHLEARNING
+    if (m_PerformCppTaylor
         &&
         B2_HYPOTHESIS == B2_HYPOTHESIS_TAYLOR)
     {
@@ -1890,14 +1921,14 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
 
     //--------------------------------------------------
-    if (B2_SKIPMACHLEARNING) m_dAggSignedQty = round(min(m_NotionalAmt / m_ChooseBestRotationGroupNum, m_MaxNotionalAmtEach) / m_SymMidQuote);
+    if (!m_PerformCppTaylor) m_dAggSignedQty = round(min(m_NotionalAmt / m_ChooseBestRotationGroupNum, m_MaxNotionalAmtEach) / m_SymMidQuote);
     //--------------------------------------------------
 
     //--------------------------------------------------
     // KolmogorovSmirnov
     //--------------------------------------------------
     const int iBestTrainingPeriod = (*m_bRisingRegime ? m_RiseRegimeBestTrainingPeriod[m_TradedSymbols[iTradSym]] : m_FallRegimeBestTrainingPeriod[m_TradedSymbols[iTradSym]]);
-    if (!B2_SKIPMACHLEARNING &&
+    if (m_PerformCppTaylor &&
         m_KSBound > 0 &&
         m_KSRange > 0 &&
         m_HistoricalAvgPxRtn->size() >= iBestTrainingPeriod &&
@@ -2034,12 +2065,12 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
     // Close price relative to average price
     //--------------------------------------------------
-    if (m_LongOnlyWhenClosePriceBelowAvgPrice.IsSome()
+    if (m_LongOnlyWhenClosePriceBelowAvgPrice
         &&
         STool::IsValidPriceOrVol(m_SymMidQuote) && !m_HistoricalAvgPx->empty())
     {
       double dClosePxAgstAvgPx = m_SymMidQuote / m_HistoricalAvgPx->back() - 1;
-      if (dClosePxAgstAvgPx > m_LongOnlyWhenClosePriceBelowAvgPrice.Get())
+      if (dClosePxAgstAvgPx > m_LongOnlyWhenClosePriceBelowAvgPrice.get())
       {
         m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to min(%f, 0). dClosePxAgstAvgPx %f",
                         GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
@@ -2047,12 +2078,12 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         m_dAggSignedQty = min(m_dAggSignedQty,0.0);
       }
     }
-    if (m_ShortOnlyWhenClosePriceAboveAvgPrice.IsSome()
+    if (m_ShortOnlyWhenClosePriceAboveAvgPrice
         &&
         STool::IsValidPriceOrVol(m_SymMidQuote) && !m_HistoricalAvgPx->empty())
     {
       double dClosePxAgstAvgPx = m_SymMidQuote / m_HistoricalAvgPx->back() - 1;
-      if (dClosePxAgstAvgPx < m_ShortOnlyWhenClosePriceAboveAvgPrice.Get())
+      if (dClosePxAgstAvgPx < m_ShortOnlyWhenClosePriceAboveAvgPrice.get())
       {
         m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to max(%f, 0). dClosePxAgstAvgPx %f",
                         GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
@@ -2064,12 +2095,12 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
     // Average price return
     //--------------------------------------------------
-    if (m_LongOnlyWhenAvgPriceReturnAbove.IsSome()
+    if (m_LongOnlyWhenAvgPriceReturnAbove
         &&
         m_HistoricalAvgPx->size() >= 2)
     {
       double dAvgPxRtn = m_HistoricalAvgPx->back() / *(m_HistoricalAvgPx->end()-2) - 1;
-      if (dAvgPxRtn < m_LongOnlyWhenAvgPriceReturnAbove.Get())
+      if (dAvgPxRtn < m_LongOnlyWhenAvgPriceReturnAbove.get())
       {
         m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to min(%f, 0). dAvgPxRtn %f",
                         GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
@@ -2077,12 +2108,12 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         m_dAggSignedQty = min(m_dAggSignedQty,0.0);
       }
     }
-    if (m_ShortOnlyWhenAvgPriceReturnBelow.IsSome()
+    if (m_ShortOnlyWhenAvgPriceReturnBelow
         &&
         m_HistoricalAvgPx->size() >= 2)
     {
       double dAvgPxRtn = m_HistoricalAvgPx->back() / *(m_HistoricalAvgPx->end()-2) - 1;
-      if (dAvgPxRtn > m_ShortOnlyWhenAvgPriceReturnBelow.Get())
+      if (dAvgPxRtn > m_ShortOnlyWhenAvgPriceReturnBelow.get())
       {
         m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to max(%f, 0). dAvgPxRtn %f",
                         GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
@@ -2135,6 +2166,41 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                       m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                       m_TradedSymbols[iTradSym].c_str(),
                       dRollingReturn);
+
+      double dArimaReturn = 0;
+      double dTaylorReturn = 0;
+
+      //--------------------------------------------------
+      // get Arima prediction
+      //--------------------------------------------------
+      dArimaReturn = GetB2ForecastFromRPy(m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),m_TradedSymbols[iTradSym],B2_RPY_ARIMA,m_HistoricalAvgPx->back(),m_HistoricalAvgPx->back(),m_HistoricalAvgPx->back(),m_HistoricalAvgPx->back());
+      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s dArimaReturn = %f",
+                      GetStrategyName(m_StyID).c_str(),
+                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                      m_TradedSymbols[iTradSym].c_str(),
+                      dArimaReturn);
+
+
+      //--------------------------------------------------
+      // get Taylor prediction
+      //--------------------------------------------------
+      dTaylorReturn = GetB2ForecastFromRPy(m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),m_TradedSymbols[iTradSym],B2_RPY_TAYLOR,m_HistoricalAvgPx->back(),m_HistoricalAvgPx->back(),m_HistoricalAvgPx->back(),m_HistoricalAvgPx->back());
+      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s dTaylorReturn = %f",
+                      GetStrategyName(m_StyID).c_str(),
+                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                      m_TradedSymbols[iTradSym].c_str(),
+                      dTaylorReturn);
+
+      //--------------------------------------------------
+      // Combine them
+      //--------------------------------------------------
+      dArimaReturn = m_TaylorWeight * dTaylorReturn + m_ArimaWeight * dArimaReturn;
+
+      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s dArimaReturn (after blending Arima and Taylor) = %f",
+                      GetStrategyName(m_StyID).c_str(),
+                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                      m_TradedSymbols[iTradSym].c_str(),
+                      dArimaReturn);
 
       //--------------------------------------------------
       // sticky group: get the groups whose position we will maintain
@@ -2212,6 +2278,10 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                            m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
                            m_TradedSymbols[iTradSym],
                            dRollingReturn);
+      AddArimaReturn(m_RotationGroup[iTradSym],
+                     m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
+                     m_TradedSymbols[iTradSym],
+                     dArimaReturn);
       AddAggSgndQty(m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
                     m_TradedSymbols[iTradSym],
                     m_dAggSignedQty);
@@ -2223,7 +2293,11 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       //--------------------------------------------------
       // check if all rolling returns are available
       //--------------------------------------------------
-      if (!NDayRollingReturnReadyForAllSym(m_RotationGroup[iTradSym],m_p_ymdhms_SysTime_Local->GetYYYYMMDD()))
+      if (
+        !NDayRollingReturnReadyForAllSym(m_RotationGroup[iTradSym],m_p_ymdhms_SysTime_Local->GetYYYYMMDD())
+        ||
+        !ArimaReturnReadyForAllSym(m_RotationGroup[iTradSym],m_p_ymdhms_SysTime_Local->GetYYYYMMDD())
+        )
       {
         m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s Not all %d-day returns are ready.",
                         GetStrategyName(m_StyID).c_str(),
@@ -2294,7 +2368,10 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
           vector<double> & vGrpRtn = it->second;
 
           FForEach(m_RotationGroup,[&](const int grp){
-            if (std::isnan(vGrpRtn[grp])) vGrpRtn[grp] = GetAvgRollgRetOfGrp(grp, m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+            //--------------------------------------------------
+            // now changed to use Arima return
+            //--------------------------------------------------
+            if (std::isnan(vGrpRtn[grp])) vGrpRtn[grp] = GetAvgArimaRetOfGrp(grp, m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
           });
 
           m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- Group Avg Return ---", GetStrategyName(m_StyID).c_str());
@@ -2322,16 +2399,16 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
 
         {
-          map<YYYYMMDD,vector<Option<string> > >::iterator it = m_RttnGrpWithSgnl.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+          map<YYYYMMDD,vector<boost::optional<string> > >::iterator it = m_RttnGrpWithSgnl.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
           if (it == m_RttnGrpWithSgnl.end())
           {
-            vector<Option<string> > vSymWithSgnl;
-            vSymWithSgnl.insert(vSymWithSgnl.begin(), B2_ROTATION_GROUP_MAX, Option<string>());
+            vector<boost::optional<string> > vSymWithSgnl;
+            vSymWithSgnl.insert(vSymWithSgnl.begin(), B2_ROTATION_GROUP_MAX, boost::optional<string>());
             m_RttnGrpWithSgnl[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()] = vSymWithSgnl;
             it = m_RttnGrpWithSgnl.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
           }
 
-          vector<Option<string> > & vSymWithSgnl = it->second;
+          vector<boost::optional<string> > & vSymWithSgnl = it->second;
 
           for (int iTradSymRttnGrp = 0; iTradSymRttnGrp < m_TradedSymbols.size(); ++iTradSymRttnGrp)
           {
@@ -2346,11 +2423,11 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             //--------------------------------------------------
             if (setMtnPsn.find(m_TradedSymbols[iTradSymRttnGrp]) != setMtnPsn.end())
             {
-              vSymWithSgnl[m_RotationGroup[iTradSymRttnGrp]] = Option<string>(m_TradedSymbols[iTradSymRttnGrp]);
+              vSymWithSgnl[m_RotationGroup[iTradSymRttnGrp]] = boost::optional<string>(m_TradedSymbols[iTradSymRttnGrp]);
             }
           }
 
-          if (!B2_SKIPMACHLEARNING)
+          if (m_PerformCppTaylor)
           {
             //--------------------------------------------------
             // sort stocks by in-sample Sharpe ratio
@@ -2395,7 +2472,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
               for (map<string,double>::iterator it = m_BestAvgSharpeOfBestPropRiseRegime.begin(); it != m_BestAvgSharpeOfBestPropRiseRegime.end(); ++it)
                 vtmp.push_back(it->second);
               std::sort(vtmp.begin(),vtmp.end());
-              m_AvgSharpeThresholdRiseRegime = vtmp[vtmp.size()/B2_MIN_SHARPE_THHD_FILTER];
+              m_AvgSharpeThresholdRiseRegime = vtmp[vtmp.size()/B2_MIN_SHARPE_THRESHOLD_FILTER];
             }
             {
               vector<double> vtmp;
@@ -2403,7 +2480,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
               for (map<string,double>::iterator it = m_BestAvgSharpeOfBestPropFallRegime.begin(); it != m_BestAvgSharpeOfBestPropFallRegime.end(); ++it)
                 vtmp.push_back(it->second);
               std::sort(vtmp.begin(),vtmp.end());
-              m_AvgSharpeThresholdFallRegime = vtmp[vtmp.size()/B2_MIN_SHARPE_THHD_FILTER];
+              m_AvgSharpeThresholdFallRegime = vtmp[vtmp.size()/B2_MIN_SHARPE_THRESHOLD_FILTER];
             }
             //--------------------------------------------------
 
@@ -2467,7 +2544,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             //--------------------------------------------------
             int iRank = 1;
             while (
-              vSymWithSgnl[iRttnGrp].IsNone()
+              (!vSymWithSgnl[iRttnGrp]) // boost::optional null
               &&
               iRank <=
               m_AllAvbSymForRollingBasket[iRttnGrp][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].size()
@@ -2485,10 +2562,10 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                 else ad = AD_DESCENDING;
               }
 
-              Option<string> o_sym;
-              if (B2_SKIPMACHLEARNING)
+              boost::optional<string> o_sym;
+              if (!m_PerformCppTaylor)
               {
-                o_sym = GetSymInGrpWithRank(m_SymRankedByRollingReturn,
+                o_sym = GetSymInGrpWithRank(m_SymRankedByArimaReturn,
                                             iRttnGrp,
                                             m_p_ymdhms_SysTime_Local->GetYYYYMMDD(),
                                             iRank,
@@ -2510,9 +2587,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                 }
               }
 
-              if (o_sym.IsSome())
+              if (o_sym)
               {
-                double dAggSgndQty = m_SymAggSgndQty[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()][o_sym.GetOrElse("")];
+                double dAggSgndQty = m_SymAggSgndQty[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()][GetOrElse(o_sym,string(""))];
 
                 if (
                   (
@@ -2521,7 +2598,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                     (m_RotationMode == -1 && dAggSgndQty < 0)
                   )
                   &&
-                  (m_mapRoleOfSym[o_sym.Get()] > 0) // not indicator symbol
+                  (m_mapRoleOfSym[o_sym.get()] > 0) // not indicator symbol
                   )
                 {
                   vSymWithSgnl[iRttnGrp] = o_sym;
@@ -2533,7 +2610,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                               iRttnGrp,
                               iRank,
                               m_AllAvbSymForRollingBasket[iRttnGrp][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].size(),
-                              vSymWithSgnl[iRttnGrp].GetOrElse("___").c_str()
+                              GetOrElse(vSymWithSgnl[iRttnGrp],string("___")).c_str()
                              );
               iRank++;
 
@@ -2558,7 +2635,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Group %d Symbol with signal %s",
                             GetStrategyName(m_StyID).c_str(),
                             m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                            grp, vSymWithSgnl[grp].GetOrElse("___").c_str());
+                            grp, GetOrElse(vSymWithSgnl[grp],string("___")).c_str());
           }
           m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- Symbol with signal ---", GetStrategyName(m_StyID).c_str());
 
@@ -2580,7 +2657,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
               // check the average signed notional of each group,
               // if it is smaller than the threshold, then remove all the symbols from the group
               //--------------------------------------------------
-              vSymWithSgnl[iRttnGrp] = Option<string>();
+              vSymWithSgnl[iRttnGrp] = boost::optional<string>();
             }
 
           }
@@ -2592,10 +2669,10 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         // sort the groups (with positive stock positions) by their returns
         //--------------------------------------------------
         {
-          map<YYYYMMDD,vector<Option<string> > >::iterator it1 = m_RttnGrpWithSgnl.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+          map<YYYYMMDD,vector<boost::optional<string> > >::iterator it1 = m_RttnGrpWithSgnl.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
           map<YYYYMMDD,vector<double> >::iterator it2 = m_AvgRtnOfGrp.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
 
-          vector<Option<string> > & vSymWithSgnl = it1->second;
+          vector<boost::optional<string> > & vSymWithSgnl = it1->second;
           vector<double> & vGrpRtn = it2->second;
 
           map<YYYYMMDD,vector<TupRetSym> >::iterator it = m_GrpRtnAndLeadingSym.find(m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
@@ -2610,9 +2687,9 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
           for (int grp = 0; grp < B2_ROTATION_GROUP_MAX; ++grp)
           {
-            // if (vSymWithSgnl[grp].IsNone()) continue;
+            // if (!vSymWithSgnl[grp]) continue;
             if (std::isnan(vGrpRtn[grp])) continue;
-            mGrpRtnAndLeadSym.push_back(TupRetSym(vGrpRtn[grp],vSymWithSgnl[grp].GetOrElse(""),grp));
+            mGrpRtnAndLeadSym.push_back(TupRetSym(vGrpRtn[grp],GetOrElse(vSymWithSgnl[grp],string("")),grp));
           }
 
           //--------------------------------------------------
@@ -2698,7 +2775,6 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             }
             //--------------------------------------------------
 
-
             int iCnt = 0;
             while (true)
             {
@@ -2716,7 +2792,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
               //--------------------------------------------------
               if (mGrpRtnAndLeadSym[iCnt].m_symbol() != "")
               {
-                if (m_LongOnlyWhenGrpAvgReturnAbove.IsNone())
+                if (!m_LongOnlyWhenGrpAvgReturnAbove) // boost::optional null
                 {
                   m_StkPicks.insert(mGrpRtnAndLeadSym[iCnt].m_symbol());
                 }
@@ -2726,7 +2802,8 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                   // if the group average return does not reach the threshold, then don't pick the stock
                   // *** so this should override group and stock stickiness ***
                   //--------------------------------------------------
-                  if (mGrpRtnAndLeadSym[iCnt].m_return > m_LongOnlyWhenGrpAvgReturnAbove.Get())
+                  double dRollingRtnOfGrp = GetAvgRollgRetOfGrp(m_SymRotationGroup[m_TradedSymbols[iTradSym]],m_p_ymdhms_SysTime_Local->GetYYYYMMDD());
+                  if (dRollingRtnOfGrp > m_LongOnlyWhenGrpAvgReturnAbove.get())
                   {
                     m_StkPicks.insert(mGrpRtnAndLeadSym[iCnt].m_symbol());
                   }
@@ -2736,7 +2813,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                                     GetStrategyName(m_StyID).c_str(),
                                     m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                                     mGrpRtnAndLeadSym[iCnt].m_symbol().c_str(),
-                                    m_LongOnlyWhenGrpAvgReturnAbove.Get());
+                                    m_LongOnlyWhenGrpAvgReturnAbove.get());
                   }
                 }
               }
@@ -2979,6 +3056,44 @@ bool StrategyB2::NDayRollingReturnReadyForAllSym(const int gid, const YYYYMMDD &
   return true;
 }
 
+bool StrategyB2::ArimaReturnReadyForAllSym(const int gid, const YYYYMMDD & ymd)
+{
+  map<YYYYMMDD,map<string,double> >::iterator it = m_SymAndArimaReturn[gid].find(ymd);
+  if (it == m_SymAndArimaReturn[gid].end())
+  {
+    m_Logger->Write(Logger::INFO,"Strategy %s: Date %s not found in m_SymAndArimaReturn. gid = %d",
+                    GetStrategyName(m_StyID).c_str(), ymd.ToStr().c_str(),
+                    gid);
+    return false;
+  }
+
+  map<string,double> & mapTmp = it->second;
+
+  if (mapTmp.size() < m_AllAvbSymForRollingBasket[gid][ymd].size())
+  {
+    m_Logger->Write(Logger::INFO,"Strategy %s: gid = %d No of rolling return obtained = %d. Num of available symbols = %d",
+                    GetStrategyName(m_StyID).c_str(), gid,
+                    mapTmp.size(),
+                    m_AllAvbSymForRollingBasket[gid][ymd].size());
+
+    FForEach(mapTmp,[&](const std::pair<string,double> tup) {
+      m_Logger->Write(Logger::INFO,"Strategy %s: gid = %d Arima return obtained for %s",
+                      GetStrategyName(m_StyID).c_str(), gid,
+                      tup.first.c_str());
+    });
+
+    FForEach(m_AllAvbSymForRollingBasket[gid][ymd],[&](const string & s) {
+      m_Logger->Write(Logger::INFO,"Strategy %s: gid = %d Available symbols %s",
+                      GetStrategyName(m_StyID).c_str(), gid,
+                      s.c_str());
+    });
+
+    return false;
+  }
+
+  return true;
+}
+
 bool StrategyB2::AggSgndQtyReadyForAllSym(const YYYYMMDD & ymd)
 {
   map<YYYYMMDD,map<string,double> >::iterator it = m_SymAggSgndQty.find(ymd);
@@ -3030,6 +3145,40 @@ void StrategyB2::AddNDayRollingReturn(const int gid, const YYYYMMDD & ymd, const
     it1 = m_SymAndRollingReturn[gid].find(ymd);
     m_SymRankedByRollingReturn[gid][ymd] = vector<TupRetSym>();
     it2 = m_SymRankedByRollingReturn[gid].find(ymd);
+  }
+  else
+  {
+    //--------------------------------------------------
+    // added already, won't add second time
+    //--------------------------------------------------
+    if (it1->second.find(sym) != it1->second.end()) return;
+  }
+
+  //--------------------------------------------------
+  // add now
+  //--------------------------------------------------
+  it1->second[sym] = ret;
+  it2->second.push_back(TupRetSym(ret, sym, gid));
+
+}
+
+void StrategyB2::AddArimaReturn(const int gid, const YYYYMMDD & ymd, const string & sym, const double ret)
+{
+  //--------------------------------------------------
+  // don't add if NAN
+  //--------------------------------------------------
+  if (std::isnan(ret)) return;
+
+  if (m_AllAvbSymForRollingBasket[gid][ymd].find(sym) == m_AllAvbSymForRollingBasket[gid][ymd].end()) return;
+
+  map<YYYYMMDD,map<string,double> >::iterator it1 = m_SymAndArimaReturn[gid].find(ymd);
+  map<YYYYMMDD,vector<TupRetSym> >::iterator it2 = m_SymRankedByArimaReturn[gid].find(ymd);
+  if (it1 == m_SymAndArimaReturn[gid].end())
+  {
+    m_SymAndArimaReturn[gid][ymd] = map<string,double>();
+    it1 = m_SymAndArimaReturn[gid].find(ymd);
+    m_SymRankedByArimaReturn[gid][ymd] = vector<TupRetSym>();
+    it2 = m_SymRankedByArimaReturn[gid].find(ymd);
   }
   else
   {
@@ -3116,41 +3265,54 @@ void StrategyB2::AddAggSgndNotnl(const YYYYMMDD & ymd, const int gid, const stri
 }
 
 
-Option<string> StrategyB2::GetSymInGrpWithRank(const vector<map<YYYYMMDD,vector<TupRetSym> > > & vecmapYMD, const int gid, const YYYYMMDD & ymd, const int rank, const ASC_DESC ad)
+boost::optional<string> StrategyB2::GetSymInGrpWithRank(const vector<map<YYYYMMDD,vector<TupRetSym> > > & vecmapYMD, const int gid, const YYYYMMDD & ymd, const int rank, const ASC_DESC ad)
 {
   map<YYYYMMDD,vector<TupRetSym> >::const_iterator it2 = vecmapYMD[gid].find(ymd);
-  if (it2 == vecmapYMD[gid].end()) return Option<string>();
+  if (it2 == vecmapYMD[gid].end()) return boost::optional<string>();
 
   vector<TupRetSym> vecTmp = it2->second;
-  if (vecTmp.empty()) return Option<string>();
+  if (vecTmp.empty()) return boost::optional<string>();
 
   std::sort(vecTmp.begin(), vecTmp.end());
 
-  if (ad == AD_ASCENDING && vecTmp.size() >= rank) return Option<string>(vecTmp[rank-1].m_symbol());
-  if (ad == AD_DESCENDING && vecTmp.size() >= rank) return Option<string>(vecTmp[vecTmp.size()-rank].m_symbol());
+  if (ad == AD_ASCENDING && vecTmp.size() >= rank) return boost::optional<string>(vecTmp[rank-1].m_symbol());
+  if (ad == AD_DESCENDING && vecTmp.size() >= rank) return boost::optional<string>(vecTmp[vecTmp.size()-rank].m_symbol());
 
-  return Option<string>();
+  return boost::optional<string>();
 }
 
-Option<string> StrategyB2::GetSymInGrpWithRank(const vector<TupAvgSharpeSymIdx> & sortedRevVecTup, const int gid, const int rank)
+boost::optional<string> StrategyB2::GetSymInGrpWithRank(const vector<TupAvgSharpeSymIdx> & sortedRevVecTup, const int gid, const int rank)
 {
   int iRank = 1;
   for (vector<TupAvgSharpeSymIdx>::const_iterator it = sortedRevVecTup.begin(); it != sortedRevVecTup.end(); ++it)
   {
     if (m_RotationGroup[it->m_symidx] == gid)
     {
-      if (iRank == rank) return Option<string>(m_TradedSymbols[it->m_symidx]);
+      if (iRank == rank) return boost::optional<string>(m_TradedSymbols[it->m_symidx]);
       iRank++;
     }
   };
 
-  return Option<string>();
+  return boost::optional<string>();
 }
 
 double StrategyB2::GetAvgRollgRetOfGrp(const int gid,const YYYYMMDD & ymd)
 {
   map<YYYYMMDD,vector<TupRetSym> >::iterator it2 = m_SymRankedByRollingReturn[gid].find(ymd);
   if (it2 == m_SymRankedByRollingReturn[gid].end()) return NAN;
+
+  const vector<TupRetSym> vt = FFilterNot(it2->second,[](const TupRetSym &tup){ return std::isnan(tup.m_return); });
+
+  int iCnt = vt.size();
+  double dTot = FFold(vt,(double)0,[](const double &a, const TupRetSym &b) { return a+b.m_return; } );
+
+  if (iCnt > 0) return dTot / (double)iCnt;
+  else return NAN;
+}
+double StrategyB2::GetAvgArimaRetOfGrp(const int gid,const YYYYMMDD & ymd)
+{
+  map<YYYYMMDD,vector<TupRetSym> >::iterator it2 = m_SymRankedByArimaReturn[gid].find(ymd);
+  if (it2 == m_SymRankedByArimaReturn[gid].end()) return NAN;
 
   const vector<TupRetSym> vt = FFilterNot(it2->second,[](const TupRetSym &tup){ return std::isnan(tup.m_return); });
 
@@ -3184,3 +3346,33 @@ double StrategyB2::GetAvgAggSgndNotnlOfGrp(const int gid,const YYYYMMDD & ymd)
   else return NAN;
 }
 
+double StrategyB2::GetB2ForecastFromRPy(const YYYYMMDD & ymd, const string & sym, const int model, const double o, const double h, const double l, const double c)
+{
+  char req_msg[256];
+  strcpy(req_msg, ymd.ToStr_().c_str());
+  strcat(req_msg, ",");
+  strcat(req_msg, sym.c_str());
+  strcat(req_msg, ",");
+  strcat(req_msg, (boost::lexical_cast<string>(o)).c_str());
+  strcat(req_msg, ",");
+  strcat(req_msg, (boost::lexical_cast<string>(h)).c_str());
+  strcat(req_msg, ",");
+  strcat(req_msg, (boost::lexical_cast<string>(l)).c_str());
+  strcat(req_msg, ",");
+  strcat(req_msg, (boost::lexical_cast<string>(c)).c_str());
+  strcat(req_msg, ",999,");
+  strcat(req_msg, (boost::lexical_cast<string>(model)).c_str());
+
+  zmq::message_t zmq_msg(strlen(req_msg)+1);
+
+  memcpy((void *)zmq_msg.data(), req_msg, strlen(req_msg));
+  ((char *)zmq_msg.data())[strlen(req_msg)] = '\0';
+  m_zmqsocket->send(zmq_msg);
+
+  // char rep_msg[256];
+  zmq::message_t zmq_reply;
+  m_zmqsocket->recv(&zmq_reply);
+  // memcpy(rep_msg, (void *)zmq_reply.data(), strlen(zmq_reply.data()))
+  return atof((char *)(zmq_reply.data()));
+  //--------------------------------------------------
+}

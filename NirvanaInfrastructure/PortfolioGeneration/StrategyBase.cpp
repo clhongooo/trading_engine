@@ -858,6 +858,7 @@ void StrategyBase::StyInitAndChecking()
   m_TradedSymbols           = m_SysCfg->GetTradedSymbols(m_StyID);
   m_MonitoringIntervalInSec = m_SysCfg->GetMonitoringIntervalInSec(m_StyID);
   ReadParam();
+  StrategySetup();
   ParamSanityCheck();
 
   if (m_iNumOfParam < 0)

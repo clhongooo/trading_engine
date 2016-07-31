@@ -46,8 +46,6 @@ class MarketData
     long GetLastAccumTradeVolume(const string &);
     void CleanUpOldSnapshots();
     void DebugPrintBarAgg(const string &);
-    Option<string> GetSuppD1BarOHLCVPath(const string &);
-    Option<string> GetSuppM1BarOHLCVPath(const string &);
     void GetSuppD1BarOHLCVInDateRange(const string &,const YYYYMMDD &,const YYYYMMDD &,vector<YYYYMMDD> &,vector<double> &,vector<double> &,vector<double> &,vector<double> &,vector<long> &);
     void GetSuppM1BarOHLCVInDateTimeRange(const string &,const YYYYMMDD &,const HHMMSS &,const YYYYMMDD &,const HHMMSS &,vector<YYYYMMDD> &,vector<HHMMSS> &,vector<double> &,vector<double> &,vector<double> &,vector<double> &,vector<long> &);
     void GetUpdatedSymbols(set<string> &);
@@ -76,7 +74,7 @@ class MarketData
     double ComputeTickReturn(const string &,const double);
     double GetTradePriceOrElseWeightedMidQuote(const ATU_MDI_marketfeed_struct &) const;
     double GetWeightedMidQuote(const ATU_MDI_marketfeed_struct &) const;
-    Option<string> GetSuppBarOHLCVPath(const string &, const string &);
+    boost::optional<string> GetSuppBarOHLCVPath(const string &, const string &);
 
     //--------------------------------------------------
     // Singleton

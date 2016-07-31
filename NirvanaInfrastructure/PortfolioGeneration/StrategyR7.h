@@ -20,6 +20,7 @@ class StrategyR7 : public StrategyBase {
     virtual ~StrategyR7();
 
   protected:
+    virtual void StrategySetup();
     virtual void ReadParam();
     virtual void ParamSanityCheck();
     virtual void StartOfDayInit();

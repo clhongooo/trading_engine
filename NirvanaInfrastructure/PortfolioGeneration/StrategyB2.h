@@ -21,34 +21,42 @@
 #include "SystemConfig.h"
 #include "SystemState.h"
 #include "Sma.hpp"
+#include <zmq.hpp>
 
 #define B2_ROTATION_GROUP_MAX  38
 #define B2_ROTATION_PICKTOPSYM 1
 
-#define B2_KS_PRICE_FILTER_NDAYS 100
+#define B2_KS_PRICE_FILTER_NDAYS          100
 #define B2_KS_PRICE_FILTER_RISE_ADJFACTOR 0.5
 #define B2_KS_PRICE_FILTER_FALL_ADJFACTOR 1
 
-#define B2_HYPOTHESIS_TAYLOR               1
-#define B2_HYPOTHESIS_TAYLOR1_TRDATCLOSE   11
-#define B2_HYPOTHESIS_TAYLOR2_TRDATCLOSE   12
-#define B2_HYPOTHESIS                      B2_HYPOTHESIS_TAYLOR
+#define B2_HYPOTHESIS_TAYLOR              1
+#define B2_HYPOTHESIS_TAYLOR1_TRDATCLOSE  11
+#define B2_HYPOTHESIS_TAYLOR2_TRDATCLOSE  12
+#define B2_HYPOTHESIS                     B2_HYPOTHESIS_TAYLOR
 
-#define B2_SETPOSSIZETOFULLORZERO 0.5
+#define B2_SETPOSSIZETOFULLORZERO 0.2
 
 #define B2_CURBOUTLIERMODE_FIXED 1
 #define B2_CURBOUTLIERMODE_PCTL  2
 #define B2_CURBOUTLIERMODE       B2_CURBOUTLIERMODE_FIXED
 
-#define B2_RISEREGIME   0
-#define B2_FALLREGIME   1
+#define B2_RISEREGIME  0
+#define B2_FALLREGIME  1
 
 #define B2_FAVOUR_LONG_TRNG_PRD true
-#define B2_MIN_SHARPE_THHD_FILTER 2
-
-#define B2_SKIPMACHLEARNING false
-#define B2_STICINESS_ON     true
+//--------------------------------------------------
+// FIXME Testing
+//--------------------------------------------------
+//--------------------------------------------------
+// this controls the proportion of stocks that are filtered out by in-sample Sharpe
+//--------------------------------------------------
+#define B2_MIN_SHARPE_THRESHOLD_FILTER 2 // 2
+#define B2_STICINESS_ON            false
 #define B2_PURE_ROTATN_FOLW_LEADER true
+
+#define B2_RPY_ARIMA  1
+#define B2_RPY_TAYLOR 2
 
 class StrategyB2 : public StrategyBase {
   public:
@@ -124,8 +132,16 @@ class StrategyB2 : public StrategyBase {
     double m_b4_low;
     double m_b4_high;
     double m_b4_adj;
+
+    //--------------------------------------------------
+    // ZMQ
+    //--------------------------------------------------
+    boost::scoped_ptr<zmq::context_t> m_zmqcontext;
+    boost::scoped_ptr<zmq::socket_t> m_zmqsocket;
     //--------------------------------------------------
 
+    //--------------------------------------------------
+    virtual void StrategySetup();
     virtual void ReadParam();
     virtual void ParamSanityCheck();
     virtual void StartOfDayInit();
@@ -192,11 +208,6 @@ class StrategyB2 : public StrategyBase {
     bool             m_RotationModeTradeHighestReturn;
     bool             m_RotationModeUseVolyAdjdReturn;
     int              m_RotationModeUseNDayReturn;
-    Option<double>   m_LongOnlyWhenClosePriceBelowAvgPrice;
-    Option<double>   m_ShortOnlyWhenClosePriceAboveAvgPrice;
-    Option<double>   m_LongOnlyWhenAvgPriceReturnAbove;
-    Option<double>   m_LongOnlyWhenGrpAvgReturnAbove;
-    Option<double>   m_ShortOnlyWhenAvgPriceReturnBelow;
     int              m_ChooseBestRotationGroupNum;
     double           m_ChooseBestRotationGroupProp;
     double           m_AvgAggSgndNotnlThresh;
@@ -206,6 +217,11 @@ class StrategyB2 : public StrategyBase {
     HHMMSS           m_hms_CloseEnd;
     set<string>      m_TradedSymbolsTradeAtOpen;
     int              m_NumOfAvbGrp;
+    boost::optional<double>   m_LongOnlyWhenClosePriceBelowAvgPrice;
+    boost::optional<double>   m_ShortOnlyWhenClosePriceAboveAvgPrice;
+    boost::optional<double>   m_LongOnlyWhenAvgPriceReturnAbove;
+    boost::optional<double>   m_LongOnlyWhenGrpAvgReturnAbove;
+    boost::optional<double>   m_ShortOnlyWhenAvgPriceReturnBelow;
 
     //--------------------------------------------------
     map<string,map<int,vector<TupObjParamVec> > >    m_tup_BestParamSetBeta1Beta3AvgPx_trdatclose_hypo1;
@@ -324,19 +340,24 @@ class StrategyB2 : public StrategyBase {
 
     enum ASC_DESC {AD_ASCENDING=0,AD_DESCENDING};
     bool NDayRollingReturnReadyForAllSym(const int,const YYYYMMDD &);
+    bool ArimaReturnReadyForAllSym(const int,const YYYYMMDD &);
     bool AggSgndQtyReadyForAllSym(const YYYYMMDD &);
     void AddNDayRollingReturn(const int,const YYYYMMDD &,const string &,const double);
+    void AddArimaReturn(const int,const YYYYMMDD &,const string &,const double);
     void AddAvgSharpeOfSym(const int, const double, const int);
     void AddAggSgndQty(const YYYYMMDD &,const string &,const double);
     void AddAggSgndNotnl(const YYYYMMDD &,const int,const string &,const double);
-    Option<string> GetSymInGrpWithRank(const vector<map<YYYYMMDD,vector<TupRetSym> > > &, const int,const YYYYMMDD &,const int,const ASC_DESC);
-    Option<string> GetSymInGrpWithRank(const vector<TupAvgSharpeSymIdx> &, const int,const int);
+    boost::optional<string> GetSymInGrpWithRank(const vector<map<YYYYMMDD,vector<TupRetSym> > > &, const int,const YYYYMMDD &,const int,const ASC_DESC);
+    boost::optional<string> GetSymInGrpWithRank(const vector<TupAvgSharpeSymIdx> &, const int,const int);
     double GetAvgRollgRetOfGrp(const int,const YYYYMMDD &);
+    double GetAvgArimaRetOfGrp(const int,const YYYYMMDD &);
     double GetAvgAggSgndNotnlOfGrp(const int,const YYYYMMDD &);
+    double GetB2ForecastFromRPy(const YYYYMMDD &,const string &,const int,const double,const double,const double,const double);
     void ReadRotationGroupFile(const string &);
     string                                      m_RotationGroupFile;
     map<YYYYMMDD,vector<int> >                  m_RotationGroupFromFile;
     vector<int>                                 m_RotationGroup;
+    map<string,int>                             m_SymRotationGroup;
     vector<int>                                 m_vRoleOfSym;
     map<string,int>                             m_mapRoleOfSym;
     vector<map<YYYYMMDD,set<string> > >         m_AllAvbSymForRollingBasket;
@@ -344,18 +365,23 @@ class StrategyB2 : public StrategyBase {
     map<YYYYMMDD,set<string> >                  m_AllSymWithUpdateDataAtClose;
     map<YYYYMMDD,set<string> >                  m_AllSymWithUpdateDataAtOpen;
     vector<map<YYYYMMDD,vector<TupRetSym> > >   m_SymRankedByRollingReturn;
+    vector<map<YYYYMMDD,vector<TupRetSym> > >   m_SymRankedByArimaReturn;
     vector<TupAvgSharpeSymIdx>                  m_SymRankedByAvgSharpeRiseRgm;
     vector<TupAvgSharpeSymIdx>                  m_SymRankedByAvgSharpeFallRgm;
     vector<map<YYYYMMDD,map<string,double> > >  m_SymAndRollingReturn;
+    vector<map<YYYYMMDD,map<string,double> > >  m_SymAndArimaReturn;
     vector<map<YYYYMMDD,set<string> > >         m_MaintainPosWithinGrp;
     map<YYYYMMDD,set<int> >                     m_MaintainGrp;
     map<YYYYMMDD,vector<double> >               m_AvgRtnOfGrp;
-    map<YYYYMMDD,vector<Option<string> > >      m_RttnGrpWithSgnl;
+    map<YYYYMMDD,vector<boost::optional<string> > >      m_RttnGrpWithSgnl;
     map<YYYYMMDD,vector<TupRetSym> >            m_GrpRtnAndLeadingSym;
     map<YYYYMMDD,map<string,double> >           m_SymAggSgndQty;
     map<YYYYMMDD,map<int,map<string,double> > > m_AggSgndNotnlOfSym;
     set<string>                                 m_StkPicks;
     SSet<YYYYMMDD>                              m_HasPerformedRotationLogic;
+    bool                                        m_PerformCppTaylor;
+    double                                      m_TaylorWeight;
+    double                                      m_ArimaWeight;
     //--------------------------------------------------
 
 };

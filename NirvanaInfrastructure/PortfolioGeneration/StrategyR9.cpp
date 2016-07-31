@@ -14,6 +14,10 @@ StrategyR9::~StrategyR9()
 {
 }
 
+void StrategyR9::StrategySetup()
+{
+}
+
 void StrategyR9::ReadParam()
 {
   m_SARThreshold.clear();

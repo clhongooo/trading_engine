@@ -4,7 +4,6 @@
 #include "PCH.h"
 #include <boost/thread.hpp>
 #include <boost/thread/shared_mutex.hpp>
-// #include <boost/scoped_ptr.hpp>
 
 //--------------------------------------------------
 // Functional programming?
@@ -81,79 +80,25 @@ double FSum(const Collection & col)
   return d;
 }
 
+template <typename T>
+T GetOrElse(boost::optional<T> o, T val) {
+    if (o)
+    {
+      return o.get();
+      
+    }
+}
 
-//--------------------------------------------------
-// Immutable Option class
-//--------------------------------------------------
-template <typename T> 
-class Option { 
-  public:
-    Option(const T & content)
-    {
-      _hasContent = true;
-      // _p_content.reset(new T(content));
-      _content = content;
-    }
-    Option(const Option<T> & o)
-    {
-      _hasContent = o._hasContent;
-      // _p_content.reset(new T(*o._p_content));
-      _content = o._content;
-    }
-    Option()
-    {
-      _hasContent = false;
-      // _p_content.reset();
-    }
-    bool IsNone() { return !_hasContent; }
-    bool IsSome() { return _hasContent; }
-    T Get() 
-    {
-      // return *_p_content;
-      return _content;
-    }
-    T GetOrElse(const T defaultval)
-    {
-      if (_hasContent)
-        // return *_p_content;
-        return _content;
-      else return defaultval;
-    }
-    Option<T>& operator=(const Option<T>& o)
-    {
-      _hasContent = o._hasContent;
-      // _p_content.reset(new T(*o._p_content));
-      _content = o._content;
-      return *this;
-    }
-    bool operator==(const Option<T>& o)
-    {
-      if (this->_hasContent && !o._hasContent) return false;
-      if (!this->_hasContent && o._hasContent) return false;
-      if (!this->_hasContent && !o._hasContent) return true;
-
-      //--------------------------------------------------
-      // both have content
-      //--------------------------------------------------
-      // return *(this->_p_content) == *(o._p_content);
-      return this->_content == o._content;
-    }
-  private:
-    bool _hasContent;
-    // scoped_ptr<T> _p_content;
-    T _content;
-}; 
-
-template <typename TK, typename TV> 
+template <typename TK, typename TV>
 class SMap {
   private:
     map<TK,TV> _map;
   public:
-    Option<TV> Get(const TK k) const
+    boost::optional<TV> Get(const TK k) const
     {
       typename map<TK,TV>::const_iterator it = _map.find(k);
-      if (it == _map.end()) return Option<TV>();
-      return Option<TV>(it->second);
+      if (it == _map.end()) return boost::optional<TV>();
+      return boost::optional<TV>(it->second);
     }
     TV GetOrElse(const TK k, const TV defaultval)
     {
@@ -200,7 +145,7 @@ class SMap {
     }
 };
 
-template <typename TK, typename TV> 
+template <typename TK, typename TV>
 class SMapThreadSafe {
   private:
     map<TK,TV> _map;
@@ -210,12 +155,12 @@ class SMapThreadSafe {
       FForEach(vIn,[&](const std::pair<TK,TV> p) { _map[p.first] = p.second; });
     }
   public:
-    Option<TV> Get(const TK k)
+    boost::optional<TV> Get(const TK k)
     {
       boost::shared_lock<boost::shared_mutex> lock(_mutex);
       typename map<TK,TV>::const_iterator it = _map.find(k);
-      if (it == _map.end()) return Option<TV>();
-      return Option<TV>(it->second);
+      if (it == _map.end()) return boost::optional<TV>();
+      return boost::optional<TV>(it->second);
     }
     TV GetOrElse(const TK k, const TV defaultval)
     {
@@ -261,7 +206,7 @@ class SMapThreadSafe {
     }
 };
 
-template <typename TV> 
+template <typename TV>
 class SSet {
   private:
     set<TV> _set;
@@ -291,20 +236,20 @@ class SSet {
 };
 
 
-template <typename TK1, typename TK2, typename TV> 
+template <typename TK1, typename TK2, typename TV>
 class SMapOfMap {
   private:
     map<TK1,map<TK2,TV> > _map;
   public:
-    Option<TV> Get(const TK1 k1, const TK2 k2)
+    boost::optional<TV> Get(const TK1 k1, const TK2 k2)
     {
       typename map<TK1,map<TK2,TV> >::iterator it = _map.find(k1);
-      if (it == _map.end()) return Option<TV>();
+      if (it == _map.end()) return boost::optional<TV>();
 
       map<TK2,TV> & m2 = it->second;
       typename map<TK2,TV>::iterator it2 = m2.find(k2);
-      if (it2 == m2.end()) return Option<TV>();
-      return Option<TV>(it2->second);
+      if (it2 == m2.end()) return boost::optional<TV>();
+      return boost::optional<TV>(it2->second);
     }
     TV GetOrElse(const TK1 k1, const TK2 k2, TV defaultval)
     {
@@ -333,12 +278,12 @@ class SMapOfMap {
     }
 };
 
-template <typename TK, typename TV> 
+template <typename TK, typename TV>
 class SMapPersistVal {
   private:
     SMap<TK,TV> _map;
   public:
-    Option<TV> Get(const TK k)
+    boost::optional<TV> Get(const TK k)
     {
       return _map.Get(k);
     }

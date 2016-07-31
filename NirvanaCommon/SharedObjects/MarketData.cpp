@@ -838,30 +838,21 @@ bool MarketData::GetLatestTradePrice(const string & sSymbol, double & tradeprice
   return true;
 }
 
-Option<string> MarketData::GetSuppD1BarOHLCVPath(const string & symbol)
-{
-  return GetSuppBarOHLCVPath(symbol, m_SysCfg->Get_SupplementaryBarD1Path());
-}
-Option<string> MarketData::GetSuppM1BarOHLCVPath(const string & symbol)
-{
-  return GetSuppBarOHLCVPath(symbol, m_SysCfg->Get_SupplementaryBarM1Path());
-}
-
-Option<string> MarketData::GetSuppBarOHLCVPath(const string & symbol, const string & folder)
+boost::optional<string> MarketData::GetSuppBarOHLCVPath(const string & symbol, const string & folder)
 {
   if (m_SysCfg->Get_SupplementaryBarLeadingZeroAdj())
   {
     const string b1f = folder+"/"+STool::TrimLeft(symbol,"0")+".csv";
     const string b2f = folder+"/"+STool::PadLeft(STool::TrimLeft(symbol,"0"),'0',5)+".csv";
-    if      (STool::ChkIfFileExists(b1f)) return Option<string>(b1f);
-    else if (STool::ChkIfFileExists(b2f)) return Option<string>(b2f);
-    else Option<string>();
+    if      (STool::ChkIfFileExists(b1f)) return boost::optional<string>(b1f);
+    else if (STool::ChkIfFileExists(b2f)) return boost::optional<string>(b2f);
+    else return boost::none;
   }
   else
   {
     const string sFile = folder+"/"+symbol+".csv";
-    if (STool::ChkIfFileExists(sFile)) return Option<string>(sFile);
-    else Option<string>();
+    if (STool::ChkIfFileExists(sFile)) return boost::optional<string>(sFile);
+    else return boost::none;
   }
 }
 
@@ -876,9 +867,7 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
   vector<double> & vClose,
   vector<long> & vVol)
 {
-  m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
   boost::unique_lock<boost::shared_mutex> lock(m_SupplementaryDayBarMutex);
-  m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
 
   //--------------------------------------------------
   // Lazy initialization
@@ -886,47 +875,35 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
   map<string,BarProvider*>::iterator it = m_SupplementaryDayBar.find(sSymbol);
   if (it == m_SupplementaryDayBar.end())
   {
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
-    Option<string> oFile = GetSuppD1BarOHLCVPath(sSymbol);
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt IsNone=%s %s %d",(oFile.IsNone() ? "true":"false"), __FILE__, __LINE__);
-    if (oFile.IsNone())
+    boost::optional<string> oFile = GetSuppBarOHLCVPath(sSymbol, m_SysCfg->Get_SupplementaryBarD1Path());
+    if (!oFile)
     {
-      m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
       vYMD.clear();
       vOpen.clear();
       vHigh.clear();
       vLow.clear();
       vClose.clear();
       vVol.clear();
-      m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
       return;
     }
 
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
-    m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: Sym=%s %s",sSymbol.c_str(), oFile.GetOrElse("None").c_str());
+    m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: Sym=%s %s",sSymbol.c_str(), GetOrElse(oFile,string("None")).c_str());
 
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
-    string sFormat = "DxOHLCV";
+    string sFormat("DxOHLCV");
     if (sSymbol == UNDERLYING_VHSI) sFormat = "DxC";
 
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
     BarProvider * bp = new BarProvider(
-      oFile.Get().c_str(),
+      (*oFile).c_str(),
       sFormat.c_str(),
       5,
       'F',
       'N',
       'P');
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
     m_SupplementaryDayBar[sSymbol] = bp;
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
     it = m_SupplementaryDayBar.find(sSymbol);
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
   }
 
-  m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
   it->second->GetOHLCVInDateRange(ymdStart, ymdEnd, vYMD, vOpen, vHigh, vLow, vClose, vVol);
-  m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
 
   return;
 }
@@ -953,8 +930,8 @@ void MarketData::GetSuppM1BarOHLCVInDateTimeRange(
   map<string,BarProvider*>::iterator it = m_SupplementaryM1Bar.find(sSymbol);
   if (it == m_SupplementaryM1Bar.end())
   {
-    Option<string> oFile= GetSuppM1BarOHLCVPath(sSymbol);
-    if (oFile.IsNone())
+    boost::optional<string> oFile = GetSuppBarOHLCVPath(sSymbol, m_SysCfg->Get_SupplementaryBarM1Path());
+    if (!oFile)
     {
       vYMD.clear();
       vHMS.clear();
@@ -966,10 +943,10 @@ void MarketData::GetSuppM1BarOHLCVInDateTimeRange(
       return;
     }
 
-    m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: %s",oFile.GetOrElse("None").c_str());
+    m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: %s",GetOrElse(oFile,string("None")).c_str());
 
     BarProvider * bp = new BarProvider(
-      oFile.GetOrElse("None").c_str(),
+      GetOrElse(oFile,string("None")).c_str(),
       "DTOHLC",
       5,
       'F',

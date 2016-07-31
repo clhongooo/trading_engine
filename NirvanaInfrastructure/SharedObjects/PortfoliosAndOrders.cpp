@@ -477,10 +477,10 @@ void PortfoliosAndOrders::LimitOrderConstructor(const OrderInstruction oi, ATU_O
 bool PortfoliosAndOrders::UpdateOrderState(const string & order_id, const OrderInstruction::OrderExecState exec_state)
 {
 
-  Option<OrderInstruction> oOI = m_working_orders.Get(order_id);
-  if (oOI.IsNone()) return false;
+  boost::optional<OrderInstruction> oOI = m_working_orders.Get(order_id);
+  if (!oOI) return false;
 
-  OrderInstruction oi = oOI.Get();
+  OrderInstruction oi = oOI.get();
   oi.m_order_exec_state = exec_state;
 
   if (exec_state == OrderInstruction::FILLED)
@@ -509,10 +509,10 @@ bool PortfoliosAndOrders::BookTradeFromOTI(const string & order_id, const string
   //--------------------------------------------------
   // try to search the order_id in working orders and completed orders
   //--------------------------------------------------
-  Option<OrderInstruction> oWOOI = m_working_orders.Get(order_id);
-  Option<OrderInstruction> oCOOI = m_completed_orders.Get(order_id);
+  boost::optional<OrderInstruction> oWOOI = m_working_orders.Get(order_id);
+  boost::optional<OrderInstruction> oCOOI = m_completed_orders.Get(order_id);
 
-  if (oWOOI.IsNone() && oCOOI.IsNone())
+  if (!oWOOI && !oCOOI)
   {
     m_Logger->Write(Logger::INFO,"PortfoliosAndOrders: BookTradeFromOTI orderid %s was not found in both completed and working orders.", order_id.c_str());
     return false;
@@ -521,9 +521,9 @@ bool PortfoliosAndOrders::BookTradeFromOTI(const string & order_id, const string
   int iPortID = -1;
   string sSymbol = "";
 
-  if (oWOOI.IsSome())
+  if (oWOOI)
   {
-    OrderInstruction oi = oWOOI.Get();
+    OrderInstruction oi = oWOOI.get();
     iPortID = oi.m_portfolio_id;
     sSymbol = oi.m_symbol;
     oi.m_signed_qty -= signed_qty;
@@ -533,8 +533,8 @@ bool PortfoliosAndOrders::BookTradeFromOTI(const string & order_id, const string
   }
   else
   {
-    iPortID = oCOOI.Get().m_portfolio_id;
-    sSymbol = oCOOI.Get().m_symbol;
+    iPortID = oCOOI.get().m_portfolio_id;
+    sSymbol = oCOOI.get().m_symbol;
   }
   //--------------------------------------------------
 
@@ -566,10 +566,10 @@ int PortfoliosAndOrders::GetUnprocessedWorkingOrdersCount()
 
 bool PortfoliosAndOrders::IsOrderPendingAddAftSF(const string order_id)
 {
-  Option<OrderInstruction> oi = m_working_orders.Get(order_id);
-  if (oi.IsNone()) return false;
+  boost::optional<OrderInstruction> oi = m_working_orders.Get(order_id);
+  if (!oi) return false;
 
-  return oi.Get().m_order_exec_state == OrderInstruction::PENDING_ADD_AFT_SF;
+  return oi.get().m_order_exec_state == OrderInstruction::PENDING_ADD_AFT_SF;
 }
 
 void PortfoliosAndOrders::WriteActualPortToPersistentPosFile()
