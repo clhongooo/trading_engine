@@ -1835,6 +1835,8 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       m_map_dq_GKYZ[m_TradedSymbols[iTradSym]].push_back(m_dGKYZVal);
     }
 
+    m_Logger->Write(Logger::INFO,"Strategy %s: m_NotionalAmt %f m_ChooseBestRotationGroupNum %d m_MaxNotionalAmtEach %f m_SymMidQuote %f",
+                    GetStrategyName(m_StyID).c_str(),m_NotionalAmt, m_ChooseBestRotationGroupNum, m_MaxNotionalAmtEach, m_SymMidQuote);
     m_dAggUnsignedQty = min(m_NotionalAmt / m_ChooseBestRotationGroupNum, m_MaxNotionalAmtEach) / m_SymMidQuote;
     m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s GKYZ.size() %d GKYZ %f m_dAggUnsignedQty (if not perform any volatility adj) %f.",
                     GetStrategyName(m_StyID).c_str(),
