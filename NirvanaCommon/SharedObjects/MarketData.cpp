@@ -876,9 +876,9 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
   vector<double> & vClose,
   vector<long> & vVol)
 {
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
+  m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
   boost::unique_lock<boost::shared_mutex> lock(m_SupplementaryDayBarMutex);
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
+  m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
 
   //--------------------------------------------------
   // Lazy initialization
@@ -888,15 +888,17 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
   {
     m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
     Option<string> oFile= GetSuppD1BarOHLCVPath(sSymbol);
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt IsNone=%s %s %d",(oFile.IsNone() ? "true":"false"), __FILE__, __LINE__);
     if (oFile.IsNone())
     {
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
+      m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
       vYMD.clear();
       vOpen.clear();
       vHigh.clear();
       vLow.clear();
       vClose.clear();
       vVol.clear();
+      m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
       return;
     }
 
@@ -909,7 +911,7 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
 
     m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
     BarProvider * bp = new BarProvider(
-      oFile.GetOrElse("/dev/null").c_str(),
+      oFile.Get().c_str(),
       sFormat.c_str(),
       5,
       'F',
@@ -922,9 +924,9 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
     m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
   }
 
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
+  m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
   it->second->GetOHLCVInDateRange(ymdStart, ymdEnd, vYMD, vOpen, vHigh, vLow, vClose, vVol);
-    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
+  m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
 
   return;
 }
