@@ -886,9 +886,11 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
   map<string,BarProvider*>::iterator it = m_SupplementaryDayBar.find(sSymbol);
   if (it == m_SupplementaryDayBar.end())
   {
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
     Option<string> oFile= GetSuppD1BarOHLCVPath(sSymbol);
     if (oFile.IsNone())
     {
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
       vYMD.clear();
       vOpen.clear();
       vHigh.clear();
@@ -898,11 +900,14 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
       return;
     }
 
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
     m_Logger->Write(Logger::INFO,"MarketData: Supplementary Day bar path: Sym=%s %s",sSymbol.c_str(), oFile.GetOrElse("None").c_str());
 
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
     string sFormat = "DxOHLCV";
     if (sSymbol == UNDERLYING_VHSI) sFormat = "DxC";
 
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
     BarProvider * bp = new BarProvider(
       oFile.GetOrElse("/dev/null").c_str(),
       sFormat.c_str(),
@@ -910,11 +915,16 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
       'F',
       'N',
       'P');
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
     m_SupplementaryDayBar[sSymbol] = bp;
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
     it = m_SupplementaryDayBar.find(sSymbol);
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
   }
 
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
   it->second->GetOHLCVInDateRange(ymdStart, ymdEnd, vYMD, vOpen, vHigh, vLow, vClose, vVol);
+    m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
 
   return;
 }
