@@ -64,7 +64,7 @@ fi
 if [[ $ARG2 == "d" ||  $ARG2 == "dbg" ]]
 then
     RUNCMD="gdb --args ./Debug/TradingEngine"
-elif [[ $ARG2 == "v" ]]
+elif [[ $ARG2 == "v" || $ARG2 == "val" ]]
 then
     # RUNCMD="valgrind -v --tool=memcheck --leak-check=full --show-leak-kinds=all ./Debug/TradingEngine"
     RUNCMD="valgrind -v --tool=memcheck ./Debug/TradingEngine"

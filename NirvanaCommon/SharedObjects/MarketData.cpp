@@ -887,7 +887,7 @@ void MarketData::GetSuppD1BarOHLCVInDateRange(
   if (it == m_SupplementaryDayBar.end())
   {
     m_Logger->Write(Logger::INFO,"MarketData: chkpt Sym=%s %s %d",sSymbol.c_str(), __FILE__, __LINE__);
-    Option<string> oFile= GetSuppD1BarOHLCVPath(sSymbol);
+    Option<string> oFile = GetSuppD1BarOHLCVPath(sSymbol);
     m_Logger->Write(Logger::INFO,"MarketData: chkpt IsNone=%s %s %d",(oFile.IsNone() ? "true":"false"), __FILE__, __LINE__);
     if (oFile.IsNone())
     {
