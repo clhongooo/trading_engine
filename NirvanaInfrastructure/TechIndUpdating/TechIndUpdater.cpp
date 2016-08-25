@@ -22,11 +22,14 @@ TechIndUpdater::TechIndUpdater() :
   m_HKItrdSea       = HKIntradaySeasonality::Instance();
   m_ThrdHlthMon     = ThreadHealthMonitor::Instance();
 
-  m_sHKc1Sym.insert(HSI_CONT_FUT_1);
-  m_sHKc1Sym.insert(HHI_CONT_FUT_1);
+  //--------------------------------------------------
+  // FIXME adhoc fix the memory problem in B2
+  //--------------------------------------------------
+  // m_sHKc1Sym.insert(HSI_CONT_FUT_1);
+  // m_sHKc1Sym.insert(HHI_CONT_FUT_1);
 
-  m_sHKIdx.insert(UNDERLYING_HSI);
-  m_sHKIdx.insert(UNDERLYING_HHI);
+  // m_sHKIdx.insert(UNDERLYING_HSI);
+  // m_sHKIdx.insert(UNDERLYING_HHI);
 
   for (unsigned int i = 0; i < MAX_OTIMDI; ++i)
   {
@@ -188,7 +191,9 @@ void TechIndUpdater::Run()
             vector<double>   vClose;
             vector<long>     vVol;
 
+            m_Logger->Write(Logger::INFO,"TechIndUpdater: GetSuppD1BarOHLCVInDateRange before %s %d", __FILE__, __LINE__);
             m_MarketData->GetSuppD1BarOHLCVInDateRange(sSym, m_ymdhms_LastMonitorTime.GetYYYYMMDD(), m_ymdhms_LastMonitorTime.GetYYYYMMDD(), vYMD, vOpen, vHigh, vLow, vClose, vVol);
+            m_Logger->Write(Logger::INFO,"TechIndUpdater: GetSuppD1BarOHLCVInDateRange after %s %d", __FILE__, __LINE__);
             for (unsigned int j = 0; j < vYMD.size(); ++j)
             {
               if (vYMD[j] != m_ymdhms_SysTimeHKT.GetYYYYMMDD())

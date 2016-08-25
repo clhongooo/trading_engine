@@ -4,6 +4,7 @@
 #include "PCH.h"
 #include <boost/thread.hpp>
 #include <boost/thread/shared_mutex.hpp>
+// #include <boost/scoped_ptr.hpp>
 
 //--------------------------------------------------
 // Functional programming?
@@ -90,22 +91,40 @@ class Option {
     Option(const T & content)
     {
       _hasContent = true;
+      // _p_content.reset(new T(content));
       _content = content;
+    }
+    Option(const Option<T> & o)
+    {
+      _hasContent = o._hasContent;
+      // _p_content.reset(new T(*o._p_content));
+      _content = o._content;
     }
     Option()
     {
       _hasContent = false;
+      // _p_content.reset();
     }
     bool IsNone() { return !_hasContent; }
     bool IsSome() { return _hasContent; }
     T Get() 
     {
+      // return *_p_content;
       return _content;
     }
     T GetOrElse(const T defaultval)
     {
-      if (_hasContent) return _content;
+      if (_hasContent)
+        // return *_p_content;
+        return _content;
       else return defaultval;
+    }
+    Option<T>& operator=(const Option<T>& o)
+    {
+      _hasContent = o._hasContent;
+      // _p_content.reset(new T(*o._p_content));
+      _content = o._content;
+      return *this;
     }
     bool operator==(const Option<T>& o)
     {
@@ -116,11 +135,13 @@ class Option {
       //--------------------------------------------------
       // both have content
       //--------------------------------------------------
-      return (this->_content == o._content);
+      // return *(this->_p_content) == *(o._p_content);
+      return this->_content == o._content;
     }
   private:
     bool _hasContent;
-    T    _content;
+    // scoped_ptr<T> _p_content;
+    T _content;
 }; 
 
 template <typename TK, typename TV> 
