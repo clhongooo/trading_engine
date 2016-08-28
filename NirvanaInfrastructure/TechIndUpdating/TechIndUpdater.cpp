@@ -22,14 +22,11 @@ TechIndUpdater::TechIndUpdater() :
   m_HKItrdSea       = HKIntradaySeasonality::Instance();
   m_ThrdHlthMon     = ThreadHealthMonitor::Instance();
 
-  //--------------------------------------------------
-  // FIXME adhoc fix the memory problem in B2
-  //--------------------------------------------------
-  // m_sHKc1Sym.insert(HSI_CONT_FUT_1);
-  // m_sHKc1Sym.insert(HHI_CONT_FUT_1);
+  m_sHKc1Sym.insert(HSI_CONT_FUT_1);
+  m_sHKc1Sym.insert(HHI_CONT_FUT_1);
 
-  // m_sHKIdx.insert(UNDERLYING_HSI);
-  // m_sHKIdx.insert(UNDERLYING_HHI);
+  m_sHKIdx.insert(UNDERLYING_HSI);
+  m_sHKIdx.insert(UNDERLYING_HHI);
 
   for (unsigned int i = 0; i < MAX_OTIMDI; ++i)
   {
