@@ -82,11 +82,8 @@ double FSum(const Collection & col)
 
 template <typename T>
 T GetOrElse(boost::optional<T> o, T val) {
-    if (o)
-    {
-      return o.get();
-      
-    }
+    if (o) return o.get();
+    else return val;
 }
 
 template <typename TK, typename TV>
