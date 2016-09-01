@@ -1,4 +1,6 @@
 #!/bin/bash
+./doSymLinking.sh obj_file_list.txt
+
 LSDIRO="/home/$(whoami)/workspaceCN/loglibrary/Debug \
 /home/$(whoami)/workspaceCN/atu_tcp_library/Debug \
 /home/$(whoami)/workspaceCN/NirvanaCommon/Debug \
