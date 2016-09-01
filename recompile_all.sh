@@ -14,5 +14,5 @@ do
     make -j$MAKE_JOB all
 done
 
-cp /home/$(whoami)/workspaceCN/TradingEngine/Debug/TradingEngine /tmp/TradingEngine
-chmod 777 /tmp/TradingEngine
+# cp /home/$(whoami)/workspaceCN/TradingEngine/Debug/TradingEngine /tmp/TradingEngine
+# chmod 777 /tmp/TradingEngine
