@@ -15,7 +15,7 @@ DEST_FOLDER=~/nir_lib/
 
 cd $DEST_FOLDER
 
-unlink *
+ls | xargs -I{} unlink {}
 
 for i in $(cat $OBJ_FILE_LIST)
 do
