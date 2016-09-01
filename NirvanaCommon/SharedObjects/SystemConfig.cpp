@@ -124,6 +124,7 @@ SystemConfig::SystemConfig() :
   m_B2_US1_RotationGroupFile(""),
   m_B2_US1_Arima_ZMQ_IP_Port(""),
   m_B2_US1_PerformCppTaylor(true),
+  m_B2_US1_SymbolStickiness(false),
   m_B2_US1_TaylorWeight(0.5),
   m_B2_US1_ArimaWeight(0.5),
   m_B2_US1_ChooseBestNRotationGroupProp(0.5),
@@ -149,6 +150,7 @@ SystemConfig::SystemConfig() :
   m_B2_US2_RotationGroupFile(""),
   m_B2_US2_Arima_ZMQ_IP_Port(""),
   m_B2_US2_PerformCppTaylor(true),
+  m_B2_US2_SymbolStickiness(false),
   m_B2_US2_TaylorWeight(0.5),
   m_B2_US2_ArimaWeight(0.5),
   m_B2_US2_ChooseBestNRotationGroupProp(0.5),
@@ -174,6 +176,7 @@ SystemConfig::SystemConfig() :
   m_B2_US3_RotationGroupFile(""),
   m_B2_US3_Arima_ZMQ_IP_Port(""),
   m_B2_US3_PerformCppTaylor(true),
+  m_B2_US3_SymbolStickiness(false),
   m_B2_US3_TaylorWeight(0.5),
   m_B2_US3_ArimaWeight(0.5),
   m_B2_US3_ChooseBestNRotationGroupProp(0.5),
@@ -198,6 +201,7 @@ SystemConfig::SystemConfig() :
   m_B2_HK_RotationGroupFile(""),
   m_B2_HK_Arima_ZMQ_IP_Port(""),
   m_B2_HK_PerformCppTaylor(true),
+  m_B2_HK_SymbolStickiness(false),
   m_B2_HK_TaylorWeight(0.5),
   m_B2_HK_ArimaWeight(0.5),
   m_B2_HK_ChooseBestNRotationGroupProp(0.5),
@@ -385,6 +389,7 @@ bool                          SystemConfig::B2_PersistTheoPosCPnL               
 string                        SystemConfig::Get_B2_RotationGroupFile               (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_RotationGroupFile;                    else if (id == STY_B2_US2) return m_B2_US2_RotationGroupFile;                       else if (id == STY_B2_US3) return m_B2_US3_RotationGroupFile;                       else if (id == STY_B2_HK) return m_B2_HK_RotationGroupFile;                   }
 string                        SystemConfig::Get_B2_Arima_ZMQ_IP_Port               (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_Arima_ZMQ_IP_Port;                    else if (id == STY_B2_US2) return m_B2_US2_Arima_ZMQ_IP_Port;                       else if (id == STY_B2_US3) return m_B2_US3_Arima_ZMQ_IP_Port;                       else if (id == STY_B2_HK) return m_B2_HK_Arima_ZMQ_IP_Port;                   }
 bool                          SystemConfig::Get_B2_PerformCppTaylor                (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_PerformCppTaylor;                     else if (id == STY_B2_US2) return m_B2_US2_PerformCppTaylor;                        else if (id == STY_B2_US3) return m_B2_US3_PerformCppTaylor;                        else if (id == STY_B2_HK) return m_B2_HK_PerformCppTaylor;                    }
+bool                          SystemConfig::Get_B2_SymbolStickiness                (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_SymbolStickiness;                     else if (id == STY_B2_US2) return m_B2_US2_SymbolStickiness;                        else if (id == STY_B2_US3) return m_B2_US3_SymbolStickiness;                        else if (id == STY_B2_HK) return m_B2_HK_SymbolStickiness;                    }
 double                        SystemConfig::Get_B2_TaylorWeight                    (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_TaylorWeight;                         else if (id == STY_B2_US2) return m_B2_US2_TaylorWeight;                            else if (id == STY_B2_US3) return m_B2_US3_TaylorWeight;                            else if (id == STY_B2_HK) return m_B2_HK_TaylorWeight;                        }
 double                        SystemConfig::Get_B2_ArimaWeight                     (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_ArimaWeight;                          else if (id == STY_B2_US2) return m_B2_US2_ArimaWeight;                             else if (id == STY_B2_US3) return m_B2_US3_ArimaWeight;                             else if (id == STY_B2_HK) return m_B2_HK_ArimaWeight;                         }
 vector<int>                   SystemConfig::Get_B2_RoleOfSym                       (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_RoleOfSym;                            else if (id == STY_B2_US2) return m_B2_US2_RoleOfSym;                               else if (id == STY_B2_US3) return m_B2_US3_RoleOfSym;                               else if (id == STY_B2_HK) return m_B2_HK_RoleOfSym;                           }
@@ -610,6 +615,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_US1_RotationGroupFile                   = pt.get_optional<string>  ("Strategy_B2_US1.RotationGroupFile");
   boost::optional<string> o_B2_US1_Arima_ZMQ_IP_Port                   = pt.get_optional<string>  ("Strategy_B2_US1.ArimaZMQIPPort");
   boost::optional<bool>   o_B2_US1_PerformCppTaylor                    = pt.get_optional<bool>    ("Strategy_B2_US1.PerformCppTaylor");
+  boost::optional<bool>   o_B2_US1_SymbolStickiness                    = pt.get_optional<bool>    ("Strategy_B2_US1.SymbolStickiness");
   boost::optional<double> o_B2_US1_TaylorWeight                        = pt.get_optional<double>  ("Strategy_B2_US1.TaylorWeight");
   boost::optional<double> o_B2_US1_ArimaWeight                         = pt.get_optional<double>  ("Strategy_B2_US1.ArimaWeight");
 
@@ -631,6 +637,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US1_RotationGroupFile                   )  m_B2_US1_RotationGroupFile                    = STool::Trim(o_B2_US1_RotationGroupFile       .get());
   if(o_B2_US1_Arima_ZMQ_IP_Port                   )  m_B2_US1_Arima_ZMQ_IP_Port                    = STool::Trim(o_B2_US1_Arima_ZMQ_IP_Port       .get());
   if(o_B2_US1_PerformCppTaylor                    )  m_B2_US1_PerformCppTaylor                     = o_B2_US1_PerformCppTaylor                    .get();
+  if(o_B2_US1_SymbolStickiness                    )  m_B2_US1_SymbolStickiness                     = o_B2_US1_SymbolStickiness                    .get();
   if(o_B2_US1_TaylorWeight                        )  m_B2_US1_TaylorWeight                         = o_B2_US1_TaylorWeight                        .get();
   if(o_B2_US1_ArimaWeight                         )  m_B2_US1_ArimaWeight                          = o_B2_US1_ArimaWeight                         .get();
 
@@ -652,6 +659,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_US2_RotationGroupFile                   = pt.get_optional<string>  ("Strategy_B2_US2.RotationGroupFile");
   boost::optional<string> o_B2_US2_Arima_ZMQ_IP_Port                   = pt.get_optional<string>  ("Strategy_B2_US2.ArimaZMQIPPort");
   boost::optional<bool>   o_B2_US2_PerformCppTaylor                    = pt.get_optional<bool>    ("Strategy_B2_US2.PerformCppTaylor");
+  boost::optional<bool>   o_B2_US2_SymbolStickiness                    = pt.get_optional<bool>    ("Strategy_B2_US2.SymbolStickiness");
   boost::optional<double> o_B2_US2_TaylorWeight                        = pt.get_optional<double>  ("Strategy_B2_US2.TaylorWeight");
   boost::optional<double> o_B2_US2_ArimaWeight                         = pt.get_optional<double>  ("Strategy_B2_US2.ArimaWeight");
 
@@ -673,6 +681,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US2_RotationGroupFile                   )  m_B2_US2_RotationGroupFile                    = STool::Trim(o_B2_US2_RotationGroupFile       .get());
   if(o_B2_US2_Arima_ZMQ_IP_Port                   )  m_B2_US2_Arima_ZMQ_IP_Port                    = STool::Trim(o_B2_US2_Arima_ZMQ_IP_Port       .get());
   if(o_B2_US2_PerformCppTaylor                    )  m_B2_US2_PerformCppTaylor                     = o_B2_US2_PerformCppTaylor                    .get();
+  if(o_B2_US2_SymbolStickiness                    )  m_B2_US2_SymbolStickiness                     = o_B2_US2_SymbolStickiness                    .get();
   if(o_B2_US2_TaylorWeight                        )  m_B2_US2_TaylorWeight                         = o_B2_US2_TaylorWeight                        .get();
   if(o_B2_US2_ArimaWeight                         )  m_B2_US2_ArimaWeight                          = o_B2_US2_ArimaWeight                         .get();
 
@@ -694,6 +703,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_US3_RotationGroupFile                   = pt.get_optional<string>  ("Strategy_B2_US3.RotationGroupFile");
   boost::optional<string> o_B2_US3_Arima_ZMQ_IP_Port                   = pt.get_optional<string>  ("Strategy_B2_US3.ArimaZMQIPPort");
   boost::optional<bool>   o_B2_US3_PerformCppTaylor                    = pt.get_optional<bool>    ("Strategy_B2_US3.PerformCppTaylor");
+  boost::optional<bool>   o_B2_US3_SymbolStickiness                    = pt.get_optional<bool>    ("Strategy_B2_US3.SymbolStickiness");
   boost::optional<double> o_B2_US3_TaylorWeight                        = pt.get_optional<double>  ("Strategy_B2_US3.TaylorWeight");
   boost::optional<double> o_B2_US3_ArimaWeight                         = pt.get_optional<double>  ("Strategy_B2_US3.ArimaWeight");
 
@@ -715,6 +725,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US3_RotationGroupFile                   )  m_B2_US3_RotationGroupFile                    = STool::Trim(o_B2_US3_RotationGroupFile       .get());
   if(o_B2_US3_Arima_ZMQ_IP_Port                   )  m_B2_US3_Arima_ZMQ_IP_Port                    = STool::Trim(o_B2_US3_Arima_ZMQ_IP_Port       .get());
   if(o_B2_US3_PerformCppTaylor                    )  m_B2_US3_PerformCppTaylor                     = o_B2_US3_PerformCppTaylor                    .get();
+  if(o_B2_US3_SymbolStickiness                    )  m_B2_US3_SymbolStickiness                     = o_B2_US3_SymbolStickiness                    .get();
   if(o_B2_US3_TaylorWeight                        )  m_B2_US3_TaylorWeight                         = o_B2_US3_TaylorWeight                        .get();
   if(o_B2_US3_ArimaWeight                         )  m_B2_US3_ArimaWeight                          = o_B2_US3_ArimaWeight                         .get();
 
@@ -736,6 +747,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_HK_RotationGroupFile                   = pt.get_optional<string>  ("Strategy_B2_HK.RotationGroupFile");
   boost::optional<string> o_B2_HK_Arima_ZMQ_IP_Port                   = pt.get_optional<string>  ("Strategy_B2_HK.ArimaZMQIPPort");
   boost::optional<bool>   o_B2_HK_PerformCppTaylor                    = pt.get_optional<bool>    ("Strategy_B2_HK.PerformCppTaylor");
+  boost::optional<bool>   o_B2_HK_SymbolStickiness                    = pt.get_optional<bool>    ("Strategy_B2_HK.SymbolStickiness");
   boost::optional<double> o_B2_HK_TaylorWeight                        = pt.get_optional<double>  ("Strategy_B2_HK.TaylorWeight");
   boost::optional<double> o_B2_HK_ArimaWeight                         = pt.get_optional<double>  ("Strategy_B2_HK.ArimaWeight");
 
@@ -757,6 +769,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_HK_RotationGroupFile                   )  m_B2_HK_RotationGroupFile                   = STool::Trim(o_B2_HK_RotationGroupFile       .get());
   if(o_B2_HK_Arima_ZMQ_IP_Port                   )  m_B2_HK_Arima_ZMQ_IP_Port                   = STool::Trim(o_B2_HK_Arima_ZMQ_IP_Port       .get());
   if(o_B2_HK_PerformCppTaylor                    )  m_B2_HK_PerformCppTaylor                    = o_B2_HK_PerformCppTaylor                    .get();
+  if(o_B2_HK_SymbolStickiness                    )  m_B2_HK_SymbolStickiness                    = o_B2_HK_SymbolStickiness                    .get();
   if(o_B2_HK_TaylorWeight                        )  m_B2_HK_TaylorWeight                        = o_B2_HK_TaylorWeight                        .get();
   if(o_B2_HK_ArimaWeight                         )  m_B2_HK_ArimaWeight                         = o_B2_HK_ArimaWeight                         .get();
 

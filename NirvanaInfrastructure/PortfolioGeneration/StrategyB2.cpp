@@ -746,6 +746,10 @@ void StrategyB2::ReadParam()
   m_Logger->Write(Logger::INFO,"Strategy %s: m_PerformCppTaylor %s",
                   GetStrategyName(m_StyID).c_str(), (m_PerformCppTaylor ? "true" : "false"));
 
+  m_SymbolStickiness = m_SysCfg->Get_B2_SymbolStickiness(m_StyID);
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_SymbolStickiness %s",
+                  GetStrategyName(m_StyID).c_str(), (m_SymbolStickiness ? "true" : "false"));
+
   m_TaylorWeight = m_SysCfg->Get_B2_TaylorWeight(m_StyID);
   m_Logger->Write(Logger::INFO,"Strategy %s: m_TaylorWeight %f", GetStrategyName(m_StyID).c_str(), m_TaylorWeight);
 
@@ -2207,7 +2211,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       // sticky stock: get the set of symbol whose position we will maintain (within the groups)
       //--------------------------------------------------
 
-      if (B2_STICINESS_ON)
+      if (m_SymbolStickiness)
       {
         if (
           (

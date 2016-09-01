@@ -190,6 +190,7 @@ class SystemConfig : boost::noncopyable
     string                 Get_B2_RotationGroupFile(const StrategyID)                          const;
     string                 Get_B2_Arima_ZMQ_IP_Port(const StrategyID)                          const;
     bool                   Get_B2_PerformCppTaylor(const StrategyID)                           const;
+    bool                   Get_B2_SymbolStickiness(const StrategyID)                           const;
     double                 Get_B2_TaylorWeight(const StrategyID)                               const;
     double                 Get_B2_ArimaWeight(const StrategyID)                                const;
     vector<int>            Get_B2_RoleOfSym(const StrategyID)                                  const;
@@ -395,6 +396,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_B2_US1_RotationGroupFile;
     string                                             m_B2_US1_Arima_ZMQ_IP_Port;
     bool                                               m_B2_US1_PerformCppTaylor;
+    bool                                               m_B2_US1_SymbolStickiness;
     double                                             m_B2_US1_TaylorWeight;
     double                                             m_B2_US1_ArimaWeight;
     vector<int>                                        m_B2_US1_RoleOfSym;
@@ -423,6 +425,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_B2_US2_RotationGroupFile;
     string                                             m_B2_US2_Arima_ZMQ_IP_Port;
     bool                                               m_B2_US2_PerformCppTaylor;
+    bool                                               m_B2_US2_SymbolStickiness;
     double                                             m_B2_US2_TaylorWeight;
     double                                             m_B2_US2_ArimaWeight;
     vector<int>                                        m_B2_US2_RoleOfSym;
@@ -451,6 +454,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_B2_US3_RotationGroupFile;
     string                                             m_B2_US3_Arima_ZMQ_IP_Port;
     bool                                               m_B2_US3_PerformCppTaylor;
+    bool                                               m_B2_US3_SymbolStickiness;
     double                                             m_B2_US3_TaylorWeight;
     double                                             m_B2_US3_ArimaWeight;
     vector<int>                                        m_B2_US3_RoleOfSym;
@@ -479,6 +483,7 @@ class SystemConfig : boost::noncopyable
     string                                             m_B2_HK_RotationGroupFile;
     string                                             m_B2_HK_Arima_ZMQ_IP_Port;
     bool                                               m_B2_HK_PerformCppTaylor;
+    bool                                               m_B2_HK_SymbolStickiness;
     double                                             m_B2_HK_TaylorWeight;
     double                                             m_B2_HK_ArimaWeight;
     vector<int>                                        m_B2_HK_RoleOfSym;
