@@ -6,6 +6,7 @@
 *.a
 *.d
 *.log
+nohup.out
 
 ###########
 # Eclipse #
@@ -17,6 +18,8 @@
 *.pref
 */Debug/*
 */.settings/*
+.metadata
+RemoteSystemsTempFiles
 
 ###################
 # Compiled source #
