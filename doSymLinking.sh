@@ -2,7 +2,7 @@
 
 if [[ $# -eq 0 ]]
 then
-      echo "arg 1 : location of obj_file_list.txt"
+      echo "Usage: $(basename $0) [obj_file_list.txt]"
       exit
 fi
 
@@ -11,10 +11,7 @@ CURDIR=$(pwd)
 OBJ_FILE_LIST=$CURDIR/$1
 DEST_FOLDER=~/nir_lib/
 
-if [[ ! -d $DEST_FOLDER ]]
-then
-    mkdir -p $DEST_FOLDER
-fi
+[[ ! -d $DEST_FOLDER ]] && mkdir -p $DEST_FOLDER
 
 cd $DEST_FOLDER
 
