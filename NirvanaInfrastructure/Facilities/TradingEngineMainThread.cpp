@@ -140,6 +140,7 @@ void TradingEngineMainThread::RunMainThread()
   boost::scoped_ptr<StrategyB2_US2>     styB2_US2;
   boost::scoped_ptr<StrategyB2_US3>     styB2_US3;
   boost::scoped_ptr<StrategyB2_HK>      styB2_HK;
+  boost::scoped_ptr<StrategyB3_US>      styB3_US;
   boost::scoped_ptr<StrategyNIR1>       styNIR1;
   boost::scoped_ptr<StrategyR7>         styR7;
   boost::scoped_ptr<StrategyR9>         styR9;
@@ -223,25 +224,32 @@ void TradingEngineMainThread::RunMainThread()
     p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_HK"); usleep(100000);
   }
 
-  if (p_SysCfg->IsStrategyOn(STY_NIR1))
+  if (p_SysCfg->IsStrategyOn(STY_B3_US))
   {
-    styNIR1.reset(new StrategyNIR1());
-    m_thread_group.add_thread(new boost::thread(&StrategyNIR1::Run, styNIR1.get()));
-    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyNIR1"); usleep(100000);
+    styB3_US.reset(new StrategyB3_US());
+    m_thread_group.add_thread(new boost::thread(&StrategyB3_US::Run, styB3_US.get()));
+    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB3_US"); usleep(100000);
   }
 
-  if (p_SysCfg->IsStrategyOn(STY_R7))
-  {
-    styR7.reset(new StrategyR7());
-    m_thread_group.add_thread(new boost::thread(&StrategyR7::Run, styR7.get()));
-    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR7"); usleep(100000);
-  }
-  if (p_SysCfg->IsStrategyOn(STY_R9))
-  {
-    styR9.reset(new StrategyR9());
-    m_thread_group.add_thread(new boost::thread(&StrategyR9::Run, styR9.get()));
-    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR9"); usleep(100000);
-  }
+  // if (p_SysCfg->IsStrategyOn(STY_NIR1))
+  // {
+  //   styNIR1.reset(new StrategyNIR1());
+  //   m_thread_group.add_thread(new boost::thread(&StrategyNIR1::Run, styNIR1.get()));
+  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyNIR1"); usleep(100000);
+  // }
+
+  // if (p_SysCfg->IsStrategyOn(STY_R7))
+  // {
+  //   styR7.reset(new StrategyR7());
+  //   m_thread_group.add_thread(new boost::thread(&StrategyR7::Run, styR7.get()));
+  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR7"); usleep(100000);
+  // }
+  // if (p_SysCfg->IsStrategyOn(STY_R9))
+  // {
+  //   styR9.reset(new StrategyR9());
+  //   m_thread_group.add_thread(new boost::thread(&StrategyR9::Run, styR9.get()));
+  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR9"); usleep(100000);
+  // }
 
   // if (p_SysCfg->IsStrategyOn(STY_S11A))
   // {

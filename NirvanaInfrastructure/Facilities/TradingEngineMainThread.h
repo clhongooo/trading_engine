@@ -29,6 +29,7 @@
 #include "StrategyB2US1.h"
 #include "StrategyB2US2.h"
 #include "StrategyB2US3.h"
+#include "StrategyB3US.h"
 #include "StrategyNIR1.h"
 #include "StrategyS11A.h"
 #include "StrategyA1.h"

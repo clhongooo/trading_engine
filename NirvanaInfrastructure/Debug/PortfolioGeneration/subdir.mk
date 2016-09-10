@@ -14,6 +14,8 @@ CPP_SRCS += \
 ../PortfolioGeneration/StrategyB2US1.cpp \
 ../PortfolioGeneration/StrategyB2US2.cpp \
 ../PortfolioGeneration/StrategyB2US3.cpp \
+../PortfolioGeneration/StrategyB3.cpp \
+../PortfolioGeneration/StrategyB3US.cpp \
 ../PortfolioGeneration/StrategyBase.cpp \
 ../PortfolioGeneration/StrategyETFR.cpp \
 ../PortfolioGeneration/StrategyNIR1.cpp \
@@ -37,6 +39,8 @@ OBJS += \
 ./PortfolioGeneration/StrategyB2US1.o \
 ./PortfolioGeneration/StrategyB2US2.o \
 ./PortfolioGeneration/StrategyB2US3.o \
+./PortfolioGeneration/StrategyB3.o \
+./PortfolioGeneration/StrategyB3US.o \
 ./PortfolioGeneration/StrategyBase.o \
 ./PortfolioGeneration/StrategyETFR.o \
 ./PortfolioGeneration/StrategyNIR1.o \
@@ -60,6 +64,8 @@ CPP_DEPS += \
 ./PortfolioGeneration/StrategyB2US1.d \
 ./PortfolioGeneration/StrategyB2US2.d \
 ./PortfolioGeneration/StrategyB2US3.d \
+./PortfolioGeneration/StrategyB3.d \
+./PortfolioGeneration/StrategyB3US.d \
 ./PortfolioGeneration/StrategyBase.d \
 ./PortfolioGeneration/StrategyETFR.d \
 ./PortfolioGeneration/StrategyNIR1.d \

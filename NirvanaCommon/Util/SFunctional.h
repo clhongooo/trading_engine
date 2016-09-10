@@ -82,8 +82,8 @@ double FSum(const Collection & col)
 
 template <typename T>
 T GetOrElse(boost::optional<T> o, T val) {
-    if (o) return o.get();
-    else return val;
+  if (o) return o.get();
+  else return val;
 }
 
 template <typename TK, typename TV>
@@ -295,6 +295,97 @@ class SMapPersistVal {
     bool Contains(const TK k)
     {
       return _map.Contains(k);
+    }
+};
+
+
+template <typename A, typename B>
+class Tuple2 {
+  private:
+    A m_a;
+    B m_b;
+  public:
+    Tuple2(A a, B b)
+    {
+      m_a = a;
+      m_b = b;
+    }
+    bool operator<(const Tuple2 & rhs) const { return this->m_a < rhs.m_a; }
+    Tuple2 & operator=(const Tuple2 & tup)
+    { if (this == &tup) return *this;
+      m_a = tup.m_a;
+      m_b = tup.m_b;
+      return *this;
+    }
+    A _1() const { return m_a; }
+    B _2() const { return m_b; }
+    string ToString() const
+    {
+      return "(" + boost::lexical_cast<string>(m_a) + "," + boost::lexical_cast<string>(m_b) + ")";
+    }
+};
+
+template <typename A, typename B, typename C>
+class Tuple3 {
+  private:
+    A m_a;
+    B m_b;
+    C m_c;
+  public:
+    Tuple3(A a, B b, C c)
+    {
+      m_a = a;
+      m_b = b;
+      m_c = c;
+    }
+    bool operator<(const Tuple3 & rhs) const { return this->m_a < rhs.m_a; }
+    Tuple3 & operator=(const Tuple3 & tup)
+    { if (this == &tup) return *this;
+      m_a = tup.m_a;
+      m_b = tup.m_b;
+      m_c = tup.m_c;
+      return *this;
+    }
+    A _1() const { return m_a; }
+    B _2() const { return m_b; }
+    C _3() const { return m_c; }
+    string ToString() const
+    {
+      return "(" + boost::lexical_cast<string>(m_a) + "," + boost::lexical_cast<string>(m_b) + "," + boost::lexical_cast<string>(m_c) + ")";
+    }
+};
+
+template <typename A, typename B, typename C, typename D>
+class Tuple4 {
+  private:
+    A m_a;
+    B m_b;
+    C m_c;
+    D m_d;
+  public:
+    Tuple4(A a, B b, C c, D d)
+    {
+      m_a = a;
+      m_b = b;
+      m_c = c;
+      m_d = d;
+    }
+    bool operator<(const Tuple4 & rhs) const { return this->m_a < rhs.m_a; }
+    Tuple4 & operator=(const Tuple4 & tup)
+    { if (this == &tup) return *this;
+      m_a = tup.m_a;
+      m_b = tup.m_b;
+      m_c = tup.m_c;
+      m_d = tup.m_d;
+      return *this;
+    }
+    A _1() const { return m_a; }
+    B _2() const { return m_b; }
+    C _3() const { return m_c; }
+    D _4() const { return m_d; }
+    string ToString() const
+    {
+      return "(" + boost::lexical_cast<string>(m_a) + "," + boost::lexical_cast<string>(m_b) + "," + boost::lexical_cast<string>(m_c) + "," + boost::lexical_cast<string>(m_d) + ")";
     }
 };
 

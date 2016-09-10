@@ -210,6 +210,31 @@ SystemConfig::SystemConfig() :
   m_B2_HK_MoveNextBestGroupUpIfNoSignal(true),
   m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal(true),
   m_B2_HK_AvgAggSgndNotnlThresh(0),
+  m_B3_US_HasEnabledMinCommissionCheck(true),
+  m_B3_US_CommissionRateThreshold(0),
+  m_B3_US_HasEnabledRotationMode(0),
+  m_B3_US_RotationModeTradeHighestReturn(0),
+  m_B3_US_RotationModeUseNDayReturn(2),
+  m_B3_US_LongOnlyWhenClosePriceBelowAvgPrice(boost::optional<double>()),
+  m_B3_US_ShortOnlyWhenClosePriceAboveAvgPrice(boost::optional<double>()),
+  m_B3_US_LongOnlyWhenAvgPriceReturnAbove(boost::optional<double>()),
+  m_B3_US_LongOnlyWhenGrpAvgReturnAbove(boost::optional<double>()),
+  m_B3_US_ShortOnlyWhenAvgPriceReturnBelow(boost::optional<double>()),
+  m_B3_US_TheoCPnLHistFolder(""),
+  m_B3_US_TheoPosFolder(""),
+  m_B3_US_PersistTheoPosCPnL(false),
+  m_B3_US_RotationGroupFile(""),
+  m_B3_US_Arima_ZMQ_IP_Port(""),
+  m_B3_US_PerformCppTaylor(true),
+  m_B3_US_SymbolStickiness(false),
+  m_B3_US_TaylorWeight(0.5),
+  m_B3_US_ArimaWeight(0.5),
+  m_B3_US_ChooseBestNRotationGroupProp(0.5),
+  m_B3_US_ActionTimeBefCloseInSec(180),
+  m_B3_US_ActionTimeAftOpenInSec(180),
+  m_B3_US_MoveNextBestGroupUpIfNoSignal(true),
+  m_B3_US_MoveNextBestStkInGrpUpIfNoSignal(true),
+  m_B3_US_AvgAggSgndNotnlThresh(0),
   m_SymbolsToBeUsedInAllSections(""),
   m_MaxAllowedTradeNotional(0),
   m_MaxAllowedTradeQty(0)
@@ -402,6 +427,35 @@ bool                          SystemConfig::Get_B2_MoveNextBestStkInGrpUpIfNoSig
 double                        SystemConfig::Get_B2_AvgAggSgndNotnlThresh           (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_AvgAggSgndNotnlThresh;                else if (id == STY_B2_US2) return m_B2_US2_AvgAggSgndNotnlThresh;                   else if (id == STY_B2_US3) return m_B2_US3_AvgAggSgndNotnlThresh;                   else if (id == STY_B2_HK) return m_B2_HK_AvgAggSgndNotnlThresh;               }
 set<string>                   SystemConfig::Get_B2_TradedSymTradeAtOpen            (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_TradedSymbolsTradeAtOpen;             else if (id == STY_B2_US2) return m_B2_US2_TradedSymbolsTradeAtOpen;                else if (id == STY_B2_US3) return m_B2_US3_TradedSymbolsTradeAtOpen;                else if (id == STY_B2_HK) return m_B2_HK_TradedSymbolsTradeAtOpen;            }
 
+bool                          SystemConfig::B3_HasEnabledMinCommissionCheck        (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_HasEnabledMinCommissionCheck;         }
+double                        SystemConfig::B3_CommissionRateThreshold             (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_CommissionRateThreshold;              }
+int                           SystemConfig::B3_HasEnabledRotationMode              (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_HasEnabledRotationMode;               }
+bool                          SystemConfig::B3_RotationModeTradeHighestReturn      (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_RotationModeTradeHighestReturn;       }
+bool                          SystemConfig::B3_RotationModeUseVolyAdjdReturn       (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_RotationModeUseVolyAdjdReturn;        }
+int                           SystemConfig::B3_RotationModeUseNDayReturn           (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_RotationModeUseNDayReturn;            }
+boost::optional<double>       SystemConfig::B3_LongOnlyWhenClosePriceBelowAvgPrice (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_LongOnlyWhenClosePriceBelowAvgPrice;  }
+boost::optional<double>       SystemConfig::B3_ShortOnlyWhenClosePriceAboveAvgPrice(const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_ShortOnlyWhenClosePriceAboveAvgPrice; }
+boost::optional<double>       SystemConfig::B3_LongOnlyWhenAvgPriceReturnAbove     (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_LongOnlyWhenAvgPriceReturnAbove;      }
+boost::optional<double>       SystemConfig::B3_LongOnlyWhenGrpAvgReturnAbove       (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_LongOnlyWhenGrpAvgReturnAbove;        }
+boost::optional<double>       SystemConfig::B3_ShortOnlyWhenAvgPriceReturnBelow    (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_ShortOnlyWhenAvgPriceReturnBelow;     }
+string                        SystemConfig::B3_TheoCPnLHistFolder                  (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_TheoCPnLHistFolder;                   }
+string                        SystemConfig::B3_TheoPosFolder                       (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_TheoPosFolder;                        }
+bool                          SystemConfig::B3_PersistTheoPosCPnL                  (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_PersistTheoPosCPnL;                   }
+string                        SystemConfig::Get_B3_RotationGroupFile               (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_RotationGroupFile;                    }
+string                        SystemConfig::Get_B3_Arima_ZMQ_IP_Port               (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_Arima_ZMQ_IP_Port;                    }
+bool                          SystemConfig::Get_B3_PerformCppTaylor                (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_PerformCppTaylor;                     }
+bool                          SystemConfig::Get_B3_SymbolStickiness                (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_SymbolStickiness;                     }
+double                        SystemConfig::Get_B3_TaylorWeight                    (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_TaylorWeight;                         }
+double                        SystemConfig::Get_B3_ArimaWeight                     (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_ArimaWeight;                          }
+vector<int>                   SystemConfig::Get_B3_RoleOfSym                       (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_RoleOfSym;                            }
+double                        SystemConfig::Get_B3_ChooseBestNRotationGroupProp    (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_ChooseBestNRotationGroupProp;         }
+int                           SystemConfig::Get_B3_ActionTimeBefCloseInSec         (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_ActionTimeBefCloseInSec;              }
+int                           SystemConfig::Get_B3_ActionTimeAftOpenInSec          (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_ActionTimeAftOpenInSec;               }
+vector<int>                   SystemConfig::Get_B3_FilterSMAPeriod                 (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_FilterSMAPeriod;                      }
+bool                          SystemConfig::Get_B3_MoveNextBestGroupUpIfNoSignal   (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_MoveNextBestGroupUpIfNoSignal;        }
+bool                          SystemConfig::Get_B3_MoveNextBestStkInGrpUpIfNoSignal(const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_MoveNextBestStkInGrpUpIfNoSignal;     }
+double                        SystemConfig::Get_B3_AvgAggSgndNotnlThresh           (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_AvgAggSgndNotnlThresh;                }
+set<string>                   SystemConfig::Get_B3_TradedSymTradeAtOpen            (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_TradedSymbolsTradeAtOpen;             }
 
 bool SystemConfig::ChkIfProceedStyForceExcnEvenIfNoMD(const string & symbol) const
 {
@@ -773,6 +827,50 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_HK_TaylorWeight                        )  m_B2_HK_TaylorWeight                        = o_B2_HK_TaylorWeight                        .get();
   if(o_B2_HK_ArimaWeight                         )  m_B2_HK_ArimaWeight                         = o_B2_HK_ArimaWeight                         .get();
 
+  boost::optional<bool>   o_B3_US_HasEnabledMinCommissionCheck        = pt.get_optional<bool>    ("Strategy_B3_US.EnableMinCommissionCheck");
+  boost::optional<double> o_B3_US_CommissionRateThreshold             = pt.get_optional<double>  ("Strategy_B3_US.CommissionRateThreshold");
+  boost::optional<int>    o_B3_US_HasEnabledRotationMode              = pt.get_optional<int>     ("Strategy_B3_US.EnableRotationMode");
+  boost::optional<bool>   o_B3_US_RotationModeTradeHighestReturn      = pt.get_optional<bool>    ("Strategy_B3_US.RotationModeTradeHighestReturn");
+  boost::optional<bool>   o_B3_US_RotationModeUseVolyAdjdReturn       = pt.get_optional<bool>    ("Strategy_B3_US.RotationModeUseVolyAdjdReturn");
+  boost::optional<int>    o_B3_US_RotationModeUseNDayReturn           = pt.get_optional<int>     ("Strategy_B3_US.RotationModeUseNDayReturn");
+  boost::optional<bool>   o_B3_US_PersistTheoPosCPnL                  = pt.get_optional<bool>    ("Strategy_B3_US.PersistTheoPosCPnL");
+  boost::optional<double> o_B3_US_ChooseBestNRotationGroupProp        = pt.get_optional<double>  ("Strategy_B3_US.ChooseBestNRotationGroupProp");
+  boost::optional<int>    o_B3_US_ActionTimeBefCloseInSec             = pt.get_optional<int>     ("Strategy_B3_US.ActionTimeBefCloseInSec");
+  boost::optional<int>    o_B3_US_ActionTimeAftOpenInSec              = pt.get_optional<int>     ("Strategy_B3_US.ActionTimeAftOpenInSec");
+  boost::optional<bool>   o_B3_US_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B3_US.MoveNextBestGroupUpIfNoSignal");
+  boost::optional<bool>   o_B3_US_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B3_US.MoveNextBestStkInGrpUpIfNoSignal");
+  boost::optional<double> o_B3_US_AvgAggSgndNotnlThresh               = pt.get_optional<double>  ("Strategy_B3_US.AvgAggSgndNotnlThresh");
+  boost::optional<string> o_B3_US_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B3_US.TheoCPnLHistFolder");
+  boost::optional<string> o_B3_US_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B3_US.TheoPosFolder");
+  boost::optional<string> o_B3_US_RotationGroupFile                   = pt.get_optional<string>  ("Strategy_B3_US.RotationGroupFile");
+  boost::optional<string> o_B3_US_Arima_ZMQ_IP_Port                   = pt.get_optional<string>  ("Strategy_B3_US.ArimaZMQIPPort");
+  boost::optional<bool>   o_B3_US_PerformCppTaylor                    = pt.get_optional<bool>    ("Strategy_B3_US.PerformCppTaylor");
+  boost::optional<bool>   o_B3_US_SymbolStickiness                    = pt.get_optional<bool>    ("Strategy_B3_US.SymbolStickiness");
+  boost::optional<double> o_B3_US_TaylorWeight                        = pt.get_optional<double>  ("Strategy_B3_US.TaylorWeight");
+  boost::optional<double> o_B3_US_ArimaWeight                         = pt.get_optional<double>  ("Strategy_B3_US.ArimaWeight");
+
+  if(o_B3_US_HasEnabledMinCommissionCheck        )  m_B3_US_HasEnabledMinCommissionCheck        = o_B3_US_HasEnabledMinCommissionCheck        .get();
+  if(o_B3_US_CommissionRateThreshold             )  m_B3_US_CommissionRateThreshold             = o_B3_US_CommissionRateThreshold             .get();
+  if(o_B3_US_HasEnabledRotationMode              )  m_B3_US_HasEnabledRotationMode              = o_B3_US_HasEnabledRotationMode              .get();
+  if(o_B3_US_RotationModeTradeHighestReturn      )  m_B3_US_RotationModeTradeHighestReturn      = o_B3_US_RotationModeTradeHighestReturn      .get();
+  if(o_B3_US_RotationModeUseVolyAdjdReturn       )  m_B3_US_RotationModeUseVolyAdjdReturn       = o_B3_US_RotationModeUseVolyAdjdReturn       .get();
+  if(o_B3_US_RotationModeUseNDayReturn           )  m_B3_US_RotationModeUseNDayReturn           = o_B3_US_RotationModeUseNDayReturn           .get();
+  if(o_B3_US_PersistTheoPosCPnL                  )  m_B3_US_PersistTheoPosCPnL                  = o_B3_US_PersistTheoPosCPnL                  .get();
+  if(o_B3_US_ChooseBestNRotationGroupProp        )  m_B3_US_ChooseBestNRotationGroupProp        = o_B3_US_ChooseBestNRotationGroupProp        .get();
+  if(o_B3_US_ActionTimeBefCloseInSec             )  m_B3_US_ActionTimeBefCloseInSec             = o_B3_US_ActionTimeBefCloseInSec             .get();
+  if(o_B3_US_ActionTimeAftOpenInSec              )  m_B3_US_ActionTimeAftOpenInSec              = o_B3_US_ActionTimeAftOpenInSec              .get();
+  if(o_B3_US_MoveNextBestGroupUpIfNoSignal       )  m_B3_US_MoveNextBestGroupUpIfNoSignal       = o_B3_US_MoveNextBestGroupUpIfNoSignal       .get();
+  if(o_B3_US_MoveNextBestStkInGrpUpIfNoSignal    )  m_B3_US_MoveNextBestStkInGrpUpIfNoSignal    = o_B3_US_MoveNextBestStkInGrpUpIfNoSignal    .get();
+  if(o_B3_US_AvgAggSgndNotnlThresh               )  m_B3_US_AvgAggSgndNotnlThresh               = o_B3_US_AvgAggSgndNotnlThresh               .get();
+  if(o_B3_US_TheoCPnLHistFolder                  )  m_B3_US_TheoCPnLHistFolder                  = STool::Trim(o_B3_US_TheoCPnLHistFolder      .get());
+  if(o_B3_US_TheoPosFolder                       )  m_B3_US_TheoPosFolder                       = STool::Trim(o_B3_US_TheoPosFolder           .get());
+  if(o_B3_US_RotationGroupFile                   )  m_B3_US_RotationGroupFile                   = STool::Trim(o_B3_US_RotationGroupFile       .get());
+  if(o_B3_US_Arima_ZMQ_IP_Port                   )  m_B3_US_Arima_ZMQ_IP_Port                   = STool::Trim(o_B3_US_Arima_ZMQ_IP_Port       .get());
+  if(o_B3_US_PerformCppTaylor                    )  m_B3_US_PerformCppTaylor                    = o_B3_US_PerformCppTaylor                    .get();
+  if(o_B3_US_SymbolStickiness                    )  m_B3_US_SymbolStickiness                    = o_B3_US_SymbolStickiness                    .get();
+  if(o_B3_US_TaylorWeight                        )  m_B3_US_TaylorWeight                        = o_B3_US_TaylorWeight                        .get();
+  if(o_B3_US_ArimaWeight                         )  m_B3_US_ArimaWeight                         = o_B3_US_ArimaWeight                         .get();
+
   boost::optional<string> o_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice   = pt.get_optional<string>  ("Strategy_B2_US1.LongOnlyWhenClosePriceBelowAvgPrice");
   boost::optional<string> o_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice  = pt.get_optional<string>  ("Strategy_B2_US1.ShortOnlyWhenClosePriceAboveAvgPrice");
   boost::optional<string> o_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice   = pt.get_optional<string>  ("Strategy_B2_US2.LongOnlyWhenClosePriceBelowAvgPrice");
@@ -781,6 +879,8 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_US3_ShortOnlyWhenClosePriceAboveAvgPrice  = pt.get_optional<string>  ("Strategy_B2_US3.ShortOnlyWhenClosePriceAboveAvgPrice");
   boost::optional<string> o_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice    = pt.get_optional<string>  ("Strategy_B2_HK.LongOnlyWhenClosePriceBelowAvgPrice");
   boost::optional<string> o_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice   = pt.get_optional<string>  ("Strategy_B2_HK.ShortOnlyWhenClosePriceAboveAvgPrice");
+  boost::optional<string> o_B3_US_LongOnlyWhenClosePriceBelowAvgPrice    = pt.get_optional<string>  ("Strategy_B3_US.LongOnlyWhenClosePriceBelowAvgPrice");
+  boost::optional<string> o_B3_US_ShortOnlyWhenClosePriceAboveAvgPrice   = pt.get_optional<string>  ("Strategy_B3_US.ShortOnlyWhenClosePriceAboveAvgPrice");
   if(o_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice ) { string s = STool::Trim(o_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice  .get()); if (s != "") m_B2_US1_LongOnlyWhenClosePriceBelowAvgPrice  = boost::optional<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice) { string s = STool::Trim(o_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice .get()); if (s != "") m_B2_US1_ShortOnlyWhenClosePriceAboveAvgPrice = boost::optional<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice ) { string s = STool::Trim(o_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice  .get()); if (s != "") m_B2_US2_LongOnlyWhenClosePriceBelowAvgPrice  = boost::optional<double>(boost::lexical_cast<double>(s));  }
@@ -789,6 +889,8 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US3_ShortOnlyWhenClosePriceAboveAvgPrice) { string s = STool::Trim(o_B2_US3_ShortOnlyWhenClosePriceAboveAvgPrice .get()); if (s != "") m_B2_US3_ShortOnlyWhenClosePriceAboveAvgPrice = boost::optional<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice )  { string s = STool::Trim(o_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice   .get()); if (s != "") m_B2_HK_LongOnlyWhenClosePriceBelowAvgPrice   = boost::optional<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice)  { string s = STool::Trim(o_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice  .get()); if (s != "") m_B2_HK_ShortOnlyWhenClosePriceAboveAvgPrice  = boost::optional<double>(boost::lexical_cast<double>(s));  }
+  if(o_B3_US_LongOnlyWhenClosePriceBelowAvgPrice )  { string s = STool::Trim(o_B3_US_LongOnlyWhenClosePriceBelowAvgPrice   .get()); if (s != "") m_B3_US_LongOnlyWhenClosePriceBelowAvgPrice   = boost::optional<double>(boost::lexical_cast<double>(s));  }
+  if(o_B3_US_ShortOnlyWhenClosePriceAboveAvgPrice)  { string s = STool::Trim(o_B3_US_ShortOnlyWhenClosePriceAboveAvgPrice  .get()); if (s != "") m_B3_US_ShortOnlyWhenClosePriceAboveAvgPrice  = boost::optional<double>(boost::lexical_cast<double>(s));  }
 
   boost::optional<string> o_B2_US1_LongOnlyWhenAvgPriceReturnAbove   = pt.get_optional<string>  ("Strategy_B2_US1.LongOnlyWhenAvgPriceReturnAbove");
   boost::optional<string> o_B2_US1_ShortOnlyWhenAvgPriceReturnBelow  = pt.get_optional<string>  ("Strategy_B2_US1.ShortOnlyWhenAvgPriceReturnBelow");
@@ -798,6 +900,8 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<string> o_B2_US3_ShortOnlyWhenAvgPriceReturnBelow  = pt.get_optional<string>  ("Strategy_B2_US3.ShortOnlyWhenAvgPriceReturnBelow");
   boost::optional<string> o_B2_HK_LongOnlyWhenAvgPriceReturnAbove    = pt.get_optional<string>  ("Strategy_B2_HK.LongOnlyWhenAvgPriceReturnAbove");
   boost::optional<string> o_B2_HK_ShortOnlyWhenAvgPriceReturnBelow   = pt.get_optional<string>  ("Strategy_B2_HK.ShortOnlyWhenAvgPriceReturnBelow");
+  boost::optional<string> o_B3_US_LongOnlyWhenAvgPriceReturnAbove    = pt.get_optional<string>  ("Strategy_B3_US.LongOnlyWhenAvgPriceReturnAbove");
+  boost::optional<string> o_B3_US_ShortOnlyWhenAvgPriceReturnBelow   = pt.get_optional<string>  ("Strategy_B3_US.ShortOnlyWhenAvgPriceReturnBelow");
   if(o_B2_US1_LongOnlyWhenAvgPriceReturnAbove ) { string s = STool::Trim(o_B2_US1_LongOnlyWhenAvgPriceReturnAbove  .get()); if (s != "") m_B2_US1_LongOnlyWhenAvgPriceReturnAbove  = boost::optional<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_US1_ShortOnlyWhenAvgPriceReturnBelow) { string s = STool::Trim(o_B2_US1_ShortOnlyWhenAvgPriceReturnBelow .get()); if (s != "") m_B2_US1_ShortOnlyWhenAvgPriceReturnBelow = boost::optional<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_US2_LongOnlyWhenAvgPriceReturnAbove ) { string s = STool::Trim(o_B2_US2_LongOnlyWhenAvgPriceReturnAbove  .get()); if (s != "") m_B2_US2_LongOnlyWhenAvgPriceReturnAbove  = boost::optional<double>(boost::lexical_cast<double>(s));  }
@@ -806,15 +910,19 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US3_ShortOnlyWhenAvgPriceReturnBelow) { string s = STool::Trim(o_B2_US3_ShortOnlyWhenAvgPriceReturnBelow .get()); if (s != "") m_B2_US3_ShortOnlyWhenAvgPriceReturnBelow = boost::optional<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_HK_LongOnlyWhenAvgPriceReturnAbove )  { string s = STool::Trim(o_B2_HK_LongOnlyWhenAvgPriceReturnAbove   .get()); if (s != "") m_B2_HK_LongOnlyWhenAvgPriceReturnAbove   = boost::optional<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_HK_ShortOnlyWhenAvgPriceReturnBelow)  { string s = STool::Trim(o_B2_HK_ShortOnlyWhenAvgPriceReturnBelow  .get()); if (s != "") m_B2_HK_ShortOnlyWhenAvgPriceReturnBelow  = boost::optional<double>(boost::lexical_cast<double>(s));  }
+  if(o_B3_US_LongOnlyWhenAvgPriceReturnAbove )  { string s = STool::Trim(o_B3_US_LongOnlyWhenAvgPriceReturnAbove   .get()); if (s != "") m_B3_US_LongOnlyWhenAvgPriceReturnAbove   = boost::optional<double>(boost::lexical_cast<double>(s));  }
+  if(o_B3_US_ShortOnlyWhenAvgPriceReturnBelow)  { string s = STool::Trim(o_B3_US_ShortOnlyWhenAvgPriceReturnBelow  .get()); if (s != "") m_B3_US_ShortOnlyWhenAvgPriceReturnBelow  = boost::optional<double>(boost::lexical_cast<double>(s));  }
 
   boost::optional<string> o_B2_US1_LongOnlyWhenGrpAvgReturnAbove   = pt.get_optional<string>  ("Strategy_B2_US1.LongOnlyWhenGrpAvgReturnAbove");
   boost::optional<string> o_B2_US2_LongOnlyWhenGrpAvgReturnAbove   = pt.get_optional<string>  ("Strategy_B2_US2.LongOnlyWhenGrpAvgReturnAbove");
   boost::optional<string> o_B2_US3_LongOnlyWhenGrpAvgReturnAbove   = pt.get_optional<string>  ("Strategy_B2_US3.LongOnlyWhenGrpAvgReturnAbove");
   boost::optional<string> o_B2_HK_LongOnlyWhenGrpAvgReturnAbove    = pt.get_optional<string>  ("Strategy_B2_HK.LongOnlyWhenGrpAvgReturnAbove");
+  boost::optional<string> o_B3_US_LongOnlyWhenGrpAvgReturnAbove    = pt.get_optional<string>  ("Strategy_B3_US.LongOnlyWhenGrpAvgReturnAbove");
   if(o_B2_US1_LongOnlyWhenGrpAvgReturnAbove ) { string s = STool::Trim(o_B2_US1_LongOnlyWhenGrpAvgReturnAbove  .get()); if (s != "") m_B2_US1_LongOnlyWhenGrpAvgReturnAbove  = boost::optional<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_US2_LongOnlyWhenGrpAvgReturnAbove ) { string s = STool::Trim(o_B2_US2_LongOnlyWhenGrpAvgReturnAbove  .get()); if (s != "") m_B2_US2_LongOnlyWhenGrpAvgReturnAbove  = boost::optional<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_US3_LongOnlyWhenGrpAvgReturnAbove ) { string s = STool::Trim(o_B2_US3_LongOnlyWhenGrpAvgReturnAbove  .get()); if (s != "") m_B2_US3_LongOnlyWhenGrpAvgReturnAbove  = boost::optional<double>(boost::lexical_cast<double>(s));  }
   if(o_B2_HK_LongOnlyWhenGrpAvgReturnAbove )  { string s = STool::Trim(o_B2_HK_LongOnlyWhenGrpAvgReturnAbove   .get()); if (s != "") m_B2_HK_LongOnlyWhenGrpAvgReturnAbove   = boost::optional<double>(boost::lexical_cast<double>(s));  }
+  if(o_B3_US_LongOnlyWhenGrpAvgReturnAbove )  { string s = STool::Trim(o_B3_US_LongOnlyWhenGrpAvgReturnAbove   .get()); if (s != "") m_B3_US_LongOnlyWhenGrpAvgReturnAbove   = boost::optional<double>(boost::lexical_cast<double>(s));  }
 
   {
     boost::optional<string> o_B2_US1_FilterSMAPeriod = pt.get_optional<string>("Strategy_B2_US1.FilterSMAPeriod");
@@ -853,6 +961,16 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
       vector<string> vs;
       boost::split(vs, o_B2_HK_FilterSMAPeriod.get(), boost::is_any_of(","));
       if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & sma) { m_B2_HK_FilterSMAPeriod.push_back(boost::lexical_cast<int>(sma)); });
+    }
+  }
+
+  {
+    boost::optional<string> o_B3_US_FilterSMAPeriod = pt.get_optional<string>("Strategy_B3_US.FilterSMAPeriod");
+    if(o_B3_US_FilterSMAPeriod)
+    {
+      vector<string> vs;
+      boost::split(vs, o_B3_US_FilterSMAPeriod.get(), boost::is_any_of(","));
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & sma) { m_B3_US_FilterSMAPeriod.push_back(boost::lexical_cast<int>(sma)); });
     }
   }
 
@@ -906,6 +1024,17 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
       if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & irole) { m_B2_HK_RoleOfSym.push_back(boost::lexical_cast<int>(irole)); });
     }
   }
+  {
+    boost::optional<string> o_B3_US_RoleOfSym = pt.get_optional<string>("Strategy_B3_US.RoleOfSym");
+
+    if (o_B3_US_RoleOfSym)
+    {
+      string s_B3_US_RoleOfSym = o_B3_US_RoleOfSym.get();
+      vector<string> vs;
+      boost::split(vs, s_B3_US_RoleOfSym, boost::is_any_of(","));
+      if (!vs.empty() && vs[0] != "") FForEach (vs,[&](const string & irole) { m_B3_US_RoleOfSym.push_back(boost::lexical_cast<int>(irole)); });
+    }
+  }
 
   {
     boost::optional<string> o_TradedSym = pt.get_optional<string>("Strategy_B2_US1.TradedSymbolsTradeAtOpen");
@@ -949,6 +1078,17 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
       vector<string> vs;
       boost::split(vs, s_TradedSym, boost::is_any_of(","));
       FForEach (vs,[&](const string & s) { m_B2_HK_TradedSymbolsTradeAtOpen.insert(s); });
+    }
+  }
+  {
+    boost::optional<string> o_TradedSym = pt.get_optional<string>("Strategy_B3_US.TradedSymbolsTradeAtOpen");
+    if (o_TradedSym)
+    {
+      string s_TradedSym = STool::Trim(o_TradedSym.get());
+      m_Logger->Write(Logger::INFO,"SystemConfig: m_B3_US_TradedSymbolsTradeAtOpen (truncated to 1024) %s", s_TradedSym.substr(0,1024).c_str());
+      vector<string> vs;
+      boost::split(vs, s_TradedSym, boost::is_any_of(","));
+      FForEach (vs,[&](const string & s) { m_B3_US_TradedSymbolsTradeAtOpen.insert(s); });
     }
   }
   //--------------------------------------------------

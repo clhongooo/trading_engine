@@ -10,6 +10,7 @@ string GetStrategyName(const StrategyID id)
     case STY_B2_US2:     { return "B2_US2";      }
     case STY_B2_US3:     { return "B2_US3";      }
     case STY_B2_HK:      { return "B2_HK";       }
+    case STY_B3_US:      { return "B3_US";       }
     case STY_NIR1:       { return "NIR1";        }
     case STY_ETFR:       { return "ETFR";        }
     case STY_S11A:       { return "S11A";        }
@@ -35,6 +36,7 @@ void GetStrategyNameCStr(const StrategyID id, char outputStrategyName[HEALTHKEYL
     case STY_B2_US2:       { strcpy(outputStrategyName,"B2_US2\0");      break; }
     case STY_B2_US3:       { strcpy(outputStrategyName,"B2_US3\0");      break; }
     case STY_B2_HK:        { strcpy(outputStrategyName,"B2_HK\0");       break; }
+    case STY_B3_US:        { strcpy(outputStrategyName,"B3_US\0");       break; }
     case STY_NIR1:         { strcpy(outputStrategyName,"NIR1\0");        break; }
     case STY_ETFR:         { strcpy(outputStrategyName,"ETFR\0");        break; }
     case STY_S11A:         { strcpy(outputStrategyName,"S11A\0");        break; }
