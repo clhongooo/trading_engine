@@ -8,8 +8,6 @@ StrategyB3::StrategyB3() :
   m_B3_WhetherToRetain(false),
   m_B3_ActionTimeBefCloseInSec(180),
   m_B3_ActionTimeAftOpenInSec(180),
-  m_MoveNextBestGroupUpIfNoSignal(true),
-  m_MoveNextBestStkInGrpUpIfNoSignal(true),
   StrategyBase()
 {
   UnsetConvenienceVarb();
@@ -207,14 +205,6 @@ void StrategyB3::ReadParam()
   m_PersistTheoPosCPnL = m_SysCfg->B3_PersistTheoPosCPnL(m_StyID);
 
   //--------------------------------------------------
-  m_RotationMode = m_SysCfg->B3_HasEnabledRotationMode(m_StyID);
-  m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationMode %d", GetStrategyName(m_StyID).c_str(),  m_RotationMode);
-  m_RotationModeTradeHighestReturn = m_SysCfg->B3_RotationModeTradeHighestReturn(m_StyID);
-  m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationModeTradeHighestReturn %s", GetStrategyName(m_StyID).c_str(), (m_RotationModeTradeHighestReturn?"true":"false"));
-  m_RotationModeUseVolyAdjdReturn = m_SysCfg->B3_RotationModeUseVolyAdjdReturn(m_StyID);
-  m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationModeUseVolyAdjdReturn %s", GetStrategyName(m_StyID).c_str(), (m_RotationModeUseVolyAdjdReturn?"true":"false"));
-  m_RotationModeUseNDayReturn = m_SysCfg->B3_RotationModeUseNDayReturn(m_StyID);
-  m_Logger->Write(Logger::INFO,"Strategy %s: m_RotationModeUseNDayReturn %d", GetStrategyName(m_StyID).c_str(), m_RotationModeUseNDayReturn);
 
   m_LongOnlyWhenClosePriceBelowAvgPrice = m_SysCfg->B3_LongOnlyWhenClosePriceBelowAvgPrice(m_StyID);
   if (m_LongOnlyWhenClosePriceBelowAvgPrice)
@@ -253,15 +243,12 @@ void StrategyB3::ReadParam()
   m_B3_TrainingFreq                 = m_SysCfg->GetTrainingFreq(m_StyID);
   m_B3_ActionTimeBefCloseInSec      = m_SysCfg->Get_B3_ActionTimeBefCloseInSec(m_StyID);
   m_B3_ActionTimeAftOpenInSec       = m_SysCfg->Get_B3_ActionTimeAftOpenInSec(m_StyID);
-  m_B3_FilterSMAPeriod              = m_SysCfg->Get_B3_FilterSMAPeriod(m_StyID);
 
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B3_HasEnabledMinCommissionCheck %s", GetStrategyName(m_StyID).c_str(), (m_B3_HasEnabledMinCommissionCheck?"true":"false"));
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B3_WhetherToRetain              %s", GetStrategyName(m_StyID).c_str(), (m_B3_WhetherToRetain             ?"true":"false"));
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B3_TrainingFreq                 %d", GetStrategyName(m_StyID).c_str(),  m_B3_TrainingFreq                                );
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B3_ActionTimeBefCloseInSec      %d", GetStrategyName(m_StyID).c_str(),  m_B3_ActionTimeBefCloseInSec                     );
   m_Logger->Write(Logger::INFO,"Strategy %s: m_B3_ActionTimeAftOpenInSec       %d", GetStrategyName(m_StyID).c_str(),  m_B3_ActionTimeAftOpenInSec                      );
-
-  FForEach(m_B3_FilterSMAPeriod,[&](const int iSma) { m_Logger->Write(Logger::INFO,"Strategy %s: m_B3_FilterSMAPeriod %d", GetStrategyName(m_StyID).c_str(), iSma); });
 
   m_TradedSymbolsTradeAtOpen = m_SysCfg->Get_B3_TradedSymTradeAtOpen(m_StyID);
   FForEach(m_TradedSymbolsTradeAtOpen,[&](const string & sym) { m_Logger->Write(Logger::INFO,"Strategy %s: m_TradedSymbolsTradeAtOpen %s", GetStrategyName(m_StyID).c_str(), sym.c_str()); });
@@ -285,31 +272,6 @@ void StrategyB3::ReadParam()
     m_PTask_PrintStyActionTimeToken[sym] = m_PTask_PrintStyActionTime.GetNewTokenAndSetIntervalInSec(60);
   });
   m_PTask_PrintAllAvbSymToken = m_PTask_PrintAllAvbSym.GetNewTokenAndSetIntervalInSec(300);
-
-  if (!m_B3_FilterSMAPeriod.empty())
-  {
-    if (m_B3_FilterSMAPeriod.size() == 2)
-    {
-      if (m_B3_FilterSMAPeriod[0] > 0)
-      {
-        for (unsigned int i = 0; i < m_TradedSymbols.size(); ++i)
-          m_v_SMA_short.push_back(Sma<double>(m_B3_FilterSMAPeriod[0],true));
-      }
-      if (m_B3_FilterSMAPeriod[1] > 0)
-      {
-        for (unsigned int i = 0; i < m_TradedSymbols.size(); ++i)
-          m_v_SMA_long.push_back(Sma<double>(m_B3_FilterSMAPeriod[1],true));
-      }
-    }
-    else if (m_B3_FilterSMAPeriod.size() == 1)
-    {
-      if (m_B3_FilterSMAPeriod[0] > 0)
-      {
-        for (unsigned int i = 0; i < m_TradedSymbols.size(); ++i)
-          m_v_SMA_long.push_back(Sma<double>(m_B3_FilterSMAPeriod[0],true));
-      }
-    }
-  }
 
   m_PTask_PrintTrainingResultToken = m_PTask_PrintTrainingResult.GetNewTokenAndSetIntervalInSec(60);
 
@@ -416,25 +378,6 @@ void StrategyB3::SetConvenienceVarb(const int iTradSym)
     m_HistoricalFallThenLongCPnL = &(it4->second);
     //--------------------------------------------------
   }
-
-  //--------------------------------------------------
-  map<string,double>::iterator it4c = m_map_OutlierLowerBound.find(m_TradedSymbols[iTradSym]);
-  if (it4c == m_map_OutlierLowerBound.end())
-  {
-    m_map_OutlierLowerBound[m_TradedSymbols[iTradSym]] = NAN;
-    it4c = m_map_OutlierLowerBound.find(m_TradedSymbols[iTradSym]);
-  }
-  m_dOutlierLowerBound = &(it4c->second);
-
-  //--------------------------------------------------
-  map<string,double>::iterator it4d = m_map_OutlierUpperBound.find(m_TradedSymbols[iTradSym]);
-  if (it4d == m_map_OutlierUpperBound.end())
-  {
-    m_map_OutlierUpperBound[m_TradedSymbols[iTradSym]] = NAN;
-    it4d = m_map_OutlierUpperBound.find(m_TradedSymbols[iTradSym]);
-  }
-  m_dOutlierUpperBound = &(it4d->second);
-
 
   map<string,bool>::iterator it7a = m_map_DoneSODTrade.find(m_TradedSymbols[iTradSym]);
   if (it7a == m_map_DoneSODTrade.end())
@@ -576,19 +519,6 @@ void StrategyB3::InitialWarmUp(const int iTradSym)
 
       //--------------------------------------------------
 
-      if (!m_B3_FilterSMAPeriod.empty())
-      {
-        if (m_B3_FilterSMAPeriod.size() == 2)
-        {
-          if (m_B3_FilterSMAPeriod[0] > 0) m_v_SMA_short[iTradSym].Add(dAvgPx);
-          if (m_B3_FilterSMAPeriod[1] > 0) m_v_SMA_long[iTradSym].Add(dAvgPx);
-        }
-        else if (m_B3_FilterSMAPeriod.size() == 1)
-        {
-          if (m_B3_FilterSMAPeriod[0] > 0) m_v_SMA_long[iTradSym].Add(dAvgPx);
-        }
-      }
-
       if (m_HistoricalAvgPx->size()>1)
       {
         double d = m_HistoricalAvgPx->back() / *(m_HistoricalAvgPx->end()-2);
@@ -604,7 +534,6 @@ void StrategyB3::InitialWarmUp(const int iTradSym)
         // if (m_HistoricalAvgPx->size() > n)
         if (m_HistoricalClose->size() > n)
         {
-          // if (m_HistoricalAvgPx->rbegin()[1] < m_HistoricalAvgPx->rbegin()[n+1])
           if (m_HistoricalClose->rbegin()[1] < m_HistoricalClose->rbegin()[n+1])
             (*m_HistoricalFallThenLongCPnL)[n].push_back(m_HistoricalCloseRtn->back());
           else
@@ -652,20 +581,6 @@ void StrategyB3::UpdateInternalData(const int iTradSym)
       m_HistoricalOpenAvg->push_back(dAvgPx);
 
       //--------------------------------------------------
-      if (!m_B3_FilterSMAPeriod.empty())
-      {
-        if (m_B3_FilterSMAPeriod.size() == 2)
-        {
-          if (m_B3_FilterSMAPeriod[0] > 0) m_v_SMA_short[iTradSym].Add(dAvgPx);
-          if (m_B3_FilterSMAPeriod[1] > 0) m_v_SMA_long[iTradSym].Add(dAvgPx);
-        }
-        else if (m_B3_FilterSMAPeriod.size() == 1)
-        {
-          if (m_B3_FilterSMAPeriod[0] > 0) m_v_SMA_long[iTradSym].Add(dAvgPx);
-
-        }
-      }
-
       if (m_HistoricalAvgPx->size()>1)
       {
         double d = m_HistoricalAvgPx->back() / (m_HistoricalAvgPx->rbegin()[1]);
@@ -680,7 +595,6 @@ void StrategyB3::UpdateInternalData(const int iTradSym)
       {
         if (m_HistoricalAvgPx->size() > n)
         {
-          // if (m_HistoricalAvgPx->rbegin()[1] < m_HistoricalAvgPx->rbegin()[n+1])
           if (m_HistoricalClose->rbegin()[1] < m_HistoricalClose->rbegin()[n+1])
             (*m_HistoricalFallThenLongCPnL)[n].push_back(m_HistoricalCloseRtn->back());
           else
@@ -1053,14 +967,11 @@ void StrategyB3::UnsetConvenienceVarb()
 
 void StrategyB3::ParamSanityCheck()
 {
-  if (m_RotationMode != 0)
+  if (m_ParamVector.size() != m_iNumOfParam)
   {
-    if (m_ParamVector.size() != m_iNumOfParam)
-    {
-      m_Logger->Write(Logger::ERROR,"Strategy %s: Failed sanity test", GetStrategyName(m_StyID).c_str());
-      sleep(2);
-      exit(1);
-    }
+    m_Logger->Write(Logger::ERROR,"Strategy %s: Failed sanity test", GetStrategyName(m_StyID).c_str());
+    sleep(2);
+    exit(1);
   }
   return;
 }

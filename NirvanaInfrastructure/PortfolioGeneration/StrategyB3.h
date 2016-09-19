@@ -98,10 +98,6 @@ class StrategyB3 : public StrategyBase {
     string           m_TheoPosFolder;
     vector<Acct>     m_TheoAcct;
     bool             m_PersistTheoPosCPnL;
-    int              m_RotationMode;
-    bool             m_RotationModeTradeHighestReturn;
-    bool             m_RotationModeUseVolyAdjdReturn;
-    int              m_RotationModeUseNDayReturn;
     HHMMSS           m_hms_OpenStart;
     HHMMSS           m_hms_OpenEnd;
     HHMMSS           m_hms_CloseStart;
@@ -125,33 +121,17 @@ class StrategyB3 : public StrategyBase {
     map<string,vector<double> >            m_map_HistoricalAvgPxRtn;
     map<string,vector<double> >            m_map_HistoricalCloseRtn;
     map<string,vector<vector<double> > >   m_map_HistoricalFallThenLongCPnL;
-    map<string,double>                     m_map_OutlierLowerBound;
-    map<string,double>                     m_map_OutlierUpperBound;
 
     map<string,deque<double> >             m_map_dq_GKYZ;
     map<string,bool>                       m_map_DoneSODTrade;
     map<string,bool>                       m_map_DoneEODTrade;
     map<string,bool>                       m_map_bTrainRetAvgPx;
-    map<string,bool>                       m_map_bRisingRegimeAvgPx;
     double                                 m_TotSharpeOfMethod;
     bool                                   m_B3_HasEnabledMinCommissionCheck;
     bool                                   m_B3_WhetherToRetain;
     TradingStrategyConfig::TrainingFreq    m_B3_TrainingFreq;
     int                                    m_B3_ActionTimeBefCloseInSec;
     int                                    m_B3_ActionTimeAftOpenInSec;
-    vector<int>                            m_B3_FilterSMAPeriod;
-    vector<Sma<double> >                   m_v_SMA_short;
-    vector<Sma<double> >                   m_v_SMA_long;
-    bool                                   m_MoveNextBestGroupUpIfNoSignal;
-    bool                                   m_MoveNextBestStkInGrpUpIfNoSignal;
-    map<string,map<double,int> >           m_RiseRegimeAvgSharpeOfBestPropInEachTraingPeriod;
-    map<string,map<double,int> >           m_FallRegimeAvgSharpeOfBestPropInEachTraingPeriod;
-    map<string,double>                     m_BestAvgSharpeOfBestPropRiseRegime;
-    map<string,double>                     m_BestAvgSharpeOfBestPropFallRegime;
-    double                                 m_AvgSharpeThresholdRiseRegime;
-    double                                 m_AvgSharpeThresholdFallRegime;
-    map<string,int>                        m_RiseRegimeBestTrainingPeriod;
-    map<string,int>                        m_FallRegimeBestTrainingPeriod;
 
     //--------------------------------------------------
     // Convenience pointers
@@ -167,8 +147,6 @@ class StrategyB3 : public StrategyBase {
     bool *                m_DoneEODTrade;
     bool *                m_bTrainRetAvgPx;
     bool *                m_bTrainRetClose;
-    double *              m_dOutlierLowerBound;
-    double *              m_dOutlierUpperBound;
 
     double                m_dStrengthCountTrdAtClose;
     double                m_dStrengthCountTrdAtOpen;
