@@ -24,7 +24,8 @@ then
     echo "7 ) zsun_b2spy_bkt_nmdi_noti"
     echo
     echo "8 ) zsun_b3us_bkt_nmdi_noti"
-    echo "9 ) zsun_b2hk_bkt_nmdi_noti"
+    echo "9 ) zsun_us_bkt_nmdi_noti"
+    echo "10) zsun_b2hk_bkt_nmdi_noti"
     echo
     echo "11) zsun_nir1_bkt_nmdi_noti.ini"
     echo
@@ -46,7 +47,8 @@ then
     elif [[ $line -eq 6  ]]; then ARG1="zsun_b2spy_pprbkt_nmdi_noti" 
     elif [[ $line -eq 7  ]]; then ARG1="zsun_b2spy_bkt_nmdi_noti"    
     elif [[ $line -eq 8  ]]; then ARG1="zsun_b3us_bkt_nmdi_noti"    
-    elif [[ $line -eq 9  ]]; then ARG1="zsun_b2hk_bkt_nmdi_noti"     
+    elif [[ $line -eq 9  ]]; then ARG1="zsun_us_bkt_nmdi_noti"     
+    elif [[ $line -eq 10 ]]; then ARG1="zsun_b2hk_bkt_nmdi_noti"     
     elif [[ $line -eq 11 ]]; then ARG1="zsun_nir1_bkt_nmdi_noti"     
     elif [[ $line -eq 12 ]]; then ARG1="b2bkt"                       
     elif [[ $line -eq 13 ]]; then ARG1="cash_b2hsi_bkt_nmdi_noti"    
@@ -120,6 +122,11 @@ fi
 if [[ $ARG1 == "zsun_b3us_bkt_nmdi_noti" ]]
 then
     $RUNCMD "/home/qy/Dropbox/nirvana/conf/zsun_b3us_bkt_nmdi_noti.ini"
+    exit
+fi
+if [[ $ARG1 == "zsun_us_bkt_nmdi_noti" ]]
+then
+    $RUNCMD "/home/qy/Dropbox/nirvana/conf/zsun_us_bkt_nmdi_noti.ini"
     exit
 fi
 if [[ $ARG1 == "zsun_b2hk_bkt_nmdi_noti" ]]

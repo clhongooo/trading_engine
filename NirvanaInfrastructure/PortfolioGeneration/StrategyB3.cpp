@@ -708,18 +708,18 @@ void StrategyB3::DetermineRegime(const int iTradSym)
 void StrategyB3::PreTradePreparation(const int iTradSym)
 {
 
-  for (int i = 0; i < (*m_HistoricalFallThenLongCPnL)[1].size(); ++i)
-  {
-    m_Logger->Write(Logger::INFO,"Strategy %s: %s %s (%d) m_HistoricalAvgPxRtn[%d] size %d %f m_HistoricalCloseRtn[%d] size %d %f m_HistoricalFallThenLongCPnL[%d] size %d %f m_HistoricalFallThenLongCPnL size %d",
-                    GetStrategyName(m_StyID).c_str(),
-                    m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                    __FUNCTION__,__LINE__,
-                    i, m_HistoricalAvgPxRtn->size(),(*m_HistoricalAvgPxRtn)[i],
-                    i, m_HistoricalCloseRtn->size(),(*m_HistoricalCloseRtn)[i],
-                    i, (*m_HistoricalFallThenLongCPnL)[1].size(),(*m_HistoricalFallThenLongCPnL)[1][i],
-                    (*m_HistoricalFallThenLongCPnL)[50].size()
-                   );
-  }
+  // for (int i = 0; i < (*m_HistoricalFallThenLongCPnL)[1].size(); ++i)
+  // {
+  //   m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s (%d) m_HistoricalAvgPxRtn[%d] size %d %f m_HistoricalCloseRtn[%d] size %d %f m_HistoricalFallThenLongCPnL[%d] size %d %f m_HistoricalFallThenLongCPnL size %d",
+  //                   GetStrategyName(m_StyID).c_str(),
+  //                   m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+  //                   __FUNCTION__,__LINE__,
+  //                   i, m_HistoricalAvgPxRtn->size(),(*m_HistoricalAvgPxRtn)[i],
+  //                   i, m_HistoricalCloseRtn->size(),(*m_HistoricalCloseRtn)[i],
+  //                   i, (*m_HistoricalFallThenLongCPnL)[1].size(),(*m_HistoricalFallThenLongCPnL)[1][i],
+  //                   (*m_HistoricalFallThenLongCPnL)[50].size()
+  //                  );
+  // }
 
   //--------------------------------------------------
   // Day End logic

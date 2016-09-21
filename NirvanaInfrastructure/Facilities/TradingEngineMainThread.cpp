@@ -97,12 +97,12 @@ void TradingEngineMainThread::RunMainThread()
     p_Logger->Write(Logger::NOTICE,"FSMC not loaded."); usleep(100000);
   }
 
-  //--------------------------------------------------
-  // VolSurfCalculator
-  //--------------------------------------------------
-  VolSurfCalculator vsc;
-  vsc.SetCalcIntervalInSec(p_SysCfg->Get_VolSurfCalcIntervalInSec());
-  p_Logger->Write(Logger::NOTICE,"Finished loading VolSurfCalculator."); usleep(100000);
+  // //--------------------------------------------------
+  // // VolSurfCalculator
+  // //--------------------------------------------------
+  // VolSurfCalculator vsc;
+  // vsc.SetCalcIntervalInSec(p_SysCfg->Get_VolSurfCalcIntervalInSec());
+  // p_Logger->Write(Logger::NOTICE,"Finished loading VolSurfCalculator."); usleep(100000);
 
   //--------------------------------------------------
   // VolSurfaces
@@ -298,7 +298,7 @@ void TradingEngineMainThread::RunMainThread()
   {
     pg.reset(new PortfolioGenerator());
 
-    m_thread_group.add_thread(new boost::thread(&VolSurfCalculator::Run          ,&vsc));
+    // m_thread_group.add_thread(new boost::thread(&VolSurfCalculator::Run          ,&vsc));
     m_thread_group.add_thread(new boost::thread(&TechIndUpdater::Run             ,&tiu));
     m_thread_group.add_thread(new boost::thread(&PriceForwarderToNextTier::Run   ,&pf));
     m_thread_group.add_thread(new boost::thread(&PortfolioGenerator::Run         ,pg.get()));
