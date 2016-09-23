@@ -48,10 +48,6 @@
 //--------------------------------------------------
 // FIXME Testing
 //--------------------------------------------------
-//--------------------------------------------------
-// this controls the proportion of stocks that are filtered out by in-sample Sharpe
-//--------------------------------------------------
-#define B2_MIN_SHARPE_THRESHOLD_FILTER 2 // 2
 #define B2_PURE_ROTATN_FOLW_LEADER true
 
 #define B2_RPY_ARIMA  1
@@ -380,6 +376,7 @@ class StrategyB2 : public StrategyBase {
     SSet<YYYYMMDD>                              m_HasPerformedRotationLogic;
     bool                                        m_PerformCppTaylor;
     bool                                        m_SymbolStickiness;
+    double                                      m_MinSharpeThreshFilter;
     double                                      m_TaylorWeight;
     double                                      m_ArimaWeight;
     //--------------------------------------------------

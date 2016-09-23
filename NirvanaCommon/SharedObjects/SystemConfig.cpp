@@ -133,6 +133,7 @@ SystemConfig::SystemConfig() :
   m_B2_US1_MoveNextBestGroupUpIfNoSignal(true),
   m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal(true),
   m_B2_US1_AvgAggSgndNotnlThresh(0),
+  m_B2_US1_MinSharpeThreshFilter(2),
   m_B2_US2_HasEnabledMinCommissionCheck(true),
   m_B2_US2_CommissionRateThreshold(0),
   m_B2_US2_HasEnabledRotationMode(0),
@@ -159,6 +160,7 @@ SystemConfig::SystemConfig() :
   m_B2_US2_MoveNextBestGroupUpIfNoSignal(true),
   m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal(true),
   m_B2_US2_AvgAggSgndNotnlThresh(0),
+  m_B2_US2_MinSharpeThreshFilter(2),
   m_B2_US3_HasEnabledMinCommissionCheck(true),
   m_B2_US3_CommissionRateThreshold(0),
   m_B2_US3_HasEnabledRotationMode(0),
@@ -185,6 +187,7 @@ SystemConfig::SystemConfig() :
   m_B2_US3_MoveNextBestGroupUpIfNoSignal(true),
   m_B2_US3_MoveNextBestStkInGrpUpIfNoSignal(true),
   m_B2_US3_AvgAggSgndNotnlThresh(0),
+  m_B2_US3_MinSharpeThreshFilter(2),
   m_B2_HK_HasEnabledMinCommissionCheck(true),
   m_B2_HK_CommissionRateThreshold(0),
   m_B2_HK_HasEnabledRotationMode(0),
@@ -210,6 +213,7 @@ SystemConfig::SystemConfig() :
   m_B2_HK_MoveNextBestGroupUpIfNoSignal(true),
   m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal(true),
   m_B2_HK_AvgAggSgndNotnlThresh(0),
+  m_B2_HK_MinSharpeThreshFilter(2),
   m_B3_US_HasEnabledMinCommissionCheck(true),
   m_B3_US_CommissionRateThreshold(0),
   m_B3_US_HasEnabledRotationMode(0),
@@ -425,6 +429,7 @@ vector<int>                   SystemConfig::Get_B2_FilterSMAPeriod              
 bool                          SystemConfig::Get_B2_MoveNextBestGroupUpIfNoSignal   (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_MoveNextBestGroupUpIfNoSignal;        else if (id == STY_B2_US2) return m_B2_US2_MoveNextBestGroupUpIfNoSignal;           else if (id == STY_B2_US3) return m_B2_US3_MoveNextBestGroupUpIfNoSignal;           else if (id == STY_B2_HK) return m_B2_HK_MoveNextBestGroupUpIfNoSignal;       }
 bool                          SystemConfig::Get_B2_MoveNextBestStkInGrpUpIfNoSignal(const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal;     else if (id == STY_B2_US2) return m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal;        else if (id == STY_B2_US3) return m_B2_US3_MoveNextBestStkInGrpUpIfNoSignal;        else if (id == STY_B2_HK) return m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal;    }
 double                        SystemConfig::Get_B2_AvgAggSgndNotnlThresh           (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_AvgAggSgndNotnlThresh;                else if (id == STY_B2_US2) return m_B2_US2_AvgAggSgndNotnlThresh;                   else if (id == STY_B2_US3) return m_B2_US3_AvgAggSgndNotnlThresh;                   else if (id == STY_B2_HK) return m_B2_HK_AvgAggSgndNotnlThresh;               }
+double                        SystemConfig::Get_B2_MinSharpeThreshFilter           (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_MinSharpeThreshFilter;                else if (id == STY_B2_US2) return m_B2_US2_MinSharpeThreshFilter;                   else if (id == STY_B2_US3) return m_B2_US3_MinSharpeThreshFilter;                   else if (id == STY_B2_HK) return m_B2_HK_MinSharpeThreshFilter;               }
 set<string>                   SystemConfig::Get_B2_TradedSymTradeAtOpen            (const StrategyID id)  const {  if (id == STY_B2_US1) return m_B2_US1_TradedSymbolsTradeAtOpen;             else if (id == STY_B2_US2) return m_B2_US2_TradedSymbolsTradeAtOpen;                else if (id == STY_B2_US3) return m_B2_US3_TradedSymbolsTradeAtOpen;                else if (id == STY_B2_HK) return m_B2_HK_TradedSymbolsTradeAtOpen;            }
 
 bool                          SystemConfig::B3_HasEnabledMinCommissionCheck        (const StrategyID id)  const {  if (id == STY_B3_US) return m_B3_US_HasEnabledMinCommissionCheck;         }
@@ -664,6 +669,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<bool>   o_B2_US1_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B2_US1.MoveNextBestGroupUpIfNoSignal");
   boost::optional<bool>   o_B2_US1_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B2_US1.MoveNextBestStkInGrpUpIfNoSignal");
   boost::optional<double> o_B2_US1_AvgAggSgndNotnlThresh               = pt.get_optional<double>  ("Strategy_B2_US1.AvgAggSgndNotnlThresh");
+  boost::optional<double> o_B2_US1_MinSharpeThreshFilter               = pt.get_optional<double>  ("Strategy_B2_US1.MinSharpeThreshFilter");
   boost::optional<string> o_B2_US1_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B2_US1.TheoCPnLHistFolder");
   boost::optional<string> o_B2_US1_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_US1.TheoPosFolder");
   boost::optional<string> o_B2_US1_RotationGroupFile                   = pt.get_optional<string>  ("Strategy_B2_US1.RotationGroupFile");
@@ -686,6 +692,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US1_MoveNextBestGroupUpIfNoSignal       )  m_B2_US1_MoveNextBestGroupUpIfNoSignal        = o_B2_US1_MoveNextBestGroupUpIfNoSignal       .get();
   if(o_B2_US1_MoveNextBestStkInGrpUpIfNoSignal    )  m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal     = o_B2_US1_MoveNextBestStkInGrpUpIfNoSignal    .get();
   if(o_B2_US1_AvgAggSgndNotnlThresh               )  m_B2_US1_AvgAggSgndNotnlThresh                = o_B2_US1_AvgAggSgndNotnlThresh               .get();
+  if(o_B2_US1_MinSharpeThreshFilter               )  m_B2_US1_MinSharpeThreshFilter                = o_B2_US1_MinSharpeThreshFilter               .get();
   if(o_B2_US1_TheoCPnLHistFolder                  )  m_B2_US1_TheoCPnLHistFolder                   = STool::Trim(o_B2_US1_TheoCPnLHistFolder      .get());
   if(o_B2_US1_TheoPosFolder                       )  m_B2_US1_TheoPosFolder                        = STool::Trim(o_B2_US1_TheoPosFolder           .get());
   if(o_B2_US1_RotationGroupFile                   )  m_B2_US1_RotationGroupFile                    = STool::Trim(o_B2_US1_RotationGroupFile       .get());
@@ -708,6 +715,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<bool>   o_B2_US2_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B2_US2.MoveNextBestGroupUpIfNoSignal");
   boost::optional<bool>   o_B2_US2_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B2_US2.MoveNextBestStkInGrpUpIfNoSignal");
   boost::optional<double> o_B2_US2_AvgAggSgndNotnlThresh               = pt.get_optional<double>  ("Strategy_B2_US2.AvgAggSgndNotnlThresh");
+  boost::optional<double> o_B2_US2_MinSharpeThreshFilter               = pt.get_optional<double>  ("Strategy_B2_US2.MinSharpeThreshFilter");
   boost::optional<string> o_B2_US2_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B2_US2.TheoCPnLHistFolder");
   boost::optional<string> o_B2_US2_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_US2.TheoPosFolder");
   boost::optional<string> o_B2_US2_RotationGroupFile                   = pt.get_optional<string>  ("Strategy_B2_US2.RotationGroupFile");
@@ -730,6 +738,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US2_MoveNextBestGroupUpIfNoSignal       )  m_B2_US2_MoveNextBestGroupUpIfNoSignal        = o_B2_US2_MoveNextBestGroupUpIfNoSignal       .get();
   if(o_B2_US2_MoveNextBestStkInGrpUpIfNoSignal    )  m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal     = o_B2_US2_MoveNextBestStkInGrpUpIfNoSignal    .get();
   if(o_B2_US2_AvgAggSgndNotnlThresh               )  m_B2_US2_AvgAggSgndNotnlThresh                = o_B2_US2_AvgAggSgndNotnlThresh               .get();
+  if(o_B2_US2_MinSharpeThreshFilter               )  m_B2_US2_MinSharpeThreshFilter                = o_B2_US2_MinSharpeThreshFilter               .get();
   if(o_B2_US2_TheoCPnLHistFolder                  )  m_B2_US2_TheoCPnLHistFolder                   = STool::Trim(o_B2_US2_TheoCPnLHistFolder      .get());
   if(o_B2_US2_TheoPosFolder                       )  m_B2_US2_TheoPosFolder                        = STool::Trim(o_B2_US2_TheoPosFolder           .get());
   if(o_B2_US2_RotationGroupFile                   )  m_B2_US2_RotationGroupFile                    = STool::Trim(o_B2_US2_RotationGroupFile       .get());
@@ -752,6 +761,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<bool>   o_B2_US3_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B2_US3.MoveNextBestGroupUpIfNoSignal");
   boost::optional<bool>   o_B2_US3_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B2_US3.MoveNextBestStkInGrpUpIfNoSignal");
   boost::optional<double> o_B2_US3_AvgAggSgndNotnlThresh               = pt.get_optional<double>  ("Strategy_B2_US3.AvgAggSgndNotnlThresh");
+  boost::optional<double> o_B2_US3_MinSharpeThreshFilter               = pt.get_optional<double>  ("Strategy_B2_US3.MinSharpeThreshFilter");
   boost::optional<string> o_B2_US3_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B2_US3.TheoCPnLHistFolder");
   boost::optional<string> o_B2_US3_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_US3.TheoPosFolder");
   boost::optional<string> o_B2_US3_RotationGroupFile                   = pt.get_optional<string>  ("Strategy_B2_US3.RotationGroupFile");
@@ -774,6 +784,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_US3_MoveNextBestGroupUpIfNoSignal       )  m_B2_US3_MoveNextBestGroupUpIfNoSignal        = o_B2_US3_MoveNextBestGroupUpIfNoSignal       .get();
   if(o_B2_US3_MoveNextBestStkInGrpUpIfNoSignal    )  m_B2_US3_MoveNextBestStkInGrpUpIfNoSignal     = o_B2_US3_MoveNextBestStkInGrpUpIfNoSignal    .get();
   if(o_B2_US3_AvgAggSgndNotnlThresh               )  m_B2_US3_AvgAggSgndNotnlThresh                = o_B2_US3_AvgAggSgndNotnlThresh               .get();
+  if(o_B2_US3_MinSharpeThreshFilter               )  m_B2_US3_MinSharpeThreshFilter                = o_B2_US3_MinSharpeThreshFilter               .get();
   if(o_B2_US3_TheoCPnLHistFolder                  )  m_B2_US3_TheoCPnLHistFolder                   = STool::Trim(o_B2_US3_TheoCPnLHistFolder      .get());
   if(o_B2_US3_TheoPosFolder                       )  m_B2_US3_TheoPosFolder                        = STool::Trim(o_B2_US3_TheoPosFolder           .get());
   if(o_B2_US3_RotationGroupFile                   )  m_B2_US3_RotationGroupFile                    = STool::Trim(o_B2_US3_RotationGroupFile       .get());
@@ -796,6 +807,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   boost::optional<bool>   o_B2_HK_MoveNextBestGroupUpIfNoSignal       = pt.get_optional<bool>    ("Strategy_B2_HK.MoveNextBestGroupUpIfNoSignal");
   boost::optional<bool>   o_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    = pt.get_optional<bool>    ("Strategy_B2_HK.MoveNextBestStkInGrpUpIfNoSignal");
   boost::optional<double> o_B2_HK_AvgAggSgndNotnlThresh               = pt.get_optional<double>  ("Strategy_B2_HK.AvgAggSgndNotnlThresh");
+  boost::optional<double> o_B2_HK_MinSharpeThreshFilter               = pt.get_optional<double>  ("Strategy_B2_HK.MinSharpeThreshFilter");
   boost::optional<string> o_B2_HK_TheoCPnLHistFolder                  = pt.get_optional<string>  ("Strategy_B2_HK.TheoCPnLHistFolder");
   boost::optional<string> o_B2_HK_TheoPosFolder                       = pt.get_optional<string>  ("Strategy_B2_HK.TheoPosFolder");
   boost::optional<string> o_B2_HK_RotationGroupFile                   = pt.get_optional<string>  ("Strategy_B2_HK.RotationGroupFile");
@@ -818,6 +830,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if(o_B2_HK_MoveNextBestGroupUpIfNoSignal       )  m_B2_HK_MoveNextBestGroupUpIfNoSignal       = o_B2_HK_MoveNextBestGroupUpIfNoSignal       .get();
   if(o_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    )  m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    = o_B2_HK_MoveNextBestStkInGrpUpIfNoSignal    .get();
   if(o_B2_HK_AvgAggSgndNotnlThresh               )  m_B2_HK_AvgAggSgndNotnlThresh               = o_B2_HK_AvgAggSgndNotnlThresh               .get();
+  if(o_B2_HK_MinSharpeThreshFilter               )  m_B2_HK_MinSharpeThreshFilter               = o_B2_HK_MinSharpeThreshFilter               .get();
   if(o_B2_HK_TheoCPnLHistFolder                  )  m_B2_HK_TheoCPnLHistFolder                  = STool::Trim(o_B2_HK_TheoCPnLHistFolder      .get());
   if(o_B2_HK_TheoPosFolder                       )  m_B2_HK_TheoPosFolder                       = STool::Trim(o_B2_HK_TheoPosFolder           .get());
   if(o_B2_HK_RotationGroupFile                   )  m_B2_HK_RotationGroupFile                   = STool::Trim(o_B2_HK_RotationGroupFile       .get());

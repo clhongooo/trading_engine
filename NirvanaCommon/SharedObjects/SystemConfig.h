@@ -201,6 +201,7 @@ class SystemConfig : boost::noncopyable
     bool                   Get_B2_MoveNextBestGroupUpIfNoSignal(const StrategyID)              const;
     bool                   Get_B2_MoveNextBestStkInGrpUpIfNoSignal(const StrategyID)           const;
     double                 Get_B2_AvgAggSgndNotnlThresh(const StrategyID)                      const;
+    double                 Get_B2_MinSharpeThreshFilter(const StrategyID)                      const;
     set<string>            Get_B2_TradedSymTradeAtOpen(const StrategyID)                       const;
     bool                   B3_HasEnabledMinCommissionCheck(const StrategyID)                   const;
     double                 B3_CommissionRateThreshold(const StrategyID)                        const;
@@ -436,6 +437,7 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_US1_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_US1_MoveNextBestStkInGrpUpIfNoSignal;
     double                                             m_B2_US1_AvgAggSgndNotnlThresh;
+    double                                             m_B2_US1_MinSharpeThreshFilter;
     set<string>                                        m_B2_US1_TradedSymbolsTradeAtOpen;
     bool                                               m_B2_US2_HasEnabledMinCommissionCheck;
     double                                             m_B2_US2_CommissionRateThreshold;
@@ -465,6 +467,7 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_US2_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_US2_MoveNextBestStkInGrpUpIfNoSignal;
     double                                             m_B2_US2_AvgAggSgndNotnlThresh;
+    double                                             m_B2_US2_MinSharpeThreshFilter;
     set<string>                                        m_B2_US2_TradedSymbolsTradeAtOpen;
     bool                                               m_B2_US3_HasEnabledMinCommissionCheck;
     double                                             m_B2_US3_CommissionRateThreshold;
@@ -494,6 +497,7 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_US3_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_US3_MoveNextBestStkInGrpUpIfNoSignal;
     double                                             m_B2_US3_AvgAggSgndNotnlThresh;
+    double                                             m_B2_US3_MinSharpeThreshFilter;
     set<string>                                        m_B2_US3_TradedSymbolsTradeAtOpen;
     bool                                               m_B2_HK_HasEnabledMinCommissionCheck;
     double                                             m_B2_HK_CommissionRateThreshold;
@@ -523,6 +527,7 @@ class SystemConfig : boost::noncopyable
     bool                                               m_B2_HK_MoveNextBestGroupUpIfNoSignal;
     bool                                               m_B2_HK_MoveNextBestStkInGrpUpIfNoSignal;
     double                                             m_B2_HK_AvgAggSgndNotnlThresh;
+    double                                             m_B2_HK_MinSharpeThreshFilter;
     set<string>                                        m_B2_HK_TradedSymbolsTradeAtOpen;
 
     bool                                               m_B3_US_HasEnabledMinCommissionCheck;

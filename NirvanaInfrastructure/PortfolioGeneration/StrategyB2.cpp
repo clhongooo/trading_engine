@@ -750,6 +750,13 @@ void StrategyB2::ReadParam()
   m_Logger->Write(Logger::INFO,"Strategy %s: m_SymbolStickiness %s",
                   GetStrategyName(m_StyID).c_str(), (m_SymbolStickiness ? "true" : "false"));
 
+  //--------------------------------------------------
+  // this controls the proportion of stocks that are filtered out by in-sample Sharpe
+  //--------------------------------------------------
+  m_MinSharpeThreshFilter = m_SysCfg->Get_B2_MinSharpeThreshFilter(m_StyID);
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_MinSharpeThreshFilter %f", GetStrategyName(m_StyID).c_str(), m_MinSharpeThreshFilter);
+
+
   m_TaylorWeight = m_SysCfg->Get_B2_TaylorWeight(m_StyID);
   m_Logger->Write(Logger::INFO,"Strategy %s: m_TaylorWeight %f", GetStrategyName(m_StyID).c_str(), m_TaylorWeight);
 
@@ -2476,7 +2483,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
               for (map<string,double>::iterator it = m_BestAvgSharpeOfBestPropRiseRegime.begin(); it != m_BestAvgSharpeOfBestPropRiseRegime.end(); ++it)
                 vtmp.push_back(it->second);
               std::sort(vtmp.begin(),vtmp.end());
-              m_AvgSharpeThresholdRiseRegime = vtmp[vtmp.size()/B2_MIN_SHARPE_THRESHOLD_FILTER];
+              m_AvgSharpeThresholdRiseRegime = vtmp[vtmp.size()/m_MinSharpeThreshFilter];
             }
             {
               vector<double> vtmp;
@@ -2484,7 +2491,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
               for (map<string,double>::iterator it = m_BestAvgSharpeOfBestPropFallRegime.begin(); it != m_BestAvgSharpeOfBestPropFallRegime.end(); ++it)
                 vtmp.push_back(it->second);
               std::sort(vtmp.begin(),vtmp.end());
-              m_AvgSharpeThresholdFallRegime = vtmp[vtmp.size()/B2_MIN_SHARPE_THRESHOLD_FILTER];
+              m_AvgSharpeThresholdFallRegime = vtmp[vtmp.size()/m_MinSharpeThreshFilter];
             }
             //--------------------------------------------------
 
