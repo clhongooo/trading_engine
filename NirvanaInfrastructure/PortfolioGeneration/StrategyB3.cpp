@@ -563,6 +563,7 @@ void StrategyB3::UpdateInternalData(const int iTradSym)
     //--------------------------------------------------
     // has to be done whether we are trading at open
     //--------------------------------------------------
+    !*m_DoneEODTrade &&
     m_ymdhms_SysTime_HKT.GetHHMMSS() >= m_hms_CloseStart &&
     m_ymdhms_SysTime_HKT.GetHHMMSS() <= m_hms_CloseEnd
     )
