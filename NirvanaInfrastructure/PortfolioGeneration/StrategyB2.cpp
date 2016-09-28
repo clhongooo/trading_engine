@@ -686,8 +686,11 @@ void StrategyB2::StrategySetup()
 
   string sZMQMDIPPort = m_SysCfg->Get_B2_Arima_ZMQ_IP_Port(m_StyID);
   m_Logger->Write(Logger::INFO,"StrategyB2: Initializing ZMQ connection. ZMQ IP Port = %s", sZMQMDIPPort.c_str());
-  string sConn = "tcp://"+sZMQMDIPPort;
-  m_zmqsocket->connect(sConn.c_str());
+  if (sZMQMDIPPort.length() > 0)
+  {
+    string sConn = "tcp://"+sZMQMDIPPort;
+    m_zmqsocket->connect(sConn.c_str());
+  }
 
 }
 
