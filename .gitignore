@@ -16,7 +16,6 @@ nohup.out
 *.history
 *.index
 *.pref
-*/Debug/*
 */.settings/*
 .metadata
 RemoteSystemsTempFiles
