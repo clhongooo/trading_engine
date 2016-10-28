@@ -2913,19 +2913,22 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
     //--------------------------------------------------
     if (m_B2_HasEnabledMinCommissionCheck)
     {
+      const double cmsn_abs = CommissionCalculator::CalcCommission(
+        CommissionCalculator::IB,
+        CommissionCalculator::USSTK,
+        CommissionCalculator::SPOT,
+        m_SymMidQuote,
+        m_dAggSignedQty);
+      const double cmsn_ratio_abs = cmsn_abs / abs(m_SymMidQuote * m_dAggSignedQty);
 
       if (
         //--------------------------------------------------
         // if position is to be set to zero, do it! ignore commission impact
         //--------------------------------------------------
-        abs(m_dAggSignedQty) > NIR_EPSILON
+        // abs(m_dAggSignedQty) > NIR_EPSILON
+        abs(m_dAggSignedQty) >= 1.0
         &&
-        CommissionCalculator::CalcCommission(
-          CommissionCalculator::IB,
-          CommissionCalculator::USSTK,
-          CommissionCalculator::SPOT,
-          m_SymMidQuote,
-          m_dAggSignedQty) / (m_SymMidQuote * abs(m_dAggSignedQty)) > m_SysCfg->B2_CommissionRateThreshold(m_StyID)
+        cmsn_ratio_abs > m_SysCfg->B2_CommissionRateThreshold(m_StyID)
         )
       {
         //--------------------------------------------------
@@ -2933,18 +2936,37 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         // the target quantity is too small, just make the quantity zero.
         // not worth keeping a tiny position here
         //--------------------------------------------------
-        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty will be adjusted to zero after considering commission impact. m_SymMidQuote = %f m_dAggSignedQty = %f",
+        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty will be adjusted to zero after considering commission impact. The target quantity is just too small. cmsn_abs = %f cmsn_ratio_abs = %f m_SymMidQuote = %f m_dAggSignedQty = %f",
                         GetStrategyName(m_StyID).c_str(),
                         m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                         m_TradedSymbols[iTradSym].c_str(),
+                        cmsn_abs,
+                        cmsn_ratio_abs,
                         m_SymMidQuote,
                         m_dAggSignedQty);
         m_dAggSignedQty = 0;
       }
-
+      else
+      {
+        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s cmsn_abs = %f cmsn_ratio_abs = %f m_SymMidQuote = %f m_dAggSignedQty = %f",
+                        GetStrategyName(m_StyID).c_str(),
+                        m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                        m_TradedSymbols[iTradSym].c_str(),
+                        cmsn_abs,
+                        cmsn_ratio_abs,
+                        m_SymMidQuote,
+                        m_dAggSignedQty);
+      }
     }
 
     double dAbsDeltaQty = abs(m_dAggSignedQty - GetPrevTheoSgndPos(m_TradedSymbols[iTradSym]));
+    const double cmsn_delta = CommissionCalculator::CalcCommission(
+          CommissionCalculator::IB,
+          CommissionCalculator::USSTK,
+          CommissionCalculator::SPOT,
+          m_SymMidQuote,
+          dAbsDeltaQty);
+    const double cmsn_ratio_delta = cmsn_delta / abs(m_SymMidQuote * dAbsDeltaQty);
     if (
       !m_B2_HasEnabledMinCommissionCheck
       ||
@@ -2956,12 +2978,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       (
         m_B2_HasEnabledMinCommissionCheck
         &&
-        CommissionCalculator::CalcCommission(
-          CommissionCalculator::IB,
-          CommissionCalculator::USSTK,
-          CommissionCalculator::SPOT,
-          m_SymMidQuote,
-          dAbsDeltaQty) / (m_SymMidQuote * dAbsDeltaQty) <= m_SysCfg->B2_CommissionRateThreshold(m_StyID)
+        cmsn_ratio_delta <= m_SysCfg->B2_CommissionRateThreshold(m_StyID)
       )
       )
     {
@@ -2970,17 +2987,27 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         m_TargetTradeDir [iTradSym] = (m_dAggSignedQty > 0 ? TD_LONG : TD_SHORT);
         m_TargetAbsPos   [iTradSym] = round(abs(m_dAggSignedQty));
       }
-    }
-    else
-    {
-      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s Trade wasn't initiated because the commission expense rate is higher than threshold. m_SymMidQuote = %f m_dAggSignedQty = %f",
+
+      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s cmsn_delta = %f cmsn_ratio_delta = %f m_SymMidQuote = %f m_dAggSignedQty = %f",
                       GetStrategyName(m_StyID).c_str(),
                       m_p_ymdhms_SysTime_Local->ToStr().c_str(),
                       m_TradedSymbols[iTradSym].c_str(),
+                      cmsn_delta,
+                      cmsn_ratio_delta,
                       m_SymMidQuote,
-                      m_dAggSignedQty);
+                      dAbsDeltaQty);
     }
-
+    else
+    {
+      m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Sym=%s Trade wasn't initiated because the commission expense rate is higher than threshold. cmsn_delta = %f cmsn_ratio_delta = %f m_SymMidQuote = %f m_dAggSignedQty = %f",
+                      GetStrategyName(m_StyID).c_str(),
+                      m_p_ymdhms_SysTime_Local->ToStr().c_str(),
+                      m_TradedSymbols[iTradSym].c_str(),
+                      cmsn_delta,
+                      cmsn_ratio_delta,
+                      m_SymMidQuote,
+                      dAbsDeltaQty);
+    }
 
     *m_DoneEODTrade = true;
     //--------------------------------------------------
@@ -2992,7 +3019,6 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
 void StrategyB2::CalcPosSize(const int iTradSym)
 {
-
 }
 
 void StrategyB2::UnsetConvenienceVarb()
