@@ -844,9 +844,9 @@ void StrategyB2::ReadParam()
   m_TrainingPeriodMax      = m_ParamVector[1];
   m_TrainingPeriodStepSize = m_ParamVector[2];
 
-  m_Logger->Write(Logger::INFO,"Strategy %s: m_TrainingPeriodMin      %f", GetStrategyName(m_StyID).c_str(), m_TrainingPeriodMin     );
-  m_Logger->Write(Logger::INFO,"Strategy %s: m_TrainingPeriodMax      %f", GetStrategyName(m_StyID).c_str(), m_TrainingPeriodMax     );
-  m_Logger->Write(Logger::INFO,"Strategy %s: m_TrainingPeriodStepSize %f", GetStrategyName(m_StyID).c_str(), m_TrainingPeriodStepSize);
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_TrainingPeriodMin      %d", GetStrategyName(m_StyID).c_str(), m_TrainingPeriodMin     );
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_TrainingPeriodMax      %d", GetStrategyName(m_StyID).c_str(), m_TrainingPeriodMax     );
+  m_Logger->Write(Logger::INFO,"Strategy %s: m_TrainingPeriodStepSize %d", GetStrategyName(m_StyID).c_str(), m_TrainingPeriodStepSize);
   //--------------------------------------------------
 
   m_NotionalAmt        = m_ParamVector[3 +  0];
