@@ -800,7 +800,7 @@ void StrategyB3::PreTradePreparation(const int iTradSym)
       double dClosePxAgstAvgPx = m_SymMidQuote / m_HistoricalAvgPx->back() - 1;
       if (dClosePxAgstAvgPx > m_LongOnlyWhenClosePriceBelowAvgPrice.get())
       {
-        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to min(%f, 0). dClosePxAgstAvgPx %f",
+        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to min(%f, 0) because close price is too high relative to average price. (dClosePxAgstAvgPx %f)",
                         GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
                         m_dAggSignedQty, dClosePxAgstAvgPx);
         m_dAggSignedQty = min(m_dAggSignedQty,0.0);
@@ -813,7 +813,7 @@ void StrategyB3::PreTradePreparation(const int iTradSym)
       double dClosePxAgstAvgPx = m_SymMidQuote / m_HistoricalAvgPx->back() - 1;
       if (dClosePxAgstAvgPx < m_ShortOnlyWhenClosePriceAboveAvgPrice.get())
       {
-        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to max(%f, 0). dClosePxAgstAvgPx %f",
+        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to max(%f, 0) because close price is too low relative to average price. (dClosePxAgstAvgPx %f)",
                         GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
                         m_dAggSignedQty, dClosePxAgstAvgPx);
         m_dAggSignedQty = max(m_dAggSignedQty,0.0);
@@ -830,7 +830,7 @@ void StrategyB3::PreTradePreparation(const int iTradSym)
       double dAvgPxRtn = m_HistoricalAvgPx->back() / (m_HistoricalAvgPx->rbegin()[1]) - 1;
       if (dAvgPxRtn < m_LongOnlyWhenAvgPriceReturnAbove.get())
       {
-        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to min(%f, 0). dAvgPxRtn %f",
+        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to min(%f, 0) because average price return is below %f",
                         GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
                         m_dAggSignedQty, dAvgPxRtn);
         m_dAggSignedQty = min(m_dAggSignedQty,0.0);
@@ -843,7 +843,7 @@ void StrategyB3::PreTradePreparation(const int iTradSym)
       double dAvgPxRtn = m_HistoricalAvgPx->back() / (m_HistoricalAvgPx->rbegin()[1]) - 1;
       if (dAvgPxRtn > m_ShortOnlyWhenAvgPriceReturnBelow.get())
       {
-        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to max(%f, 0). dAvgPxRtn %f",
+        m_Logger->Write(Logger::INFO,"Strategy %s: %s Sym=%s m_dAggSignedQty is set to max(%f, 0) because average price return is above %f",
                         GetStrategyName(m_StyID).c_str(), m_p_ymdhms_SysTime_Local->ToStr().c_str(), m_TradedSymbols[iTradSym].c_str(),
                         m_dAggSignedQty, dAvgPxRtn);
         m_dAggSignedQty = max(m_dAggSignedQty,0.0);
