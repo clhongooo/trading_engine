@@ -35,7 +35,7 @@ double Toolbox::meanInList(vector<double> &mylist)
 
 bool Toolbox::isFileExist(const char *filename) {
 	ifstream ifile(filename);
-	return ifile;
+	return ifile.is_open();
 }
 int Toolbox::getNextDay(int org_date, int nDayForward){
 	int year = org_date / 10000;
