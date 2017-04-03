@@ -1,20 +1,24 @@
-#ifndef PORTFOLIOGENERATION_STRATEGYR9_H_
-#define PORTFOLIOGENERATION_STRATEGYR9_H_
+#ifndef STRATEGIES_STRATEGYR8_H_
+#define STRATEGIES_STRATEGYR8_H_
 
 #include "PCH.h"
 #include "Constants.h"
-#include "SFunctional.h"
-#include "StrategyBase.h"
-#include "NumberPosition.h"
+#include "SystemState.h"
+#include "SystemConfig.h"
+#include "MDI_Acknowledgement.h"
+#include "MarketData.h"
+#include "TechIndicators.h"
+#include "PortfoliosAndOrders.h"
+#include "LinRegr.h"
+#include "HighLow.hpp"
+#include "../Strategies/StrategyBase.h"
 
-class StrategyR9 : public StrategyBase {
+class StrategyR8 : public StrategyBase {
   public:
-    enum FixedOrTrailingStop {FOT_FIXED=0,FOT_TRAILING};
-    StrategyR9();
-    virtual ~StrategyR9();
+    StrategyR8();
+    virtual ~StrategyR8();
 
   protected:
-    virtual void StrategySetup();
     virtual void ReadParam();
     virtual void ParamSanityCheck();
     virtual void StartOfDayInit();
@@ -33,24 +37,28 @@ class StrategyR9 : public StrategyBase {
     virtual void AdjustSamplingInterval(const int iTradSym);
     virtual void EndOfDayTrainingRoutine(const int iTradSym,const map<HHMMSS,double> & map_HistDataInTimeBucket);
 
-  private:
+    //--------------------------------------------------
+    // Strategy param
+    //--------------------------------------------------
+    vector<double> m_DownTrendWindowInSec;
+    vector<double> m_DownTrendMagnitude;
+    vector<double> m_DownTrendSlopeThreshold;
+    vector<double> m_ReboundWindowInSec;
+    vector<double> m_TakeProfitMul;
+    vector<double> m_StopLossMul;
+
     //--------------------------------------------------
     // Strategy objects
     //--------------------------------------------------
-    vector<vector<double> > m_StopLossPrice;
-    vector<vector<double> > m_RefPrice;
-    vector<vector<double> > m_SeedTradePos;
-    vector<NumberPosition> m_vNumPos_RefPx;
+    vector<double>           m_EntryPrice;
+    vector<double>           m_StopLossPrice;
+    vector<double>           m_TakeProfitPrice;
+    vector<LinRegr>          m_vLinRegr;
+    vector<HighLow<double> > m_vHighLowPrice;
+    vector<HighLow<double> > m_vHighLowSlope;
 
-    //--------------------------------------------------
-    // Strategy Parameters
-    //--------------------------------------------------
-    vector<double> m_SARThreshold;
-    vector<double> m_TargetProfit;
-    vector<double> m_NumOfSeeds;
-    vector<double> m_SeedsPtsApart;
-    vector<double> m_FixedOrTrailingStop;
 
 };
 
-#endif /* PORTFOLIOGENERATION_STRATEGYR9_H_ */
+
+#endif /* STRATEGIES_STRATEGYR8_H_ */

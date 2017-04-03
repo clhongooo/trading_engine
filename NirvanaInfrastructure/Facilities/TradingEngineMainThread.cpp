@@ -131,10 +131,9 @@ void TradingEngineMainThread::RunMainThread()
   PriceForwarderToNextTier pf;
 
   //--------------------------------------------------
-  // PortfolioGenerator
+  // Strategies
   //--------------------------------------------------
   boost::scoped_ptr<StrategyTest>       styTest;
-  boost::scoped_ptr<PortfolioGenerator> pg;
   boost::scoped_ptr<StrategyB1_HKF>     styB1_HKF;
   boost::scoped_ptr<StrategyB2_US1>     styB2_US1;
   boost::scoped_ptr<StrategyB2_US2>     styB2_US2;
@@ -144,6 +143,7 @@ void TradingEngineMainThread::RunMainThread()
   boost::scoped_ptr<StrategyNIR1>       styNIR1;
   boost::scoped_ptr<StrategyR7>         styR7;
   boost::scoped_ptr<StrategyR9>         styR9;
+  // boost::scoped_ptr<PortfolioGenerator> pg;
   // boost::scoped_ptr<StrategyA1>         styA1;
   // boost::scoped_ptr<StrategyA6>         styA6;
   // boost::scoped_ptr<StrategyR1>         styR1;
@@ -296,17 +296,17 @@ void TradingEngineMainThread::RunMainThread()
   //
 
   {
-    pg.reset(new PortfolioGenerator());
+    // pg.reset(new PortfolioGenerator());
 
     // m_thread_group.add_thread(new boost::thread(&VolSurfCalculator::Run          ,&vsc));
     m_thread_group.add_thread(new boost::thread(&TechIndUpdater::Run             ,&tiu));
     m_thread_group.add_thread(new boost::thread(&PriceForwarderToNextTier::Run   ,&pf));
-    m_thread_group.add_thread(new boost::thread(&PortfolioGenerator::Run         ,pg.get()));
+    // m_thread_group.add_thread(new boost::thread(&PortfolioGenerator::Run         ,pg.get()));
     // m_thread_group.add_thread(new boost::thread(&TerminalThread::Run          ,&tthd));
     m_thread_group.add_thread(new boost::thread(&MarkToMarket::Run               ,&mtm));
     p_Logger->Write(Logger::NOTICE,"Started thread: VolSurfCalculator");    usleep(100000);
     p_Logger->Write(Logger::NOTICE,"Started thread: TechIndUpdater");       usleep(100000);
-    p_Logger->Write(Logger::NOTICE,"Started thread: PortfolioGenerator");   usleep(100000);
+    // p_Logger->Write(Logger::NOTICE,"Started thread: PortfolioGenerator");   usleep(100000);
     p_Logger->Write(Logger::NOTICE,"Started thread: OrderExecutor");        usleep(100000);
     p_Logger->Write(Logger::NOTICE,"Started thread: TerminalThread");       usleep(100000);
     p_Logger->Write(Logger::NOTICE,"Started thread: MarkToMarket");         usleep(100000);

@@ -1,11 +1,11 @@
-#ifndef PORTFOLIOGENERATION_STRATEGYB1HKF_H_
-#define PORTFOLIOGENERATION_STRATEGYB1HKF_H_
+#ifndef STRATEGIES_STRATEGYB1HKF_H_
+#define STRATEGIES_STRATEGYB1HKF_H_
 
 #include "PCH.h"
 #include "Constants.h"
-#include "StrategyB1.h"
 #include "CPnLHist.h"
 #include "Acct.h"
+#include "../Strategies/StrategyB1.h"
 
 #define B1_METH_AVGPX 0
 #define B1_METH_CLOSE 1

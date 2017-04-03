@@ -1,13 +1,13 @@
-#ifndef PORTFOLIOGENERATION_STRATEGYB1_H_
-#define PORTFOLIOGENERATION_STRATEGYB1_H_
+#ifndef STRATEGIES_STRATEGYB1_H_
+#define STRATEGIES_STRATEGYB1_H_
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
 #include <vector>
 #include "Sma.hpp"
-#include "StrategyBase.h"
 #include "SDateTime.h"
 #include "SFunctional.h"
+#include "../Strategies/StrategyBase.h"
 
 class StrategyB1 : public StrategyBase {
   public:
@@ -52,4 +52,4 @@ class StrategyB1 : public StrategyBase {
 
 };
 
-#endif /* PORTFOLIOGENERATION_STRATEGYB1_H_ */
+#endif /* STRATEGIES_STRATEGYB1_H_ */

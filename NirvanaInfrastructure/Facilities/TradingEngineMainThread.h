@@ -22,7 +22,6 @@
 #include "OrderExecutor.h"
 #include "VolSurfCalculator.h"
 #include "VolSurfaces.h"
-#include "PortfolioGenerator.h"
 #include "StrategyTest.h"
 #include "StrategyB1HKF.h"
 #include "StrategyB2HK.h"

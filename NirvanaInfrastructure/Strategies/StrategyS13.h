@@ -5,8 +5,8 @@
  *      Author: qy
  */
 
-#ifndef PORTFOLIOGENERATION_STRATEGYS13_H_
-#define PORTFOLIOGENERATION_STRATEGYS13_H_
+#ifndef STRATEGIES_STRATEGYS13_H_
+#define STRATEGIES_STRATEGYS13_H_
 
 class StrategyS13 {
 public:
@@ -14,4 +14,4 @@ public:
 	virtual ~StrategyS13();
 };
 
-#endif /* PORTFOLIOGENERATION_STRATEGYS13_H_ */
+#endif /* STRATEGIES_STRATEGYS13_H_ */

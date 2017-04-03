@@ -1,12 +1,11 @@
-#ifndef PORTFOLIOGENERATION_STRATEGYB3_H_
-#define PORTFOLIOGENERATION_STRATEGYB3_H_
+#ifndef STRATEGIES_STRATEGYB3_H_
+#define STRATEGIES_STRATEGYB3_H_
 
 #include "PCH.h"
 #include "Constants.h"
 #include "SFunctional.h"
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
-#include "StrategyBase.h"
 #include "Acct.h"
 #include "CommissionCalculator.h"
 #include "CPnLHist.h"
@@ -16,6 +15,7 @@
 #include "NYSE.h"
 #include "SystemConfig.h"
 #include "SystemState.h"
+#include "../Strategies/StrategyBase.h"
 
 #define B3_CURBOUTLIERMODE_FIXED 1
 #define B3_CURBOUTLIERMODE_PCTL  2
@@ -159,4 +159,4 @@ class StrategyB3 : public StrategyBase {
 
 };
 
-#endif /* PORTFOLIOGENERATION_STRATEGYB3_H_ */
+#endif /* STRATEGIES_STRATEGYB3_H_ */

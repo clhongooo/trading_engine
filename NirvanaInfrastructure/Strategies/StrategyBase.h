@@ -1,5 +1,5 @@
-#ifndef PORTFOLIOGENERATION_STRATEGYBASE_H_
-#define PORTFOLIOGENERATION_STRATEGYBASE_H_
+#ifndef STRATEGIES_STRATEGYBASE_H_
+#define STRATEGIES_STRATEGYBASE_H_
 
 #include "PCH.h"
 #include "Constants.h"
@@ -161,4 +161,4 @@ class StrategyBase {
     map<string,double> m_PrevTheoSgndPos;
 };
 
-#endif /* PORTFOLIOGENERATION_STRATEGYBASE_H_ */
+#endif /* STRATEGIES_STRATEGYBASE_H_ */

@@ -3,7 +3,8 @@
 
 #include "PCH.h"
 #include "Constants.h"
-#include "StrategyB2.h"
+
+#include "../Strategies/StrategyB2.h"
 
 class StrategyB2_HK : public StrategyB2 {
   public:

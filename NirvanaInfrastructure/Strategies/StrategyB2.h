@@ -1,12 +1,11 @@
-#ifndef PORTFOLIOGENERATION_STRATEGYB2_H_
-#define PORTFOLIOGENERATION_STRATEGYB2_H_
+#ifndef STRATEGIES_STRATEGYB2_H_
+#define STRATEGIES_STRATEGYB2_H_
 
 #include "PCH.h"
 #include "Constants.h"
 #include "SFunctional.h"
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
-#include "StrategyBase.h"
 #include "Acct.h"
 #include "CommissionCalculator.h"
 #include "CountingFunction.h"
@@ -22,6 +21,7 @@
 #include "SystemState.h"
 #include "Sma.hpp"
 #include <zmq.hpp>
+#include "../Strategies/StrategyBase.h"
 
 #define B2_ROTATION_GROUP_MAX  38
 #define B2_ROTATION_PICKTOPSYM 1

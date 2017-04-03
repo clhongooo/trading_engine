@@ -1,9 +1,10 @@
-#ifndef PORTFOLIOGENERATION_STRATEGYTEST_H_
-#define PORTFOLIOGENERATION_STRATEGYTEST_H_
+#ifndef STRATEGIES_STRATEGYTEST_H_
+#define STRATEGIES_STRATEGYTEST_H_
 
 #include "PCH.h"
 #include "Constants.h"
-#include "StrategyBase.h"
+
+#include "../Strategies/StrategyBase.h"
 
 class StrategyTest : public StrategyBase {
   public:
@@ -32,4 +33,4 @@ class StrategyTest : public StrategyBase {
 
 };
 
-#endif /* PORTFOLIOGENERATION_STRATEGYTEST_H_ */
+#endif /* STRATEGIES_STRATEGYTEST_H_ */

@@ -1,5 +1,5 @@
-#ifndef PORTFOLIOGENERATION_STRATEGYR3_H_
-#define PORTFOLIOGENERATION_STRATEGYR3_H_
+#ifndef STRATEGIES_STRATEGYA6_H_
+#define STRATEGIES_STRATEGYA6_H_
 
 // #include "PCH.h"
 // #include "Constants.h"
@@ -10,16 +10,19 @@
 // #include "TechIndicators.h"
 // #include "PortfoliosAndOrders.h"
 //
-// class StrategyR3 {
-//   public:
-//     StrategyR3();
-//     virtual ~StrategyR3();
+// class StrategyA6 {
+// public:
+// 	StrategyA6();
+// 	virtual ~StrategyA6();
 //     void Run();
 //
 //   private:
 //     void ReportAckIfNeeded();
 //
+//     long m_CalcIntervalInSeconds;
+//
 //     //--------------------------------------------------
+//     YYYYMMDDHHMMSS m_ymdhms_LastCalculated;
 //
 //     //--------------------------------------------------
 //     // System objects
@@ -40,4 +43,4 @@
 //     vector<double>   m_ParamVector;
 // };
 
-#endif /* PORTFOLIOGENERATION_STRATEGYR3_H_ */
+#endif /* STRATEGIES_STRATEGYA6_H_ */

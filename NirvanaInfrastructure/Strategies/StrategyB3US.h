@@ -1,9 +1,10 @@
-#ifndef PORTFOLIOGENERATION_STRATEGYB3US_H_
-#define PORTFOLIOGENERATION_STRATEGYB3US_H_
+#ifndef STRATEGIES_STRATEGYB3US_H_
+#define STRATEGIES_STRATEGYB3US_H_
 
 #include "PCH.h"
 #include "Constants.h"
-#include "StrategyB3.h"
+
+#include "../Strategies/StrategyB3.h"
 
 class StrategyB3_US: public StrategyB3 {
 public:

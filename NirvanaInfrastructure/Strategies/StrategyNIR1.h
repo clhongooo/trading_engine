@@ -1,23 +1,18 @@
-#ifndef PORTFOLIOGENERATION_STRATEGYR7_H_
-#define PORTFOLIOGENERATION_STRATEGYR7_H_
+#ifndef STRATEGIES_STRATEGYNIR1_H_
+#define STRATEGIES_STRATEGYNIR1_H_
 
 #include "PCH.h"
 #include "Constants.h"
-#include "StrategyBase.h"
+#include "SFunctional.h"
 #include "NumberPosition.h"
+#include "BlackScholes.h"
+#include "MarketData.h"
+#include "../Strategies/StrategyBase.h"
 
-class StrategyR7 : public StrategyBase {
+class StrategyNIR1 : public StrategyBase {
   public:
-    // enum R7_RefPxMode {
-    //   R7REFPX_OPEN=0,
-    //   R7REFPX_DAYHIGH,
-    //   R7REFPX_DAYLOW,
-    //   // R7REFPX_DAYAVGPX,
-    //   // R7REFPX_MVGAVGPX,
-    //   R7REFPX_LAST};
-
-    StrategyR7();
-    virtual ~StrategyR7();
+    StrategyNIR1();
+    virtual ~StrategyNIR1();
 
   protected:
     virtual void StrategySetup();
@@ -43,23 +38,11 @@ class StrategyR7 : public StrategyBase {
     //--------------------------------------------------
     // Strategy objects
     //--------------------------------------------------
-    vector<vector<double> > m_RefPrice;
-    vector<vector<double> > m_TimeStopPrice;
-    vector<vector<double> > m_TheoPosSize;
+    SMap<string,int>    m_map_SgndPos;
+    int                 m_MaturityYYYYMMDD;
+    double              m_UnderlyingMQ;
 
-    vector<vector<double> > m_SeedTradePos;
-    vector<NumberPosition> m_vNumPos_RefPx;
-
-    //--------------------------------------------------
-    // Strategy Parameters
-    //--------------------------------------------------
-    vector<double> m_EntryThreshold;
-    vector<double> m_MaxSize;
-    vector<double> m_RateOfTimeStopAdj;
-
-    vector<double> m_NumOfSeeds;
-    vector<double> m_SeedsPtsApart;
 
 };
 
-#endif /* PORTFOLIOGENERATION_STRATEGYR7_H_ */
+#endif /* STRATEGIES_STRATEGYNIR1_H_ */

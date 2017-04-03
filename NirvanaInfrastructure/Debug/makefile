@@ -10,9 +10,9 @@ RM := rm -rf
 -include sources.mk
 -include VolSurfaceCalculation/subdir.mk
 -include TechIndUpdating/subdir.mk
+-include Strategies/subdir.mk
 -include SharedObjects/subdir.mk
 -include ProbDistributionGeneration/subdir.mk
--include PortfolioGeneration/subdir.mk
 -include OrderExecutionAlgo/subdir.mk
 -include LowPriorityFacilities/subdir.mk
 -include Facilities/subdir.mk

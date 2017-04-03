@@ -1,24 +1,26 @@
-#ifndef PORTFOLIOGENERATION_STRATEGYR8_H_
-#define PORTFOLIOGENERATION_STRATEGYR8_H_
+#ifndef STRATEGIES_STRATEGYR7_H_
+#define STRATEGIES_STRATEGYR7_H_
 
 #include "PCH.h"
 #include "Constants.h"
-#include "StrategyBase.h"
-#include "SystemState.h"
-#include "SystemConfig.h"
-#include "MDI_Acknowledgement.h"
-#include "MarketData.h"
-#include "TechIndicators.h"
-#include "PortfoliosAndOrders.h"
-#include "LinRegr.h"
-#include "HighLow.hpp"
+#include "NumberPosition.h"
+#include "../Strategies/StrategyBase.h"
 
-class StrategyR8 : public StrategyBase {
+class StrategyR7 : public StrategyBase {
   public:
-    StrategyR8();
-    virtual ~StrategyR8();
+    // enum R7_RefPxMode {
+    //   R7REFPX_OPEN=0,
+    //   R7REFPX_DAYHIGH,
+    //   R7REFPX_DAYLOW,
+    //   // R7REFPX_DAYAVGPX,
+    //   // R7REFPX_MVGAVGPX,
+    //   R7REFPX_LAST};
+
+    StrategyR7();
+    virtual ~StrategyR7();
 
   protected:
+    virtual void StrategySetup();
     virtual void ReadParam();
     virtual void ParamSanityCheck();
     virtual void StartOfDayInit();
@@ -37,28 +39,27 @@ class StrategyR8 : public StrategyBase {
     virtual void AdjustSamplingInterval(const int iTradSym);
     virtual void EndOfDayTrainingRoutine(const int iTradSym,const map<HHMMSS,double> & map_HistDataInTimeBucket);
 
-    //--------------------------------------------------
-    // Strategy param
-    //--------------------------------------------------
-    vector<double> m_DownTrendWindowInSec;
-    vector<double> m_DownTrendMagnitude;
-    vector<double> m_DownTrendSlopeThreshold;
-    vector<double> m_ReboundWindowInSec;
-    vector<double> m_TakeProfitMul;
-    vector<double> m_StopLossMul;
-
+  private:
     //--------------------------------------------------
     // Strategy objects
     //--------------------------------------------------
-    vector<double>           m_EntryPrice;
-    vector<double>           m_StopLossPrice;
-    vector<double>           m_TakeProfitPrice;
-    vector<LinRegr>          m_vLinRegr;
-    vector<HighLow<double> > m_vHighLowPrice;
-    vector<HighLow<double> > m_vHighLowSlope;
+    vector<vector<double> > m_RefPrice;
+    vector<vector<double> > m_TimeStopPrice;
+    vector<vector<double> > m_TheoPosSize;
 
+    vector<vector<double> > m_SeedTradePos;
+    vector<NumberPosition> m_vNumPos_RefPx;
+
+    //--------------------------------------------------
+    // Strategy Parameters
+    //--------------------------------------------------
+    vector<double> m_EntryThreshold;
+    vector<double> m_MaxSize;
+    vector<double> m_RateOfTimeStopAdj;
+
+    vector<double> m_NumOfSeeds;
+    vector<double> m_SeedsPtsApart;
 
 };
 
-
-#endif /* PORTFOLIOGENERATION_STRATEGYR8_H_ */
+#endif /* STRATEGIES_STRATEGYR7_H_ */

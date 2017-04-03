@@ -27,9 +27,9 @@ DataAggregation \
 Facilities \
 LowPriorityFacilities \
 OrderExecutionAlgo \
-PortfolioGeneration \
 ProbDistributionGeneration \
 SharedObjects \
+Strategies \
 TechIndUpdating \
 VolSurfaceCalculation \
 
