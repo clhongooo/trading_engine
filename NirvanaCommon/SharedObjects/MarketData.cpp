@@ -115,56 +115,8 @@ MarketData::~MarketData()
 
 }
 
-bool MarketData::ParseMDIString(const string & sMD, vector<string> & vMD, YYYYMMDD & yyyymmdd, HHMMSS & hhmmss)
-{
-  vMD.clear();
-  boost::split(vMD, sMD, boost::is_any_of(","));
 
-  //--------------------------------------------------
-  // 1 for time stamp
-  // 1 for feed code
-  // 2 for trade price and volume
-  // 11 for bid queue
-  // 11 for ask queue
-  //--------------------------------------------------
-  if (vMD.size() != 26 &&
-      vMD.size() != 4)
-  {
-    m_Logger->Write(Logger::DEBUG,"MarketData: Discarded marketdata with incorrect length. Received MD: %s",sMD.c_str());
-    return false;
-  }
-
-  if (vMD[1] == "acknowledgement")
-  {
-    m_Logger->Write(Logger::NOTICE,"MarketData: MDI gave us an acknowledgement market feed?!? Received MD: %s",sMD.c_str());
-    return false;
-  }
-
-  SDateTime::FromCashTSToYMDHMS(vMD[0],yyyymmdd,hhmmss);
-
-  return true;
-}
-
-void MarketData::UpdateInternalDataWithParsedMDIString(const vector<string> & vMD, const YYYYMMDD & yyyymmdd, const HHMMSS & hhmmss)
-{
-
-  ATU_MDI_marketfeed_struct sMD;
-
-  sMD.m_timestamp     =                             vMD[ 0] ;
-  sMD.m_feedcode      =                             vMD[ 1] ;
-  sMD.m_traded_price  = boost::lexical_cast<double>(vMD[ 2]);
-  sMD.m_traded_volume = boost::lexical_cast<double>(vMD[ 3]);
-  sMD.m_bid_price_1   = boost::lexical_cast<double>(vMD[ 5]);
-  sMD.m_bid_volume_1  = boost::lexical_cast<double>(vMD[ 6]);
-  sMD.m_ask_price_1   = boost::lexical_cast<double>(vMD[16]);
-  sMD.m_ask_volume_1  = boost::lexical_cast<double>(vMD[17]);
-
-  UpdateInternalDataWithParsedMDIString(sMD, yyyymmdd, hhmmss);
-  return;
-}
-
-
-void MarketData::UpdateInternalDataWithParsedMDIString(const ATU_MDI_marketfeed_struct & sMDa, const YYYYMMDD & yyyymmdd, const HHMMSS & hhmmss)
+void MarketData::UpdateInternalDataWithMDIstruct(const ATU_MDI_marketfeed_struct & sMDa, const YYYYMMDD & yyyymmdd, const HHMMSS & hhmmss)
 {
 
   //--------------------------------------------------
@@ -306,72 +258,16 @@ void MarketData::UpdateInternalDataWithParsedMDIString(const ATU_MDI_marketfeed_
 }
 
 
-bool MarketData::UpdateMarketData(const string & sMD)
-{
-  YYYYMMDD yyyymmdd;
-  HHMMSS hhmmss;
-  vector<string> vMD;
 
-  if (!ParseMDIString(sMD,vMD,yyyymmdd,hhmmss))
-  {
-    if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK ||
-        m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
-    {
-      m_MDIAck->ReportNotMktData();
-    }
-    m_Logger->Write(Logger::INFO,"MarketData: Failed to parse string from MDI: %s", sMD.c_str());
-    return false;
-  }
-
-  UpdateInternalDataWithParsedMDIString(vMD,yyyymmdd,hhmmss);
-
-  NotifyConsumers();
-  return true;
-}
-
-
-bool MarketData::UpdateMarketData(const ATU_MDI_marketfeed_struct & sMD)
+bool MarketData::UpdateMarketData(const ATU_MDI_marketfeed_struct & structMD)
 {
   YYYYMMDD yyyymmdd;
   HHMMSS hhmmss;
 
-  try
-  {
-    //--------------------------------------------------
-    // Determine the format of timestamp
-    //--------------------------------------------------
-    vector<string> vTS;
-    boost::split(vTS, sMD.m_timestamp, boost::is_any_of("_"));
-
-    if (vTS.size() >= 4)
-    {
-      return false;
-    }
-    else if (vTS.size() == 3)
-    {
-      yyyymmdd.Set(boost::lexical_cast<int>(vTS[0]));
-      hhmmss.Set(boost::lexical_cast<int>(vTS[1]));
-    }
-    else if (vTS.size() == 2)
-    {
-      yyyymmdd.Set(boost::lexical_cast<int>(vTS[0]));
-      hhmmss.Set(boost::lexical_cast<int>(vTS[1]));
-    }
-    else // size must be 1
-    {
-      time_t t = time(0);
-      struct tm * now = localtime(&t);
-      yyyymmdd.Set((now->tm_year+1900)*10000 + (now->tm_mon+1)*100 + (now->tm_mday));
-      hhmmss.Set(boost::lexical_cast<int>(vTS[0]));
-    }
-  }
-  catch (std::exception e)
-  {
-    m_Logger->Write(Logger::ERROR,"MarketData: Exception: %s. Error parsing market data.",e.what());
+  if (!SDateTime::FromCashTSToYMDHMS(structMD.m_timestamp,yyyymmdd,hhmmss))
     return false;
-  }
 
-  UpdateInternalDataWithParsedMDIString(sMD,yyyymmdd,hhmmss);
+  UpdateInternalDataWithMDIstruct(structMD,yyyymmdd,hhmmss);
 
   NotifyConsumers();
   return true;
@@ -603,43 +499,43 @@ void MarketData::UpdateBarAggregators(const YYYYMMDD & yyyymmdd, const HHMMSS & 
   }
 }
 
-void MarketData::UpdateLatestSnapshot(const YYYYMMDD & yyyymmdd, const HHMMSS & hhmmss, const ATU_MDI_marketfeed_struct & sMD)
+void MarketData::UpdateLatestSnapshot(const YYYYMMDD & yyyymmdd, const HHMMSS & hhmmss, const ATU_MDI_marketfeed_struct & structMD)
 {
-  UpdateLatestSnapshot(yyyymmdd, hhmmss, sMD, 0);
+  UpdateLatestSnapshot(yyyymmdd, hhmmss, structMD, 0);
   return;
 }
 
-void MarketData::UpdateLatestSnapshot(const YYYYMMDD & yyyymmdd, const HHMMSS & hhmmss, const ATU_MDI_marketfeed_struct & sMD, const double price_offset)
+void MarketData::UpdateLatestSnapshot(const YYYYMMDD & yyyymmdd, const HHMMSS & hhmmss, const ATU_MDI_marketfeed_struct & structMD, const double price_offset)
 {
   //--------------------------------------------------
   // Update Latest Snapshot
   //--------------------------------------------------
-  boost::unique_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(sMD.m_feedcode)));
+  boost::unique_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(structMD.m_feedcode)));
 
-  map<string,TupMDIStructTS>::iterator it = m_LatestSnapshots.find(sMD.m_feedcode);
+  map<string,TupMDIStructTS>::iterator it = m_LatestSnapshots.find(structMD.m_feedcode);
 
   if (it == m_LatestSnapshots.end())
   {
-    m_LatestSnapshots[sMD.m_feedcode] = TupMDIStructTS();
-    it = m_LatestSnapshots.find(sMD.m_feedcode);
+    m_LatestSnapshots[structMD.m_feedcode] = TupMDIStructTS();
+    it = m_LatestSnapshots.find(structMD.m_feedcode);
   }
 
   {
-    if (STool::IsValidPriceOrVol(sMD.m_traded_price)) it->second.m_mdi_struct.m_traded_price = sMD.m_traded_price + price_offset;
+    if (STool::IsValidPriceOrVol(structMD.m_traded_price)) it->second.m_mdi_struct.m_traded_price = structMD.m_traded_price + price_offset;
     else                                              it->second.m_mdi_struct.m_traded_price = NAN;
 
-    it->second.m_mdi_struct.m_traded_volume = sMD.m_traded_volume;
+    it->second.m_mdi_struct.m_traded_volume = structMD.m_traded_volume;
   }
 
-  if (STool::IsValidPriceOrVol(sMD.m_bid_price_1)) it->second.m_mdi_struct.m_bid_price_1  = sMD.m_bid_price_1 + price_offset;
+  if (STool::IsValidPriceOrVol(structMD.m_bid_price_1)) it->second.m_mdi_struct.m_bid_price_1  = structMD.m_bid_price_1 + price_offset;
   else                                             it->second.m_mdi_struct.m_bid_price_1  = NAN;
 
 
-  if (STool::IsValidPriceOrVol(sMD.m_ask_price_1)) it->second.m_mdi_struct.m_ask_price_1  = sMD.m_ask_price_1 + price_offset;
+  if (STool::IsValidPriceOrVol(structMD.m_ask_price_1)) it->second.m_mdi_struct.m_ask_price_1  = structMD.m_ask_price_1 + price_offset;
   else                                             it->second.m_mdi_struct.m_ask_price_1  = NAN;
 
-  it->second.m_mdi_struct.m_bid_volume_1 = boost::lexical_cast<double> (sMD.m_bid_volume_1);
-  it->second.m_mdi_struct.m_ask_volume_1 = boost::lexical_cast<double> (sMD.m_ask_volume_1);
+  it->second.m_mdi_struct.m_bid_volume_1 = boost::lexical_cast<double> (structMD.m_bid_volume_1);
+  it->second.m_mdi_struct.m_ask_volume_1 = boost::lexical_cast<double> (structMD.m_ask_volume_1);
 
   //--------------------------------------------------
   // record update time
@@ -708,11 +604,11 @@ bool MarketData::Peek1DayOHLCBar(const string & symbol, YYYYMMDD & yyyymmdd, HHM
   return it->second->PeekOHLCBar(yyyymmdd, hhmmss, open, high, low, close, volume);
 }
 
-void MarketData::UpdateBarAggregatorsAndLatestSnapshotContFut(const YYYYMMDDHHMMSS & ymdhms, const ATU_MDI_marketfeed_struct & sMD)
+void MarketData::UpdateBarAggregatorsAndLatestSnapshotContFut(const YYYYMMDDHHMMSS & ymdhms, const ATU_MDI_marketfeed_struct & structMD)
 {
-  if (!STool::IsValidPriceOrVol(sMD.m_traded_price)) return;
+  if (!STool::IsValidPriceOrVol(structMD.m_traded_price)) return;
 
-  m_ContFut->Add(ymdhms, sMD);
+  m_ContFut->Add(ymdhms, structMD);
   ATU_MDI_marketfeed_struct mdi_struct;
 
   set<string> setContFutList = m_ContFut->GetAvbContFut();

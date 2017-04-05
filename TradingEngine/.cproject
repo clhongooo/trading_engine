@@ -31,7 +31,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/DataAggregation}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/Facilities}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/OrderExecutionAlgo}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/PortfolioGeneration}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/Strategies}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/ProbDistributionGeneration}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/SharedObjects}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/TechIndUpdating}&quot;"/>

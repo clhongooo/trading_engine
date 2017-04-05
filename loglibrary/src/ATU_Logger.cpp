@@ -5,7 +5,7 @@ using namespace ost;
 using namespace std;
 namespace atu {
 #define LOGGER_LOCKFREE_QUEUE_SIZE 10000
-ATU_Logger::ATU_Logger(string datapath, string filename,int timerShareMemoryKey) :m_isShutdown(false),m_Timer(NULL),m_isReady(false)
+ATU_Logger::ATU_Logger(string datapath, string filename,int timerShareMemoryKey) :m_Timer(NULL),m_isShutdown(false),m_isReady(false)
 {
 
 	m_Timer = new ATU_Timer(timerShareMemoryKey);
@@ -108,18 +108,7 @@ void ATU_Logger::final(void) {
 	m_GeneralLogFile.close();
 
 }
-/*
-int ATU_Logger::addLog(string logSource,int logSeverity,char *argsfmt,char *argtype,...) {
-	va_list listPointer;
-	va_start(listPointer,argtype);
-
-	ATU_logfeed_struct *logfeed=copy2logfeed_struct(logSource,
-			logSeverity,argsfmt,argtype, listPointer);
-	on_notify_logfeed(logfeed);
-
-}
-*/
-bool ATU_Logger::addLog(ATU_Logger *logger ,string msg, int writeToConsole) {
+bool ATU_Logger::addLog(ATU_Logger *logger, const string &msg, int writeToConsole) {
 	if (logger!=NULL) {
 		logger->addLog(msg, writeToConsole);
 	} else {
@@ -127,7 +116,7 @@ bool ATU_Logger::addLog(ATU_Logger *logger ,string msg, int writeToConsole) {
 	}
 	return true;
 }
-int ATU_Logger::addLog(string msg, int writeToConsole) {
+int ATU_Logger::addLog(const string & msg, int writeToConsole) {
 	//	assert(msg.size()!=0);
 	if (msg.length()==0) return 0;
 	string msgout = "";
@@ -140,7 +129,7 @@ int ATU_Logger::addLog(string msg, int writeToConsole) {
 	m_LogMsgQueueWriteToConsole.push(writeToConsole);
 	m_LogMsgQueueMutex.leaveMutex();
 //	m_LogMsgQueueLock.signal(true);
-	return true;
+	return 1;
 }
 
 int ATU_Logger::writeLogFeed(int &size) {
@@ -227,6 +216,7 @@ int ATU_Logger::writeLogFeed(int &size) {
 		cout << "ATU_Logger writeLogFeed pop error" << std::endl;
 	}
 
+  return 1;
 }
 void ATU_Logger::FindAndReplace( std::string& tInput, std::string tFind, std::string tReplace )
 {
@@ -264,7 +254,7 @@ int ATU_Logger::writeLog(int &size) {
 	} else {
 		m_LogMsgQueueMutex.leaveMutex();
 	}
-	return true;
+	return 1;
 }
 void ATU_Logger::backupFileCopy(string filename,string directory)
 {

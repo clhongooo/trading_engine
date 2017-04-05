@@ -58,8 +58,8 @@ inline char getDatatypeStringAndSize(char datatype, int &size) {
 	}
 	return 0;
 }
-inline ATU_logfeed_struct *copy2logfeed_struct(string &logSource,
-		int logSeverity,char * argsfmt,char *argtype, va_list listPointer){
+inline ATU_logfeed_struct *copy2logfeed_struct(const string &logSource,
+		int logSeverity,const char * argsfmt,const char *argtype, va_list listPointer){
 
 	char *buffer = (char *)malloc(LOG_MAX_LENGTH);
 	int logptr = 0 , curLengthLimit = LOG_MAX_LENGTH;
@@ -177,7 +177,7 @@ inline ATU_logfeed_struct *copy2logfeed_struct(string &logSource,
 	logfeed->m_logSource=logSource;
 	if(isOverflow){
 		logfeed->m_logSeverity=ATU_logfeed_struct::ERROR;
-		char *errStr = "FATAL ERROR: Buffer is OVERFLOW";
+		const char *errStr = "FATAL ERROR: Buffer is OVERFLOW";
 		memcpy( buffer, errStr , strlen(errStr)+1 );
 		buffer[strlen(errStr)+1] = 0 ;
 		logfeed->m_logData = buffer;
@@ -252,15 +252,16 @@ public:
 	string m_FileName;
 	int writeLog(int &size);
 	int writeLogFeed(int &size);
-	int addLog(string msg,int writeToConsole=0);
-	static bool addLog(ATU_Logger*, string msg, int writeToConsole=0);
-	inline int addLog(string logSource,int logSeverity,char *argsfmt,char *argtype,...) {
+	int addLog(const string & msg,int writeToConsole=0);
+	static bool addLog(ATU_Logger*, const string & msg, int writeToConsole=0);
+	inline int addLog(const string & logSource,int logSeverity,const char *argsfmt,const char *argtype,...) {
 		va_list listPointer;
 		va_start(listPointer,argtype);
 
 		ATU_logfeed_struct *logfeed=copy2logfeed_struct(logSource,
 				logSeverity,argsfmt,argtype, listPointer);
 		on_notify_logfeed(logfeed);
+    return true;
 	}
 	void backupFileCopy(string fielanme,string directory);
 	void FindAndReplace( std::string& tInput, std::string tFind, std::string tReplace );

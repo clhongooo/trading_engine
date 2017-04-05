@@ -7,7 +7,7 @@
 #include "ATU_Feed_Logger.h"
 namespace atu{
 
-ATU_Feed_Logger::ATU_Feed_Logger(string datapath,int timerShareMemoryKey, string feedtype) :m_isShutdown(false),m_Timer(NULL),m_isReady(false)
+ATU_Feed_Logger::ATU_Feed_Logger(string datapath,int timerShareMemoryKey, string feedtype) :m_Timer(NULL),m_isShutdown(false),m_isReady(false)
 {
 	m_Timer = new ATU_Timer(timerShareMemoryKey);
 	m_Timer->detach();
@@ -105,7 +105,7 @@ void ATU_Feed_Logger::final(void) {
 	m_GeneralLogFile.close();
 
 }
-bool ATU_Feed_Logger::addLog(ATU_Feed_Logger *logger ,string msg, int writeToConsole) {
+bool ATU_Feed_Logger::addLog(ATU_Feed_Logger *logger, const string & msg, int writeToConsole) {
 	if (logger!=NULL) {
 		logger->addLog(msg, writeToConsole);
 	} else {
@@ -113,7 +113,7 @@ bool ATU_Feed_Logger::addLog(ATU_Feed_Logger *logger ,string msg, int writeToCon
 	}
 	return true;
 }
-int ATU_Feed_Logger::addLog(string msg, int writeToConsole) {
+int ATU_Feed_Logger::addLog(const string & msg, int writeToConsole) {
 	//	assert(msg.size()!=0);
 
 	if (msg.length()==0) return 0;
@@ -127,7 +127,7 @@ int ATU_Feed_Logger::addLog(string msg, int writeToConsole) {
 	m_LogMsgQueueWriteToConsole.push(writeToConsole);
 	m_LogMsgQueueMutex.leaveMutex();
 	m_LogMsgQueueLock.signal(true);
-	return true;
+	return 1;
 }
 int ATU_Feed_Logger::writeLog(int &size) {
 	size = 0;
@@ -149,7 +149,7 @@ int ATU_Feed_Logger::writeLog(int &size) {
 	} else {
 		m_LogMsgQueueMutex.leaveMutex();
 	}
-	return true;
+	return 1;
 }
 void ATU_Feed_Logger::backupFileCopy(string filename,string directory)
 {

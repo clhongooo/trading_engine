@@ -128,7 +128,6 @@ class SDateTime
           yyyymmdd.Set((now->tm_year+1900)*10000 + (now->tm_mon+1)*100 + (now->tm_mday));
           hhmmss.Set(boost::lexical_cast<int>(vTS[0]));
         }
-
       }
       catch (std::exception e)
       {

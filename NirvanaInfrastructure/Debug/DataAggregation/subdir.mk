@@ -4,13 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../DataAggregation/DataAggregator.cpp 
+../DataAggregation/MDIDataReceiver.cpp 
 
 OBJS += \
-./DataAggregation/DataAggregator.o 
+./DataAggregation/MDIDataReceiver.o 
 
 CPP_DEPS += \
-./DataAggregation/DataAggregator.d 
+./DataAggregation/MDIDataReceiver.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

@@ -50,8 +50,7 @@ protected:
 	virtual void connect_and_recv();
 	void process_send_queue();
 	void handle_recv_queue();
-//	void addLog(string source,string str,int severity);
-	void addLog(string logSource,int logSeverity,char *argsfmt,char *argtype,...);
+	void addLog(const string & logSource,int logSeverity,const char *argsfmt,const char *argtype,...);
 
 	tcp::socket *m_socket;
 	string m_server;

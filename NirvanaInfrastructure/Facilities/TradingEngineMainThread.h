@@ -18,7 +18,7 @@
 #include <string>
 #include "Logger.h"
 #include "SystemConfig.h"
-#include "DataAggregator.h"
+#include "MDIDataReceiver.h"
 #include "OrderExecutor.h"
 #include "VolSurfCalculator.h"
 #include "VolSurfaces.h"
@@ -31,8 +31,6 @@
 #include "StrategyB3US.h"
 #include "StrategyNIR1.h"
 #include "StrategyS11A.h"
-#include "StrategyA1.h"
-#include "StrategyA6.h"
 #include "StrategyR1.h"
 #include "StrategyR3.h"
 #include "StrategyR7.h"
@@ -57,6 +55,7 @@ class TradingEngineMainThread {
     virtual ~TradingEngineMainThread();
     void RunMainThread();
     bool HasFinishedInit();
+    inline static void ShortSleep();
 
     string m_ConfigPath;
     string m_ItrdHighLowFromIB;
@@ -68,7 +67,7 @@ class TradingEngineMainThread {
     boost::shared_ptr<HKSE>                        p_HKSE;
     boost::shared_ptr<HKMA>                        p_HKMA;
     boost::shared_ptr<CorrelMatrices>              p_CorrelMatrices;
-    vector<boost::shared_ptr<DataAggregator> >     p_dataagg;
+    vector<boost::shared_ptr<MDIDataReceiver> >    p_dataagg;
     boost::shared_ptr<OrderExecutor>               p_oe;
 
   private:

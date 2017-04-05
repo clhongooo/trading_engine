@@ -21,20 +21,19 @@ using namespace std;
 using namespace boost;
 
 //--------------------------------------------------
-// Not singleton, there can be a whole bunch of DataAggregator
+// Not singleton, there can be a whole bunch of MDIDataReceiver
 //--------------------------------------------------
 typedef boost::function<void()> ATU_TCPClientAfterConnectionCallBackFunc;
 typedef boost::function<void(string str)> ATU_TCPReadCallBackFunc;
 
-class DataAggregator {
+class MDIDataReceiver {
   public:
-    DataAggregator(const int);
-    virtual ~DataAggregator();
+    MDIDataReceiver(const int);
+    virtual ~MDIDataReceiver();
     void SetMDIServer(const string &,const string &);
     void OnNotifyLogfeed(ATU_logfeed_struct *);
 
     virtual void OnRecvMsgCSV(string);
-    virtual void OnRecvMsgMDIStruct(const ATU_MDI_marketfeed_struct &);
     virtual void OnTCPConnect();
     virtual void Run();
     virtual void BatchMktFeedSubscription(const vector<string>&, const string &, const string &, const string &);
@@ -46,6 +45,10 @@ class DataAggregator {
     virtual void ReadDataFile(const string &);
 
   protected:
+    //--------------------------------------------------
+    bool ParseMDIString(const string &, vector<string> &);
+    void UpdateInternalDataWithParsedMDIString(const vector<string> &, const YYYYMMDD &, const HHMMSS &);
+    void ConvertTo_ATU_MDI_marketfeed_struct(const vector<string> &, ATU_MDI_marketfeed_struct &);
     //--------------------------------------------------
     int m_Aggregator_Identity;
 

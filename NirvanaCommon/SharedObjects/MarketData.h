@@ -61,9 +61,7 @@ class MarketData
 
 
   private:
-    bool   ParseMDIString(const string &, vector<string> &, YYYYMMDD &, HHMMSS &);
-    void   UpdateInternalDataWithParsedMDIString(const vector<string> &, const YYYYMMDD &, const HHMMSS &);
-    void   UpdateInternalDataWithParsedMDIString(const ATU_MDI_marketfeed_struct &, const YYYYMMDD &, const HHMMSS &);
+    void   UpdateInternalDataWithMDIstruct(const ATU_MDI_marketfeed_struct &, const YYYYMMDD &, const HHMMSS &);
     void   UpdateSystemTime(const YYYYMMDD &,const HHMMSS &);
     void   UpdateBarAggregators(const YYYYMMDD &,const HHMMSS &,const string &,const double,const long);
     void   UpdateBarAggregatorsAndLatestSnapshotContFut(const YYYYMMDDHHMMSS &,const ATU_MDI_marketfeed_struct & sMD);

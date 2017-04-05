@@ -5,7 +5,7 @@ namespace atu {
 // TODO: There is error when stress testing the code
 // e.g. while true; do ./atu_timer_main 12766; done
 // "pure virtual method called" error will pop out after few seconds and evenually will core dump
-ATU_Timer::ATU_Timer(int key) :	m_ShareMemoryTimerData(NULL), m_shareMemoryKey(key), m_isShutdown(false), m_lastSec(0) {
+ATU_Timer::ATU_Timer(int key) :	m_ShareMemoryTimerData(NULL), m_shareMemoryKey(key), m_lastSec(0), m_isShutdown(false) {
 	if (key != 0) {
 		createShareMemoryTimerData(key);
 	} else {

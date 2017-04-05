@@ -17,6 +17,12 @@ TradingEngineMainThread::TradingEngineMainThread
 {
 }
 
+void TradingEngineMainThread::ShortSleep()
+{
+  ShortSleep();
+}
+
+
 TradingEngineMainThread::~TradingEngineMainThread()
 {
 }
@@ -51,21 +57,21 @@ void TradingEngineMainThread::RunMainThread()
 
   p_HKFE = HKFE::Instance();
   p_HKFE->LoadCalendar(p_SysCfg->Get_HKFE_CalendarPath());
-  p_Logger->Write(Logger::NOTICE,"Finished loading HKFE."); usleep(100000);
+  p_Logger->Write(Logger::NOTICE,"Finished loading HKFE."); ShortSleep();
 
   p_HKSE = HKSE::Instance();
   p_HKSE->LoadHSIConstituents(p_SysCfg->Get_HKSE_HSIConstituentsPath()); 
-  p_Logger->Write(Logger::NOTICE,"Finished loading HKSE."); usleep(100000);
+  p_Logger->Write(Logger::NOTICE,"Finished loading HKSE."); ShortSleep();
 
   p_HKMA = HKMA::Instance();
   if (p_SysCfg->IsStrategyOn(STY_NIR))
   {
     p_HKMA->LoadExchgFundBill(p_SysCfg->Get_HKMA_ExchgFundBillPath()); 
-    p_Logger->Write(Logger::NOTICE,"Finished loading HKMA."); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Finished loading HKMA."); ShortSleep();
   }
   else
   {
-    p_Logger->Write(Logger::NOTICE,"HKMA not loaded."); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"HKMA not loaded."); ShortSleep();
   }
 
   //--------------------------------------------------
@@ -75,11 +81,11 @@ void TradingEngineMainThread::RunMainThread()
   if (p_SysCfg->IsStrategyOn(STY_NIR))
   {
     p_CorrelMatrices->LoadCorrelMatrices(p_SysCfg->Get_CorrelMatricesPath());
-    p_Logger->Write(Logger::NOTICE,"Finished loading correlation matrices."); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Finished loading correlation matrices."); ShortSleep();
   }
   else
   {
-    p_Logger->Write(Logger::NOTICE,"CorrelMatrices not loaded."); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"CorrelMatrices not loaded."); ShortSleep();
   }
 
   //--------------------------------------------------
@@ -90,11 +96,11 @@ void TradingEngineMainThread::RunMainThread()
   {
     pdg.SetCalcIntervalInSec(p_SysCfg->Get_ProbDistrnCalcIntervalInSec());
     pdg.LoadTrainedFSMCData(p_SysCfg->Get_ProbDistrFileFSMC1D());
-    p_Logger->Write(Logger::NOTICE,"Finished loading FSMC data."); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Finished loading FSMC data."); ShortSleep();
   }
   else
   {
-    p_Logger->Write(Logger::NOTICE,"FSMC not loaded."); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"FSMC not loaded."); ShortSleep();
   }
 
   // //--------------------------------------------------
@@ -102,7 +108,7 @@ void TradingEngineMainThread::RunMainThread()
   // //--------------------------------------------------
   // VolSurfCalculator vsc;
   // vsc.SetCalcIntervalInSec(p_SysCfg->Get_VolSurfCalcIntervalInSec());
-  // p_Logger->Write(Logger::NOTICE,"Finished loading VolSurfCalculator."); usleep(100000);
+  // p_Logger->Write(Logger::NOTICE,"Finished loading VolSurfCalculator."); ShortSleep();
 
   //--------------------------------------------------
   // VolSurfaces
@@ -113,11 +119,11 @@ void TradingEngineMainThread::RunMainThread()
   if (p_SysCfg->IsStrategyOn(STY_NIR))
   {
     p_VolSurfaces->LoadHSIVolSurfModelParam(p_SysCfg->Get_VolSurfParamFile1FM()); 
-    p_Logger->Write(Logger::NOTICE,"Finished loading volatility surface parameters."); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Finished loading volatility surface parameters."); ShortSleep();
   }
   else
   {
-    p_Logger->Write(Logger::NOTICE,"VolatilitySurface parameters not loaded."); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"VolatilitySurface parameters not loaded."); ShortSleep();
   }
 
   //--------------------------------------------------
@@ -125,10 +131,10 @@ void TradingEngineMainThread::RunMainThread()
   //--------------------------------------------------
   TechIndUpdater tiu;
 
-  //--------------------------------------------------
-  // PriceForwarderToNextTier
-  //--------------------------------------------------
-  PriceForwarderToNextTier pf;
+  // //--------------------------------------------------
+  // // PriceForwarderToNextTier
+  // //--------------------------------------------------
+  // PriceForwarderToNextTier pf;
 
   //--------------------------------------------------
   // Strategies
@@ -144,8 +150,6 @@ void TradingEngineMainThread::RunMainThread()
   boost::scoped_ptr<StrategyR7>         styR7;
   boost::scoped_ptr<StrategyR9>         styR9;
   // boost::scoped_ptr<PortfolioGenerator> pg;
-  // boost::scoped_ptr<StrategyA1>         styA1;
-  // boost::scoped_ptr<StrategyA6>         styA6;
   // boost::scoped_ptr<StrategyR1>         styR1;
   // boost::scoped_ptr<StrategyR3>         styR3;
   // boost::scoped_ptr<StrategyR8>         styR8;
@@ -172,144 +176,130 @@ void TradingEngineMainThread::RunMainThread()
   boost::thread_group m_thread_group;
 
   m_thread_group.add_thread(new boost::thread(&ThreadHealthMonitor::Run, pThm.get()));
-  p_Logger->Write(Logger::NOTICE,"Started thread: ThreadHealthMonitor"); usleep(100000);
+  p_Logger->Write(Logger::NOTICE,"Started thread: ThreadHealthMonitor"); ShortSleep();
 
 
 
   if (p_SysCfg->IsStrategyOn(STY_NIR))
   {
     m_thread_group.add_thread(new boost::thread(&ProbDistributionGenerator::Run, &pdg));
-    p_Logger->Write(Logger::NOTICE,"Started thread: ProbDistributionGenerator"); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Started thread: ProbDistributionGenerator"); ShortSleep();
   }
 
   if (p_SysCfg->IsStrategyOn(STY_TEST))
   {
     styTest.reset(new StrategyTest());
     m_thread_group.add_thread(new boost::thread(&StrategyTest::Run, styTest.get()));
-    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyTest"); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyTest"); ShortSleep();
   }
 
   if (p_SysCfg->IsStrategyOn(STY_B1_HKF))
   {
     styB1_HKF.reset(new StrategyB1_HKF());
     m_thread_group.add_thread(new boost::thread(&StrategyB1_HKF::Run, styB1_HKF.get()));
-    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB1_HKF"); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB1_HKF"); ShortSleep();
   }
 
   if (p_SysCfg->IsStrategyOn(STY_B2_US1))
   {
     styB2_US1.reset(new StrategyB2_US1());
     m_thread_group.add_thread(new boost::thread(&StrategyB2_US1::Run, styB2_US1.get()));
-    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_US1"); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_US1"); ShortSleep();
   }
 
   if (p_SysCfg->IsStrategyOn(STY_B2_US2))
   {
     styB2_US2.reset(new StrategyB2_US2());
     m_thread_group.add_thread(new boost::thread(&StrategyB2_US2::Run, styB2_US2.get()));
-    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_US2"); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_US2"); ShortSleep();
   }
 
   if (p_SysCfg->IsStrategyOn(STY_B2_US3))
   {
     styB2_US3.reset(new StrategyB2_US3());
     m_thread_group.add_thread(new boost::thread(&StrategyB2_US3::Run, styB2_US3.get()));
-    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_US3"); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_US3"); ShortSleep();
   }
 
   if (p_SysCfg->IsStrategyOn(STY_B2_HK))
   {
     styB2_HK.reset(new StrategyB2_HK());
     m_thread_group.add_thread(new boost::thread(&StrategyB2_HK::Run, styB2_HK.get()));
-    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_HK"); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB2_HK"); ShortSleep();
   }
 
   if (p_SysCfg->IsStrategyOn(STY_B3_US))
   {
     styB3_US.reset(new StrategyB3_US());
     m_thread_group.add_thread(new boost::thread(&StrategyB3_US::Run, styB3_US.get()));
-    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB3_US"); usleep(100000);
+    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB3_US"); ShortSleep();
   }
 
   // if (p_SysCfg->IsStrategyOn(STY_NIR1))
   // {
   //   styNIR1.reset(new StrategyNIR1());
   //   m_thread_group.add_thread(new boost::thread(&StrategyNIR1::Run, styNIR1.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyNIR1"); usleep(100000);
+  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyNIR1"); ShortSleep();
   // }
 
   // if (p_SysCfg->IsStrategyOn(STY_R7))
   // {
   //   styR7.reset(new StrategyR7());
   //   m_thread_group.add_thread(new boost::thread(&StrategyR7::Run, styR7.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR7"); usleep(100000);
+  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR7"); ShortSleep();
   // }
   // if (p_SysCfg->IsStrategyOn(STY_R9))
   // {
   //   styR9.reset(new StrategyR9());
   //   m_thread_group.add_thread(new boost::thread(&StrategyR9::Run, styR9.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR9"); usleep(100000);
+  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR9"); ShortSleep();
   // }
 
   // if (p_SysCfg->IsStrategyOn(STY_S11A))
   // {
   //   styS11A.reset(new StrategyS11A());
   //   m_thread_group.add_thread(new boost::thread(&StrategyS11A::Run, styS11A.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyS11A"); usleep(100000);
+  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyS11A"); ShortSleep();
   // }
   //
   // if (p_SysCfg->IsStrategyOn(STY_R1))
   // {
   //   styR1.reset(new StrategyR1());
   //   m_thread_group.add_thread(new boost::thread(&StrategyR1::Run, styR1.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR1"); usleep(100000);
+  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR1"); ShortSleep();
   // }
   //
   // if (p_SysCfg->IsStrategyOn(STY_R3))
   // {
   //   styR3.reset(new StrategyR3());
   //   m_thread_group.add_thread(new boost::thread(&StrategyR3::Run, styR3.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR3"); usleep(100000);
+  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR3"); ShortSleep();
   // }
   //
   // if (p_SysCfg->IsStrategyOn(STY_R8))
   // {
   //   styR8.reset(new StrategyR8());
   //   m_thread_group.add_thread(new boost::thread(&StrategyR8::Run, styR8.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR8"); usleep(100000);
+  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR8"); ShortSleep();
   // }
 
-
-  // if (p_SysCfg->IsStrategyOn(STY_A1))
-  // {
-  //   styA1.reset(new StrategyA1());
-  //   m_thread_group.add_thread(new boost::thread(&StrategyA1::Run, styA1.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyA1"); usleep(100000);
-  // }
-  //
-  // if (p_SysCfg->IsStrategyOn(STY_A6))
-  // {
-  //   styA6.reset(new StrategyA6());
-  //   m_thread_group.add_thread(new boost::thread(&StrategyA6::Run, styA6.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyA6"); usleep(100000);
-  // }
-  //
 
   {
     // pg.reset(new PortfolioGenerator());
 
-    // m_thread_group.add_thread(new boost::thread(&VolSurfCalculator::Run          ,&vsc));
     m_thread_group.add_thread(new boost::thread(&TechIndUpdater::Run             ,&tiu));
-    m_thread_group.add_thread(new boost::thread(&PriceForwarderToNextTier::Run   ,&pf));
+    m_thread_group.add_thread(new boost::thread(&MarkToMarket::Run               ,&mtm));
+    p_Logger->Write(Logger::NOTICE,"Started thread: TechIndUpdater"); ShortSleep();
+    p_Logger->Write(Logger::NOTICE,"Started thread: MarkToMarket"); ShortSleep();
+
+    // m_thread_group.add_thread(new boost::thread(&VolSurfCalculator::Run          ,&vsc));
+    // m_thread_group.add_thread(new boost::thread(&PriceForwarderToNextTier::Run   ,&pf));
     // m_thread_group.add_thread(new boost::thread(&PortfolioGenerator::Run         ,pg.get()));
     // m_thread_group.add_thread(new boost::thread(&TerminalThread::Run          ,&tthd));
-    m_thread_group.add_thread(new boost::thread(&MarkToMarket::Run               ,&mtm));
-    p_Logger->Write(Logger::NOTICE,"Started thread: VolSurfCalculator");    usleep(100000);
-    p_Logger->Write(Logger::NOTICE,"Started thread: TechIndUpdater");       usleep(100000);
-    // p_Logger->Write(Logger::NOTICE,"Started thread: PortfolioGenerator");   usleep(100000);
-    p_Logger->Write(Logger::NOTICE,"Started thread: OrderExecutor");        usleep(100000);
-    p_Logger->Write(Logger::NOTICE,"Started thread: TerminalThread");       usleep(100000);
-    p_Logger->Write(Logger::NOTICE,"Started thread: MarkToMarket");         usleep(100000);
+
+    // p_Logger->Write(Logger::NOTICE,"Started thread: VolSurfCalculator"); ShortSleep();
+    // p_Logger->Write(Logger::NOTICE,"Started thread: PortfolioGenerator"); ShortSleep();
+    // p_Logger->Write(Logger::NOTICE,"Started thread: TerminalThread"); ShortSleep();
   }
 
 
@@ -337,11 +327,12 @@ void TradingEngineMainThread::RunMainThread()
         p_Logger->Write(Logger::NOTICE,"Finished loading OTI %d.",i);
         m_thread_group.add_thread(new boost::thread(&OrderExecutor::Run           ,(p_oe.get())));
         // m_thread_group.add_thread(new boost::thread(&OrderExecutor::RunChkOrd     ,(p_oe.get())));
+        p_Logger->Write(Logger::NOTICE,"Started thread: OrderExecutor %s", sIP.c_str()); ShortSleep();
       }
     }
     else
     {
-      p_Logger->Write(Logger::NOTICE,"OTI not loaded."); usleep(100000);
+      p_Logger->Write(Logger::NOTICE,"OTI not loaded."); ShortSleep();
     }
 
     //--------------------------------------------------
@@ -359,7 +350,7 @@ void TradingEngineMainThread::RunMainThread()
     //--------------------------------------------------
     int iNumOfMDI = p_SysCfg->GetNumOfMDI();
     p_dataagg.clear();
-    p_dataagg.insert(p_dataagg.begin(),iNumOfMDI,boost::shared_ptr<DataAggregator>());
+    p_dataagg.insert(p_dataagg.begin(),iNumOfMDI,boost::shared_ptr<MDIDataReceiver>());
     for (unsigned int i = 0; i < iNumOfMDI; ++i)
     {
       string sFile = p_SysCfg->Get_MDI_File(i);
@@ -367,20 +358,20 @@ void TradingEngineMainThread::RunMainThread()
       string sPort = p_SysCfg->Get_MDI_Port(i);
       p_Logger->Write(Logger::NOTICE,"Read from SystemConfig: MDI %d: File %s IP %s Port %s",i,sFile.c_str(),sIP.c_str(),sPort.c_str());
 
-      p_dataagg[i].reset(new DataAggregator(i));
+      p_dataagg[i].reset(new MDIDataReceiver(i));
       if (sFile == "")
       {
         p_dataagg[i]->SetMDIServer(sIP,sPort);
-        m_thread_group.add_thread(new boost::thread(&DataAggregator::Run ,(p_dataagg[i].get())));
+        m_thread_group.add_thread(new boost::thread(&MDIDataReceiver::Run ,(p_dataagg[i].get())));
       }
       else
       {
-        m_thread_group.add_thread(new boost::thread(&DataAggregator::ReadDataFile,(p_dataagg[i].get()),sFile));
+        m_thread_group.add_thread(new boost::thread(&MDIDataReceiver::ReadDataFile,(p_dataagg[i].get()),sFile));
       }
 
       p_Logger->Write(Logger::NOTICE,"Finished loading MDI %d: %s %s",i,sIP.c_str(),sPort.c_str());
-      p_Logger->Write(Logger::NOTICE,"Started thread: DataAggregator %d",i);
-      usleep(100000);
+      p_Logger->Write(Logger::NOTICE,"Started thread: MDIDataReceiver %d",i);
+      ShortSleep();
     }
 
   }

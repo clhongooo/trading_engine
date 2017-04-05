@@ -29,8 +29,8 @@ namespace atu{
 		string m_Datapath;
 		string m_FileName;
 		int writeLog(int &size);
-		int addLog(string msg,int writeToConsole=0);
-		static bool addLog(ATU_Feed_Logger*, string msg, int writeToConsole=0);
+		int addLog(const string & msg,int writeToConsole=0);
+		static bool addLog(ATU_Feed_Logger*, const string & msg, int writeToConsole=0);
 		void backupFileCopy(string fielanme,string directory);
 		void stop();
 		bool isReady();

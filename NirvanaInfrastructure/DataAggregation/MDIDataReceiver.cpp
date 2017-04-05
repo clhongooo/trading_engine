@@ -1,6 +1,6 @@
-#include <DataAggregator.h>
+#include <MDIDataReceiver.h>
 
-DataAggregator::DataAggregator(const int otimdiid) :
+MDIDataReceiver::MDIDataReceiver(const int otimdiid) :
   m_Aggregator_Identity(otimdiid)
 {
   m_Logger          = Logger::Instance();
@@ -11,32 +11,32 @@ DataAggregator::DataAggregator(const int otimdiid) :
   m_ThrdHlthMon     = ThreadHealthMonitor::Instance();
 }
 
-DataAggregator::~DataAggregator()
+MDIDataReceiver::~MDIDataReceiver()
 {
 }
 
-void DataAggregator::SetMDIServer(const string & ip, const string & port)
+void MDIDataReceiver::SetMDIServer(const string & ip, const string & port)
 {
   if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
   {
-    m_Logger->Write(Logger::INFO,"DataAggregator: Running in read file mode. No need to connect to ATU MDI %s %s", ip.c_str(), port.c_str());
+    m_Logger->Write(Logger::INFO,"MDIDataReceiver: Running in read file mode. No need to connect to ATU MDI %s %s", ip.c_str(), port.c_str());
   }
   else
   {
-    m_Logger->Write(Logger::INFO,"DataAggregator: Connecting to ATU MDI %s %s", ip.c_str(), port.c_str());
+    m_Logger->Write(Logger::INFO,"MDIDataReceiver: Connecting to ATU MDI %s %s", ip.c_str(), port.c_str());
     m_MDI_Server_IP = ip;
     m_MDI_Server_Port = port;
     m_mdi_server.reset(new ATU_TCPClient(m_MDI_Server_IP,m_MDI_Server_Port));
-    m_mdi_server->RegisterAfterConnectionCallBack(new ATU_TCPClientAfterConnectionCallBackFunc(boost::bind(&DataAggregator::OnTCPConnect,this)));
-    m_mdi_server->RegisterHandleMsgCallBack(new ATU_TCPReadCallBackFunc(boost::bind(&DataAggregator::OnRecvMsgCSV,this,_1)));
-    m_mdi_server->register_notify_logfeed_call_back_func(new ATU_logfeed_CallBackFunc(boost::bind(&DataAggregator::OnNotifyLogfeed,this,_1)));
+    m_mdi_server->RegisterAfterConnectionCallBack(new ATU_TCPClientAfterConnectionCallBackFunc(boost::bind(&MDIDataReceiver::OnTCPConnect,this)));
+    m_mdi_server->RegisterHandleMsgCallBack(new ATU_TCPReadCallBackFunc(boost::bind(&MDIDataReceiver::OnRecvMsgCSV,this,_1)));
+    m_mdi_server->register_notify_logfeed_call_back_func(new ATU_logfeed_CallBackFunc(boost::bind(&MDIDataReceiver::OnNotifyLogfeed,this,_1)));
     m_mdi_server->detach();
   }
   return;
 }
 
 
-void DataAggregator::ReadDataFile(const string & datafileloc)
+void MDIDataReceiver::ReadDataFile(const string & datafileloc)
 {
   std::ifstream filein(datafileloc);
 
@@ -56,7 +56,7 @@ void DataAggregator::ReadDataFile(const string & datafileloc)
 }
 
 
-void DataAggregator::OnNotifyLogfeed(ATU_logfeed_struct *s)
+void MDIDataReceiver::OnNotifyLogfeed(ATU_logfeed_struct *s)
 {
   if (s->m_logArgType!=NULL) free(s->m_logArgType);
   if (s->m_logFmt!=NULL)     free(s->m_logFmt);
@@ -74,19 +74,39 @@ void DataAggregator::OnNotifyLogfeed(ATU_logfeed_struct *s)
   return;
 }
 
-void DataAggregator::OnRecvMsgCSV(string str)
+void MDIDataReceiver::OnRecvMsgCSV(string strMDI)
 {
-  // m_Logger->Write(Logger::DEBUG, "DataAggregator: OnRecvMsgCSV() Received: %s", str.c_str());
+  // m_Logger->Write(Logger::DEBUG, "MDIDataReceiver: OnRecvMsgCSV() Received: %s", strMDI.c_str());
 
   if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
   {
     m_MDIAck->ReportDataArrived(m_Aggregator_Identity);
   }
-  if (m_MarketData->UpdateMarketData(str))
+
+  //--------------------------------------------------
+  vector<string> vMDI;
+
+  if (!ParseMDIString(strMDI,vMDI))
   {
-    if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
-      m_MDIAck->WaitForAck();
+    if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK ||
+        m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
+    {
+      m_MDIAck->ReportNotMktData();
+    }
+    m_Logger->Write(Logger::INFO,"MDIDataReceiver: Failed to parse string from MDI: %s", strMDI.c_str());
   }
+  else
+  {
+    ATU_MDI_marketfeed_struct structMDI;
+    ConvertTo_ATU_MDI_marketfeed_struct(vMDI,structMDI);
+    if (m_MarketData->UpdateMarketData(structMDI))
+    {
+      if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
+        m_MDIAck->WaitForAck();
+    }
+  }
+  //--------------------------------------------------
+
   if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
   {
     string s = "9394,acknowledgement,0,fromtradingengine\n";
@@ -95,18 +115,7 @@ void DataAggregator::OnRecvMsgCSV(string str)
   }
 }
 
-void DataAggregator::OnRecvMsgMDIStruct(const ATU_MDI_marketfeed_struct &s)
-{
-  m_MDIAck->ReportDataArrived(m_Aggregator_Identity);
-  if (m_MarketData->UpdateMarketData(s))
-  {
-    m_MDIAck->WaitForAck(); // will block until all ack received
-  }
-  return;
-}
-
-
-void DataAggregator::Run()
+void MDIDataReceiver::Run()
 {
   for (;;)
   {
@@ -118,14 +127,14 @@ void DataAggregator::Run()
   }
 
   if (m_mdi_server) m_mdi_server->stop();
-  m_Logger->Write(Logger::NOTICE,"DataAggregator for ATU MDI (id=%d) has ended.", m_Aggregator_Identity);
+  m_Logger->Write(Logger::NOTICE,"MDIDataReceiver for ATU MDI (id=%d) has ended.", m_Aggregator_Identity);
   sleep(2);
   return;
 }
 
-void DataAggregator::OnTCPConnect()
+void MDIDataReceiver::OnTCPConnect()
 {
-  m_Logger->Write(Logger::INFO,"DataAggregator: Connected to ATU MDI (id=%d)", m_Aggregator_Identity);
+  m_Logger->Write(Logger::INFO,"MDIDataReceiver: Connected to ATU MDI (id=%d)", m_Aggregator_Identity);
 
   usleep(500000);
 
@@ -142,7 +151,7 @@ void DataAggregator::OnTCPConnect()
 //--------------------------------------------------
 // Adapted from Xiao Nan
 //--------------------------------------------------
-void DataAggregator::BatchMktFeedSubscription(const vector<string>& symbols, const string & begDate, const string & endDate, const string & replayspeed)
+void MDIDataReceiver::BatchMktFeedSubscription(const vector<string>& symbols, const string & begDate, const string & endDate, const string & replayspeed)
 {
   m_Logger->Write(Logger::INFO, "BatchMktFeedSubscription: Start subscribing to marketfeed. (id=%d)", m_Aggregator_Identity);
 
@@ -193,7 +202,7 @@ void DataAggregator::BatchMktFeedSubscription(const vector<string>& symbols, con
   return;
 }
 
-void DataAggregator::BatchMktFeedSubscription(const vector<string>& symbols, const string & begDate, const string & endDate, const string & replayspeed, vector<ATU_MDI_subscription_struct> & vSub)
+void MDIDataReceiver::BatchMktFeedSubscription(const vector<string>& symbols, const string & begDate, const string & endDate, const string & replayspeed, vector<ATU_MDI_subscription_struct> & vSub)
 {
   m_Logger->Write(Logger::INFO, "BatchMktFeedSubscription: Start subscribing to marketfeed. (id=%d)", m_Aggregator_Identity);
 
@@ -213,6 +222,49 @@ void DataAggregator::BatchMktFeedSubscription(const vector<string>& symbols, con
   }
 
   m_Logger->Write(Logger::INFO, "BatchMktFeedSubscription: Finished subscribing to marketfeed. (id=%d)", m_Aggregator_Identity);
+  return;
+}
+
+//--------------------------------------------------
+bool MDIDataReceiver::ParseMDIString(const string & sMD, vector<string> & vMDI)
+{
+  vMDI.clear();
+  boost::split(vMDI, sMD, boost::is_any_of(","));
+
+  //--------------------------------------------------
+  // 1 for time stamp
+  // 1 for feed code
+  // 2 for trade price and volume
+  // 11 for bid queue
+  // 11 for ask queue
+  //--------------------------------------------------
+  if (vMDI.size() != 26 &&
+      vMDI.size() != 4)
+  {
+    m_Logger->Write(Logger::DEBUG,"MarketData: Discarded marketdata with incorrect length. Received MD: %s",sMD.c_str());
+    return false;
+  }
+
+  if (vMDI[1] == "acknowledgement")
+  {
+    m_Logger->Write(Logger::NOTICE,"MarketData: MDI gave us an acknowledgement market feed?!? Received MD: %s",sMD.c_str());
+    return false;
+  }
+
+  return true;
+}
+
+
+void MDIDataReceiver::ConvertTo_ATU_MDI_marketfeed_struct(const vector<string> & vMDI, ATU_MDI_marketfeed_struct & structMDI)
+{
+  structMDI.m_timestamp     =                             vMDI[ 0] ;
+  structMDI.m_feedcode      =                             vMDI[ 1] ;
+  structMDI.m_traded_price  = boost::lexical_cast<double>(vMDI[ 2]);
+  structMDI.m_traded_volume = boost::lexical_cast<double>(vMDI[ 3]);
+  structMDI.m_bid_price_1   = boost::lexical_cast<double>(vMDI[ 5]);
+  structMDI.m_bid_volume_1  = boost::lexical_cast<double>(vMDI[ 6]);
+  structMDI.m_ask_price_1   = boost::lexical_cast<double>(vMDI[16]);
+  structMDI.m_ask_volume_1  = boost::lexical_cast<double>(vMDI[17]);
   return;
 }
 

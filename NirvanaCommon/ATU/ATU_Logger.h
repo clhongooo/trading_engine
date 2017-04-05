@@ -177,7 +177,7 @@ inline ATU_logfeed_struct *copy2logfeed_struct(string &logSource,
 	logfeed->m_logSource=logSource;
 	if(isOverflow){
 		logfeed->m_logSeverity=ATU_logfeed_struct::ERROR;
-		char *errStr = "FATAL ERROR: Buffer is OVERFLOW";
+		const char *errStr = "FATAL ERROR: Buffer is OVERFLOW";
 		memcpy( buffer, errStr , strlen(errStr)+1 );
 		buffer[strlen(errStr)+1] = 0 ;
 		logfeed->m_logData = buffer;

@@ -2,24 +2,26 @@
 #include <iostream>
 using namespace std;
 ATU_TCPClient::ATU_TCPClient() : 
+		m_socket(NULL),
 		m_server(""),
 		m_port(""),
-		m_socket(NULL),
 		m_tcp_handle_msg_call_back_func(NULL), 
+		m_logfeed_call_back_func(NULL),
 		m_isReady(false),
-		m_shutDown(false),
-		m_logfeed_call_back_func(NULL) {
+		m_shutDown(false)
+{
 	init();
 }
 ATU_TCPClient::ATU_TCPClient(string server, string port) : 
+		m_socket(NULL),
 		m_server(server),
 		m_port(port),
-		m_socket(NULL),
 		m_tcp_handle_msg_call_back_func(NULL), 
 		m_tcp_after_connection_call_back_func(NULL), 
+		m_logfeed_call_back_func(NULL),
 		m_isReady(false),
-		m_shutDown(false),
-		m_logfeed_call_back_func(NULL) {
+		m_shutDown(false)
+{
 	init();
 }
 void ATU_TCPClient::init() {
@@ -312,7 +314,7 @@ void ATU_TCPClient::addLog(string source,string str,int severity)
 	notify_logfeed(s);
 }
 */
-void ATU_TCPClient::addLog(string logSource,int logSeverity,char *argsfmt,char *argtype,...) {
+void ATU_TCPClient::addLog(const string & logSource,int logSeverity,const char *argsfmt,const char *argtype,...) {
 	va_list listPointer;
 	va_start(listPointer,argtype);
 

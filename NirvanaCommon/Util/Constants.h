@@ -60,7 +60,7 @@ enum StrategyID {
   STY_B2_US3,
   STY_B3_US,
   STY_NIR1,
-  STY_ETFR,
+  STY_CMA,
   STY_S11A,
   STY_A1,
   STY_A6,

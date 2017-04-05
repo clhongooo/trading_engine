@@ -16,6 +16,7 @@ RM := rm -rf
 -include OrderExecutionAlgo/subdir.mk
 -include LowPriorityFacilities/subdir.mk
 -include Facilities/subdir.mk
+-include DataAggregation/CTP/subdir.mk
 -include DataAggregation/subdir.mk
 -include subdir.mk
 -include objects.mk
