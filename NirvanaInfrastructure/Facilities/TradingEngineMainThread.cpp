@@ -19,7 +19,7 @@ TradingEngineMainThread::TradingEngineMainThread
 
 void TradingEngineMainThread::ShortSleep()
 {
-  ShortSleep();
+  usleep(100000);
 }
 
 
@@ -47,7 +47,7 @@ void TradingEngineMainThread::RunMainThread()
   //--------------------------------------------------
   p_Logger = Logger::Instance();
 
-  p_Logger->Write(Logger::NOTICE,"Main: Nirvana has started.");
+  p_Logger->Write(Logger::NOTICE,"Main: Trading Engine has started.");
 
   //--------------------------------------------------
   // Static Data: Exchange HKFE HKSE HKMA

@@ -624,7 +624,6 @@ void StrategyBase::Run()
         }
 
         UpdateInternalData(iTradSym);
-
       }
 
       m_StyRunMode = SRM_BKT_OR_LIVE;
@@ -640,7 +639,8 @@ void StrategyBase::Run()
         if (SkipSubseqProcessingForSymbol(iTradSym,sSkipReason))
         {
           m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s Skip reason: %s",
-                          GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_Domicile.ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),sSkipReason.c_str());
+                          GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_Domicile.ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
+                          sSkipReason.c_str());
           continue;
         }
 
@@ -653,6 +653,11 @@ void StrategyBase::Run()
             )
            )
         {
+          m_Logger->Write(Logger::DEBUG,"Strategy %s: %s %s symbol updated: %s proceed even if no MD: %s",
+                          GetStrategyName(m_StyID).c_str(), m_ymdhms_SysTime_Domicile.ToStr().c_str(),m_TradedSymbols[iTradSym].c_str(),
+                          m_MarketData->CheckIfSymbolIsUpdated(m_TradedSymbols[iTradSym]) ? "true" : "false",
+                          m_SysCfg->ChkIfProceedStyForceExcnEvenIfNoMD(m_TradedSymbols[iTradSym]) ? "true" : "false"
+                         );
           continue;
         }
         //--------------------------------------------------

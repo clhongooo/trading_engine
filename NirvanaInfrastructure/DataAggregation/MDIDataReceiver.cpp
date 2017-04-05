@@ -76,7 +76,7 @@ void MDIDataReceiver::OnNotifyLogfeed(ATU_logfeed_struct *s)
 
 void MDIDataReceiver::OnRecvMsgCSV(string strMDI)
 {
-  // m_Logger->Write(Logger::DEBUG, "MDIDataReceiver: OnRecvMsgCSV() Received: %s", strMDI.c_str());
+  m_Logger->Write(Logger::DEBUG, "MDIDataReceiver: OnRecvMsgCSV() Received: %s", strMDI.c_str());
 
   if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
   {

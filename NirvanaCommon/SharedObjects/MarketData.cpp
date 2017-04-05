@@ -346,7 +346,7 @@ YYYYMMDDHHMMSS MarketData::GetSystemTimeEST()
   return m_MDITimeEST_YYYYMMDDHHMMSS;
 }
 
-bool MarketData::GetLatestBestBidAskMid(const string & sSymbol, double & dBestBid,double & dBestAsk,double & dMidQuote,YYYYMMDDHHMMSS & ymdhms)
+bool MarketData::GetLatestBestBidAskMid(const string & sSymbol, double & dBestBid, double & dBestAsk, double & dMidQuote, YYYYMMDDHHMMSS & ymdhms)
 {
   //--------------------------------------------------
   // Continuous Futures

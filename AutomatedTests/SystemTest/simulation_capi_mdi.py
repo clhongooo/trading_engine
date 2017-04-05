@@ -89,6 +89,8 @@ class ClientHandler(asyncore.dispatcher):
             cur_px = round(float(self.last_price[sym]) * (1+pctg_chg),3)
             cur_vol = random.randint(1,10)
 
+            self.logger.debug("%s: %s" % (sym,cur_px))
+
             # 20160101_003000_000000,AGG,106.805,10000,B,106.805,10000000,999999,0,999999,0,999999,0,999999,0,A,106.805,10000000,999999,0,999999,0,999999,0,999999,0
             dtstr = datetime.strftime(datetime.now(), "%Y%m%d_%H%M%S_%f")
             data = "%s,%s,%s,%s,B,%s,1,999999,0,999999,0,999999,0,999999,0,A,%s,1,999999,0,999999,0,999999,0,999999,0\n" % (dtstr,sym,cur_px,cur_vol,cur_px,cur_px)
@@ -101,7 +103,7 @@ class ClientHandler(asyncore.dispatcher):
 def main():
     logging.basicConfig(level=logging.DEBUG, format='%(name)s:[%(levelname)s]: %(message)s')
     HOST = '0.0.0.0'
-    PORT = 19394
+    PORT = 55030
     s = Server((HOST,PORT))
     asyncore.loop()
 
