@@ -23,7 +23,7 @@ class HKMA
     //--------------------------------------------------
     HKMA();
     HKMA(HKMA const&);
-    HKMA& operator=(HKMA const&){};
+    HKMA& operator=(HKMA const&){ return *this; };
     static boost::weak_ptr<HKMA> m_pInstance;
 
     map<int,double> m_ExchgFundBill;

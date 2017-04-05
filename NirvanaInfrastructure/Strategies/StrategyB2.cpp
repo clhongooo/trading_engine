@@ -2603,7 +2603,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
 
               if (o_sym)
               {
-                double dAggSgndQty = m_SymAggSgndQty[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()][GetOrElse(o_sym,string(""))];
+                double dAggSgndQty = m_SymAggSgndQty[m_p_ymdhms_SysTime_Local->GetYYYYMMDD()][GetOrElse_(o_sym,string(""))];
 
                 if (
                   (
@@ -2624,7 +2624,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
                               iRttnGrp,
                               iRank,
                               m_AllAvbSymForRollingBasket[iRttnGrp][m_p_ymdhms_SysTime_Local->GetYYYYMMDD()].size(),
-                              GetOrElse(vSymWithSgnl[iRttnGrp],string("___")).c_str()
+                              GetOrElse_(vSymWithSgnl[iRttnGrp],string("___")).c_str()
                              );
               iRank++;
 
@@ -2649,7 +2649,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: %s Group %d Symbol with signal %s",
                             GetStrategyName(m_StyID).c_str(),
                             m_p_ymdhms_SysTime_Local->ToStr().c_str(),
-                            grp, GetOrElse(vSymWithSgnl[grp],string("___")).c_str());
+                            grp, GetOrElse_(vSymWithSgnl[grp],string("___")).c_str());
           }
           m_Logger->Write(Logger::INFO,"Strategy %s: Rotation mode: --- Symbol with signal ---", GetStrategyName(m_StyID).c_str());
 
@@ -2703,7 +2703,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
           {
             // if (!vSymWithSgnl[grp]) continue;
             if (std::isnan(vGrpRtn[grp])) continue;
-            mGrpRtnAndLeadSym.push_back(TupRetSym(vGrpRtn[grp],GetOrElse(vSymWithSgnl[grp],string("")),grp));
+            mGrpRtnAndLeadSym.push_back(TupRetSym(vGrpRtn[grp],GetOrElse_(vSymWithSgnl[grp],string("")),grp));
           }
 
           //--------------------------------------------------

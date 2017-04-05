@@ -81,7 +81,7 @@ double FSum(const Collection & col)
 }
 
 template <typename T>
-T GetOrElse(boost::optional<T> o, T val) {
+T GetOrElse_(boost::optional<T> o, T val) {
   if (o) return o.get();
   else return val;
 }
@@ -99,7 +99,7 @@ class SMap {
     }
     TV GetOrElse(const TK k, const TV defaultval)
     {
-      return Get(k).GetOrElse(defaultval);
+      return GetOrElse_(Get(k),defaultval);
     }
     typename map<TK,TV>::iterator GetIterBegin()
     {
@@ -162,7 +162,7 @@ class SMapThreadSafe {
     TV GetOrElse(const TK k, const TV defaultval)
     {
       boost::shared_lock<boost::shared_mutex> lock(_mutex);
-      return Get(k).GetOrElse(defaultval);
+      return GetOrElse_(Get(k),defaultval);
     }
     void AddOrUpdate(const TK k, const TV v)
     {
@@ -176,7 +176,7 @@ class SMapThreadSafe {
       if (it == _map.end()) return;
       _map.erase(it);
     }
-    bool Contains(const TK k) const
+    bool Contains(const TK k)
     {
       boost::shared_lock<boost::shared_mutex> lock(_mutex);
       typename map<TK,TV>::iterator it = _map.find(k);
@@ -250,7 +250,7 @@ class SMapOfMap {
     }
     TV GetOrElse(const TK1 k1, const TK2 k2, TV defaultval)
     {
-      return Get(k1,k2).GetOrElse(defaultval);
+      return GetOrElse_(Get(k1,k2),defaultval);
     }
     void AddOrUpdate(const TK1 k1, const TK2 k2, const TV v)
     {

@@ -122,7 +122,7 @@ int main ( int argc, const char* argv[] )
   // utTestRunner.addTest(TestExchange::suite());
   // utTestRunner.addTest(TestPeriodicTask::suite());
   // utTestRunner.addTest(TestRglrMiniCtrtMgr::suite());
-  // utTestRunner.addTest(TestSFunctional::suite());
+  utTestRunner.addTest(TestSFunctional::suite());
   utTestRunner.run();
 
   cout << "Finished." << endl;
