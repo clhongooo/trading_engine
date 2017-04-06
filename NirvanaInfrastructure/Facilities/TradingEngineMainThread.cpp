@@ -150,9 +150,6 @@ void TradingEngineMainThread::RunMainThread()
   boost::scoped_ptr<StrategyR7>         styR7;
   boost::scoped_ptr<StrategyR9>         styR9;
   // boost::scoped_ptr<PortfolioGenerator> pg;
-  // boost::scoped_ptr<StrategyR1>         styR1;
-  // boost::scoped_ptr<StrategyR3>         styR3;
-  // boost::scoped_ptr<StrategyR8>         styR8;
   // boost::scoped_ptr<StrategyS11A>       styS11A;
 
   //--------------------------------------------------
@@ -260,27 +257,6 @@ void TradingEngineMainThread::RunMainThread()
   //   styS11A.reset(new StrategyS11A());
   //   m_thread_group.add_thread(new boost::thread(&StrategyS11A::Run, styS11A.get()));
   //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyS11A"); ShortSleep();
-  // }
-  //
-  // if (p_SysCfg->IsStrategyOn(STY_R1))
-  // {
-  //   styR1.reset(new StrategyR1());
-  //   m_thread_group.add_thread(new boost::thread(&StrategyR1::Run, styR1.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR1"); ShortSleep();
-  // }
-  //
-  // if (p_SysCfg->IsStrategyOn(STY_R3))
-  // {
-  //   styR3.reset(new StrategyR3());
-  //   m_thread_group.add_thread(new boost::thread(&StrategyR3::Run, styR3.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR3"); ShortSleep();
-  // }
-  //
-  // if (p_SysCfg->IsStrategyOn(STY_R8))
-  // {
-  //   styR8.reset(new StrategyR8());
-  //   m_thread_group.add_thread(new boost::thread(&StrategyR8::Run, styR8.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR8"); ShortSleep();
   // }
 
 

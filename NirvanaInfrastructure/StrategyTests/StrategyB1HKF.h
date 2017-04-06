@@ -5,7 +5,7 @@
 #include "Constants.h"
 #include "CPnLHist.h"
 #include "Acct.h"
-#include "../Strategies/StrategyB1.h"
+#include "../StrategyTests/StrategyB1.h"
 
 #define B1_METH_AVGPX 0
 #define B1_METH_CLOSE 1

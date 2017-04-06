@@ -31,6 +31,7 @@ OrderExecutionAlgo \
 ProbDistributionGeneration \
 SharedObjects \
 Strategies \
+StrategyTests \
 TechIndUpdating \
 VolSurfaceCalculation \
 

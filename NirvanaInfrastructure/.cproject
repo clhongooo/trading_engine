@@ -40,6 +40,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/OrderExecutionAlgo}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SharedObjects}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Strategies}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/NirvanaInfrastructure/StrategyTests}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/ProbDistributionGeneration}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/TechIndUpdating}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VolSurfaceCalculation}&quot;"/>

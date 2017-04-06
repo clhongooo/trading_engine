@@ -10,6 +10,7 @@ RM := rm -rf
 -include sources.mk
 -include VolSurfaceCalculation/subdir.mk
 -include TechIndUpdating/subdir.mk
+-include StrategyTests/subdir.mk
 -include Strategies/subdir.mk
 -include SharedObjects/subdir.mk
 -include ProbDistributionGeneration/subdir.mk
