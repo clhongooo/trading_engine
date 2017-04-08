@@ -2,7 +2,6 @@
 #define CONSTANTS_H_
 
 #include "PCH.h"
-#include "Constants.h"
 
 #define MAGIC_NUM_INT     7236467
 #define MAGIC_NUM         7236467
@@ -26,14 +25,12 @@
 #define UNDERLYING_TF   "TF"
 #define TF_CONT_FUT_1   "TFc1"
 
-
-#define ATU_INVALID_PRICE  999999
+#define ATU_INVALID_PRICE     999999
 #define UNDEFINED_CORRELATION 999
-#define NIR_EPSILON        0.000001
+#define NIR_EPSILON           0.000001
 
-#define MAX_OTIMDI 10
+#define MAX_OTIMDI   10
 #define HEALTHKEYLEN 10
-
 
 #define ID_TECHINDUPDATER       "TIU"
 #define ID_PROBDISTGENR         "PDG"
@@ -45,33 +42,6 @@
 #define ID_MTM                  "MTM"
 #define ID_PRICEFWDR            "PF"
 
-
-
-
-using namespace std;
-using namespace boost;
-
-enum StrategyID {
-  STY_NIR=1,
-  STY_B1_HKF,
-  STY_B2_US1,
-  STY_B2_US2,
-  STY_B2_HK,
-  STY_B2_US3,
-  STY_B3_US,
-  STY_NIR1,
-  STY_CMA,
-  STY_S11A,
-  STY_A1,
-  STY_A6,
-  STY_R1,
-  STY_R3,
-  STY_R7,
-  STY_R8,
-  STY_R9,
-  STY_TEST,
-  STY_LAST=99};
-
 enum EExchange {
   EX_HKFE=1,
   EX_HKSE,
@@ -79,13 +49,5 @@ enum EExchange {
   EX_CME,
   EX_UNSET,
 };
-
-
-string GetStrategyName(const StrategyID);
-void GetStrategyNameCStr(const StrategyID, char [HEALTHKEYLEN+1]);
-
-
-
-
 
 #endif

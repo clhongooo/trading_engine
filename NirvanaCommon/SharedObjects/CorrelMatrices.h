@@ -10,7 +10,6 @@
 #include "ATU_Abstract_MDI.h"
 #include "Logger.h"
 #include "SDateTime.h"
-#include "SystemConfig.h"
 
 using namespace std;
 using namespace boost;
@@ -39,7 +38,6 @@ class CorrelMatrices
     // System Objects
     //--------------------------------------------------
     boost::shared_ptr<Logger>       m_Logger;
-    boost::shared_ptr<SystemConfig> m_SysCfg;
 
     //--------------------------------------------------
     // Correl Matrices

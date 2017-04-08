@@ -10,13 +10,15 @@
 #include "Exchange.h"
 #include "HKFE.h"
 #include "CME.h"
-#include "SystemConfig.h"
+#include "SDateTime.h"
 
 class ContFut {
   public:
     ContFut();
     virtual ~ContFut();
 
+    void SetHKFERollFwdTime(const HHMMSS &);
+    void SetCMERollFwdTime(const HHMMSS &);
     static bool IsSymContFut(const string &);
     static string GetContFutUndly(const string &);
     static string GetContFutFrRglrSym(const string &,const int);
@@ -39,7 +41,6 @@ class ContFut {
     boost::shared_ptr<Exchange>      m_Exchg;
     boost::shared_ptr<HKFE>          m_HKFE;
     boost::shared_ptr<CME>           m_CME;
-    boost::shared_ptr<SystemConfig>  m_SysCfg;
     //--------------------------------------------------
 
     shared_mutex                             m_ContFutMutex;
@@ -54,6 +55,9 @@ class ContFut {
     map<string,ATU_MDI_marketfeed_struct>    m_LatestSnapshot_Sym_c1;
     map<string,YYYYMMDDHHMMSS>               m_LatestSnapshotUpdateTime_Sym_c1;
     map<string,bool>                         m_Sym_c1Ready;
+
+    HHMMSS m_HKFE_RollFwdTime;
+    HHMMSS m_CME_RollFwdTime;
 
 };
 

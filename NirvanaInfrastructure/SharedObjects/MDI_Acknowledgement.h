@@ -3,6 +3,7 @@
 
 #include "PCH.h"
 #include "Constants.h"
+#include "StrategyConstants.h"
 #include <boost/thread.hpp>
 #include <deque>
 #include <vector>

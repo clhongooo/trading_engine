@@ -8,7 +8,6 @@
 #include <map>
 #include "DaySma.h"
 #include "TickReturn.h"
-#include "SystemConfig.h"
 #include "STool.h"
 #include "ProbMassFunc.h"
 

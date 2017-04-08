@@ -22,6 +22,12 @@ MarketData::MarketData()
   m_CME    = CME::Instance();
   m_MDIAck = MDI_Acknowledgement::Instance();
   m_ContFut.reset(new ContFut());
+  //--------------------------------------------------
+  // Set defaults
+  //--------------------------------------------------
+  m_ContFut->SetHKFERollFwdTime(HHMMSS(100000));
+  m_ContFut->SetCMERollFwdTime(HHMMSS(200000));
+  //--------------------------------------------------
 }
 
 MarketData::~MarketData()
@@ -115,6 +121,14 @@ MarketData::~MarketData()
 
 }
 
+void MarketData::SetContFutHKFERollFwdTime(const HHMMSS & hmc)
+{
+  m_ContFut->SetHKFERollFwdTime(hmc);
+}
+void MarketData::SetContFutCMERollFwdTime(const HHMMSS & hmc)
+{
+  m_ContFut->SetCMERollFwdTime(hmc);
+}
 
 void MarketData::UpdateInternalDataWithMDIstruct(const ATU_MDI_marketfeed_struct & sMDa, const YYYYMMDD & yyyymmdd, const HHMMSS & hhmmss)
 {

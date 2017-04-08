@@ -14,7 +14,6 @@ boost::shared_ptr<CorrelMatrices> CorrelMatrices::Instance() {
 CorrelMatrices::CorrelMatrices()
 {
   m_Logger = Logger::Instance();
-  m_SysCfg = SystemConfig::Instance();
 }
 
 CorrelMatrices::~CorrelMatrices()

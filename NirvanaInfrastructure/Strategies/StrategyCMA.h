@@ -14,7 +14,6 @@ class StrategyCMA : public StrategyBase {
   public:
     StrategyCMA();
     virtual ~StrategyCMA();
-    void Run();
 
   private:
     void ReportAckIfNeeded();

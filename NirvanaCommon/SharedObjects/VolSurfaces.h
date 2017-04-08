@@ -9,10 +9,8 @@
 #include "VolSurf.h"
 #include "DaySma.h"
 #include "TickReturn.h"
-#include "SystemConfig.h"
 #include "STool.h"
 #include "BarProvider.h"
-#include "MarketData.h"
 
 class VolSurfaces {
 
@@ -29,7 +27,6 @@ class VolSurfaces {
     void ResetSurfaces(const string &);
     void UpdateNirVHSI(const YYYYMMDDHHMMSS &,const double);
     double GetNirVHSI() const;
-    double GetOfficialVHSIPrevEOD() const;
     double GetOfficialVHSI() const;
     double GetOfficialVHSI(const YYYYMMDDHHMMSS &) const;
     double GetNirVHSI3DaySma();
@@ -87,11 +84,6 @@ class VolSurfaces {
     // Value : Coef
     //--------------------------------------------------
     map<long,double> m_HSIVolSurfModelParam;
-
-    //--------------------------------------------------
-    // System objects
-    //--------------------------------------------------
-    boost::shared_ptr<MarketData>  m_MarketData;
 
     //--------------------------------------------------
     // Observer

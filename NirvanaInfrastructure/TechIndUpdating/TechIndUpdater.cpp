@@ -13,13 +13,13 @@ TechIndUpdater::TechIndUpdater() :
   m_SysCfg          = SystemConfig::Instance();
   m_Logger          = Logger::Instance();
   m_TechInd         = TechIndicators::Instance();
-  m_VolSurfaces     = VolSurfaces::Instance();
+  // m_VolSurfaces     = VolSurfaces::Instance();
   m_Exchg           = Exchange::Instance();
   m_HKFE            = HKFE::Instance();
   m_HKSE            = HKSE::Instance();
   m_NYSE            = NYSE::Instance();
   m_MDIAck          = MDI_Acknowledgement::Instance();
-  m_HKItrdSea       = HKIntradaySeasonality::Instance();
+  // m_HKItrdSea       = HKIntradaySeasonality::Instance();
   m_ThrdHlthMon     = ThreadHealthMonitor::Instance();
 
   m_sHKc1Sym.insert(HSI_CONT_FUT_1);
@@ -104,7 +104,7 @@ void TechIndUpdater::Run()
   vector<long>     vVol;
 
 
-  m_HKItrdSea->InitAndResetHistHKItrdSeasonalBucketData();
+  // m_HKItrdSea->InitAndResetHistHKItrdSeasonalBucketData();
 
   //--------------------------------------------------
   for (;;)
@@ -205,15 +205,15 @@ void TechIndUpdater::Run()
         }
       }
 
-      if (bHKIdxNewDay)
-      {
-        //--------------------------------------------------
-        // Investigate the intraday seasonality pattern in HK
-        //--------------------------------------------------
-        m_HKItrdSea->AnalyzeIntrdVolatility();
-        m_HKItrdSea->InitAndResetHistHKItrdSeasonalBucketData();
-        //--------------------------------------------------
-      }
+      // if (bHKIdxNewDay)
+      // {
+      //   //--------------------------------------------------
+      //   // Investigate the intraday seasonality pattern in HK
+      //   //--------------------------------------------------
+      //   m_HKItrdSea->AnalyzeIntrdVolatility();
+      //   m_HKItrdSea->InitAndResetHistHKItrdSeasonalBucketData();
+      //   //--------------------------------------------------
+      // }
 
       m_ymdhms_LastMonitorTime = m_ymdhms_SysTimeHKT;
     }
@@ -241,21 +241,21 @@ void TechIndUpdater::Run()
       }
 
 
-      //--------------------------------------------------
-      // HKIntradaySeasonality
-      //--------------------------------------------------
-      if (m_Exchg->GetPrimaryExchange(sUpdatedSym) == EX_HKFE)
-      {
-        double dMQ = 0;
-        if (m_MarketData->GetLatestMidQuote(sUpdatedSym,dMQ))
-        {
-          m_HKItrdSea->UpdateHistHKItrdSeasonalBucketData(
-            sUpdatedSym,
-            m_ymdhms_SysTimeHKT.GetHHMMSS(),
-            dMQ);
-        }
-      }
-      //--------------------------------------------------
+      // //--------------------------------------------------
+      // // HKIntradaySeasonality
+      // //--------------------------------------------------
+      // if (m_Exchg->GetPrimaryExchange(sUpdatedSym) == EX_HKFE)
+      // {
+      //   double dMQ = 0;
+      //   if (m_MarketData->GetLatestMidQuote(sUpdatedSym,dMQ))
+      //   {
+      //     m_HKItrdSea->UpdateHistHKItrdSeasonalBucketData(
+      //       sUpdatedSym,
+      //       m_ymdhms_SysTimeHKT.GetHHMMSS(),
+      //       dMQ);
+      //   }
+      // }
+      // //--------------------------------------------------
 
       if (m_SysCfg->IsStrategyOn(STY_NIR))
       {
@@ -269,17 +269,17 @@ void TechIndUpdater::Run()
 
           m_Logger->Write(Logger::DEBUG,"TechIndUpdater: Stock price [%s] =\t%d\t%d\t%f\t%f\t%f\t%f\t%d.", it->first.c_str(), m_temp_yyyymmdd.ToInt(), m_temp_hhmmss.ToInt(), m_temp_open,m_temp_high,m_temp_low,m_temp_close,m_temp_volume);
 
-          //--------------------------------------------------
-          // FSMC state
-          //--------------------------------------------------
-          double dVHSI = m_VolSurfaces->GetOfficialVHSI();
-          if (dVHSI > 0)
-          {
-            m_TechInd->AddFSMC(it->first,m_temp_high,m_temp_low,m_temp_close,dVHSI);
-            int iFSMCState = m_TechInd->GetFSMCState(it->first);
-            if (iFSMCState > 0)
-              m_Logger->Write(Logger::DEBUG,"TechIndUpdater: Stock [%s]\t%d\tFSMC state = %d.", it->first.c_str(), m_temp_yyyymmdd.ToInt(), iFSMCState);
-          }
+          // //--------------------------------------------------
+          // // FSMC state
+          // //--------------------------------------------------
+          // double dVHSI = m_VolSurfaces->GetOfficialVHSI();
+          // if (dVHSI > 0)
+          // {
+          //   m_TechInd->AddFSMC(it->first,m_temp_high,m_temp_low,m_temp_close,dVHSI);
+          //   int iFSMCState = m_TechInd->GetFSMCState(it->first);
+          //   if (iFSMCState > 0)
+          //     m_Logger->Write(Logger::DEBUG,"TechIndUpdater: Stock [%s]\t%d\tFSMC state = %d.", it->first.c_str(), m_temp_yyyymmdd.ToInt(), iFSMCState);
+          // }
 
           //--------------------------------------------------
           // GKYZ

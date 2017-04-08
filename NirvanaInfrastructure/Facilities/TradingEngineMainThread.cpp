@@ -17,12 +17,6 @@ TradingEngineMainThread::TradingEngineMainThread
 {
 }
 
-void TradingEngineMainThread::ShortSleep()
-{
-  usleep(100000);
-}
-
-
 TradingEngineMainThread::~TradingEngineMainThread()
 {
 }
@@ -49,6 +43,19 @@ void TradingEngineMainThread::RunMainThread()
 
   p_Logger->Write(Logger::NOTICE,"Main: Trading Engine has started.");
 
+
+  //--------------------------------------------------
+  p_MktData = MarketData::Instance();
+  p_MktData->SetContFutHKFERollFwdTime(p_SysCfg->Get_HKFEContFutRollFwdTime());
+  p_MktData->SetContFutCMERollFwdTime(p_SysCfg->Get_CMEContFutRollFwdTime());
+  //--------------------------------------------------
+
+  //--------------------------------------------------
+  // Threads
+  //--------------------------------------------------
+  boost::thread_group m_thread_group;
+
+
   //--------------------------------------------------
   // Static Data: Exchange HKFE HKSE HKMA
   //--------------------------------------------------
@@ -63,104 +70,43 @@ void TradingEngineMainThread::RunMainThread()
   p_HKSE->LoadHSIConstituents(p_SysCfg->Get_HKSE_HSIConstituentsPath()); 
   p_Logger->Write(Logger::NOTICE,"Finished loading HKSE."); ShortSleep();
 
-  p_HKMA = HKMA::Instance();
   if (p_SysCfg->IsStrategyOn(STY_NIR))
   {
+    boost::shared_ptr<HKMA> p_HKMA;
+    p_HKMA = HKMA::Instance();
     p_HKMA->LoadExchgFundBill(p_SysCfg->Get_HKMA_ExchgFundBillPath()); 
     p_Logger->Write(Logger::NOTICE,"Finished loading HKMA."); ShortSleep();
+
+    boost::shared_ptr<CorrelMatrices> p_CorrelMatrices;
+    p_CorrelMatrices = CorrelMatrices::Instance();
+    p_CorrelMatrices->LoadCorrelMatrices(p_SysCfg->Get_CorrelMatricesPath());
+    p_Logger->Write(Logger::NOTICE,"Finished loading correlation matrices."); ShortSleep();
+
+    ProbDistributionGenerator pdg;
+    pdg.SetCalcIntervalInSec(p_SysCfg->Get_ProbDistrnCalcIntervalInSec());
+    pdg.LoadTrainedFSMCData(p_SysCfg->Get_ProbDistrFileFSMC1D());
+    p_Logger->Write(Logger::NOTICE,"Finished loading FSMC data."); ShortSleep();
+    m_thread_group.add_thread(new boost::thread(&ProbDistributionGenerator::Run, &pdg));
+    p_Logger->Write(Logger::NOTICE,"Started thread: ProbDistributionGenerator"); ShortSleep();
+
+    VolSurfCalculator vsc;
+    vsc.SetCalcIntervalInSec(p_SysCfg->Get_VolSurfCalcIntervalInSec());
+    p_Logger->Write(Logger::NOTICE,"Finished loading VolSurfCalculator."); ShortSleep();
+
+    boost::shared_ptr<VolSurfaces> p_VolSurfaces;
+    p_VolSurfaces = VolSurfaces::Instance();
+    p_VolSurfaces->LoadHSIVolSurfModelParam(p_SysCfg->Get_VolSurfParamFile1FM()); 
+    p_Logger->Write(Logger::NOTICE,"Finished loading volatility surface parameters."); ShortSleep();
+
   }
   else
   {
     p_Logger->Write(Logger::NOTICE,"HKMA not loaded."); ShortSleep();
-  }
-
-  //--------------------------------------------------
-  // Static Data: Correl Matrix
-  //--------------------------------------------------
-  p_CorrelMatrices = CorrelMatrices::Instance();
-  if (p_SysCfg->IsStrategyOn(STY_NIR))
-  {
-    p_CorrelMatrices->LoadCorrelMatrices(p_SysCfg->Get_CorrelMatricesPath());
-    p_Logger->Write(Logger::NOTICE,"Finished loading correlation matrices."); ShortSleep();
-  }
-  else
-  {
     p_Logger->Write(Logger::NOTICE,"CorrelMatrices not loaded."); ShortSleep();
-  }
-
-  //--------------------------------------------------
-  // ProbDistributionGenerator
-  //--------------------------------------------------
-  ProbDistributionGenerator pdg;
-  if (p_SysCfg->IsStrategyOn(STY_NIR))
-  {
-    pdg.SetCalcIntervalInSec(p_SysCfg->Get_ProbDistrnCalcIntervalInSec());
-    pdg.LoadTrainedFSMCData(p_SysCfg->Get_ProbDistrFileFSMC1D());
-    p_Logger->Write(Logger::NOTICE,"Finished loading FSMC data."); ShortSleep();
-  }
-  else
-  {
     p_Logger->Write(Logger::NOTICE,"FSMC not loaded."); ShortSleep();
-  }
-
-  // //--------------------------------------------------
-  // // VolSurfCalculator
-  // //--------------------------------------------------
-  // VolSurfCalculator vsc;
-  // vsc.SetCalcIntervalInSec(p_SysCfg->Get_VolSurfCalcIntervalInSec());
-  // p_Logger->Write(Logger::NOTICE,"Finished loading VolSurfCalculator."); ShortSleep();
-
-  //--------------------------------------------------
-  // VolSurfaces
-  //--------------------------------------------------
-  boost::shared_ptr<VolSurfaces> p_VolSurfaces;
-  p_VolSurfaces = VolSurfaces::Instance();
-
-  if (p_SysCfg->IsStrategyOn(STY_NIR))
-  {
-    p_VolSurfaces->LoadHSIVolSurfModelParam(p_SysCfg->Get_VolSurfParamFile1FM()); 
-    p_Logger->Write(Logger::NOTICE,"Finished loading volatility surface parameters."); ShortSleep();
-  }
-  else
-  {
+    p_Logger->Write(Logger::NOTICE,"VolSurfCalculator not loaded."); ShortSleep();
     p_Logger->Write(Logger::NOTICE,"VolatilitySurface parameters not loaded."); ShortSleep();
   }
-
-  //--------------------------------------------------
-  // TechIndUpdater
-  //--------------------------------------------------
-  TechIndUpdater tiu;
-
-  // //--------------------------------------------------
-  // // PriceForwarderToNextTier
-  // //--------------------------------------------------
-  // PriceForwarderToNextTier pf;
-
-  //--------------------------------------------------
-  // Strategies
-  //--------------------------------------------------
-  boost::scoped_ptr<StrategyTest>       styTest;
-  boost::scoped_ptr<StrategyB1_HKF>     styB1_HKF;
-  boost::scoped_ptr<StrategyB2_US1>     styB2_US1;
-  boost::scoped_ptr<StrategyB2_US2>     styB2_US2;
-  boost::scoped_ptr<StrategyB2_US3>     styB2_US3;
-  boost::scoped_ptr<StrategyB2_HK>      styB2_HK;
-  boost::scoped_ptr<StrategyB3_US>      styB3_US;
-  boost::scoped_ptr<StrategyNIR1>       styNIR1;
-  boost::scoped_ptr<StrategyR7>         styR7;
-  boost::scoped_ptr<StrategyR9>         styR9;
-  // boost::scoped_ptr<PortfolioGenerator> pg;
-  // boost::scoped_ptr<StrategyS11A>       styS11A;
-
-  //--------------------------------------------------
-  // Terminal
-  //--------------------------------------------------
-  // TerminalThread tthd;
-
-  //--------------------------------------------------
-  // MarkToMarket
-  //--------------------------------------------------
-  MarkToMarket mtm;
 
   //--------------------------------------------------
   // ThreadHealthMonitor
@@ -168,33 +114,26 @@ void TradingEngineMainThread::RunMainThread()
   boost::shared_ptr<ThreadHealthMonitor> pThm = ThreadHealthMonitor::Instance();
 
   //--------------------------------------------------
-  // Threads
+  // Health monitor
   //--------------------------------------------------
-  boost::thread_group m_thread_group;
-
   m_thread_group.add_thread(new boost::thread(&ThreadHealthMonitor::Run, pThm.get()));
   p_Logger->Write(Logger::NOTICE,"Started thread: ThreadHealthMonitor"); ShortSleep();
 
-
-
-  if (p_SysCfg->IsStrategyOn(STY_NIR))
-  {
-    m_thread_group.add_thread(new boost::thread(&ProbDistributionGenerator::Run, &pdg));
-    p_Logger->Write(Logger::NOTICE,"Started thread: ProbDistributionGenerator"); ShortSleep();
-  }
+  //--------------------------------------------------
+  // Strategy threads
+  //--------------------------------------------------
+  boost::scoped_ptr<StrategyTest>    styTest(new StrategyTest());
+  boost::scoped_ptr<StrategyB2_US1>  styB2_US1(new StrategyB2_US1());
+  boost::scoped_ptr<StrategyB2_US2>  styB2_US2(new StrategyB2_US2());
+  boost::scoped_ptr<StrategyB2_US3>  styB2_US3(new StrategyB2_US3());
+  boost::scoped_ptr<StrategyB2_HK>   styB2_HK(new StrategyB2_HK());
+  boost::scoped_ptr<StrategyB3_US>   styB3_US(new StrategyB3_US());
+  boost::scoped_ptr<StrategyNIR1>    sty_NIR1(new StrategyNIR1());
 
   if (p_SysCfg->IsStrategyOn(STY_TEST))
   {
-    styTest.reset(new StrategyTest());
     m_thread_group.add_thread(new boost::thread(&StrategyTest::Run, styTest.get()));
     p_Logger->Write(Logger::NOTICE,"Started thread: StrategyTest"); ShortSleep();
-  }
-
-  if (p_SysCfg->IsStrategyOn(STY_B1_HKF))
-  {
-    styB1_HKF.reset(new StrategyB1_HKF());
-    m_thread_group.add_thread(new boost::thread(&StrategyB1_HKF::Run, styB1_HKF.get()));
-    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB1_HKF"); ShortSleep();
   }
 
   if (p_SysCfg->IsStrategyOn(STY_B2_US1))
@@ -232,50 +171,44 @@ void TradingEngineMainThread::RunMainThread()
     p_Logger->Write(Logger::NOTICE,"Started thread: StrategyB3_US"); ShortSleep();
   }
 
-  // if (p_SysCfg->IsStrategyOn(STY_NIR1))
-  // {
-  //   styNIR1.reset(new StrategyNIR1());
-  //   m_thread_group.add_thread(new boost::thread(&StrategyNIR1::Run, styNIR1.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyNIR1"); ShortSleep();
-  // }
-
-  // if (p_SysCfg->IsStrategyOn(STY_R7))
-  // {
-  //   styR7.reset(new StrategyR7());
-  //   m_thread_group.add_thread(new boost::thread(&StrategyR7::Run, styR7.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR7"); ShortSleep();
-  // }
-  // if (p_SysCfg->IsStrategyOn(STY_R9))
-  // {
-  //   styR9.reset(new StrategyR9());
-  //   m_thread_group.add_thread(new boost::thread(&StrategyR9::Run, styR9.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyR9"); ShortSleep();
-  // }
-
-  // if (p_SysCfg->IsStrategyOn(STY_S11A))
-  // {
-  //   styS11A.reset(new StrategyS11A());
-  //   m_thread_group.add_thread(new boost::thread(&StrategyS11A::Run, styS11A.get()));
-  //   p_Logger->Write(Logger::NOTICE,"Started thread: StrategyS11A"); ShortSleep();
-  // }
-
-
+  if (p_SysCfg->IsStrategyOn(STY_NIR1))
   {
-    // pg.reset(new PortfolioGenerator());
+    sty_NIR1.reset(new StrategyNIR1());
+    m_thread_group.add_thread(new boost::thread(&StrategyNIR1::Run, sty_NIR1.get()));
+    p_Logger->Write(Logger::NOTICE,"Started thread: StrategyNIR1"); ShortSleep();
+  }
 
-    m_thread_group.add_thread(new boost::thread(&TechIndUpdater::Run             ,&tiu));
-    m_thread_group.add_thread(new boost::thread(&MarkToMarket::Run               ,&mtm));
-    p_Logger->Write(Logger::NOTICE,"Started thread: TechIndUpdater"); ShortSleep();
-    p_Logger->Write(Logger::NOTICE,"Started thread: MarkToMarket"); ShortSleep();
+  // boost::scoped_ptr<PortfolioGenerator> pg;
+  // pg.reset(new PortfolioGenerator());
+  // m_thread_group.add_thread(new boost::thread(&PortfolioGenerator::Run, pg.get()));
+  // p_Logger->Write(Logger::NOTICE,"Started thread: PortfolioGenerator"); ShortSleep();
 
-    // m_thread_group.add_thread(new boost::thread(&VolSurfCalculator::Run          ,&vsc));
-    // m_thread_group.add_thread(new boost::thread(&PriceForwarderToNextTier::Run   ,&pf));
-    // m_thread_group.add_thread(new boost::thread(&PortfolioGenerator::Run         ,pg.get()));
-    // m_thread_group.add_thread(new boost::thread(&TerminalThread::Run          ,&tthd));
+  // m_thread_group.add_thread(new boost::thread(&VolSurfCalculator::Run, &vsc));
+  // p_Logger->Write(Logger::NOTICE,"Started thread: VolSurfCalculator"); ShortSleep();
 
-    // p_Logger->Write(Logger::NOTICE,"Started thread: VolSurfCalculator"); ShortSleep();
-    // p_Logger->Write(Logger::NOTICE,"Started thread: PortfolioGenerator"); ShortSleep();
-    // p_Logger->Write(Logger::NOTICE,"Started thread: TerminalThread"); ShortSleep();
+  //--------------------------------------------------
+  // Other threads
+  //--------------------------------------------------
+  MarkToMarket mtm;
+  m_thread_group.add_thread(new boost::thread(&MarkToMarket::Run, &mtm));
+  p_Logger->Write(Logger::NOTICE,"Started thread: MarkToMarket"); ShortSleep();
+
+  TechIndUpdater tiu;
+  m_thread_group.add_thread(new boost::thread(&TechIndUpdater::Run, &tiu));
+  p_Logger->Write(Logger::NOTICE,"Started thread: TechIndUpdater"); ShortSleep();
+
+  PriceForwarderToNextTier pf;
+  if (p_SysCfg->IsPriceFwdrToNextTierOn())
+  {
+    m_thread_group.add_thread(new boost::thread(&PriceForwarderToNextTier::Run, &pf));
+    p_Logger->Write(Logger::NOTICE,"Started thread: PriceForwarderToNextTier"); ShortSleep();
+  }
+
+  TerminalThread tthd;
+  if (p_SysCfg->GetSystemServicePort() >= 1024)
+  {
+    m_thread_group.add_thread(new boost::thread(&TerminalThread::Run, &tthd));
+    p_Logger->Write(Logger::NOTICE,"Started thread: TerminalThread"); ShortSleep();
   }
 
 
@@ -358,6 +291,9 @@ void TradingEngineMainThread::RunMainThread()
   cout << "Nirvana: all threads are started." << endl << flush;
   cout << "Location of log file: " << p_SysCfg->Get_Main_Log_Path() << endl << flush;
 
+  //--------------------------------------------------
+  // Block here
+  //--------------------------------------------------
   m_thread_group.join_all();
 
   //--------------------------------------------------

@@ -4,20 +4,32 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../SharedObjects/PortfoliosAndOrders.cpp 
+../SharedObjects/MDI_Acknowledgement.cpp \
+../SharedObjects/MarketData.cpp \
+../SharedObjects/PortfoliosAndOrders.cpp \
+../SharedObjects/SystemConfig.cpp \
+../SharedObjects/TechIndicators.cpp 
 
 OBJS += \
-./SharedObjects/PortfoliosAndOrders.o 
+./SharedObjects/MDI_Acknowledgement.o \
+./SharedObjects/MarketData.o \
+./SharedObjects/PortfoliosAndOrders.o \
+./SharedObjects/SystemConfig.o \
+./SharedObjects/TechIndicators.o 
 
 CPP_DEPS += \
-./SharedObjects/PortfoliosAndOrders.d 
+./SharedObjects/MDI_Acknowledgement.d \
+./SharedObjects/MarketData.d \
+./SharedObjects/PortfoliosAndOrders.d \
+./SharedObjects/SystemConfig.d \
+./SharedObjects/TechIndicators.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 SharedObjects/%.o: ../SharedObjects/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -std=c++0x -I"/home/qy/workspaceCN/NirvanaCommon/ATU" -I"/home/qy/workspaceCN/NirvanaCommon/SharedObjects" -I"/home/qy/workspaceCN/NirvanaCommon/Math" -I"/home/qy/workspaceCN/NirvanaCommon/Model" -I"/home/qy/workspaceCN/NirvanaCommon/PCH" -I"/home/qy/workspaceCN/NirvanaInfrastructure/DataAggregation" -I"/home/qy/workspaceCN/NirvanaInfrastructure/Facilities" -I"/home/qy/workspaceCN/NirvanaInfrastructure/OrderExecutionAlgo" -I"/home/qy/workspaceCN/NirvanaInfrastructure/SharedObjects" -I"/home/qy/workspaceCN/NirvanaInfrastructure/Strategies" -I"/home/qy/workspaceCN/NirvanaInfrastructure/StrategyTests" -I"/home/qy/workspaceCN/NirvanaInfrastructure/ProbDistributionGeneration" -I"/home/qy/workspaceCN/NirvanaInfrastructure/TechIndUpdating" -I"/home/qy/workspaceCN/NirvanaInfrastructure/VolSurfaceCalculation" -I"/home/qy/workspaceCN/NirvanaInfrastructure/LowPriorityFacilities" -I"/home/qy/workspaceCN/NirvanaCommon/Util" -I"/home/qy/workspaceCN/NirvanaCommon/Logger" -I/usr/local/pantheios/include -I/usr/local/stlsoft/include -I"/home/qy/workspaceCN/atu_tcp_library/include" -O0 -g3 -c -fmessage-length=0 -Wfatal-errors -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	g++ -std=c++0x -I"/home/qy/workspaceCN/NirvanaCommon/ATU" -I"/home/qy/workspaceCN/NirvanaInfrastructure/StrategyUtils" -I"/home/qy/workspaceCN/NirvanaCommon/SharedObjects" -I"/home/qy/workspaceCN/NirvanaCommon/Math" -I"/home/qy/workspaceCN/NirvanaCommon/Model" -I"/home/qy/workspaceCN/NirvanaCommon/PCH" -I"/home/qy/workspaceCN/NirvanaInfrastructure/DataAggregation" -I"/home/qy/workspaceCN/NirvanaInfrastructure/Facilities" -I"/home/qy/workspaceCN/NirvanaInfrastructure/OrderExecutionAlgo" -I"/home/qy/workspaceCN/NirvanaInfrastructure/SharedObjects" -I"/home/qy/workspaceCN/NirvanaInfrastructure/Strategies" -I"/home/qy/workspaceCN/NirvanaInfrastructure/StrategyTests" -I"/home/qy/workspaceCN/NirvanaInfrastructure/ProbDistributionGeneration" -I"/home/qy/workspaceCN/NirvanaInfrastructure/TechIndUpdating" -I"/home/qy/workspaceCN/NirvanaInfrastructure/VolSurfaceCalculation" -I"/home/qy/workspaceCN/NirvanaInfrastructure/LowPriorityFacilities" -I"/home/qy/workspaceCN/NirvanaCommon/Util" -I"/home/qy/workspaceCN/NirvanaCommon/Logger" -I/usr/local/pantheios/include -I/usr/local/stlsoft/include -I"/home/qy/workspaceCN/atu_tcp_library/include" -O0 -g3 -c -fmessage-length=0 -Wfatal-errors -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

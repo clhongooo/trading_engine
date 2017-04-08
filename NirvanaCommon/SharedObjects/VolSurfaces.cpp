@@ -14,8 +14,6 @@ boost::shared_ptr<VolSurfaces> VolSurfaces::Instance() {
 VolSurfaces::VolSurfaces() :
   m_NirVHSI(NAN)
 {
-  m_MarketData = MarketData::Instance();
-
   m_3DaySma_NirVHSI.Reset(3);
   m_3DaySma_OfficialVHSI.Reset(3);
   m_1DayHistReturn_NirVHSI.Reset(24*60*60);
@@ -174,75 +172,6 @@ double VolSurfaces::GetNirVHSI() const
   return m_NirVHSI;
 }
 
-
-double VolSurfaces::GetOfficialVHSIPrevEOD() const
-{
-  YYYYMMDDHHMMSS ymdhms_MDITime = m_MarketData->GetSystemTimeHKT();
-
-  vector<YYYYMMDD> vYMD;
-  vector<HHMMSS>   vHMS;
-  vector<double>   vOpen;
-  vector<double>   vHigh;
-  vector<double>   vLow;
-  vector<double>   vClose;
-  vector<long>     vVol;
-
-  YMD ymdStart(ymdhms_MDITime.GetYYYYMMDD());
-  ymdStart.SubtractDay(10);
-
-  YMD ymdEnd(ymdhms_MDITime.GetYYYYMMDD());
-  ymdEnd.SubtractDay(1);
-
-  m_MarketData->GetSuppD1BarOHLCVInDateRange(
-      UNDERLYING_VHSI,
-      YYYYMMDD(ymdStart),
-      YYYYMMDD(ymdEnd),
-      vYMD,
-      vOpen,
-      vHigh,
-      vLow,
-      vClose,
-      vVol);
-
-  if (vClose.empty()) return NAN;
-  return vClose.back()/100;
-}
-
-double VolSurfaces::GetOfficialVHSI() const
-{
-  return GetOfficialVHSI(m_MarketData->GetSystemTimeHKT());
-}
-
-double VolSurfaces::GetOfficialVHSI(const YYYYMMDDHHMMSS & ymdhms_MDITime) const
-{
-  vector<YYYYMMDD> vYMD;
-  vector<HHMMSS>   vHMS;
-  vector<double>   vOpen;
-  vector<double>   vHigh;
-  vector<double>   vLow;
-  vector<double>   vClose;
-  vector<long>     vVol;
-
-  YMD ymdStart(ymdhms_MDITime.GetYYYYMMDD());
-  ymdStart.SubtractDay(10);
-
-  m_MarketData->GetSuppM1BarOHLCVInDateTimeRange(
-      UNDERLYING_VHSI,
-      YYYYMMDD(ymdStart),
-      HHMMSS(0),
-      ymdhms_MDITime.GetYYYYMMDD(),
-      ymdhms_MDITime.GetHHMMSS(),
-      vYMD,
-      vHMS,
-      vOpen,
-      vHigh,
-      vLow,
-      vClose,
-      vVol);
-
-  if (vClose.empty()) return NAN;
-  return vClose.back()/100;
-}
 
 double VolSurfaces::GetNirVHSI3DaySma()
 {

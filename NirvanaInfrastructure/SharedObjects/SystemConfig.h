@@ -2,6 +2,7 @@
 #define SYSTEMCONFIG_HPP_
 
 #include "PCH.h"
+#include "StrategyConstants.h"
 #include "Constants.h"
 #include "SFunctional.h"
 #include <boost/property_tree/ptree.hpp>

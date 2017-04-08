@@ -5,7 +5,6 @@ ContFut::ContFut()
   m_Exchg  = Exchange::Instance();
   m_HKFE   = HKFE::Instance();
   m_CME    = CME::Instance();
-  m_SysCfg = SystemConfig::Instance();
 
   m_SymList.insert(UNDERLYING_HSI);
   m_SymList.insert(UNDERLYING_HHI);
@@ -30,6 +29,16 @@ ContFut::ContFut()
 
 ContFut::~ContFut()
 {
+}
+
+void ContFut::SetHKFERollFwdTime(const HHMMSS &hms)
+{
+  m_HKFE_RollFwdTime.Set(hms);
+}
+
+void ContFut::SetCMERollFwdTime(const HHMMSS &hms)
+{
+  m_CME_RollFwdTime.Set(hms);
 }
 
 void ContFut::Add(const YYYYMMDDHHMMSS & ymdhms, const ATU_MDI_marketfeed_struct & sMD)
@@ -102,8 +111,8 @@ void ContFut::Add(const YYYYMMDDHHMMSS & ymdhms, const ATU_MDI_marketfeed_struct
   // Roll time is in HKT
   //--------------------------------------------------
   HHMMSS hmsRollTime;
-  if      (pri_ex == EX_HKFE) hmsRollTime.Set(m_SysCfg->Get_HKFEContFutRollFwdTime());
-  else if (pri_ex == EX_CME)  hmsRollTime.Set(m_SysCfg->Get_CMEContFutRollFwdTime());
+  if      (pri_ex == EX_HKFE) hmsRollTime.Set(m_HKFE_RollFwdTime);
+  else if (pri_ex == EX_CME)  hmsRollTime.Set(m_CME_RollFwdTime);
 
 
   //--------------------------------------------------
@@ -120,10 +129,10 @@ void ContFut::Add(const YYYYMMDDHHMMSS & ymdhms, const ATU_MDI_marketfeed_struct
     else
     {
       if (
-          ymdhms.GetHHMMSS() >= hmsRollTime &&
-          m_LatestSnapshot_Sym_1FM[sUndlySym].m_traded_price > 0 && abs(ymdhms - m_LatestSnapshotUpdateTime_Sym_1FM[sUndlySym]) < 5 && STool::IsValidPriceOrVol(m_LatestSnapshot_Sym_1FM[sUndlySym].m_traded_price) &&
-          m_LatestSnapshot_Sym_2FM[sUndlySym].m_traded_price > 0 && abs(ymdhms - m_LatestSnapshotUpdateTime_Sym_2FM[sUndlySym]) < 5 && STool::IsValidPriceOrVol(m_LatestSnapshot_Sym_2FM[sUndlySym].m_traded_price)
-         )
+        ymdhms.GetHHMMSS() >= hmsRollTime &&
+        m_LatestSnapshot_Sym_1FM[sUndlySym].m_traded_price > 0 && abs(ymdhms - m_LatestSnapshotUpdateTime_Sym_1FM[sUndlySym]) < 5 && STool::IsValidPriceOrVol(m_LatestSnapshot_Sym_1FM[sUndlySym].m_traded_price) &&
+        m_LatestSnapshot_Sym_2FM[sUndlySym].m_traded_price > 0 && abs(ymdhms - m_LatestSnapshotUpdateTime_Sym_2FM[sUndlySym]) < 5 && STool::IsValidPriceOrVol(m_LatestSnapshot_Sym_2FM[sUndlySym].m_traded_price)
+        )
       {
         //--------------------------------------------------
         // Roll forward if the data is recent enought

@@ -13,7 +13,7 @@
 #include "TechIndicators.h"
 #include "PortfoliosAndOrders.h"
 #include "VolSurfaces.h"
-#include "HKIntradaySeasonality.h"
+// #include "HKIntradaySeasonality.h"
 #include "Acct.h"
 #include "SDateTime.h"
 #include "ThreadHealthMonitor.h"
@@ -34,7 +34,7 @@ class StrategyBase {
 
     StrategyBase();
     virtual ~StrategyBase();
-    void Run();
+    virtual void Run();
 
   protected:
     void SetStrategyID(const StrategyID);
@@ -76,7 +76,7 @@ class StrategyBase {
     boost::shared_ptr<HKSE>                   m_HKSE;
     boost::shared_ptr<NYSE>                   m_NYSE;
     boost::shared_ptr<CME>                    m_CME;
-    boost::shared_ptr<HKIntradaySeasonality>  m_HKItrdSea;
+    // boost::shared_ptr<HKIntradaySeasonality>  m_HKItrdSea;
     boost::shared_ptr<StyCPnLHist>            m_StyCPnLHist;
 
     //--------------------------------------------------

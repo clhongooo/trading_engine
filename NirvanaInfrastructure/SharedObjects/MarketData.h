@@ -51,6 +51,8 @@ class MarketData
     void GetUpdatedSymbols(set<string> &);
     void ClearUpdatedSymbols();
     bool CheckIfSymbolIsUpdated(const string &);
+    void SetContFutHKFERollFwdTime(const HHMMSS &);
+    void SetContFutCMERollFwdTime(const HHMMSS &);
 
     //--------------------------------------------------
     // Observer

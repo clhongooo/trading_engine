@@ -5,41 +5,23 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../SharedObjects/CorrelMatrices.cpp \
-../SharedObjects/HKIntradaySeasonality.cpp \
 ../SharedObjects/HSIDailyHLRangeEstimation.cpp \
-../SharedObjects/MDI_Acknowledgement.cpp \
-../SharedObjects/MarketData.cpp \
 ../SharedObjects/ProbDistributions.cpp \
 ../SharedObjects/ShortTermAlpha.cpp \
-../SharedObjects/StyCPnLHist.cpp \
-../SharedObjects/SystemConfig.cpp \
-../SharedObjects/TechIndicators.cpp \
 ../SharedObjects/VolSurfaces.cpp 
 
 OBJS += \
 ./SharedObjects/CorrelMatrices.o \
-./SharedObjects/HKIntradaySeasonality.o \
 ./SharedObjects/HSIDailyHLRangeEstimation.o \
-./SharedObjects/MDI_Acknowledgement.o \
-./SharedObjects/MarketData.o \
 ./SharedObjects/ProbDistributions.o \
 ./SharedObjects/ShortTermAlpha.o \
-./SharedObjects/StyCPnLHist.o \
-./SharedObjects/SystemConfig.o \
-./SharedObjects/TechIndicators.o \
 ./SharedObjects/VolSurfaces.o 
 
 CPP_DEPS += \
 ./SharedObjects/CorrelMatrices.d \
-./SharedObjects/HKIntradaySeasonality.d \
 ./SharedObjects/HSIDailyHLRangeEstimation.d \
-./SharedObjects/MDI_Acknowledgement.d \
-./SharedObjects/MarketData.d \
 ./SharedObjects/ProbDistributions.d \
 ./SharedObjects/ShortTermAlpha.d \
-./SharedObjects/StyCPnLHist.d \
-./SharedObjects/SystemConfig.d \
-./SharedObjects/TechIndicators.d \
 ./SharedObjects/VolSurfaces.d 
 
 

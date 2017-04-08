@@ -18,21 +18,12 @@
 #include <string>
 #include "Logger.h"
 #include "SystemConfig.h"
+#include "MarketData.h"
 #include "MDIDataReceiver.h"
+#include "StrategyConstants.h"
 #include "OrderExecutor.h"
 #include "VolSurfCalculator.h"
 #include "VolSurfaces.h"
-#include "StrategyTest.h"
-#include "StrategyB1HKF.h"
-#include "StrategyB2HK.h"
-#include "StrategyB2US1.h"
-#include "StrategyB2US2.h"
-#include "StrategyB2US3.h"
-#include "StrategyB3US.h"
-#include "StrategyNIR1.h"
-#include "StrategyS11A.h"
-#include "StrategyR7.h"
-#include "StrategyR9.h"
 #include "ProbDistributionGenerator.h"
 #include "TechIndUpdater.h"
 #include "PriceForwarderToNextTier.h"
@@ -45,6 +36,14 @@
 #include "MarkToMarket.h"
 #include "ThreadHealthMonitor.h"
 
+#include "StrategyTest.h"
+#include "StrategyB2US1.h"
+#include "StrategyB2US2.h"
+#include "StrategyB2US3.h"
+#include "StrategyB2HK.h"
+#include "StrategyB3US.h"
+#include "StrategyNIR1.h"
+
 class TradingEngineMainThread {
   public:
     TradingEngineMainThread(const char *);
@@ -52,18 +51,17 @@ class TradingEngineMainThread {
     virtual ~TradingEngineMainThread();
     void RunMainThread();
     bool HasFinishedInit();
-    inline static void ShortSleep();
+    inline static void ShortSleep() {usleep(100000);}
 
     string m_ConfigPath;
     string m_ItrdHighLowFromIB;
 
     boost::shared_ptr<SystemConfig>                p_SysCfg;
+    boost::shared_ptr<MarketData>                  p_MktData;
     boost::shared_ptr<Logger>                      p_Logger;
     boost::shared_ptr<Exchange>                    p_Exchg;
     boost::shared_ptr<HKFE>                        p_HKFE;
     boost::shared_ptr<HKSE>                        p_HKSE;
-    boost::shared_ptr<HKMA>                        p_HKMA;
-    boost::shared_ptr<CorrelMatrices>              p_CorrelMatrices;
     vector<boost::shared_ptr<MDIDataReceiver> >    p_dataagg;
     boost::shared_ptr<OrderExecutor>               p_oe;
 

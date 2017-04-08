@@ -32,6 +32,7 @@ ProbDistributionGeneration \
 SharedObjects \
 Strategies \
 StrategyTests \
+StrategyUtils \
 TechIndUpdating \
 VolSurfaceCalculation \
 

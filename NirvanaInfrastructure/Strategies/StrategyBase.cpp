@@ -29,7 +29,7 @@ StrategyBase::StrategyBase() :
   m_HKSE            = HKSE::Instance();
   m_NYSE            = NYSE::Instance();
   m_CME             = CME::Instance();
-  m_HKItrdSea       = HKIntradaySeasonality::Instance();
+  // m_HKItrdSea       = HKIntradaySeasonality::Instance();
   m_ThrdHlthMon     = ThreadHealthMonitor::Instance();
   m_StyCPnLHist     = StyCPnLHist::Instance();
 
@@ -452,29 +452,29 @@ void StrategyBase::AdjustSamplingInterval(const int iTradSym)
 void StrategyBase::PerformEndOfDayTraining(const int iTradSym)
 {
 
-  if (m_StyDomicileMkt == SDM_HK)
-  {
-    for (unsigned int iHKItrdSeaBkt = 0; iHKItrdSeaBkt < m_HKItrdSea->GetTotNumSeasonalityBucket(); ++iHKItrdSeaBkt)
-    {
-      //--------------------------------------------------
-      // Looping through seasonal time buckets
-      //--------------------------------------------------
-      const map<HHMMSS,double> map_HistDataInTimeBucket = m_HKItrdSea->GetHistHKItrdSeasonalBucketData(m_TradedSymbols[iTradSym],iHKItrdSeaBkt);
-
-      if (!map_HistDataInTimeBucket.empty())
-      {
-        //--------------------------------------------------
-        // For each bucket
-        //--------------------------------------------------
-        EndOfDayTrainingForEachTimeBucket(iTradSym,map_HistDataInTimeBucket);
-      }
-    }
-  }
-  if (m_StyDomicileMkt == SDM_US)
-  {
-    map<HHMMSS,double> mapTmp;
-    EndOfDayTrainingForEachTimeBucket(iTradSym,mapTmp);
-  }
+  // if (m_StyDomicileMkt == SDM_HK)
+  // {
+  //   for (unsigned int iHKItrdSeaBkt = 0; iHKItrdSeaBkt < m_HKItrdSea->GetTotNumSeasonalityBucket(); ++iHKItrdSeaBkt)
+  //   {
+  //     //--------------------------------------------------
+  //     // Looping through seasonal time buckets
+  //     //--------------------------------------------------
+  //     const map<HHMMSS,double> map_HistDataInTimeBucket = m_HKItrdSea->GetHistHKItrdSeasonalBucketData(m_TradedSymbols[iTradSym],iHKItrdSeaBkt);
+  //
+  //     if (!map_HistDataInTimeBucket.empty())
+  //     {
+  //       //--------------------------------------------------
+  //       // For each bucket
+  //       //--------------------------------------------------
+  //       EndOfDayTrainingForEachTimeBucket(iTradSym,map_HistDataInTimeBucket);
+  //     }
+  //   }
+  // }
+  // if (m_StyDomicileMkt == SDM_US)
+  // {
+  //   map<HHMMSS,double> mapTmp;
+  //   EndOfDayTrainingForEachTimeBucket(iTradSym,mapTmp);
+  // }
 }
 
 

@@ -12,8 +12,8 @@
 #include "SystemState.h"
 #include "TechIndicators.h"
 #include "TechIndUpdater.h"
-#include "VolSurfaces.h"
-#include "HKIntradaySeasonality.h"
+// #include "VolSurfaces.h"
+// #include "HKIntradaySeasonality.h"
 #include "ThreadHealthMonitor.h"
 #include "Exchange.h"
 #include "PeriodicTask.h"
@@ -41,13 +41,13 @@ class TechIndUpdater {
     boost::shared_ptr<SystemConfig>          m_SysCfg;
     boost::shared_ptr<Logger>                m_Logger;
     boost::shared_ptr<TechIndicators>        m_TechInd;
-    boost::shared_ptr<VolSurfaces>           m_VolSurfaces;
+    // boost::shared_ptr<VolSurfaces>           m_VolSurfaces;
     boost::shared_ptr<Exchange>              m_Exchg;
     boost::shared_ptr<HKFE>                  m_HKFE;
     boost::shared_ptr<HKSE>                  m_HKSE;
     boost::shared_ptr<NYSE>                  m_NYSE;
     boost::shared_ptr<MDI_Acknowledgement>   m_MDIAck;
-    boost::shared_ptr<HKIntradaySeasonality> m_HKItrdSea;
+    // boost::shared_ptr<HKIntradaySeasonality> m_HKItrdSea;
     boost::shared_ptr<ThreadHealthMonitor>   m_ThrdHlthMon;
 
 

@@ -1,14 +1,8 @@
 NirvanaCommon/Debug/PCH/PCH.o
-NirvanaCommon/Debug/SharedObjects/StyCPnLHist.o
-NirvanaCommon/Debug/SharedObjects/TechIndicators.o
 NirvanaCommon/Debug/SharedObjects/HSIDailyHLRangeEstimation.o
 NirvanaCommon/Debug/SharedObjects/CorrelMatrices.o
-NirvanaCommon/Debug/SharedObjects/MarketData.o
 NirvanaCommon/Debug/SharedObjects/ShortTermAlpha.o
-NirvanaCommon/Debug/SharedObjects/SystemConfig.o
 NirvanaCommon/Debug/SharedObjects/ProbDistributions.o
-NirvanaCommon/Debug/SharedObjects/MDI_Acknowledgement.o
-NirvanaCommon/Debug/SharedObjects/HKIntradaySeasonality.o
 NirvanaCommon/Debug/SharedObjects/VolSurfaces.o
 NirvanaCommon/Debug/Util/BestBidAskTrade.o
 NirvanaCommon/Debug/Util/PeriodicTask.o
