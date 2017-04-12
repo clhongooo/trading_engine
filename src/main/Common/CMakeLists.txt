@@ -274,5 +274,4 @@ add_library (${PROJECT_NAME} STATIC
                                     Math/NumberPosition.cpp
                                     Math/StateMach2.cpp
 )
-# install (TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}/lib/)
 target_link_libraries(${PROJECT_NAME} atu_tcp_library)

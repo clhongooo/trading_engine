@@ -1,0 +1,6 @@
+project(cme_mdp)
+include_directories(. sbe cme)
+# file(GLOB cme_SRC "cme/*.h")
+# add_executable(${PROJECT_NAME} sbe/sbe.h ${cme_SRC} common.h error.h CmeMdApi.h error.c CmeMdApi.cpp cme-md.cpp)
+add_executable(${PROJECT_NAME} common.h error.h CmeMdApi.h error.c CmeMdApi.cpp cme-md.cpp)
+target_link_libraries(${PROJECT_NAME} pthread)
