@@ -28,7 +28,7 @@ RemoteSystemsTempFiles
 *.dll
 *.exe
 *.o
-*.so
+# *.so
 *.gcda
 *.gcno
 *.pyc
