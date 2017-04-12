@@ -10,7 +10,14 @@ fi
 [[ ! -d $BUILD_FOLDER ]] && mkdir $BUILD_FOLDER
 [[ ! -d $BIN_FOLDER ]] && mkdir $BIN_FOLDER
 cd $BUILD_FOLDER
-cmake ../src/main/
+
+if [[ $1 == *"d"* ]]
+then
+    cmake -DCMAKE_BUILD_TYPE=Debug ../src/main/
+elif [[ $1 == *"r"* ]]
+then
+    cmake -DCMAKE_BUILD_TYPE=Release ../src/main/
+fi
 MAKE_VERBOSITY=""
 if [[ $@ == *"v"* ]]
 then
