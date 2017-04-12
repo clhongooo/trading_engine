@@ -94,6 +94,6 @@ if(Boost_FOUND AND GSL_FOUND)
     link_directories(/usr/local/pantheios/lib)
     add_executable(${PROJECT_NAME} ${PROJECT_SRC})
 
-    target_link_libraries(${PROJECT_NAME} Common ${Boost_LIBRARIES} ${GSL_LIBRARIES} ${ZeroMQ_LIBRARY} pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)
+    target_link_libraries(${PROJECT_NAME} Common ${Boost_LIBRARIES} pthread ${GSL_LIBRARIES} ${ZeroMQ_LIBRARY} pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)
 endif()
 
