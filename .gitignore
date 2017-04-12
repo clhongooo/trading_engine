@@ -83,3 +83,5 @@ Thumbs.db
 # build
 ####################
 build/*
+bin/cme_ilink
+bin/cme_mdp

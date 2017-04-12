@@ -1,3 +1,3 @@
-# insert GE GEZ8 9810 9810 10 buy limit day
-# cancel 1
+insert GE GEZ8 9810 9810 10 buy limit day
+cancel 1
 resend

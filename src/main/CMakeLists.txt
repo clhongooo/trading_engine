@@ -98,16 +98,14 @@ add_subdirectory(cme_ilink)
 add_subdirectory(cme_mdp)
 
 
-if(Boost_FOUND AND GSL_FOUND)
-    include_directories(${PROJECT_INC}
-                        ${PANTHEIOS_INC}
-                        ${Boost_INCLUDE_DIRS}
-                        ${GSL_INCLUDE_DIRS}
-                        ${ZeroMQ_INCLUDE_DIR}) 
+include_directories(${PROJECT_INC}
+                    ${PANTHEIOS_INC}
+                    ${Boost_INCLUDE_DIRS}
+                    ${GSL_INCLUDE_DIRS}
+                    ${ZeroMQ_INCLUDE_DIR}) 
 
-    link_directories(/usr/local/pantheios/lib)
-    add_executable(${PROJECT_NAME} ${PROJECT_SRC})
+link_directories(/usr/local/pantheios/lib)
+add_executable(${PROJECT_NAME} ${PROJECT_SRC})
 
-    target_link_libraries(${PROJECT_NAME} Common ${Boost_LIBRARIES} pthread ${GSL_LIBRARIES} ${ZeroMQ_LIBRARY} pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)
-endif()
+target_link_libraries(${PROJECT_NAME} Common ${Boost_LIBRARIES} pthread ${GSL_LIBRARIES} ${ZeroMQ_LIBRARY} pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)
 
