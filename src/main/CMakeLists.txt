@@ -1,15 +1,3 @@
-##################################################
-#  ----------------
-# < Trading Engine >
-#  ----------------
-#         \   ^__^
-#          \  (oo)\_______
-#             (__)\       )\/\
-#                 ||----w |
-#                 ||     ||
-#
-##################################################
-
 cmake_minimum_required (VERSION 3.0 FATAL_ERROR)
 
 project(TradingEngine)
@@ -61,8 +49,9 @@ find_package(Boost COMPONENTS
 # find_package(GSL REQUIRED)
 find_package(GSL)
 if (NOT GSL_FOUND)
-    set(GSL_ROOT_DIR /usr)
-    set(GSL_DIR /usr)
+    set(GSL_ROOT_DIR /usr/local/)
+    set(GSL_DIR /usr/local/)
+    set(GSL_LIBRARIES dl gsl gslcblas m)
 endif()
 
 
@@ -108,4 +97,3 @@ link_directories(/usr/local/pantheios/lib)
 add_executable(${PROJECT_NAME} ${PROJECT_SRC})
 
 target_link_libraries(${PROJECT_NAME} Common ${Boost_LIBRARIES} pthread ${GSL_LIBRARIES} ${ZeroMQ_LIBRARY} pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)
-

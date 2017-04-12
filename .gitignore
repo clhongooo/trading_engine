@@ -80,8 +80,9 @@ Thumbs.db
 *.pdf
 
 ####################
-# build
+# bin/build
 ####################
+bin/*
 build/*
 bin/cme_ilink
 bin/cme_mdp
