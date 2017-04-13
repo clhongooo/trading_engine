@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CORE_MINUS_1=$(cat /proc/cpuinfo | grep processor | tail -n 1 | awk '{print $3}')
-BUILD_FOLDER=build
+BUILD_FOLDER=target
 BIN_FOLDER=bin
 if [[ $1 == *"c"* && -d $BUILD_FOLDER ]]
 then
