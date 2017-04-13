@@ -71,7 +71,6 @@ add_library (${PROJECT_NAME} STATIC
                                     ATU/GlobalVariables.h
                                     ATU/IniContractReader.h
                                     ATU/LogStream.h
-                                    ATU/ATU_Abstract_AlgoI.h
                                     ATU/ContractManager.h
                                     ATU/ATU_Abstract_MDI.h
                                     ATU/ATU_Timer.h
