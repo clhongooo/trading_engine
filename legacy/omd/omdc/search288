@@ -1,0 +1,15 @@
+rm -f ~/haha
+
+# cat OMD.log | grep Code\":288, | grep ASK | grep 25000 | grep :1350  | grep 250000 | grep :1360 | grep 25000 | grep :1370  | grep 275000 | grep :1380 | grep 100000 | grep :1400 | grep 125000 | grep :1410 | grep -v :1340, >> ~/haha
+# cat OMD.log | grep Code\":288, | grep BID | grep :100000  | grep :1330 | grep :200000 | grep :1290 | grep -v 75000 >> ~/haha
+
+# cat OMD.log | grep Code\":11280, | grep ASK | grep 550 | grep 40000 | grep 560 | grep 100000 | grep 570 | grep 20000 | grep 590 | grep 40000 | grep 600 | grep 60000 | grep 610 | grep 220000 | grep 620 | grep 270000 | grep 630 | grep 100000 | grep 640 | grep 10000 >> ~/haha
+# cat OMD.log | grep Code\":11280, | grep BID | grep 30000 | grep 540 | grep 60000 | grep 530 | grep 40000 | grep 520 >> ~/haha
+
+cat OMD-4.log | grep Code\":288,\"Side\":\"B\",\"BID\":\{\"Price\":1330,\"NumOfOrders\":2,\"AggQty\":100000\},\"BID\":\{\"Price\":1290,\"NumOfOrders\":1,\"AggQty\":200000\}\} >> ~/haha
+cat OMD-4.log | grep Code\":288,\"Side\":\"A\",\"ASK\":\{\"Price\":1350,\"NumOfOrders\":1,\"AggQty\":25000\},\"ASK\":\{\"Price\":1360,\"NumOfOrders\":2,\"AggQty\":250000\},\"ASK\":\{\"Price\":1370,\"NumOfOrders\":1,\"AggQty\":25000\},\"ASK\":\{\"Price\":1380,\"NumOfOrders\":2,\"AggQty\":275000\},\"ASK\":\{\"Price\":1400,\"NumOfOrders\":2,\"AggQty\":100000\},\"ASK\":\{\"Price\":1410,\"NumOfOrders\":2,\"AggQty\":125000\},\"ASK\":\{\"Price\":1420,\"NumOfOrders\":1,\"AggQty\":75000\}\}  >> ~/haha
+
+cat OMD-4.log | grep Code\":11280,\"Side\":\"B\",\"BID\":\{\"Price\":540,\"NumOfOrders\":1,\"AggQty\":30000\},\"BID\":\{\"Price\":530,\"NumOfOrders\":1,\"AggQty\":60000\},\"BID\":\{\"Price\":520,\"NumOfOrders\":1,\"AggQty\":40000\}\} >> ~/haha
+cat OMD-4.log | grep Code\":11280,\"Side\":\"A\",\"ASK\":\{\"Price\":550,\"NumOfOrders\":1,\"AggQty\":40000\},\"ASK\":\{\"Price\":560,\"NumOfOrders\":1,\"AggQty\":100000\},\"ASK\":\{\"Price\":570,\"NumOfOrders\":1,\"AggQty\":20000\},\"ASK\":\{\"Price\":590,\"NumOfOrders\":1,\"AggQty\":40000\},\"ASK\":\{\"Price\":600,\"NumOfOrders\":1,\"AggQty\":60000\},\"ASK\":\{\"Price\":610,\"NumOfOrders\":5,\"AggQty\":220000\},\"ASK\":\{\"Price\":620,\"NumOfOrders\":6,\"AggQty\":270000\},\"ASK\":\{\"Price\":630,\"NumOfOrders\":2,\"AggQty\":100000\},\"ASK\":\{\"Price\":640,\"NumOfOrders\":1,\"AggQty\":10000\}\} >> ~/haha
+
+vim ~/haha

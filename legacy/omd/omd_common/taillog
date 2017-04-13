@@ -1,0 +1,1 @@
+tail -f /home/atu/omdc/OMD.log | egrep 'DataComplete|RTSClient|Warning|Error|Notice|Terminal' | grep -v Health

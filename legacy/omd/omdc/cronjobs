@@ -1,0 +1,139 @@
+ 42  8 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+ 43  8 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 44  8 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+#45  8 * * 1,2,3,4,5  echo rs   | nc -w 1 localhost 8000
+ 46  8 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+
+ 42 10 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+ 43 10 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 44 10 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+#45 10 * * 1,2,3,4,5  echo rs   | nc -w 1 localhost 8000
+ 46 10 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+
+ # data broadcast until 11:40
+#42 11 * * 1,2,3,4,5  echo cte  | nc -w 1 localhost 8000
+#43 11 * * 1,2,3,4,5  echo cte  | nc -w 1 localhost 8000
+#46 11 * * 1,2,3,4,5  echo ctd  | nc -w 1 localhost 8000
+#47 11 * * 1,2,3,4,5  echo ctd  | nc -w 1 localhost 8000
+ 56 11 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+ 57 11 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 58 11 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+#59 11 * * 1,2,3,4,5  echo rs   | nc -w 1 localhost 8000
+  0 12 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+
+#15 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#16 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#17 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#18 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#19 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#20 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#21 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#22 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#23 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#24 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#25 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#26 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#27 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#28 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#29 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#30 12 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+
+
+
+ 41 14 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+ 42 14 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 43 14 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+#44 14 * * 1,2,3,4,5  echo rs   | nc -w 1 localhost 8000
+ 45 14 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+
+ 56 15 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+ 57 15 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 58 15 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+#59 15 * * 1,2,3,4,5  echo rs   | nc -w 1 localhost 8000
+  0 16 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+
+#19 16 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#20 16 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#21 16 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#22 16 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#23 16 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#24 16 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+#25 16 * * 1,2,3,4,5  echo rfd  | nc -w 1 localhost 8000
+
+ 11 17 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+ 12 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 13 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+#14 17 * * 1,2,3,4,5  echo rs   | nc -w 1 localhost 8000
+ 15 17 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+
+ 29 17 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+ 30 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 31 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+#32 17 * * 1,2,3,4,5  echo rs   | nc -w 1 localhost 8000
+ 33 17 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+  
+ 14 17 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+ 15 17 * * 1,2,3,4,5  echo log5 | nc -w 1 localhost 8000
+ 16 17 * * 1,2,3,4,5  echo log5 | nc -w 1 localhost 8000
+#17 17 * * 1,2,3,4,5  echo cte  | nc -w 1 localhost 8000
+#18 17 * * 1,2,3,4,5  echo cte  | nc -w 1 localhost 8000
+#19 17 * * 1,2,3,4,5  echo cte  | nc -w 1 localhost 8000
+ 20 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+ 21 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 22 17 * * 1,2,3,4,5  echo cbd  | nc -w 1 localhost 8000
+ 23 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+ 24 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 25 17 * * 1,2,3,4,5  echo cbd  | nc -w 1 localhost 8000
+ 26 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+ 27 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 28 17 * * 1,2,3,4,5  echo cbd  | nc -w 1 localhost 8000
+ 29 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+ 30 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 31 17 * * 1,2,3,4,5  echo cbd  | nc -w 1 localhost 8000
+ 32 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+ 33 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 34 17 * * 1,2,3,4,5  echo cbd  | nc -w 1 localhost 8000
+ 35 17 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+
+ 39 17 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+ 40 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 41 17 * * 1,2,3,4,5  echo cbd  | nc -w 1 localhost 8000
+ 42 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+ 43 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 44 17 * * 1,2,3,4,5  echo cbd  | nc -w 1 localhost 8000
+ 45 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+ 46 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 47 17 * * 1,2,3,4,5  echo cbd  | nc -w 1 localhost 8000
+ 48 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+ 49 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 50 17 * * 1,2,3,4,5  echo cbd  | nc -w 1 localhost 8000
+ 51 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+ 52 17 * * 1,2,3,4,5  echo lsn  | nc -w 1 localhost 8000
+ 53 17 * * 1,2,3,4,5  echo cbd  | nc -w 1 localhost 8000
+ 54 17 * * 1,2,3,4,5  echo rfc  | nc -w 1 localhost 8000
+ 55 17 * * 1,2,3,4,5  date >> /home/atu/omdc/memfootprint; ps aux | grep omd >> /home/atu/omdc/memfootprint
+
+
+  50  8 * * 1,2,3,4,5  /home/atu/omdc/startOMD
+# 44 10 * * 1,2,3,4,5  for i in $(ps aux | grep omdc | grep -v grep | awk '{print $2}'); do kill -9 $i; done #/home/atu/omdc/killOMD
+# 45 10 * * 1,2,3,4,5  mv /home/atu/omdc/OMD.log /home/atu/omdc/OMD-1.log
+#
+# 46 10 * * 1,2,3,4,5  /home/atu/omdc/startOMD
+# 45 11 * * 1,2,3,4,5  for i in $(ps aux | grep omdc | grep -v grep | awk '{print $2}'); do kill -9 $i; done #/home/atu/omdc/killOMD
+# 46 11 * * 1,2,3,4,5  mv /home/atu/omdc/OMD.log /home/atu/omdc/OMD-2.log
+#
+# 47 11 * * 1,2,3,4,5  /home/atu/omdc/startOMD
+# 20 14 * * 1,2,3,4,5  for i in $(ps aux | grep omdc | grep -v grep | awk '{print $2}'); do kill -9 $i; done #/home/atu/omdc/killOMD
+# 21 14 * * 1,2,3,4,5  mv /home/atu/omdc/OMD.log /home/atu/omdc/OMD-3.log
+#
+# 22 14 * * 1,2,3,4,5  /home/atu/omdc/startOMD
+# 50 15 * * 1,2,3,4,5  for i in $(ps aux | grep omdc | grep -v grep | awk '{print $2}'); do kill -9 $i; done #/home/atu/omdc/killOMD
+# 51 15 * * 1,2,3,4,5  mv /home/atu/omdc/OMD.log /home/atu/omdc/OMD-4.log
+#
+# 52 15 * * 1,2,3,4,5  /home/atu/omdc/startOMD
+# 38 16 * * 1,2,3,4,5  for i in $(ps aux | grep omdc | grep -v grep | awk '{print $2}'); do kill -9 $i; done #/home/atu/omdc/killOMD
+# 39 16 * * 1,2,3,4,5  mv /home/atu/omdc/OMD.log /home/atu/omdc/OMD-5.log
+#
+# 40 16 * * 1,2,3,4,5  /home/atu/omdc/startOMD
+   0 18 * * 1,2,3,4,5  for i in $(ps aux | grep omdc | grep -v grep | awk '{print $2}'); do kill -9 $i; done #/home/atu/omdc/killOMD
+   1 18 * * 1,2,3,4,5  mv /home/atu/omdc/OMD.log /home/atu/omdc/OMD-6.log

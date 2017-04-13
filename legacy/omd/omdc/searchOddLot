@@ -1,0 +1,16 @@
+rm -f ~/haha
+echo -n "  66 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":66,\"OrderID\":155154,\"Price\":17,\"Quantity\":535,\"BrokerID\":2224,\"Side\":0 | wc -l >> ~/haha
+echo -n "  66 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":66,\"OrderID\":61218,\"Price\":15,\"Quantity\":717,\"BrokerID\":2224,\"Side\":0 | wc -l >> ~/haha
+echo -n "  66 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":66,\"OrderID\":62066,\"Price\":17,\"Quantity\":332,\"BrokerID\":2224,\"Side\":1 | wc -l >> ~/haha
+echo -n "  66 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":66,\"OrderID\":23922,\"Price\":19,\"Quantity\":968,\"BrokerID\":1153,\"Side\":1 | wc -l >> ~/haha
+echo -n "  66 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":66,\"OrderID\":84994,\"Price\":19,\"Quantity\":613,\"BrokerID\":1154,\"Side\":1 | wc -l >> ~/haha
+echo -n "  66 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":66,\"OrderID\":27890,\"Price\":21,\"Quantity\":713,\"BrokerID\":1153,\"Side\":1 | wc -l >> ~/haha
+echo -n "8115 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":8115,\"OrderID\":595,\"Price\":360,\"Quantity\":999,\"BrokerID\":8822,\"Side\":0\}\} | wc -l >> ~/haha
+echo -n "8115 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":8115,\"OrderID\":691,\"Price\":350,\"Quantity\":123,\"BrokerID\":8822,\"Side\":1\}\} | wc -l >> ~/haha
+echo -n "  34 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":34,\"OrderID\":243970,\"Price\":108500,\"Quantity\":387,\"BrokerID\":1154,\"Side\":0 | wc -l >> ~/haha
+echo -n "  34 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":34,\"OrderID\":277010,\"Price\":108500,\"Quantity\":401,\"BrokerID\":2224,\"Side\":0 | wc -l >> ~/haha
+echo -n "  34 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":34,\"OrderID\":248162,\"Price\":108400,\"Quantity\":23,\"BrokerID\":2224,\"Side\":0 | wc -l >> ~/haha
+echo -n "  34 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":34,\"OrderID\":196146,\"Price\":108300,\"Quantity\":161,\"BrokerID\":2224,\"Side\":0 | wc -l >> ~/haha
+echo -n "  34 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":34,\"OrderID\":198018,\"Price\":108300,\"Quantity\":434,\"BrokerID\":2224,\"Side\":0 | wc -l >> ~/haha
+echo -n "  34 : " >> ~/haha; cat OMD-20140825.log | grep \"MsgType\":33,\"SecurityCode\":34,\"OrderID\":267330,\"Price\":108900,\"Quantity\":93,\"BrokerID\":2224,\"Side\":1 | wc -l >> ~/haha
+vim ~/haha

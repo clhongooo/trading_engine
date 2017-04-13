@@ -1,0 +1,4 @@
+pkill -f "java -Xmx10m McastCaptureReplay"
+pkill -f "java DataCaptureReplay"
+pkill -f "omdc"
+pkill -f "RTSTestingServer"

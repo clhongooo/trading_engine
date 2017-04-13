@@ -1,0 +1,6 @@
+rm -f ~/haha
+
+cat OMD-2.log | grep \"SecurityCode\":66,\"Side\":\"B\",\"BID\":\{\"Price\":15,\"NumOfOrders\":3,\"AggQty\":7000\},\"BID\":\{\"Price\":14,\"NumOfOrders\":21,\"AggQty\":136000\},\"BID\":\{\"Price\":13,\"NumOfOrders\":4,\"AggQty\":23000\},\"BID\":\{\"Price\":12,\"NumOfOrders\":2,\"AggQty\":20000\},\"BID\":\{\"Price\":11,\"NumOfOrders\":2,\"AggQty\":3000\},\"BID\":\{\"Price\":10,\"NumOfOrders\":1,\"AggQty\":11000 >> ~/haha
+cat OMD-2.log | grep \"SecurityCode\":66,\"Side\":\"A\",\"ASK\":\{\"Price\":21,\"NumOfOrders\":21,\"AggQty\":123000\},\"ASK\":\{\"Price\":22,\"NumOfOrders\":31,\"AggQty\":177000\},\"ASK\":\{\"Price\":23,\"NumOfOrders\":9,\"AggQty\":43000 >> ~/haha
+
+vim ~/haha

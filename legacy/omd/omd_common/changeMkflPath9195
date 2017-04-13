@@ -1,0 +1,13 @@
+#!/bin/bash
+cd Debug
+make clean
+cd ..
+
+rm -f ~/haha
+for i in $(grep -rl sunny Debug); do echo $i >> ~/haha; done
+
+cat ~/haha | /home/sunny/workspaceC/omdc/sr Dropbox \.
+
+rm -f ~/haha
+for i in $(grep -rl gcc46 Debug); do echo $i >> ~/haha; done
+cat ~/haha | /home/sunny/workspaceC/omdc/sr gcc46 gcc44

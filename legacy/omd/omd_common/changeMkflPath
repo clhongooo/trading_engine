@@ -1,0 +1,7 @@
+#!/bin/bash
+cd Debug
+make clean
+cd ..
+
+for i in $(grep -rl sunny Debug); do vim $i; done
+for i in $(grep -rl gcc46 Debug); do vim $i; done

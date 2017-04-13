@@ -1,0 +1,81 @@
+This note comes from the OMD sharing section with EA.
+
+# Major System Components
+-   Multicast Receiver
+-   Data Completeness Inspector
+-   RTS Client
+-   PreProcessor
+-   Real Time Channel Processor
+-   Refresh Channel Processor
+
+# Program Flow
+
+For each channel, there are 2 multicast streams for real-time and 2 for refresh altogether 4 streams,
+Each stream is handled by 1 Multicast Receiver, and 1 PreProcessor.
+Each channel is handled by 1 RealTimeProcessor and 1 RefreshProcessor
+
+E.g. Channel 10
+
+    RealTime A  -  McastReceiver  -  PreProcessor  -
+                                                    |- RealTime Processor
+    RealTime B  -  McastReceiver  -  PreProcessor  -
+    
+    Refresh  A  -  McastReceiver  -  PreProcessor  -
+                                                    |- Refresh Processor
+    Refresh  B  -  McastReceiver  -  PreProcessor  -
+
+
+## McastReceiver
+-   Simply stores received data into circular buffers as is.
+
+## PreProcessor
+-   Optionally records binary data or parses data into JSON format.
+-   Handles sequence reset
+-   Breaks packets down to messages and inserts them into another circular buffer according to their sequence number.
+
+## Line Arbitration
+-   Performed automatically when messages are inserted into the circle buffer by PreProcessor.
+-   Dirty flag exists in circle buffer to indicate if a particular sequence no is already present, in which case the message won't be memcpy'd for the second time.
+
+## Data Completeness Inspector
+-   Continuously monitor circular buffers to determine if recovery options are needed.
+-   When determined necessary, triggers retransmission client or switch a channel into refresh mode.
+-   Recovery can be triggered by sequence number gap or inactive time gap.
+
+## Refresh
+-   To minimize the time needed to finish refresh, the data in refresh channels are continuously listened to and buffered up
+-   And the buffered data is purged if the "Refresh Complete" message is received and refresh mode isn't triggered.
+-   The buffered data will be processed when "Refresh Complete" message is received and refresh mode is triggered.
+-   There are several cases where the system has to wait for the next refresh batch
+    1.  There isn't enough data in the real time channel to continue from the specified LastSeqNum in the "Refresh Complete" message.
+    1.  There is missing sequence number in that particular refresh batch.
+-   Real time channel processing is paused until the whole refresh process is completed.
+
+### Refresh Triggering
+-   When sequence number gap is larger than threshold.
+-   When time gap is larger than threshold.
+-   When RTS reports errors like "Message not available". Since RTS doesn't have the message, there is no point in waiting further. So immediately activate refresh mode.
+
+## Circular buffer
+-   Memory is reused as much as possible to avoid the time spent on memory allocation.
+-   Multicast data is directly written into circular buffers; To save copying time, memcpy is only used when absolutely necessary.
+
+## Sequence number reset:
+-   Each stream has its own local copy of the *sequence number offset* that is added to the sequence number of every message arrived.
+    E.g. Each of the RT channel A and B has its own local copy of the *sequence number offset*.
+-   There is a shared object for the *sequence number offset* in each channel.
+-   When a stream receives the sequence reset message, it will update both its local copy and the shared object.
+-   When a stream detects that the sequence number is from 1 - 10, it will check the shared object, just to make sure it hasn't missed a sequence number reset.
+-   This method can at least handle these cases:
+    1.   RT A is the faster stream. RT A has received the sequence reset message but RT B has missed it.
+    2.   RT A is the faster stream. RT A has missed the sequence reset message but RT B has received it.
+    3.   RT A is the faster stream. Both RT A and RT B have received the sequence reset message.
+-   This method won't handle this case:
+    1.   both RT A and RT B have missed the sequence reset message.
+
+# Other Features
+-   Can turn on / off the recording of raw binary data at each component.
+-   Can turn on / off the outputing of parsed data as JSON at each component.
+-   Log is written using the Pantheios library.
+-   Can issue manual commands (e.g. To force refresh to be performed) into the system by telnet'ing the port 8000.
+

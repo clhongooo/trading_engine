@@ -1,0 +1,16 @@
+#!/bin/bash
+cd Debug
+make clean
+cd ..
+
+rm -f ~/haha
+for i in $(grep -rl sunny Debug); do echo $i >> ~/haha; done
+
+cat ~/haha | /home/atu/omdc/workspaceC/omdc/sr sunny atu
+cat ~/haha | /home/atu/omdc/workspaceC/omdc/sr Dropbox omdc
+
+rm -f ~/haha
+for i in $(grep -rl gcc46 Debug); do echo $i >> ~/haha; done
+cat ~/haha | /home/atu/omdc/workspaceC/omdc/sr gcc46 gcc41
+
+cat Config-Readiness-SP-918.ini > Config.ini

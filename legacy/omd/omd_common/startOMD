@@ -1,0 +1,4 @@
+#!/bin/bash
+export LD_LIBRARY_PATH=:/usr/local/lib/:
+cd /home/atu/omdc/workspaceC/omdc/
+/home/atu/omdc/workspaceC/omdc/Debug/omdc /home/atu/omdc/workspaceC/omdc/Config.ini
