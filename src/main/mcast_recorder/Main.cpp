@@ -79,17 +79,46 @@ int main(int argc, const char *argv[])
   for (unsigned int i = 0; i < dqIP.size(); ++i)
   {
     cout << "Starting McastReceiver : " << dqLabel[i] << endl;
-
-    dqMCR.push_back(
-        new McastReceiver(
-          ios,
-          dqLabel[i],
-          boost::asio::ip::address::from_string(dqIP[i]),
-          dqPort[i],
-          ptProgramStartTime,
-          argv[2],
-          boost::lexical_cast<int>(argv[3]))
-          );
+    short iMode = boost::lexical_cast<int>(argv[3]);
+    if (iMode == 1)
+    {
+      //--------------------------------------------------
+      // HKEx Simulator format
+      //--------------------------------------------------
+      dqMCR.push_back(new McastReceiverHKExSim(ios,
+                                               dqLabel[i],
+                                               boost::asio::ip::address::from_string(dqIP[i]),
+                                               dqPort[i],
+                                               ptProgramStartTime,
+                                               argv[2],
+                                               iMode));
+    }
+    else if (iMode == 2)
+    {
+      //--------------------------------------------------
+      // Relative time in millisec
+      //--------------------------------------------------
+      dqMCR.push_back(new McastReceiverRelTime(ios,
+                                               dqLabel[i],
+                                               boost::asio::ip::address::from_string(dqIP[i]),
+                                               dqPort[i],
+                                               ptProgramStartTime,
+                                               argv[2],
+                                               iMode));
+    }
+    else if (iMode == 3)
+    {
+      //--------------------------------------------------
+      // Unix time in millisec
+      //--------------------------------------------------
+      dqMCR.push_back(new McastReceiverUnixTime(ios,
+                                                dqLabel[i],
+                                                boost::asio::ip::address::from_string(dqIP[i]),
+                                                dqPort[i],
+                                                ptProgramStartTime,
+                                                argv[2],
+                                                iMode));
+    }
   }
 
   ios.run();

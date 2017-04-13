@@ -1,7 +1,6 @@
 //**************************************************
 //  Author:      Sunny Yan
 //  Created On:  Apr 9, 2014
-//
 //**************************************************
 #ifndef MCASTRECEIVER_H_
 #define MCASTRECEIVER_H_
@@ -36,11 +35,9 @@ class McastReceiver
       const short);
     virtual ~McastReceiver();
 
-    void handle_receive_from(const boost::system::error_code& error, size_t bytes_recvd);
+    virtual void handle_receive_from(const boost::system::error_code& error, size_t bytes_recvd) = 0;
 
-  private:
-    inline string PadLeft(const string &, char, unsigned int);
-
+  protected:
     boost::asio::ip::udp::socket    m_Socket;
     boost::asio::ip::udp::endpoint  m_SenderEndpoint;
     char                            m_Buffer[BUFFER_SIZE];
@@ -48,6 +45,45 @@ class McastReceiver
     FILE *                          m_CannedFile;
     boost::posix_time::ptime        m_ProgramStartTime;
     short                           m_Mode;
+};
+
+class McastReceiverHKExSim : public McastReceiver {
+  public:
+    McastReceiverHKExSim(
+      boost::asio::io_service&,
+      const string &,
+      const boost::asio::ip::address&,
+      const short,
+      boost::posix_time::ptime,
+      const char *,
+      const short);
+    void handle_receive_from(const boost::system::error_code& error, size_t bytes_recvd);
+};
+
+class McastReceiverRelTime : public McastReceiver {
+  public:
+    McastReceiverRelTime(
+      boost::asio::io_service&,
+      const string &,
+      const boost::asio::ip::address&,
+      const short,
+      boost::posix_time::ptime,
+      const char *,
+      const short);
+    void handle_receive_from(const boost::system::error_code& error, size_t bytes_recvd);
+};
+
+class McastReceiverUnixTime : public McastReceiver {
+  public:
+    McastReceiverUnixTime(
+      boost::asio::io_service&,
+      const string &,
+      const boost::asio::ip::address&,
+      const short,
+      boost::posix_time::ptime,
+      const char *,
+      const short);
+    void handle_receive_from(const boost::system::error_code& error, size_t bytes_recvd);
 };
 
 #endif /* MCASTRECEIVER_H_ */

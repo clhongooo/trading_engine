@@ -4,7 +4,7 @@ project(TradingEngine)
 
 ## use this to globally use C++11 with in our project
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-std=c++11")
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wfatal-errors")
 # set_property(TARGET prog PROPERTY CXX_STANDARD 11)
 # set_property(TARGET prog PROPERTY CXX_STANDARD_REQUIRED ON)
 
