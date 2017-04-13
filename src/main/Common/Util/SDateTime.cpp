@@ -1080,3 +1080,21 @@ YYYYMMDDHHMMSS SDateTime::ChangeTimeZone(const YYYYMMDDHHMMSS & ymdhmsFrom, cons
   return YYYYMMDDHHMMSS(ymd,hms);
 }
 
+
+
+//==============================================================================
+//! Convert boost::gregorian::date to Unix timestamp (time_t)
+//!
+//! Converts a boost date to a Unix timestamp pointing to 00:00 hours, 0 seconds
+//! of the day given by date.
+//!
+//! time_t contains the number of seconds since 00:00 hours, Jan 1, 1970 UTC.
+//!
+//! \param date to convert
+//! \return unix timestamp 
+time_t to_time_t(const boost::gregorian::date& date ){
+  using namespace boost::posix_time;
+  static ptime epoch(boost::gregorian::date(1970, 1, 1));
+  time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
+  return time_t(secs);
+}

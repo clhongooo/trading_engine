@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration environment="New Release Certification" updated="2017/04/11-03:17:02">
+<configuration environment="New Release Certification" updated="2017/04/13-01:17:02">
   <channel id="601" label="AutoCert Interest Rate Options">
     <products>
       <product code="1GE">
@@ -1206,7 +1206,38 @@
    </connections>
   </channel>
   <channel id="617" label="AutoCert Interest Rate Options">
-    <products/>
+    <products>
+      <product code="1GE4">
+        <group code="3$"/>
+      </product>
+      <product code="2GE4">
+        <group code="3$"/>
+      </product>
+      <product code="3GE4">
+        <group code="3$"/>
+      </product>
+      <product code="4GE4">
+        <group code="3$"/>
+      </product>
+      <product code="5GE4">
+        <group code="3$"/>
+      </product>
+      <product code="6GE4">
+        <group code="3$"/>
+      </product>
+      <product code="7GE4">
+        <group code="3$"/>
+      </product>
+      <product code="8GE4">
+        <group code="3$"/>
+      </product>
+      <product code="9GE4">
+        <group code="3$"/>
+      </product>
+      <product code="BGE4">
+        <group code="3$"/>
+      </product>
+    </products>
    <connections>
     <connection id="617IA">
       <type feed-type="I">Incremental</type>
@@ -1333,7 +1364,38 @@
    </connections>
   </channel>
   <channel id="621" label="AutoCert Equity Options">
-    <products/>
+    <products>
+      <product code="0OB">
+        <group code="L$"/>
+      </product>
+      <product code="1OB">
+        <group code="L$"/>
+      </product>
+      <product code="2OB">
+        <group code="L$"/>
+      </product>
+      <product code="3OB">
+        <group code="L$"/>
+      </product>
+      <product code="4OB">
+        <group code="L$"/>
+      </product>
+      <product code="5OB">
+        <group code="L$"/>
+      </product>
+      <product code="6OB">
+        <group code="L$"/>
+      </product>
+      <product code="7OB">
+        <group code="L$"/>
+      </product>
+      <product code="8OB">
+        <group code="L$"/>
+      </product>
+      <product code="9OB">
+        <group code="L$"/>
+      </product>
+    </products>
    <connections>
     <connection id="621IA">
       <type feed-type="I">Incremental</type>
@@ -1378,7 +1440,38 @@
    </connections>
   </channel>
   <channel id="623" label="AutoCert Equity Options">
-    <products/>
+    <products>
+      <product code="0AE7">
+        <group code="6$"/>
+      </product>
+      <product code="1AE7">
+        <group code="6$"/>
+      </product>
+      <product code="2AE7">
+        <group code="6$"/>
+      </product>
+      <product code="3AE7">
+        <group code="6$"/>
+      </product>
+      <product code="4AE7">
+        <group code="6$"/>
+      </product>
+      <product code="5AE7">
+        <group code="6$"/>
+      </product>
+      <product code="6AE7">
+        <group code="6$"/>
+      </product>
+      <product code="7AE7">
+        <group code="6$"/>
+      </product>
+      <product code="8AE7">
+        <group code="6$"/>
+      </product>
+      <product code="9AE7">
+        <group code="6$"/>
+      </product>
+    </products>
    <connections>
     <connection id="623IA">
       <type feed-type="I">Incremental</type>
@@ -1423,7 +1516,71 @@
    </connections>
   </channel>
   <channel id="625" label="AutoCert Equity Futures">
-    <products/>
+    <products>
+      <product code="0SLP">
+        <group code="91"/>
+      </product>
+      <product code="1DVE">
+        <group code="91"/>
+      </product>
+      <product code="1FT5">
+        <group code="91"/>
+      </product>
+      <product code="1SMC">
+        <group code="S$"/>
+      </product>
+      <product code="2SLP">
+        <group code="91"/>
+      </product>
+      <product code="3ES">
+        <group code="91"/>
+      </product>
+      <product code="3NQ">
+        <group code="91"/>
+      </product>
+      <product code="4SMC">
+        <group code="S$"/>
+      </product>
+      <product code="6EMD">
+        <group code="S$"/>
+      </product>
+      <product code="6ES">
+        <group code="91"/>
+      </product>
+      <product code="6FT5">
+        <group code="91"/>
+      </product>
+      <product code="6NQ">
+        <group code="91"/>
+      </product>
+      <product code="6RSV">
+        <group code="91"/>
+      </product>
+      <product code="6SMC">
+        <group code="S$"/>
+      </product>
+      <product code="8FT5">
+        <group code="91"/>
+      </product>
+      <product code="8RSV">
+        <group code="91"/>
+      </product>
+      <product code="8SMC">
+        <group code="S$"/>
+      </product>
+      <product code="9EMD">
+        <group code="S$"/>
+      </product>
+      <product code="9ES">
+        <group code="91"/>
+      </product>
+      <product code="9SLP">
+        <group code="91"/>
+      </product>
+      <product code="BES">
+        <group code="91"/>
+      </product>
+    </products>
    <connections>
     <connection id="625IA">
       <type feed-type="I">Incremental</type>
@@ -1468,7 +1625,71 @@
    </connections>
   </channel>
   <channel id="627" label="AutoCert Equity Futures">
-    <products/>
+    <products>
+      <product code="0EMD">
+        <group code="S$"/>
+      </product>
+      <product code="0NQ">
+        <group code="91"/>
+      </product>
+      <product code="2EMD">
+        <group code="S$"/>
+      </product>
+      <product code="2FT5">
+        <group code="91"/>
+      </product>
+      <product code="3DVE">
+        <group code="91"/>
+      </product>
+      <product code="3ES">
+        <group code="91"/>
+      </product>
+      <product code="3RSV">
+        <group code="91"/>
+      </product>
+      <product code="3SMC">
+        <group code="S$"/>
+      </product>
+      <product code="4FT5">
+        <group code="91"/>
+      </product>
+      <product code="5DVE">
+        <group code="91"/>
+      </product>
+      <product code="5EMD">
+        <group code="S$"/>
+      </product>
+      <product code="5ES">
+        <group code="91"/>
+      </product>
+      <product code="5SLP">
+        <group code="91"/>
+      </product>
+      <product code="5SMC">
+        <group code="S$"/>
+      </product>
+      <product code="6DVE">
+        <group code="91"/>
+      </product>
+      <product code="6ES">
+        <group code="91"/>
+      </product>
+      <product code="6SMC">
+        <group code="S$"/>
+      </product>
+      <product code="7SLP">
+        <group code="91"/>
+      </product>
+      <product code="8DVE">
+        <group code="91"/>
+      </product>
+      <product code="8FT5">
+        <group code="91"/>
+      </product>
+      <product code="9ES">
+        <group code="91"/>
+      </product>
+    </products>
    <connections>
     <connection id="627IA">
       <type feed-type="I">Incremental</type>
@@ -1513,7 +1734,71 @@
    </connections>
   </channel>
   <channel id="629" label="AutoCert Equity Futures">
-    <products/>
+    <products>
+      <product code="0DVE">
+        <group code="91"/>
+      </product>
+      <product code="0EMD">
+        <group code="S$"/>
+      </product>
+      <product code="1SLP">
+        <group code="91"/>
+      </product>
+      <product code="2EMD">
+        <group code="S$"/>
+      </product>
+      <product code="2NQ">
+        <group code="91"/>
+      </product>
+      <product code="2RSV">
+        <group code="91"/>
+      </product>
+      <product code="3NQ">
+        <group code="91"/>
+      </product>
+      <product code="3SLP">
+        <group code="91"/>
+      </product>
+      <product code="3SMC">
+        <group code="S$"/>
+      </product>
+      <product code="4NQ">
+        <group code="91"/>
+      </product>
+      <product code="5NQ">
+        <group code="91"/>
+      </product>
+      <product code="5RSV">
+        <group code="91"/>
+      </product>
+      <product code="5SLP">
+        <group code="91"/>
+      </product>
+      <product code="6FT5">
+        <group code="91"/>
+      </product>
+      <product code="7EMD">
+        <group code="S$"/>
+      </product>
+      <product code="8DVE">
+        <group code="91"/>
+      </product>
+      <product code="8EMD">
+        <group code="S$"/>
+      </product>
+      <product code="8ES">
+        <group code="91"/>
+      </product>
+      <product code="9SLP">
+        <group code="91"/>
+      </product>
+      <product code="9SMC">
+        <group code="S$"/>
+      </product>
+      <product code="BES">
+        <group code="91"/>
+      </product>
+    </products>
    <connections>
     <connection id="629IA">
       <type feed-type="I">Incremental</type>
@@ -5235,7 +5520,26 @@
    </connections>
   </channel>
   <channel id="685" label="AutoCert Interest Rate Futures&#9;">
-    <products/>
+    <products>
+      <product code="1GLB">
+        <group code="N$"/>
+      </product>
+      <product code="4GE">
+        <group code="90"/>
+      </product>
+      <product code="5GE">
+        <group code="90"/>
+      </product>
+      <product code="8GLB">
+        <group code="N$"/>
+      </product>
+      <product code="9GLB">
+        <group code="N$"/>
+      </product>
+      <product code="9ZQ">
+        <group code="90"/>
+      </product>
+    </products>
    <connections>
     <connection id="685IA">
       <type feed-type="I">Incremental</type>
@@ -5280,7 +5584,68 @@
    </connections>
   </channel>
   <channel id="687" label="AutoCert Interest Rate Futures&#9;">
-    <products/>
+    <products>
+      <product code="0QH">
+        <group code="95"/>
+      </product>
+      <product code="0RT">
+        <group code="P$"/>
+      </product>
+      <product code="1RT">
+        <group code="P$"/>
+      </product>
+      <product code="1WS">
+        <group code="P$"/>
+      </product>
+      <product code="2QH">
+        <group code="95"/>
+      </product>
+      <product code="2WS">
+        <group code="P$"/>
+      </product>
+      <product code="3BB">
+        <group code="95"/>
+      </product>
+      <product code="3QH">
+        <group code="95"/>
+      </product>
+      <product code="4BB">
+        <group code="95"/>
+      </product>
+      <product code="4QH">
+        <group code="95"/>
+      </product>
+      <product code="4WS">
+        <group code="P$"/>
+      </product>
+      <product code="5QH">
+        <group code="95"/>
+      </product>
+      <product code="6BB">
+        <group code="95"/>
+      </product>
+      <product code="6QH">
+        <group code="95"/>
+      </product>
+      <product code="7BB">
+        <group code="95"/>
+      </product>
+      <product code="7RT">
+        <group code="P$"/>
+      </product>
+      <product code="7WS">
+        <group code="P$"/>
+      </product>
+      <product code="8RT">
+        <group code="P$"/>
+      </product>
+      <product code="9RT">
+        <group code="P$"/>
+      </product>
+      <product code="9WS">
+        <group code="P$"/>
+      </product>
+    </products>
    <connections>
     <connection id="687IA">
       <type feed-type="I">Incremental</type>

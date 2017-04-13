@@ -85,6 +85,7 @@ add_subdirectory(atu_tcp_library)
 add_subdirectory(Common)
 add_subdirectory(cme_ilink)
 add_subdirectory(cme_mdp)
+add_subdirectory(mcast_recorder)
 
 
 include_directories(${PROJECT_INC}

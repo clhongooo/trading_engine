@@ -8,23 +8,14 @@
 #include "McastReceiver.h"
 #include <boost/cstdint.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
-#include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <deque>
 #include <fstream>
 #include <iostream>
-#include <iostream>
-#include <memory>
 #include <string>
 #include <boost/lexical_cast.hpp>
 #include <boost/date_time/time_duration.hpp>
-#include <boost/date_time/date.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/gregorian/greg_date.hpp>
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 using namespace boost;
@@ -34,24 +25,20 @@ void ReadConfig(const char *sConfigFile, deque<string> & dqIP, deque<unsigned sh
   ifstream file (sConfigFile);
   if (file.good())
   {
-    string sValue;
+    string sLine;
 
     for (;;)
     {
-      if (!getline(file, sValue, ',')) return;
-      if (sValue.at(0) == '#')
-      {
-        getline(file, sValue, ',');
-        getline(file, sValue, '\n');
-        continue;
-      }
-      dqIP.push_back(string(sValue));
+      if (!getline(file, sLine, '\n')) return;
+      if (sLine.at(0) == '#') continue;
 
-      if (!getline(file, sValue, ',')) return;
-      dqPort.push_back(lexical_cast<unsigned short>(sValue));
+      vector<string> vFields;
+      boost::split(vFields,sLine,boost::is_any_of(","));
+      if (vFields.size() != 3) continue;
 
-      if (!getline(file, sValue, '\n')) return;
-      dqLabel.push_back(string(sValue));
+      dqIP.push_back(vFields[0]);
+      dqPort.push_back(lexical_cast<unsigned short>(vFields[1]));
+      dqLabel.push_back(vFields[2]);
     }
     file.close();
 
@@ -71,9 +58,13 @@ int main(int argc, const char *argv[])
   deque<string> dqLabel;
   ptr_deque<McastReceiver> dqMCR;
 
-  if (argc != 3)
+  if (argc != 4)
   {
-    cout << "Please provide the [path to the config file] and [path to the data folder] as the parameters." <<  endl << flush;
+    cout << "Usage: " << argv[0] << " [config_file] [dest_data_folder] [output_format]" << endl << flush;
+    cout << "       output_format:" << endl << flush;
+    cout << "       1: HKEx simulator." << endl << flush;
+    cout << "       2: 8 byte milliseconds since program start + original UDP packet." << endl << flush;
+    cout << "       3: 8 byte unix time + original UDP packet." << endl << flush;
     return 0;
   }
 
@@ -96,11 +87,13 @@ int main(int argc, const char *argv[])
           boost::asio::ip::address::from_string(dqIP[i]),
           dqPort[i],
           ptProgramStartTime,
-          argv[2]));
-
+          argv[2],
+          boost::lexical_cast<int>(argv[3]))
+          );
   }
 
   ios.run();
 
+  cout << argv[0] << " exits." << endl << flush;
   return 0;
 }
