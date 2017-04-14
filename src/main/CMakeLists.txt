@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.0 FATAL_ERROR)
 
-project(TradingEngine)
+project(TradingSystem)
 
 ## use this to globally use C++11 with in our project
 set(CMAKE_CXX_STANDARD 11)
@@ -8,28 +8,8 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wfatal-errors")
 # set_property(TARGET prog PROPERTY CXX_STANDARD 11)
 # set_property(TARGET prog PROPERTY CXX_STANDARD_REQUIRED ON)
 
-set(PROJECT_INC 
-                 atu_tcp_library
-                 Common/ATU
-                 Common/Logger
-                 Common/Math
-                 Common/Model
-                 Common/PCH
-                 Common/Util
-                 Common/DataAggregation
-                 Common/Facilities
-                 Common/LowPriorityFacilities
-                 Common/OrderExecutionAlgo
-                 Common/ProbDistributionGeneration
-                 Common/SharedObjects
-                 Common/Strategies
-                 Common/StrategyTests
-                 Common/StrategyUtils
-                 Common/TechIndUpdating
-                 Common/VolSurfaceCalculation)
 set(PANTHEIOS_INC /usr/local/pantheios/include
                   /usr/local/stlsoft/include)
-set(PROJECT_SRC Main.cpp)    
 
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
@@ -80,21 +60,20 @@ find_library(ZeroMQ_LIBRARY
 ##################################################
 
 
-
 add_subdirectory(atu_tcp_library)
-add_subdirectory(Common)
+add_subdirectory(strategy_engine_common)
+add_subdirectory(strategy_engine)
 add_subdirectory(cme_ilink)
 add_subdirectory(cme_mdp)
 add_subdirectory(mcast_recorder)
+add_subdirectory(ctp_md)
 
 
-include_directories(${PROJECT_INC}
-                    ${PANTHEIOS_INC}
+include_directories(${PANTHEIOS_INC}
                     ${Boost_INCLUDE_DIRS}
                     ${GSL_INCLUDE_DIRS}
-                    ${ZeroMQ_INCLUDE_DIR}) 
+                    ${ZeroMQ_INCLUDE_DIR}
+)
 
-link_directories(/usr/local/pantheios/lib)
-add_executable(${PROJECT_NAME} ${PROJECT_SRC})
 
-target_link_libraries(${PROJECT_NAME} Common ${Boost_LIBRARIES} pthread ${GSL_LIBRARIES} ${ZeroMQ_LIBRARY} pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)
+

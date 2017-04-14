@@ -1,15 +1,15 @@
 #!/bin/bash
 
 CORE_MINUS_1=$(cat /proc/cpuinfo | grep processor | tail -n 1 | awk '{print $3}')
-BUILD_FOLDER=target
+TARGET_FOLDER=target
 BIN_FOLDER=bin
-if [[ $1 == *"c"* && -d $BUILD_FOLDER ]]
+if [[ $1 == *"c"* && -d $TARGET_FOLDER ]]
 then
-    rm -rf $BUILD_FOLDER
+    rm -rf $TARGET_FOLDER
 fi
-[[ ! -d $BUILD_FOLDER ]] && mkdir $BUILD_FOLDER
+[[ ! -d $TARGET_FOLDER ]] && mkdir $TARGET_FOLDER
 [[ ! -d $BIN_FOLDER ]] && mkdir $BIN_FOLDER
-cd $BUILD_FOLDER
+cd $TARGET_FOLDER
 
 if [[ $1 == *"d"* ]]
 then
