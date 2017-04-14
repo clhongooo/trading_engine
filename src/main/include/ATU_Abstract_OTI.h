@@ -7,7 +7,6 @@
 #include "ATU_ErrorMsgStruct.h"
 #include "ATU_Abstract_MDI.h"
 #include "ATU_Logger.h"
-#include "ParsedMarketData.h"
 using namespace std;
 
 typedef struct ATU_OTI_signalfeed_struct{

@@ -9,7 +9,7 @@ foreach (_headerFile ${strat_eng_HEADERS})
 endforeach()
 list(REMOVE_DUPLICATES strat_eng_INC)
 
-include_directories(${PANTHEIOS_INC} ${strat_eng_INC} ../atu_tcp_library)
+include_directories(../include ${PANTHEIOS_INC} ${strat_eng_INC} ../atu_tcp_library)
 
 file(GLOB_RECURSE strat_eng_SOURCES "*.cpp")
 
