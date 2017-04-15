@@ -14,7 +14,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-#include "error.h"
+#include "StdStreamLogger.h"
 #include "CmeMdApi.h"
 
 using namespace std;
@@ -70,17 +70,17 @@ CmeMd::Init()
   char *localip = strtok(NULL, "\0");
 
   if ( (src_sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-    err_sys("open socket error");
+    StdStreamLogger::Instance()->Write(StdStreamLogger::ERROR,"open socket error");
 
   int reuse = 1;
 
   if (setsockopt(src_sock, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(reuse)) == -1)
-    err_sys("set SO_REUSEADDR error");
+    StdStreamLogger::Instance()->Write(StdStreamLogger::ERROR,"set SO_REUSEADDR error");
 
   int opt = 1;
 
   if (ioctl(src_sock, FIONBIO, &opt) == -1)
-    err_sys("socket fail to set FIONBIO");
+    StdStreamLogger::Instance()->Write(StdStreamLogger::ERROR,"socket fail to set FIONBIO");
 
   struct sockaddr_in cli = {0};
 
@@ -89,7 +89,7 @@ CmeMd::Init()
   cli.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if (bind(src_sock, (struct sockaddr*)&cli, sizeof(cli)) == -1)
-    err_sys("bind error");
+    StdStreamLogger::Instance()->Write(StdStreamLogger::ERROR,"bind error");
 
   struct ip_mreq group;
 
@@ -97,7 +97,7 @@ CmeMd::Init()
   group.imr_interface.s_addr = inet_addr(localip);
 
   if (setsockopt(src_sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&group, sizeof(group)) < -1)
-    err_sys("add multicast group error");
+    StdStreamLogger::Instance()->Write(StdStreamLogger::ERROR,"add multicast group error");
 
   int n;
   char buf[4096];
@@ -113,7 +113,7 @@ CmeMd::Init()
     Disseminate(buf, n);
   }
 
-  err_sys("fail");
+  StdStreamLogger::Instance()->Write(StdStreamLogger::ERROR,"fail");
 }
 
   void
@@ -165,7 +165,10 @@ writer(void *args)
 main(int argc, char *argv[])
 {
   if (argc < 4)
-    err_exit("usage: %s src_multicast config_file inst_id1 inst_id2 ...", argv[0]);
+  {
+    StdStreamLogger::Instance()->Write(StdStreamLogger::INFO,"usage: %s src_multicast config_file inst_id1 inst_id2 ...", argv[0]);
+    exit(0);
+  }
 
   CmeMd mdapi(argv[1], argv[2]);
   vector<string> instid;

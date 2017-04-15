@@ -49,8 +49,6 @@ class CtpMd : public CThostFtdcMdSpi{
 
     int m_iRequestID;
 
-    virtual void addLog(string logSource,int logSeverity,char *argsfmt,char *argtype,...);
-
   private:
     void *m_ctp_lib_handle;
     boost::thread *m_init_and_run_thread;
@@ -259,12 +257,3 @@ void CtpMd::Md_api_release(){
   }
 }
 
-void CtpMd::addLog(string logSource,int logSeverity,char *argsfmt,char *argtype,...) {
-  va_list listPointer;
-  va_start(listPointer,argtype);
-
-  ATU_logfeed_struct *logfeed=copy2logfeed_struct(logSource,
-                                                  logSeverity,argsfmt,argtype, listPointer);
-  notify_logfeed(logfeed);
-
-}

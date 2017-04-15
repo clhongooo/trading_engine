@@ -288,7 +288,7 @@ void TradingEngineMainThread::RunMainThread()
 
   m_FinishedInit = true;
 
-  cout << "Nirvana: all threads are started." << endl << flush;
+  cout << "System: all threads are started." << endl << flush;
   cout << "Location of log file: " << p_SysCfg->Get_Main_Log_Path() << endl << flush;
 
   //--------------------------------------------------

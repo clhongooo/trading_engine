@@ -1,0 +1,5 @@
+project(logger)
+include_directories(${PANTHEIOS_INC})
+link_directories(/usr/local/pantheios/lib)
+add_library (${PROJECT_NAME} STATIC StdStreamLogger.cpp Logger.cpp)
+target_link_libraries(${PROJECT_NAME} pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)

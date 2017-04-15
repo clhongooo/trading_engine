@@ -67,6 +67,7 @@ add_subdirectory(cme_ilink)
 add_subdirectory(cme_mdp)
 add_subdirectory(mcast_recorder)
 add_subdirectory(ctp_md)
+add_subdirectory(logger)
 
 
 include_directories(${PANTHEIOS_INC}

@@ -93,7 +93,7 @@ void TerminalSession::handle_read(const boost::system::error_code& error, size_t
     //--------------------------------------------------
     else if (strncmp(m_Buffer,CMD_SHUTDOWN,strlen(CMD_SHUTDOWN))==0)
     {
-      sprintf(m_Buffer, "TerminalSession: Nirvana will now shutdown. Stopping all threads.");
+      sprintf(m_Buffer, "TerminalSession: System will now shutdown. Stopping all threads.");
       output_tml_log_prompt();
       m_SysState->SetSystemState(SystemState::STATE_OFF);
       for (unsigned int i = 0; i < 3; ++i)

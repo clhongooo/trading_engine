@@ -8,9 +8,9 @@
 #ifndef LOGGER_H_
 #define LOGGER_H_
 
-#include "PCH.h"
-#include "Constants.h"
 #include <cstdarg>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
 // --------------------------------------------------
 #include <pantheios/pantheios.hpp>
@@ -32,6 +32,8 @@
 // --------------------------------------------------
 
 using namespace std;
+using namespace boost;
+
 
 
 
@@ -61,15 +63,13 @@ class Logger {
 
     void SetLogLevel(LogLevel);
     void SetPath(const char*);
-    void Write(LogLevel, const char *, ...);
-    bool DoWeNeedToDo(LogLevel);
+    void Write(const LogLevel, const char *, ...);
 
   private:
     Logger(){};
     Logger(Logger const&){};
     Logger& operator=(Logger const&){};
     static boost::weak_ptr<Logger> m_pInstance;
-    static const char * m_LogPath;
 };
 
 #endif

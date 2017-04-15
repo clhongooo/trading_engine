@@ -8,15 +8,14 @@
 #include "Logger.h"
 
 boost::weak_ptr<Logger> Logger::m_pInstance;
-const char *Logger::m_LogPath = "/tmp/OMD.log";
 
 // --------------------------------------------------
 // Pantheois - Begin
 // --------------------------------------------------
-extern const PAN_CHAR_T PANTHEIOS_FE_PROCESS_IDENTITY[] = "TradingEngine";
+extern const PAN_CHAR_T PANTHEIOS_FE_PROCESS_IDENTITY[] = "DefaultLogger";
 
 PANTHEIOS_CALL(PAN_CHAR_T const*) pantheios_fe_getProcessIdentity(void*)
-{ return PANTHEIOS_LITERAL_STRING("NirvanaTradingEngine"); }
+{ return PANTHEIOS_LITERAL_STRING("DefaultLogger"); }
 
 PANTHEIOS_CALL(int) pantheios_fe_init(void *, void **ptoken)
 { *ptoken = NULL; return 0; }
@@ -49,32 +48,6 @@ Logger::~Logger()
 void Logger::SetPath(const char * newPath)
 {
   pantheios_be_file_setFilePath(PANTHEIOS_LITERAL_STRING(newPath),  PANTHEIOS_BE_FILE_F_TRUNCATE, PANTHEIOS_BE_FILE_F_TRUNCATE, PANTHEIOS_BEID_ALL);
-}
-
-bool Logger::DoWeNeedToDo(LogLevel lev)
-{
-  switch (lev)
-  {
-    case EMERGENCY:
-      return s_severityCeiling >= pantheios::emergency;
-    case ALERT:
-      return s_severityCeiling >= pantheios::alert;
-    case CRITICAL:
-      return s_severityCeiling >= pantheios::critical;
-    case ERROR:
-      return s_severityCeiling >= pantheios::error;
-    case WARNING:
-      return s_severityCeiling >= pantheios::warning;
-    case NOTICE:
-      return s_severityCeiling >= pantheios::notice;
-    case INFO:
-      return s_severityCeiling >= pantheios::informational;
-    case DEBUG:
-      return s_severityCeiling >= pantheios::debug;
-
-    default:
-      return s_severityCeiling >= pantheios::debug;
-  }
 }
 
 void Logger::SetLogLevel(LogLevel lev)
@@ -112,7 +85,7 @@ void Logger::SetLogLevel(LogLevel lev)
   }
 }
 
-void Logger::Write(LogLevel lev, const char *fmt, ...)
+void Logger::Write(const LogLevel lev, const char *fmt, ...)
 {
   char buffer[20480];
   va_list args;

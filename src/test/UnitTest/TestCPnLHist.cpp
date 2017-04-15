@@ -14,7 +14,7 @@ void TestCPnLHist::RunTest()
   //--------------------------------------------------
   {
     CPnLHist ch;
-    CPPUNIT_ASSERT(ch.LoadFromFile("/home/qy/Dropbox/nirvana/workspaceCN/NirvanaCommonTest/UnitTest/cpnlhist.csv"));
+    CPPUNIT_ASSERT(ch.LoadFromFile("UnitTest/cpnlhist.csv"));
 
     CPPUNIT_ASSERT(ch.GetPnL(2,false) == (48533-47020));
     CPPUNIT_ASSERT(ch.GetPnL(1,false) == (48533-47827));
@@ -53,7 +53,7 @@ void TestCPnLHist::RunTest()
   //--------------------------------------------------
   {
     CPnLHist ch;
-    CPPUNIT_ASSERT(ch.LoadFromFile("/home/qy/Dropbox/nirvana/workspaceCN/NirvanaCommonTest/UnitTest/cpnlhist_2.csv"));
+    CPPUNIT_ASSERT(ch.LoadFromFile("UnitTest/cpnlhist_2.csv"));
 
     CPPUNIT_ASSERT(abs(ch.GetEstWinningProb(20))-0.45 < 0.001);
     CPPUNIT_ASSERT(abs(ch.GetEstNetOdds(20))-1.1304 < 0.001);
