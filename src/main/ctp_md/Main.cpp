@@ -16,13 +16,13 @@
 using namespace std;
 using namespace boost;
 
-void ReadConfig(const string & sConfigPath)
+void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd)
 {
   boost::shared_ptr<StdStreamLogger> m_Logger = StdStreamLogger::Instance();
   boost::property_tree::ptree pt;
   boost::property_tree::ini_parser::read_ini(sConfigPath, pt);
 
-  string sLogLevel = pt.get<std::string>("General.LogLevel");
+  string sLogLevel = STool::Trim(pt.get<std::string>("General.LogLevel"));
   if      (sLogLevel == "EMERGENCY") { m_Logger->SetLogLevel(StdStreamLogger::EMERGENCY); }
   else if (sLogLevel == "ALERT")     { m_Logger->SetLogLevel(StdStreamLogger::ALERT);     }
   else if (sLogLevel == "CRITICAL")  { m_Logger->SetLogLevel(StdStreamLogger::CRITICAL);  }
@@ -39,6 +39,14 @@ void ReadConfig(const string & sConfigPath)
   m_Logger->Write(StdStreamLogger::INFO,"DataFolder: %s", sDataFolder.c_str());
   string sThostLibFolder = pt.get<std::string>("General.ThostLibFolder");
   m_Logger->Write(StdStreamLogger::INFO,"ThostLibFolder: %s", sThostLibFolder.c_str());
+
+
+    // p_ctpmd->setConnectString(const string &);
+    // p_ctpmd->setBrokerID(const int);
+    // p_ctpmd->setInvestorID(const string &);
+    // p_ctpmd->setPassword(const string &);
+
+
 }
 
 int main(int argc, const char *argv[])
@@ -49,10 +57,10 @@ int main(int argc, const char *argv[])
     return 0;
   }
 
-  ReadConfig(argv[1]);
+  boost::shared_ptr<CtpMd> p_ctpmd;
+  ReadConfig(argv[1],p_ctpmd);
 
-  CtpMd ctpmd;
-  ctpmd.detach();
+  p_ctpmd->detach();
 
   sleep(10000);
 

@@ -4,23 +4,13 @@
 //returns the larger
 double STool::Max(double dA, double dB)
 {
-  if (IsNaN(dA) || IsNaN(dB))
-  {
-    SException se;
-    se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
-    throw se;
-  }
+  if (IsNaN(dA) || IsNaN(dB)) throw std::exception();
   return (dA > dB ? dA : dB);
 }
 //returns the smaller
 double STool::Min(double dA, double dB)
 {
-  if (IsNaN(dA) || IsNaN(dB))
-  {
-    SException se;
-    se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
-    throw se;
-  }
+  if (IsNaN(dA) || IsNaN(dB)) throw std::exception();
   return (dA < dB ? dA : dB);
 }
 //returns the larger
@@ -122,12 +112,7 @@ double STool::ToDbl(const string &s)
 
   istringstream ss(s);
   double d;
-  if (!(ss >> d))
-  {
-    SException se;
-    se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
-    throw se;
-  }
+  if (!(ss >> d)) throw std::exception();
   return d;
 }
 double STool::ToDbl(const string &s, unsigned u)
@@ -277,12 +262,7 @@ void STool::ReadFile(const char *sPath, deque<string> & dqS)
   {
     for (string str; getline(ifs,str); ) dqS.push_back(str);
   }
-  else
-  {
-    SException se;
-    se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
-    throw se;
-  }
+  else throw std::exception();
   ifs.close();
 }
 
@@ -350,7 +330,7 @@ bool STool::IsValidPriceOrVol(const double d)
 {
   if (std::isnan(d)         ) return false;
   if (d >= ATU_INVALID_PRICE) return false;
-  if (d <= NIR_EPSILON      ) return false;
+  if (d <= EPSILON          ) return false;
   return true;
 }
 

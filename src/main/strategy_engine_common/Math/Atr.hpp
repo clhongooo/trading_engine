@@ -1,8 +1,8 @@
 #ifndef ATR_H
 #define ATR_H
 
-#include "../Util/IParam.h"
-#include "../Util/SException.h"
+#include "IParam.h"
+#include "SException.h"
 #include "DataQue.hpp"
 #include "Ema.hpp"
 #include <cmath>

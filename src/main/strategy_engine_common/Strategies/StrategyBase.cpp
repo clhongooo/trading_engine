@@ -21,7 +21,6 @@ StrategyBase::StrategyBase() :
   m_SysCfg          = SystemConfig::Instance();
   m_Logger          = Logger::Instance();
   m_TechInd         = TechIndicators::Instance();
-  m_VolSurf         = VolSurfaces::Instance();
   m_PortAndOrders   = PortfoliosAndOrders::Instance();
   m_MDIAck          = MDI_Acknowledgement::Instance();
   m_Exchg           = Exchange::Instance();
@@ -29,7 +28,6 @@ StrategyBase::StrategyBase() :
   m_HKSE            = HKSE::Instance();
   m_NYSE            = NYSE::Instance();
   m_CME             = CME::Instance();
-  // m_HKItrdSea       = HKIntradaySeasonality::Instance();
   m_ThrdHlthMon     = ThreadHealthMonitor::Instance();
   m_StyCPnLHist     = StyCPnLHist::Instance();
 

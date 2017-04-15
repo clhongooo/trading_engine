@@ -1,7 +1,7 @@
 #ifndef DELAYEDCIRDATAQUE_H
 #define DELAYEDCIRDATAQUE_H
 
-#include "../Util/SException.h"
+#include "SException.h"
 #include "CirDataQue.hpp"
 #include <deque>
 

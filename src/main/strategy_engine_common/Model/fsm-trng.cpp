@@ -1,13 +1,13 @@
 // FINITE STATE MACHINE TRAINING
 /*
-#include "../Math/StateMach.hpp"
-#include "../Math/StateMach1.hpp"
-#include "../Math/StateMach2.hpp"
-#include "../Util/STool.h"
-#include "../Util/BarProvider.hpp"
-#include "../Util/HKFE.hpp"
-#include "../Util/SException.hpp"
-#include "../Util/IParam.hpp"
+#include "StateMach.hpp"
+#include "StateMach1.hpp"
+#include "StateMach2.hpp"
+#include "STool.h"
+#include "BarProvider.hpp"
+#include "HKFE.hpp"
+#include "SException.hpp"
+#include "IParam.hpp"
 #include <fstream>
 #include <deque>
 #include <map>

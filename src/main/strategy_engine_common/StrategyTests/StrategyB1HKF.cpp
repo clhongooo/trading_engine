@@ -402,7 +402,7 @@ void StrategyB1_HKF::UpdateInternalData(const int iTradSym)
           MarketData::Instance()->GetLatestMidQuote(sSymbol,dMQ,ymdhms_mq);
           if (!m_SysCfg->CheckIfHalfDayTrading(sSymbol,m_ymdhms_SysTime_HKT.GetYYYYMMDD()))
           {
-            while (abs(dMQ - dClose) > NIR_EPSILON)
+            while (abs(dMQ - dClose) > EPSILON)
             {
               MarketData::Instance()->GetLatestMidQuote(sSymbol,dMQ,ymdhms_mq);
 
@@ -743,7 +743,7 @@ void StrategyB1_HKF::PreTradePreparation(const int iTradSym)
       // }
 
 
-      // if (abs(m_dStrengthCountAvgPx) < NIR_EPSILON)
+      // if (abs(m_dStrengthCountAvgPx) < EPSILON)
       // {
       //   //--------------------------------------------------
       //   // if there is no discrepancy between the futures and the underlying

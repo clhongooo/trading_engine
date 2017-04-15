@@ -1,7 +1,7 @@
 #ifndef TRENDSTREN_HPP
 #define TRENDSTREN_HPP
 
-#include "../Util/SException.h"
+#include "SException.h"
 #include "DataQue.hpp"
 #include "Sma.hpp"
 #include <vector>

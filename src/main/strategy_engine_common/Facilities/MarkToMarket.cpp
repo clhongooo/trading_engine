@@ -140,7 +140,7 @@ void MarkToMarket::Run()
     //--------------------------------------------------
     // output the sum of PnL of all strategies
     //--------------------------------------------------
-    if (abs(dOverallCPnL) > NIR_EPSILON &&
+    if (abs(dOverallCPnL) > EPSILON &&
       m_Overall_MTM_Done.find(ymdhms_MDITime.GetYYYYMMDD().ToInt()) == m_Overall_MTM_Done.end())
     {
       fsMTMLog << ymdhms_MDITime.ToStr() << "\t" << setprecision(2) << fixed << dOverallCPnL << endl;

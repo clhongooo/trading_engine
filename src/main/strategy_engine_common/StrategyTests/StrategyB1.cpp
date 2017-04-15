@@ -62,7 +62,7 @@ bool StrategyB1::TestRun(const TestRunParm & gep)
     if (ws == WS_LINEAR)
     {
       dWeight = max((double)i-(double)v_hist_forsma.size()+(double)trainingperiod,(double)0);
-      if (dWeight <= NIR_EPSILON) continue;
+      if (dWeight <= EPSILON) continue;
     }
     else if (ws == WS_UNIFORM)
     {

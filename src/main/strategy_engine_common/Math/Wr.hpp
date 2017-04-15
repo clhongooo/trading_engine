@@ -1,8 +1,8 @@
 #ifndef WR_HPP
 #define WR_HPP
 
-#include "../Util/SException.h"
-#include "../Math/DataQue.hpp"
+#include "SException.h"
+#include "DataQue.hpp"
 #include "HighLow.hpp"
 
 using namespace std;

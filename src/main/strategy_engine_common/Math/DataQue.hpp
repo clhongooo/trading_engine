@@ -1,7 +1,7 @@
 #ifndef DATAQUE_H
 #define DATAQUE_H
 
-#include "../Util/ValidityChk.h"
+#include "ValidityChk.h"
 #include <vector>
 
 using namespace std;

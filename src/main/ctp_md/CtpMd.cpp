@@ -19,12 +19,12 @@ void CtpMd::setConnectString(const string & connStr) {
   m_connection_string = connStr;
 }
 void CtpMd::init(){
-  m_p_ctp_lib_handle = dlopen("libthostmduserapi.so",RTLD_NOW);
+  m_p_ctp_lib_handle = dlopen("thostmduserapi.so",RTLD_NOW);
   if (m_p_ctp_lib_handle == NULL) {
-    m_Logger->Write(StdStreamLogger::INFO,"CTP libthostmduserapi.so loaded");
-  } else {
     m_Logger->Write(StdStreamLogger::ERROR,"CTP libthostmduserapi.so NOT loaded");
     return;
+  } else {
+    m_Logger->Write(StdStreamLogger::INFO,"CTP libthostmduserapi.so loaded");
   }
   typedef CThostFtdcMdApi* (*CreateFtdcMdApiPtr)(const char *, bool, bool);
   CreateFtdcMdApiPtr CreateFtdcMdApi = (CreateFtdcMdApiPtr)dlsym(m_p_ctp_lib_handle,"_ZN15CThostFtdcMdApi15CreateFtdcMdApiEPKcbb");

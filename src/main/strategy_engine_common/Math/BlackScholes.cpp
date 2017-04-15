@@ -64,7 +64,7 @@ double BlackScholes::ImpldVolatility(bool bIsCall, double S, double K, double r,
     dIVLB = dIVGuess;
   }
 
-  while (abs(dIVLB - dIVUB) > NIR_EPSILON)
+  while (abs(dIVLB - dIVUB) > EPSILON)
   {
     double dIVM;
     if (bFirstTime)
@@ -261,7 +261,7 @@ public static bool GetVolSmile_fromRNPDF(Hashtable htRNPDF, double dT, double dA
     double dUpper = 10;
     double dTriald2 = 0;
     double dTrialCumProb = NORMDIST(dTriald2,0,1,true);
-    while (Math.Abs(dCumProbAbvK - dTrialCumProb) > NIR_EPSILON)
+    while (Math.Abs(dCumProbAbvK - dTrialCumProb) > EPSILON)
     {
       if (dTrialCumProb > dCumProbAbvK)
       {

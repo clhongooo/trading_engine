@@ -7,8 +7,8 @@
 #include "Sma.hpp"
 #include "Atr.hpp"
 #include "SgnlPrc.h"
-#include "../Util/SException.h"
-#include "../Util/STool.h"
+#include "SException.h"
+#include "STool.h"
 
 using namespace std;
 

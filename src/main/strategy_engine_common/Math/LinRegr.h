@@ -3,7 +3,7 @@
 
 #include "PCH.h"
 #include "Constants.h"
-#include "../Util/SException.h"
+#include "SException.h"
 #include "gsl/gsl_statistics.h"
 #include "CirDataQue.hpp"
 

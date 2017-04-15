@@ -1,7 +1,7 @@
 #ifndef OPTMASTER_HPP
 #define OPTMASTER_HPP
 
-#include "../Util/ValidityChk.h"
+#include "ValidityChk.h"
 #include <map>
 
 using namespace std;

@@ -1,7 +1,7 @@
 #ifndef WMA_HPP
 #define WMA_HPP
 
-#include "../Util/SException.h"
+#include "SException.h"
 #include "DataQue.hpp"
 #include <deque>
 #include <vector>

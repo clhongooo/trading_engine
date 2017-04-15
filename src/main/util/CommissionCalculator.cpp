@@ -9,7 +9,7 @@ CommissionCalculator::~CommissionCalculator() {
 
 double CommissionCalculator::CalcCommission(const BROKER bkr, const MARKET mkt, const PRODUCT pdt, const double price, const double qty)
 {
-  if (abs(qty) < NIR_EPSILON) return 0;
+  if (abs(qty) < EPSILON) return 0;
 
   if (bkr == IB         && mkt == USSTK && pdt == SPOT) return max(min(0.005*abs(qty),0.005*abs(price*qty)),1.0);
     

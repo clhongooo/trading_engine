@@ -12,6 +12,8 @@
 #include <boost/date_time/gregorian/greg_date.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "STool.h"
+#include "Tokenizer.h"
+#include <stdexcept>
 
 using namespace std;
 using namespace boost;

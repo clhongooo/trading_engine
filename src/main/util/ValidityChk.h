@@ -20,11 +20,11 @@ class ValidityChk
 
 		//Price
 		static bool Price(double dP) {
-			if (dP != dP || dP < NIR_EPSILON) return false;
+			if (dP != dP || dP < EPSILON) return false;
 			else return true;
 		}
 		static bool Price(float fP) {
-			if (fP != fP || fP < NIR_EPSILON) return false;
+			if (fP != fP || fP < EPSILON) return false;
 			else return true;
 		}
 		static bool Price(int iP) {
@@ -64,9 +64,6 @@ class ValidityChk
 			if (iK % 100 != 0) return false;
 			return true;
 		}
-
-
-
 
 };
 

@@ -12,8 +12,6 @@
 #include "SystemState.h"
 #include "TechIndicators.h"
 #include "TechIndUpdater.h"
-// #include "VolSurfaces.h"
-// #include "HKIntradaySeasonality.h"
 #include "ThreadHealthMonitor.h"
 #include "Exchange.h"
 #include "PeriodicTask.h"

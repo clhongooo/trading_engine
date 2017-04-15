@@ -82,21 +82,21 @@ void TradingEngineMainThread::RunMainThread()
     p_CorrelMatrices->LoadCorrelMatrices(p_SysCfg->Get_CorrelMatricesPath());
     p_Logger->Write(Logger::NOTICE,"Finished loading correlation matrices."); ShortSleep();
 
-    ProbDistributionGenerator pdg;
-    pdg.SetCalcIntervalInSec(p_SysCfg->Get_ProbDistrnCalcIntervalInSec());
-    pdg.LoadTrainedFSMCData(p_SysCfg->Get_ProbDistrFileFSMC1D());
-    p_Logger->Write(Logger::NOTICE,"Finished loading FSMC data."); ShortSleep();
-    m_thread_group.add_thread(new boost::thread(&ProbDistributionGenerator::Run, &pdg));
-    p_Logger->Write(Logger::NOTICE,"Started thread: ProbDistributionGenerator"); ShortSleep();
-
-    VolSurfCalculator vsc;
-    vsc.SetCalcIntervalInSec(p_SysCfg->Get_VolSurfCalcIntervalInSec());
-    p_Logger->Write(Logger::NOTICE,"Finished loading VolSurfCalculator."); ShortSleep();
-
-    boost::shared_ptr<VolSurfaces> p_VolSurfaces;
-    p_VolSurfaces = VolSurfaces::Instance();
-    p_VolSurfaces->LoadHSIVolSurfModelParam(p_SysCfg->Get_VolSurfParamFile1FM()); 
-    p_Logger->Write(Logger::NOTICE,"Finished loading volatility surface parameters."); ShortSleep();
+    // ProbDistributionGenerator pdg;
+    // pdg.SetCalcIntervalInSec(p_SysCfg->Get_ProbDistrnCalcIntervalInSec());
+    // pdg.LoadTrainedFSMCData(p_SysCfg->Get_ProbDistrFileFSMC1D());
+    // p_Logger->Write(Logger::NOTICE,"Finished loading FSMC data."); ShortSleep();
+    // m_thread_group.add_thread(new boost::thread(&ProbDistributionGenerator::Run, &pdg));
+    // p_Logger->Write(Logger::NOTICE,"Started thread: ProbDistributionGenerator"); ShortSleep();
+    //
+    // VolSurfCalculator vsc;
+    // vsc.SetCalcIntervalInSec(p_SysCfg->Get_VolSurfCalcIntervalInSec());
+    // p_Logger->Write(Logger::NOTICE,"Finished loading VolSurfCalculator."); ShortSleep();
+    //
+    // boost::shared_ptr<VolSurfaces> p_VolSurfaces;
+    // p_VolSurfaces = VolSurfaces::Instance();
+    // p_VolSurfaces->LoadHSIVolSurfModelParam(p_SysCfg->Get_VolSurfParamFile1FM()); 
+    // p_Logger->Write(Logger::NOTICE,"Finished loading volatility surface parameters."); ShortSleep();
 
   }
   else
@@ -104,8 +104,8 @@ void TradingEngineMainThread::RunMainThread()
     p_Logger->Write(Logger::NOTICE,"HKMA not loaded."); ShortSleep();
     p_Logger->Write(Logger::NOTICE,"CorrelMatrices not loaded."); ShortSleep();
     p_Logger->Write(Logger::NOTICE,"FSMC not loaded."); ShortSleep();
-    p_Logger->Write(Logger::NOTICE,"VolSurfCalculator not loaded."); ShortSleep();
-    p_Logger->Write(Logger::NOTICE,"VolatilitySurface parameters not loaded."); ShortSleep();
+    // p_Logger->Write(Logger::NOTICE,"VolSurfCalculator not loaded."); ShortSleep();
+    // p_Logger->Write(Logger::NOTICE,"VolatilitySurface parameters not loaded."); ShortSleep();
   }
 
   //--------------------------------------------------

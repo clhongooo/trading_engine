@@ -1,7 +1,7 @@
 #ifndef SMA_HPP
 #define SMA_HPP
 
-#include "../Util/SException.h"
+#include "SException.h"
 #include "DataQue.hpp"
 #include <deque>
 

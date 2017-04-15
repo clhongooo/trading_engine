@@ -3,7 +3,7 @@
 
 #include "PCH.h"
 #include "Constants.h"
-#include "../Util/ValidityChk.h"
+#include "ValidityChk.h"
 #include "gsl/gsl_cdf.h"
 
 using namespace std;

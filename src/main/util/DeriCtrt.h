@@ -3,8 +3,8 @@
 
 #include "PCH.h"
 #include "Constants.h"
-#include "../Util/STool.h"
-#include "../Util/SDateTime.h"
+#include "STool.h"
+#include "SDateTime.h"
 
 using namespace std;
 using namespace boost;

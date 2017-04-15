@@ -1,8 +1,8 @@
 #ifndef TOKENIZER_HPP
 #define TOKENIZER_HPP
 
-#include "PCH.h"
 #include "Constants.h"
+#include <string>
 using namespace std;
 
 class Tokenizer 

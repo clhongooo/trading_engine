@@ -68,6 +68,7 @@ add_subdirectory(cme_mdp)
 add_subdirectory(mcast_recorder)
 add_subdirectory(ctp_md)
 add_subdirectory(logger)
+add_subdirectory(util)
 
 
 include_directories(${PANTHEIOS_INC}
@@ -75,6 +76,3 @@ include_directories(${PANTHEIOS_INC}
                     ${GSL_INCLUDE_DIRS}
                     ${ZeroMQ_INCLUDE_DIR}
 )
-
-
-

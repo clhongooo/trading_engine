@@ -1,14 +1,17 @@
 #ifndef STOOL_HPP
 #define STOOL_HPP
 
-#include "PCH.h"
-#include "Constants.h"
-#include "Tokenizer.h"
 #include "ValidityChk.h"
-#include "SException.h"
-
-
+#include <stdexcept>
+#include <map>
+#include <deque>
+#include <sstream>
+#include <fstream>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/lexical_cast.hpp>
 using namespace std;
+using namespace boost;
 
 class STool
 {

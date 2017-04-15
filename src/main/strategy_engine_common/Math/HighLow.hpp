@@ -2,9 +2,9 @@
 #define HIGHLOW_HPP
 
 #include <deque>
-#include "../Util/SException.h"
+#include "SException.h"
 #include "DataQue.hpp"
-#include "../Util/SLowerBound.h"
+#include "SLowerBound.h"
 
 using namespace std;
 

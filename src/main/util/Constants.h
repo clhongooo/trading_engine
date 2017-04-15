@@ -1,8 +1,6 @@
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
-#include "PCH.h"
-
 #define MAGIC_NUM_INT     7236467
 #define MAGIC_NUM         7236467
 
@@ -27,7 +25,7 @@
 
 #define ATU_INVALID_PRICE     999999
 #define UNDEFINED_CORRELATION 999
-#define NIR_EPSILON           0.000001
+#define EPSILON               0.000001
 
 #define MAX_OTIMDI   10
 

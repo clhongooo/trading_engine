@@ -8,7 +8,6 @@
 #include <boost/thread.hpp>
 #include <boost/thread/condition_variable.hpp>
 #include "ATU_Abstract_MDI.h"
-#include "Logger.h"
 #include "SDateTime.h"
 
 using namespace std;
@@ -33,11 +32,6 @@ class CorrelMatrices
     CorrelMatrices(CorrelMatrices const&);
     CorrelMatrices& operator=(CorrelMatrices const&){};
     static boost::weak_ptr<CorrelMatrices> m_pInstance;
-
-    //--------------------------------------------------
-    // System Objects
-    //--------------------------------------------------
-    boost::shared_ptr<Logger>       m_Logger;
 
     //--------------------------------------------------
     // Correl Matrices

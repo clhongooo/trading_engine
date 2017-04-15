@@ -885,7 +885,7 @@ void StrategyB3::PreTradePreparation(const int iTradSym)
         //--------------------------------------------------
         // if position is to be set to zero, do it! ignore commission impact
         //--------------------------------------------------
-        // abs(m_dAggSignedQty) > NIR_EPSILON
+        // abs(m_dAggSignedQty) > EPSILON
         abs(m_dAggSignedQty) >= 1.0
         &&
         cmsn_ratio_abs > m_SysCfg->B3_CommissionRateThreshold(m_StyID)
@@ -933,7 +933,7 @@ void StrategyB3::PreTradePreparation(const int iTradSym)
       //--------------------------------------------------
       // if position is to be set to zero, do it! ignore commission impact
       //--------------------------------------------------
-      abs(m_dAggSignedQty) < NIR_EPSILON
+      abs(m_dAggSignedQty) < EPSILON
       ||
       (
         m_B3_HasEnabledMinCommissionCheck

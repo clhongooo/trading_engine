@@ -79,9 +79,7 @@ void YYYYMMDD::Set(const string &s)
   }
   else if (vs.size() == 2)
   {
-    SException se;
-    se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
-    throw se;
+    throw std::exception();
   }
   else if (vs.size() == 3)
   {
@@ -251,19 +249,9 @@ void HHMM::Set(const string &s)
 
   Tokenizer tz(s,":");
   if (tz.NextToken()) sH = tz.GetToken();
-  else
-  {
-    SException se;
-    se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
-    throw se;
-  }
+  else throw std::exception();
   if (tz.NextToken()) sM = tz.GetToken();
-  else
-  {
-    SException se;
-    se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
-    throw se;
-  }
+  else throw std::exception();
 
   _iHM = 0;
   _iHM += boost::lexical_cast<int>(sH)*100;
@@ -846,12 +834,7 @@ bool SDateTime::IsLeapYear(int y)
 
 // void SDateTime::JulianDayNum2YMD(JulianDayNum jdn, YMD & ymd)
 // {
-// 	if (jdn <= 0)
-// 	{
-// 		SException se;
-// 		se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
-// 		throw se;
-// 	}
+// 	if (jdn <= 0) throw std::exception();
 //
 // 	// Algorithm From Wikipedia
 // 	int

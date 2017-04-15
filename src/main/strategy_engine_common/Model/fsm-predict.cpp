@@ -1,11 +1,11 @@
 // FINITE STATE MACHINE PREDICTION
 /*
-#include "../Math/StateMach2.hpp"
-#include "../Util/STool.h"
-#include "../Util/IParam.hpp"
-#include "../Util/BarProvider.hpp"
-#include "../Util/HKFE.hpp"
-#include "../Util/SException.hpp"
+#include "StateMach2.hpp"
+#include "STool.h"
+#include "IParam.hpp"
+#include "BarProvider.hpp"
+#include "HKFE.hpp"
+#include "SException.hpp"
 #include <fstream>
 #include <deque>
 #include <map>

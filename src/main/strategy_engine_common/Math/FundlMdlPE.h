@@ -3,7 +3,7 @@
 
 #include "PCH.h"
 #include "Constants.h"
-#include "../Util/STool.h"
+#include "STool.h"
 #include "gsl/gsl_randist.h"
 #include "gsl/gsl_rng.h"
 

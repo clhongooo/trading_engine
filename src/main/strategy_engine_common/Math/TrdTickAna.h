@@ -3,8 +3,8 @@
 
 #include "PCH.h"
 #include "Constants.h"
-#include "../Util/SDateTime.h"
-#include "../Util/TradeTick.h"
+#include "SDateTime.h"
+#include "TradeTick.h"
 
 using namespace std;
 

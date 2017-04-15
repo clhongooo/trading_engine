@@ -12,8 +12,6 @@
 #include "MarketData.h"
 #include "TechIndicators.h"
 #include "PortfoliosAndOrders.h"
-#include "VolSurfaces.h"
-// #include "HKIntradaySeasonality.h"
 #include "Acct.h"
 #include "SDateTime.h"
 #include "ThreadHealthMonitor.h"
@@ -76,7 +74,6 @@ class StrategyBase {
     boost::shared_ptr<HKSE>                   m_HKSE;
     boost::shared_ptr<NYSE>                   m_NYSE;
     boost::shared_ptr<CME>                    m_CME;
-    // boost::shared_ptr<HKIntradaySeasonality>  m_HKItrdSea;
     boost::shared_ptr<StyCPnLHist>            m_StyCPnLHist;
 
     //--------------------------------------------------
@@ -134,7 +131,6 @@ class StrategyBase {
     boost::shared_ptr<MarketData>           m_MarketData;
     boost::shared_ptr<TechIndicators>       m_TechInd;
     boost::shared_ptr<PortfoliosAndOrders>  m_PortAndOrders;
-    boost::shared_ptr<VolSurfaces>          m_VolSurf;
     boost::shared_ptr<SystemState>          m_SystemState;
     boost::shared_ptr<MDI_Acknowledgement>  m_MDIAck;
     boost::shared_ptr<ThreadHealthMonitor>  m_ThrdHlthMon;

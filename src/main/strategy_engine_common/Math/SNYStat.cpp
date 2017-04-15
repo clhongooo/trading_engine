@@ -216,7 +216,7 @@ double SNYStat::SemiVar0(int iQ)
 			if (dA[i] < 0) dSum += pow(dA[i], 2);
 
 		dSum /= (double)_iTargetSize;
-		if (dSum == 0) dSum = NIR_EPSILON;
+		if (dSum == 0) dSum = EPSILON;
 		_Cached_SemiVar0[iQ] = dSum;
 
 		return _Cached_SemiVar0[iQ];

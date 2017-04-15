@@ -9,8 +9,8 @@ foreach (_headerFile ${strat_eng_HEADERS})
 endforeach()
 list(REMOVE_DUPLICATES strat_eng_INC)
 
-include_directories(../include ${PANTHEIOS_INC} ${strat_eng_INC} ../atu_tcp_library ../logger)
+include_directories(../include ${PANTHEIOS_INC} ${strat_eng_INC} ../atu_tcp_library ../logger ../util)
 link_directories(/usr/local/pantheios/lib)
 
 add_executable(${PROJECT_NAME} Main.cpp)
-target_link_libraries(${PROJECT_NAME} logger strategy_engine_common atu_tcp_library ${Boost_LIBRARIES} pthread ${GSL_LIBRARIES} ${ZeroMQ_LIBRARY} pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)
+target_link_libraries(${PROJECT_NAME} logger strategy_engine_common util atu_tcp_library ${Boost_LIBRARIES} pthread ${GSL_LIBRARIES} ${ZeroMQ_LIBRARY} pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)

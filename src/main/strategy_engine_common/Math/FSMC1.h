@@ -6,8 +6,8 @@
 #include "FSMC.h"
 #include "Sma.hpp"
 #include "Wr.hpp"
-#include "../Util/SException.h"
-#include "../Util/STool.h"
+#include "SException.h"
+#include "STool.h"
 
 using namespace std;
 

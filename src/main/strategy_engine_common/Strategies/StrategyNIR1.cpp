@@ -117,11 +117,11 @@ void StrategyNIR1::PreTradePreparation(const int iTradSym)
       ||
       m_ymdhms_SysTime_HKT - ymdhms > 3600
       ||
-      abs(dMQ) < NIR_EPSILON
+      abs(dMQ) < EPSILON
       ||
-      abs(dBid) < NIR_EPSILON
+      abs(dBid) < EPSILON
       ||
-      abs(dAsk) < NIR_EPSILON
+      abs(dAsk) < EPSILON
       ||
       !STool::IsValidPriceOrVol(dBid)
       ||

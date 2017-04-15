@@ -2,6 +2,7 @@
 #define ATU_CTP_MDI_H_
 #include "ATU_Abstract_MDI.h"
 #include "StdStreamLogger.h"
+#include "STool.h"
 //#include "ATU_TCP_MDI_string_handler.h"
 #include <iostream>
 #include <map>
@@ -53,7 +54,10 @@ class CtpMd : public CThostFtdcMdSpi {
     //--------------------------------------------------
 
     void Md_api_release();
-    virtual void setConnectString(const string & connStr);
+    virtual void setConnectString(const string &);
+    virtual void setBrokerID(const int);
+    virtual void setInvestorID(const string &);
+    virtual void setPassword(const string &);
 
     int m_iRequestID;
 

@@ -12,13 +12,10 @@ boost::shared_ptr<CorrelMatrices> CorrelMatrices::Instance() {
 }
 
 CorrelMatrices::CorrelMatrices()
-{
-  m_Logger = Logger::Instance();
-}
+{}
 
 CorrelMatrices::~CorrelMatrices()
-{
-}
+{}
 
 
 string CorrelMatrices::GenerateCombinedKey(const string & symA, const string & symB)

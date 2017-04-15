@@ -10,7 +10,7 @@
 
 #include "PCH.h"
 #include "Constants.h"
-#include "../Util/SException.h"
+#include "SException.h"
 
 using namespace std;
 

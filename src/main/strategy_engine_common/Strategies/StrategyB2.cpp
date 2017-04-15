@@ -51,7 +51,7 @@ double StrategyB2::CalcPredictionTaylorTrdAtClose(const vector<double> & v_hist_
   double dFirBeta = (v_hist_trfpx[idx] > v_hist_trfpx[idx-1] ? beta_1 : beta_2);
   double dSecBeta = (v_hist_trfpx[idx] > v_hist_trfpx[idx-1] ? beta_3 : beta_4);
 
-  if (abs(dFirBeta) <= NIR_EPSILON && abs(dSecBeta) <= NIR_EPSILON) return NAN;
+  if (abs(dFirBeta) <= EPSILON && abs(dSecBeta) <= EPSILON) return NAN;
 
   double dTaylor1 = 0;
   double dTaylor2 = 0;
@@ -63,8 +63,8 @@ double StrategyB2::CalcPredictionTaylorTrdAtClose(const vector<double> & v_hist_
     //--------------------------------------------------
     // avoid multiplying zero betas
     //--------------------------------------------------
-    if (abs(dFirBeta) > NIR_EPSILON) dTaylor1 = dFirBeta * (v_hist_trfpx[idx] - v_hist_trfpx[idx-1]);
-    if (abs(dSecBeta) > NIR_EPSILON) dTaylor2 = dSecBeta * (v_hist_trfpx[idx] - 2 * v_hist_trfpx[idx-1] + v_hist_trfpx[idx-2]);
+    if (abs(dFirBeta) > EPSILON) dTaylor1 = dFirBeta * (v_hist_trfpx[idx] - v_hist_trfpx[idx-1]);
+    if (abs(dSecBeta) > EPSILON) dTaylor2 = dSecBeta * (v_hist_trfpx[idx] - 2 * v_hist_trfpx[idx-1] + v_hist_trfpx[idx-2]);
 
     return v_hist_trfpx[idx] + dTaylor1 + dTaylor2;
   }
@@ -75,8 +75,8 @@ double StrategyB2::CalcPredictionTaylorTrdAtClose(const vector<double> & v_hist_
     //--------------------------------------------------
     // avoid multiplying zero betas
     //--------------------------------------------------
-    if (abs(dFirBeta) > NIR_EPSILON) dTaylor1 = dFirBeta * (v_hist_trfpx[idx] - v_hist_trfpx[idx-2]);
-    if (abs(dSecBeta) > NIR_EPSILON) dTaylor2 = dSecBeta * (v_hist_trfpx[idx] - 2 * v_hist_trfpx[idx-1] + v_hist_trfpx[idx-2]);
+    if (abs(dFirBeta) > EPSILON) dTaylor1 = dFirBeta * (v_hist_trfpx[idx] - v_hist_trfpx[idx-2]);
+    if (abs(dSecBeta) > EPSILON) dTaylor2 = dSecBeta * (v_hist_trfpx[idx] - 2 * v_hist_trfpx[idx-1] + v_hist_trfpx[idx-2]);
 
     return v_hist_trfpx[idx] + dTaylor1 + dTaylor2;
   }
@@ -132,7 +132,7 @@ bool StrategyB2::GetEstimate(
     if (ws == WS_LINEAR)
     {
       dWeight = max((double)i-(double)(iEndingIdx+1)+(double)trainingperiod,(double)0);
-      if (dWeight <= NIR_EPSILON) continue;
+      if (dWeight <= EPSILON) continue;
     }
     else if (ws == WS_UNIFORM)
     {
@@ -1809,11 +1809,11 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
             const int iTotCnt = iCnt;
             for (int i = 0; i < iTotCnt; ++i)
             {
-              if (vdEstimate[i] > NIR_EPSILON)
+              if (vdEstimate[i] > EPSILON)
               {
                 dStrengthCount += 1;
               }
-              else if (vdEstimate[i] < -NIR_EPSILON)
+              else if (vdEstimate[i] < - EPSILON)
               {
                 dStrengthCount -= 1;
               }
@@ -2925,7 +2925,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
         //--------------------------------------------------
         // if position is to be set to zero, do it! ignore commission impact
         //--------------------------------------------------
-        // abs(m_dAggSignedQty) > NIR_EPSILON
+        // abs(m_dAggSignedQty) > EPSILON
         abs(m_dAggSignedQty) >= 1.0
         &&
         cmsn_ratio_abs > m_SysCfg->B2_CommissionRateThreshold(m_StyID)
@@ -2973,7 +2973,7 @@ void StrategyB2::PreTradePreparation(const int iTradSym)
       //--------------------------------------------------
       // if position is to be set to zero, do it! ignore commission impact
       //--------------------------------------------------
-      abs(m_dAggSignedQty) < NIR_EPSILON
+      abs(m_dAggSignedQty) < EPSILON
       ||
       (
         m_B2_HasEnabledMinCommissionCheck

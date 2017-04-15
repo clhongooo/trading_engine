@@ -263,8 +263,8 @@ bool CPnLHist::ProduceWinLossSeries(const int iPeriod, vector<double> & vWin, ve
     it--;
     double dPnL = dLastCPnL - it->second.m_cpnl;
 
-    if      (dPnL >  NIR_EPSILON) vWin.push_back(dPnL);
-    else if (dPnL < -NIR_EPSILON) vLoss.push_back(dPnL);
+    if      (dPnL >  EPSILON) vWin.push_back(dPnL);
+    else if (dPnL < -EPSILON) vLoss.push_back(dPnL);
 
     dLastCPnL = it->second.m_cpnl;
 

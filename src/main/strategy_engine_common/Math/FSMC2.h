@@ -7,7 +7,7 @@
 #include "Sma.hpp"
 #include "Atr.hpp"
 #include "SgnlPrc.h"
-#include "../Util/STool.h"
+#include "STool.h"
 
 using namespace std;
 

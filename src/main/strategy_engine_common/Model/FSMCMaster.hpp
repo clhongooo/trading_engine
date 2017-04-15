@@ -2,12 +2,12 @@
 #define FSMCMASTER_HPP
 
 #include "ModelSys.hpp"
-#include "../Math/Atr.hpp"
-#include "../Util/SException.hpp"
-#include "../Util/STool.h"
-#include "../Math/FSMC2.hpp"
-#include "../Util/BarProvider.hpp"
-#include "../Util/SException.hpp"
+#include "Atr.hpp"
+#include "SException.hpp"
+#include "STool.h"
+#include "FSMC2.hpp"
+#include "BarProvider.hpp"
+#include "SException.hpp"
 #include <deque>
 #include <map>
 #include <string>
