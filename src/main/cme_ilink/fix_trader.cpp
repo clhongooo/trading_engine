@@ -100,7 +100,9 @@ void FixTrader::fromApp(const FIX::Message& message,
     last_msg_seq_num_ = last_msg_seq_num.getValue();
     // FIX::PosReqType pos_req_type;
     message.getHeader().getField(msg_type);
-    if (msg_type == FIX::MsgType_XMLnonFIX) {
+    const char MsgType_XML_MESSAGE[] = "n";
+    // if (msg_type == FIX::MsgType_XMLnonFIX)
+    if (msg_type == MsgType_XML_MESSAGE) {
       onXmlNonFix(message, sessionID);
       return;
     } else if (msg_type == FIX::MsgType_OrderMassActionReport) {

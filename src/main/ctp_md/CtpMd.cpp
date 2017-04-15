@@ -25,23 +25,19 @@ class CtpMd : public CThostFtdcMdSpi{
     virtual bool on_process_subscription(const ATU_MDI_subscription_struct &s);
     virtual void detach();
 
+    //--------------------------------------------------
+    // CTP
+    //--------------------------------------------------
     virtual void OnRspError(CThostFtdcRspInfoField* pRspInfo,int nRequestID, bool bIsLast);
-
     virtual void OnFrontDisconnected(int nReason);
-
     virtual void OnHeartBeatWarning(int nTimeLapse);
-
     virtual void OnFrontConnected();
-
     virtual void ReqUserLogin();
-
     virtual void OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast);
-
     virtual int SubscribeMarketData(char *ppInstrumentID[], int nCount);
-
     virtual void OnRspSubMarketData(CThostFtdcSpecificInstrumentField* pSpecificInstrument, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast);
-
     virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData);
+    //--------------------------------------------------
 
     void Md_api_release();
 
@@ -53,8 +49,8 @@ class CtpMd : public CThostFtdcMdSpi{
     void *m_ctp_lib_handle;
     boost::thread *m_init_and_run_thread;
 
-    CThostFtdcMdApi *pMdApi;
-    char m_server_address[300];
+    boost::scoped_ptr<CThostFtdcMdApi> m_pMdApi;
+    string m_server_address;
     TThostFtdcBrokerIDType m_broker_id;
     TThostFtdcInvestorIDType m_investor_id;
     TThostFtdcPasswordType m_password;
@@ -89,14 +85,14 @@ using namespace boost::filesystem;
 using namespace boost::interprocess;
 
 
-CtpMd::CtpMd() {
-  strcpy(m_server_address,"tcp://222.66.166.147:41214");
+CtpMd::CtpMd() : m_server_address("") {
   m_subscribedSymbols.clear();
 }
 void CtpMd::detach(){
   m_init_and_run_thread=new boost::thread(boost::bind(&CtpMd::init,this));
 }
 void CtpMd::setConnectString(string address) {
+  // tcp://222.66.166.147:41214
   strcpy(m_server_address,address.c_str());
 }
 void CtpMd::init(){
@@ -109,17 +105,17 @@ void CtpMd::init(){
   typedef CThostFtdcMdApi* (*CreateFtdcMdApiPtr)(const char *, bool, bool);
   CreateFtdcMdApiPtr CreateFtdcMdApi= (CreateFtdcMdApiPtr)dlsym(m_ctp_lib_handle,"_ZN15CThostFtdcMdApi15CreateFtdcMdApiEPKcbb");
 
-  pMdApi=CreateFtdcMdApi("",true,true);
+  m_pMdApi=CreateFtdcMdApi("",true,true);
 
   //	    strcpy(m_server_address,"tcp://180.166.165.179:41213");
   //		strcpy(m_broker_id,"1013");
   //		strcpy(m_investor_id,"00000062");
   //		strcpy(m_password,"834591");
-  pMdApi->RegisterSpi((CThostFtdcMdSpi*) this);
-  pMdApi->RegisterFront(m_server_address);
-  pMdApi->Init();
-  if (pMdApi!=NULL) {
-    pMdApi->Join();
+  m_pMdApi->RegisterSpi((CThostFtdcMdSpi*) this);
+  m_pMdApi->RegisterFront(m_server_address);
+  m_pMdApi->Init();
+  if (m_pMdApi!=NULL) {
+    m_pMdApi->Join();
   }
 }
 
@@ -138,7 +134,7 @@ void CtpMd::ReqUserLogin(){
   strcpy(req.BrokerID, m_broker_id);
   strcpy(req.UserID, m_investor_id);
   strcpy(req.Password, m_password);
-  int iResult = pMdApi->ReqUserLogin(&req, ++m_iRequestID);
+  int iResult = m_pMdApi->ReqUserLogin(&req, ++m_iRequestID);
   addLog(__LOGSOURCE__,ATU_logfeed_struct::CRITICAL,"User Login is %s","s",(iResult == 0) ? "OK" : "Fail");
 
   for(set<string>::iterator iter = m_subscribedSymbols.begin(); iter != m_subscribedSymbols.end(); iter++){
@@ -170,7 +166,6 @@ void CtpMd::OnFrontDisconnected(int nReason){
 }
 
 void CtpMd::OnHeartBeatWarning(int nTimeLapse){
-
 }
 
 void CtpMd::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast){
@@ -196,7 +191,7 @@ int CtpMd::SubscribeMarketData(char *ppInstrumentID[], int nCount){
   for(int i = 0 ; i < nCount; i++) {
     addLog(__LOGSOURCE__,ATU_logfeed_struct::INFO,"Subscribe %s.","s",ppInstrumentID[i]);
   }
-  int ret = pMdApi->SubscribeMarketData(ppInstrumentID, nCount);
+  int ret = m_pMdApi->SubscribeMarketData(ppInstrumentID, nCount);
   return ret;
 }
 
@@ -250,10 +245,10 @@ bool CtpMd::notify_marketfeed(const ATU_MDI_marketfeed_struct &s){
 }
 
 void CtpMd::Md_api_release(){
-  if (pMdApi != NULL) {
-    pMdApi->RegisterSpi(NULL);
-    pMdApi->Release();
-    pMdApi = NULL;
+  if (m_pMdApi != NULL) {
+    m_pMdApi->RegisterSpi(NULL);
+    m_pMdApi->Release();
+    m_pMdApi.reset(NULL);
   }
 }
 
