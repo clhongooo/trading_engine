@@ -1,7 +1,5 @@
 #ifndef _CONFIGMGR_H_
 #define _CONFIGMGR_H_
-#include "PCH.h"
-#include "Constants.h"
 #include "boost/algorithm/string.hpp"
 
 /*

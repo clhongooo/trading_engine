@@ -11,20 +11,34 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 
+#include "CtpMd.h"
+
 using namespace std;
 using namespace boost;
 
 void ReadConfig(const string & sConfigPath)
 {
-  cout << "Reading Config file: " << sConfigPath << endl;
-
+  boost::shared_ptr<StdStreamLogger> m_Logger = StdStreamLogger::Instance();
   boost::property_tree::ptree pt;
   boost::property_tree::ini_parser::read_ini(sConfigPath, pt);
 
+  string sLogLevel = pt.get<std::string>("General.LogLevel");
+  if      (sLogLevel == "EMERGENCY") { m_Logger->SetLogLevel(StdStreamLogger::EMERGENCY); }
+  else if (sLogLevel == "ALERT")     { m_Logger->SetLogLevel(StdStreamLogger::ALERT);     }
+  else if (sLogLevel == "CRITICAL")  { m_Logger->SetLogLevel(StdStreamLogger::CRITICAL);  }
+  else if (sLogLevel == "ERROR")     { m_Logger->SetLogLevel(StdStreamLogger::ERROR);     }
+  else if (sLogLevel == "WARNING")   { m_Logger->SetLogLevel(StdStreamLogger::WARNING);   }
+  else if (sLogLevel == "NOTICE")    { m_Logger->SetLogLevel(StdStreamLogger::NOTICE);    }
+  else if (sLogLevel == "INFO")      { m_Logger->SetLogLevel(StdStreamLogger::INFO);      }
+  else if (sLogLevel == "DEBUG")     { m_Logger->SetLogLevel(StdStreamLogger::DEBUG);     }
+
+  m_Logger->Write(StdStreamLogger::INFO,"Reading Config file: %s", sConfigPath.c_str());
+  m_Logger->Write(StdStreamLogger::INFO,"LogLevel: %s", sLogLevel.c_str());
+
   string sDataFolder = pt.get<std::string>("General.DataFolder");
-  cout << "DataFolder: " << sDataFolder << endl;
+  m_Logger->Write(StdStreamLogger::INFO,"DataFolder: %s", sDataFolder.c_str());
   string sThostLibFolder = pt.get<std::string>("General.ThostLibFolder");
-  cout << "ThostLibFolder: " << sThostLibFolder << endl;
+  m_Logger->Write(StdStreamLogger::INFO,"ThostLibFolder: %s", sThostLibFolder.c_str());
 }
 
 int main(int argc, const char *argv[])
@@ -36,6 +50,11 @@ int main(int argc, const char *argv[])
   }
 
   ReadConfig(argv[1]);
+
+  CtpMd ctpmd;
+  ctpmd.detach();
+
+  sleep(10000);
 
   return 0;
 }

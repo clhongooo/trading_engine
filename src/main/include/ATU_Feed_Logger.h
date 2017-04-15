@@ -7,8 +7,6 @@
 
 #ifndef ATU_FEED_LOGGER_H_
 #define ATU_FEED_LOGGER_H_
-#include "PCH.h"
-#include "Constants.h"
 #include "ATU_Timer.h"
 #include "LogStream.h"
 #include <queue>

@@ -1,7 +1,5 @@
 #ifndef _ATU_ABSTRACT_OTI_H_
 #define _ATU_ABSTRACT_OTI_H_
-#include "PCH.h"
-#include "Constants.h"
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include "ATU_ErrorMsgStruct.h"

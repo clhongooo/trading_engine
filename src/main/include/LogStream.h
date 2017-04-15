@@ -1,7 +1,5 @@
 #ifndef _LOGSTREAM_H_
 #define _LOGSTREAM_H_
-#include "PCH.h"
-#include "Constants.h"
 using namespace std;
 
 

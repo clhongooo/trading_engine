@@ -9,8 +9,6 @@
 #define JSONCONTRACTREADER_H_
 
 
-#include "PCH.h"
-#include "Constants.h"
 #include "ContractReaderAdaptor.h"
 
 namespace atu {

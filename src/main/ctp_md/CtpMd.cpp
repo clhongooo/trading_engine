@@ -1,130 +1,49 @@
-#ifndef ATU_CTP_MDI_H_
-#define ATU_CTP_MDI_H_
-#include "ATU_Abstract_MDI.h"
-//#include "ATU_TCP_MDI_string_handler.h"
-#include <iostream>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-#include <boost/thread/recursive_mutex.hpp>
-#include "ATU_ErrorMsgStruct.h"
-#include <map>
-#include <dlfcn.h>
-#include <boost/thread.hpp>
-#include <boost/algorithm/string.hpp>
-using namespace std;
-#include "ThostFtdcMdApi.h"
-
-class CtpMd : public CThostFtdcMdSpi{
-  public:
-    CtpMd();
-    virtual void init();
-    virtual ~CtpMd();
-
-
-    virtual bool notify_marketfeed(const ATU_MDI_marketfeed_struct &s);
-    virtual bool on_process_subscription(const ATU_MDI_subscription_struct &s);
-    virtual void detach();
-
-    //--------------------------------------------------
-    // CTP
-    //--------------------------------------------------
-    virtual void OnRspError(CThostFtdcRspInfoField* pRspInfo,int nRequestID, bool bIsLast);
-    virtual void OnFrontDisconnected(int nReason);
-    virtual void OnHeartBeatWarning(int nTimeLapse);
-    virtual void OnFrontConnected();
-    virtual void ReqUserLogin();
-    virtual void OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast);
-    virtual int SubscribeMarketData(char *ppInstrumentID[], int nCount);
-    virtual void OnRspSubMarketData(CThostFtdcSpecificInstrumentField* pSpecificInstrument, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast);
-    virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData);
-    //--------------------------------------------------
-
-    void Md_api_release();
-
-    virtual void setConnectString(string address);
-
-    int m_iRequestID;
-
-  private:
-    void *m_ctp_lib_handle;
-    boost::thread *m_init_and_run_thread;
-
-    boost::scoped_ptr<CThostFtdcMdApi> m_pMdApi;
-    string m_server_address;
-    TThostFtdcBrokerIDType m_broker_id;
-    TThostFtdcInvestorIDType m_investor_id;
-    TThostFtdcPasswordType m_password;
-    TThostFtdcFrontIDType m_front_id;
-    TThostFtdcSessionIDType m_session_id;
-    bool IsErrorRspInfo(CThostFtdcRspInfoField* pRspInfo);
-
-    //--------------------------------------------------
-    set<string> m_subscribedSymbols;
-
-};
-
-#endif
-
-
-
 #include "CtpMd.h"
-#include <iostream>
-#include <iomanip>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-using namespace std;
-#include <boost/interprocess/file_mapping.hpp>
-#include <boost/interprocess/mapped_region.hpp>
-#include <boost/interprocess/sync/sharable_lock.hpp>
-#include <boost/interprocess/sync/file_lock.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/lexical_cast.hpp>
-using namespace boost::filesystem;
-using namespace boost::interprocess;
 
+CtpMd::CtpMd() : m_connection_string("") {
+  m_Logger = StdStreamLogger::Instance();
 
-CtpMd::CtpMd() : m_server_address("") {
-  m_subscribedSymbols.clear();
-}
-void CtpMd::detach(){
-  m_init_and_run_thread=new boost::thread(boost::bind(&CtpMd::init,this));
-}
-void CtpMd::setConnectString(string address) {
-  // tcp://222.66.166.147:41214
-  strcpy(m_server_address,address.c_str());
-}
-void CtpMd::init(){
-  m_ctp_lib_handle=dlopen("libthostmduserapi.so",RTLD_NOW);
-  if (m_ctp_lib_handle!=NULL) {
-    addLog(__LOGSOURCE__,ATU_logfeed_struct::INFO,"CTP mdapi loaded","");
-  } else {
-    addLog(__LOGSOURCE__,ATU_logfeed_struct::ERROR,"CTP mdapi NOT loaded","");
-  }
-  typedef CThostFtdcMdApi* (*CreateFtdcMdApiPtr)(const char *, bool, bool);
-  CreateFtdcMdApiPtr CreateFtdcMdApi= (CreateFtdcMdApiPtr)dlsym(m_ctp_lib_handle,"_ZN15CThostFtdcMdApi15CreateFtdcMdApiEPKcbb");
-
-  m_pMdApi=CreateFtdcMdApi("",true,true);
-
-  //	    strcpy(m_server_address,"tcp://180.166.165.179:41213");
+  //--------------------------------------------------
+  // from config
+  //--------------------------------------------------
+  //	  strcpy(m_connection_string,"tcp://180.166.165.179:41213");
   //		strcpy(m_broker_id,"1013");
   //		strcpy(m_investor_id,"00000062");
   //		strcpy(m_password,"834591");
+  m_subscribedSymbols.clear();
+}
+void CtpMd::detach(){
+  m_p_init_and_run_thread.reset(new boost::thread(boost::bind(&CtpMd::init,this)));
+}
+void CtpMd::setConnectString(const string & connStr) {
+  m_connection_string = connStr;
+}
+void CtpMd::init(){
+  m_p_ctp_lib_handle = dlopen("libthostmduserapi.so",RTLD_NOW);
+  if (m_p_ctp_lib_handle == NULL) {
+    m_Logger->Write(StdStreamLogger::INFO,"CTP libthostmduserapi.so loaded");
+  } else {
+    m_Logger->Write(StdStreamLogger::ERROR,"CTP libthostmduserapi.so NOT loaded");
+    return;
+  }
+  typedef CThostFtdcMdApi* (*CreateFtdcMdApiPtr)(const char *, bool, bool);
+  CreateFtdcMdApiPtr CreateFtdcMdApi = (CreateFtdcMdApiPtr)dlsym(m_p_ctp_lib_handle,"_ZN15CThostFtdcMdApi15CreateFtdcMdApiEPKcbb");
+
+  m_pMdApi = CreateFtdcMdApi("",true,true);
   m_pMdApi->RegisterSpi((CThostFtdcMdSpi*) this);
-  m_pMdApi->RegisterFront(m_server_address);
+
+  char m_connection_string_2[64];
+  strcpy(m_connection_string_2, m_connection_string.c_str());
+
+  m_pMdApi->RegisterFront(m_connection_string_2);
   m_pMdApi->Init();
   if (m_pMdApi!=NULL) {
     m_pMdApi->Join();
   }
 }
 
-CtpMd::~CtpMd(){
-
-}
-
 void CtpMd::OnFrontConnected() {
-  addLog(__LOGSOURCE__,ATU_logfeed_struct::INFO,"Front is connected","");
+  m_Logger->Write(StdStreamLogger::INFO,"Front is connected");
   ReqUserLogin();
 }
 
@@ -135,7 +54,7 @@ void CtpMd::ReqUserLogin(){
   strcpy(req.UserID, m_investor_id);
   strcpy(req.Password, m_password);
   int iResult = m_pMdApi->ReqUserLogin(&req, ++m_iRequestID);
-  addLog(__LOGSOURCE__,ATU_logfeed_struct::CRITICAL,"User Login is %s","s",(iResult == 0) ? "OK" : "Fail");
+  m_Logger->Write(StdStreamLogger::CRITICAL,"User Login is %s",(iResult == 0) ? "OK" : "Fail");
 
   for(set<string>::iterator iter = m_subscribedSymbols.begin(); iter != m_subscribedSymbols.end(); iter++){
     char * _ppInstrumentID[2000]; int nCount = 0;
@@ -147,22 +66,13 @@ void CtpMd::ReqUserLogin(){
 
 }
 
-bool CtpMd::IsErrorRspInfo(CThostFtdcRspInfoField* pRspInfo)
-{
-  bool bResult = ((pRspInfo) && (pRspInfo->ErrorID != 0));
-  if (bResult)
-    addLog(__LOGSOURCE__,ATU_logfeed_struct::ERROR,"ErrorID=%s, ErrorMsg=%s","ss",pRspInfo->ErrorID,pRspInfo->ErrorMsg);
-  return bResult;
-}
-
-void CtpMd::OnRspError(CThostFtdcRspInfoField* pRspInfo,
-                       int nRequestID, bool bIsLast){
-  addLog(__LOGSOURCE__,ATU_logfeed_struct::ALERT,"Error is Found!","");
-  IsErrorRspInfo(pRspInfo);
+void CtpMd::OnRspError(CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast){
+  if ((pRspInfo) && (pRspInfo->ErrorID != 0))
+    m_Logger->Write(StdStreamLogger::ERROR,"ErrorID=%s, ErrorMsg=%s",pRspInfo->ErrorID,pRspInfo->ErrorMsg);
 }
 
 void CtpMd::OnFrontDisconnected(int nReason){
-  addLog(__LOGSOURCE__,ATU_logfeed_struct::EMERGENCY,"Front is disconnected!","");
+  m_Logger->Write(StdStreamLogger::EMERGENCY,"Front is disconnected!");
 }
 
 void CtpMd::OnHeartBeatWarning(int nTimeLapse){
@@ -189,7 +99,7 @@ bool CtpMd::on_process_subscription(const ATU_MDI_subscription_struct &s) {
 
 int CtpMd::SubscribeMarketData(char *ppInstrumentID[], int nCount){
   for(int i = 0 ; i < nCount; i++) {
-    addLog(__LOGSOURCE__,ATU_logfeed_struct::INFO,"Subscribe %s.","s",ppInstrumentID[i]);
+    m_Logger->Write(StdStreamLogger::INFO,"Subscribe %s.",ppInstrumentID[i]);
   }
   int ret = m_pMdApi->SubscribeMarketData(ppInstrumentID, nCount);
   return ret;
@@ -236,19 +146,12 @@ void CtpMd::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketDat
   notify_marketfeed(mf);
 }
 
-bool CtpMd::notify_marketfeed(const ATU_MDI_marketfeed_struct &s){
-  if (m_marketfeed_call_back_func!=NULL) {
-    return (*m_marketfeed_call_back_func)(s);
-  } else {
-    return false;
-  }
+void CtpMd::notify_marketfeed(const ATU_MDI_marketfeed_struct &s){
 }
-
 void CtpMd::Md_api_release(){
   if (m_pMdApi != NULL) {
     m_pMdApi->RegisterSpi(NULL);
     m_pMdApi->Release();
-    m_pMdApi.reset(NULL);
+    m_pMdApi = NULL;
   }
 }
-

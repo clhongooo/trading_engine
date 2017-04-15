@@ -1,8 +1,6 @@
 #ifndef ATU_ABSTRACT_MDI_H_
 #define ATU_ABSTRACT_MDI_H_
 
-#include "PCH.h"
-#include "Constants.h"
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include "ATU_ErrorMsgStruct.h"

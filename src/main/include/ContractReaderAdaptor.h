@@ -8,8 +8,6 @@
 #ifndef CONTRACTREADERADAPTOR_H_
 #define CONTRACTREADERADAPTOR_H_
 
-#include "PCH.h"
-#include "Constants.h"
 #include "AtuContract.h"
 
 namespace atu {

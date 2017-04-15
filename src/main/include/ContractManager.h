@@ -8,8 +8,6 @@
 #ifndef CONTRACTMANAGER_H_
 #define CONTRACTMANAGER_H_
 
-#include "PCH.h"
-#include "Constants.h"
 #include "AtuContract.h"
 #include "ContractReaderAdaptor.h"
 

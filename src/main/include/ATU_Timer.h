@@ -1,7 +1,5 @@
 #ifndef _ATU_TIMER_H_
 #define _ATU_TIMER_H_
-#include "PCH.h"
-#include "Constants.h"
 //#include "config.h"
 #include <cc++/socket.h>
 #include <sys/shm.h>

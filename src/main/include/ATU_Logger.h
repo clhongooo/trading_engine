@@ -1,7 +1,5 @@
 #ifndef _ATU_LOGGER_H_
 #define _ATU_LOGGER_H_
-#include "PCH.h"
-#include "Constants.h"
 //#include "config.h"
 #include "ATU_Timer.h"
 #include "LogStream.h"

@@ -8,8 +8,6 @@
 #ifndef ATUCONTRACT_H_
 #define ATUCONTRACT_H_
 
-#include "PCH.h"
-#include "Constants.h"
 #include <tr1/unordered_map>
 
 using std::vector;

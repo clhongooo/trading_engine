@@ -2,8 +2,6 @@
 #define _ATU_ERRORMSGSTRUCT_H_
 
 //using namespace atu;
-#include "PCH.h"
-#include "Constants.h"
 #include <boost/function.hpp>
 using namespace std;
 namespace atu {
