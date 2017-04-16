@@ -2,7 +2,6 @@
 #define _ATU_ABSTRACT_OTI_H_
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
-#include "ATU_ErrorMsgStruct.h"
 #include "ATU_Abstract_MDI.h"
 #include "ATU_Logger.h"
 using namespace std;

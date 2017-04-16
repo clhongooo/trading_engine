@@ -7,6 +7,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include <boost/thread.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
@@ -35,34 +36,28 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd)
   m_Logger->Write(StdStreamLogger::INFO,"Reading Config file: %s", sConfigPath.c_str());
   m_Logger->Write(StdStreamLogger::INFO,"LogLevel: %s", sLogLevel.c_str());
 
-  string sDataFolder = pt.get<std::string>("General.DataFolder");
-  m_Logger->Write(StdStreamLogger::INFO,"DataFolder: %s", sDataFolder.c_str());
-  string sThostLibFolder = pt.get<std::string>("General.ThostLibFolder");
-  m_Logger->Write(StdStreamLogger::INFO,"ThostLibFolder: %s", sThostLibFolder.c_str());
-
-
-    // p_ctpmd->setConnectString(const string &);
-    // p_ctpmd->setBrokerID(const int);
-    // p_ctpmd->setInvestorID(const string &);
-    // p_ctpmd->setPassword(const string &);
-
-
+  p_ctpmd->setDataFolder(STool::Trim(pt.get<std::string>("General.DataFolder")));
+  p_ctpmd->setDataMode(STool::Trim(pt.get<std::string>("General.DataMode")));
+  p_ctpmd->setWriteDataToFile(STool::Trim(pt.get<std::string>("General.WriteDataToFile")));
+  p_ctpmd->setConnectString(STool::Trim(pt.get<std::string>("General.ConnectionString")));
+  p_ctpmd->setBrokerID(STool::Trim(pt.get<std::string>("General.BrokerID")));
+  p_ctpmd->setInvestorID(STool::Trim(pt.get<std::string>("General.InvestorID")));
+  p_ctpmd->setPassword(pt.get<std::string>("General.Password"));
 }
 
 int main(int argc, const char *argv[])
 {
   if (argc != 2)
   {
-    cout << "Usage: " << argv[0] << " [config_file]" << endl << flush;
+    cerr << "Usage: " << argv[0] << " [config_file]" << endl << flush;
     return 0;
   }
 
-  boost::shared_ptr<CtpMd> p_ctpmd;
+  boost::shared_ptr<CtpMd> p_ctpmd(new CtpMd());
   ReadConfig(argv[1],p_ctpmd);
 
-  p_ctpmd->detach();
-
-  sleep(10000);
+  boost::scoped_ptr<boost::thread> m_p_init_and_run_thread(new boost::thread(boost::bind(&CtpMd::run,p_ctpmd.get())));
+  m_p_init_and_run_thread->join();
 
   return 0;
 }

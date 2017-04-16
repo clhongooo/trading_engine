@@ -3,20 +3,21 @@
 #include "ATU_Abstract_MDI.h"
 #include "StdStreamLogger.h"
 #include "STool.h"
-//#include "ATU_TCP_MDI_string_handler.h"
 #include <iostream>
 #include <map>
+#include <set>
 #include <dlfcn.h>
 #include <iomanip>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <algorithm>
+#include <boost/algorithm/string.hpp>
 using namespace std;
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
-#include <boost/thread.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
@@ -31,13 +32,13 @@ using namespace boost::interprocess;
 
 class CtpMd : public CThostFtdcMdSpi {
   public:
+    enum DataMode {DM_BINARY=0,DM_CSV};
     CtpMd();
-    virtual void init();
+    virtual void run();
     virtual ~CtpMd(){}
 
     void notify_marketfeed(const ATU_MDI_marketfeed_struct &);
     virtual bool on_process_subscription(const ATU_MDI_subscription_struct &s);
-    virtual void detach();
 
     //--------------------------------------------------
     // CTP
@@ -54,25 +55,30 @@ class CtpMd : public CThostFtdcMdSpi {
     //--------------------------------------------------
 
     void Md_api_release();
+    virtual void setDataFolder(const string &);
+    virtual void setDataMode(const string &);
+    virtual void setWriteDataToFile(const string &);
     virtual void setConnectString(const string &);
-    virtual void setBrokerID(const int);
+    virtual void setBrokerID(const string &);
     virtual void setInvestorID(const string &);
     virtual void setPassword(const string &);
 
     int m_iRequestID;
 
   private:
-    boost::scoped_ptr<boost::thread>   m_p_init_and_run_thread;
     CThostFtdcMdApi* m_pMdApi;
 
     void*  m_p_ctp_lib_handle;
 
+    string                   m_DataFolder;
+    DataMode                 m_DataMode;
+    bool                     m_WriteDataToFile;
     string                   m_connection_string;
     TThostFtdcBrokerIDType   m_broker_id;
     TThostFtdcInvestorIDType m_investor_id;
     TThostFtdcPasswordType   m_password;
-    TThostFtdcFrontIDType    m_front_id;
     TThostFtdcSessionIDType  m_session_id;
+    // TThostFtdcFrontIDType    m_front_id;
     set<string>              m_subscribedSymbols;
 
     boost::shared_ptr<StdStreamLogger> m_Logger;

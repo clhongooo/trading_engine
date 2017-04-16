@@ -84,10 +84,11 @@ void MDIDataReceiver::OnRecvMsgCSV(string strMDI)
   }
 
   //--------------------------------------------------
-  vector<string> vMDI;
-
-  if (!ParseMDIString(strMDI,vMDI))
+  ATU_MDI_marketfeed_struct structMDI;
+  if (!ATU_MDI_marketfeed_struct::ParseMDIString(strMDI,structMDI))
   {
+    m_Logger->Write(Logger::DEBUG,"MarketData: Discarded marketdata with incorrect format. Received MD: %s",strMDI.c_str());
+
     if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK ||
         m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
     {
@@ -97,8 +98,6 @@ void MDIDataReceiver::OnRecvMsgCSV(string strMDI)
   }
   else
   {
-    ATU_MDI_marketfeed_struct structMDI;
-    ConvertTo_ATU_MDI_marketfeed_struct(vMDI,structMDI);
     if (m_MarketData->UpdateMarketData(structMDI))
     {
       if (m_SysCfg->Get_MDIMode() == SystemConfig::MDI_TCPWITHACK || m_SysCfg->Get_MDIMode() == SystemConfig::MDI_READFILE)
@@ -224,47 +223,3 @@ void MDIDataReceiver::BatchMktFeedSubscription(const vector<string>& symbols, co
   m_Logger->Write(Logger::INFO, "BatchMktFeedSubscription: Finished subscribing to marketfeed. (id=%d)", m_Aggregator_Identity);
   return;
 }
-
-//--------------------------------------------------
-bool MDIDataReceiver::ParseMDIString(const string & sMD, vector<string> & vMDI)
-{
-  vMDI.clear();
-  boost::split(vMDI, sMD, boost::is_any_of(","));
-
-  //--------------------------------------------------
-  // 1 for time stamp
-  // 1 for feed code
-  // 2 for trade price and volume
-  // 11 for bid queue
-  // 11 for ask queue
-  //--------------------------------------------------
-  if (vMDI.size() != 26 &&
-      vMDI.size() != 4)
-  {
-    m_Logger->Write(Logger::DEBUG,"MarketData: Discarded marketdata with incorrect length. Received MD: %s",sMD.c_str());
-    return false;
-  }
-
-  if (vMDI[1] == "acknowledgement")
-  {
-    m_Logger->Write(Logger::NOTICE,"MarketData: MDI gave us an acknowledgement market feed?!? Received MD: %s",sMD.c_str());
-    return false;
-  }
-
-  return true;
-}
-
-
-void MDIDataReceiver::ConvertTo_ATU_MDI_marketfeed_struct(const vector<string> & vMDI, ATU_MDI_marketfeed_struct & structMDI)
-{
-  structMDI.m_timestamp     =                             vMDI[ 0] ;
-  structMDI.m_feedcode      =                             vMDI[ 1] ;
-  structMDI.m_traded_price  = boost::lexical_cast<double>(vMDI[ 2]);
-  structMDI.m_traded_volume = boost::lexical_cast<double>(vMDI[ 3]);
-  structMDI.m_bid_price_1   = boost::lexical_cast<double>(vMDI[ 5]);
-  structMDI.m_bid_volume_1  = boost::lexical_cast<double>(vMDI[ 6]);
-  structMDI.m_ask_price_1   = boost::lexical_cast<double>(vMDI[16]);
-  structMDI.m_ask_volume_1  = boost::lexical_cast<double>(vMDI[17]);
-  return;
-}
-

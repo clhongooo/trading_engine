@@ -45,11 +45,7 @@ class MDIDataReceiver {
     virtual void ReadDataFile(const string &);
 
   protected:
-    //--------------------------------------------------
-    bool ParseMDIString(const string &, vector<string> &);
     void UpdateInternalDataWithParsedMDIString(const vector<string> &, const YYYYMMDD &, const HHMMSS &);
-    void ConvertTo_ATU_MDI_marketfeed_struct(const vector<string> &, ATU_MDI_marketfeed_struct &);
-    //--------------------------------------------------
     int m_Aggregator_Identity;
 
     //--------------------------------------------------
