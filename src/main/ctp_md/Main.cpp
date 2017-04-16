@@ -36,13 +36,18 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd)
   m_Logger->Write(StdStreamLogger::INFO,"Reading Config file: %s", sConfigPath.c_str());
   m_Logger->Write(StdStreamLogger::INFO,"LogLevel: %s", sLogLevel.c_str());
 
-  p_ctpmd->setDataFolder(STool::Trim(pt.get<std::string>("General.DataFolder")));
-  p_ctpmd->setDataMode(STool::Trim(pt.get<std::string>("General.DataMode")));
+  p_ctpmd->setDataFolder     (STool::Trim(pt.get<std::string>("General.DataFolder")));
+  p_ctpmd->setDataMode       (STool::Trim(pt.get<std::string>("General.DataMode")));
   p_ctpmd->setWriteDataToFile(STool::Trim(pt.get<std::string>("General.WriteDataToFile")));
-  p_ctpmd->setConnectString(STool::Trim(pt.get<std::string>("General.ConnectionString")));
-  p_ctpmd->setBrokerID(STool::Trim(pt.get<std::string>("General.BrokerID")));
-  p_ctpmd->setInvestorID(STool::Trim(pt.get<std::string>("General.InvestorID")));
-  p_ctpmd->setPassword(pt.get<std::string>("General.Password"));
+  p_ctpmd->setConnectString  (STool::Trim(pt.get<std::string>("General.ConnectionString")));
+  p_ctpmd->setBrokerID       (STool::Trim(pt.get<std::string>("General.BrokerID")));
+  p_ctpmd->setInvestorID     (STool::Trim(pt.get<std::string>("General.InvestorID")));
+  p_ctpmd->setPassword       (pt.get<std::string>("General.Password"));
+
+  vector<string> vSym;
+  const string sSyms = pt.get<std::string>("General.SubscribeSymbols");
+  boost::split(vSym,sSyms,boost::is_any_of(","));
+  p_ctpmd->setSubscribeSymbols<vector<string> >(vSym);
 }
 
 int main(int argc, const char *argv[])

@@ -3,17 +3,20 @@
 #include "ATU_Abstract_MDI.h"
 #include "StdStreamLogger.h"
 #include "STool.h"
+#include "SDateTime.h"
+#include <dlfcn.h>
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <set>
-#include <dlfcn.h>
+#include <vector>
 #include <iomanip>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
-#include <boost/algorithm/string.hpp>
 using namespace std;
+#include <boost/algorithm/string.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
@@ -37,24 +40,23 @@ class CtpMd : public CThostFtdcMdSpi {
     virtual void run();
     virtual ~CtpMd(){}
 
+    //--------------------------------------------------
     void notify_marketfeed(const ATU_MDI_marketfeed_struct &);
-    virtual bool on_process_subscription(const ATU_MDI_subscription_struct &s);
+    virtual void on_process_subscription(const ATU_MDI_subscription_struct &s);
 
     //--------------------------------------------------
-    // CTP
+    // CTP callback
     //--------------------------------------------------
     virtual void OnRspError(CThostFtdcRspInfoField* pRspInfo,int nRequestID, bool bIsLast);
     virtual void OnFrontDisconnected(int nReason);
     virtual void OnHeartBeatWarning(int nTimeLapse);
     virtual void OnFrontConnected();
-    virtual void ReqUserLogin();
     virtual void OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast);
-    virtual int SubscribeMarketData(char *ppInstrumentID[], int nCount);
     virtual void OnRspSubMarketData(CThostFtdcSpecificInstrumentField* pSpecificInstrument, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast);
     virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData);
     //--------------------------------------------------
 
-    void Md_api_release();
+    void release_CThostFtdcMdApi();
     virtual void setDataFolder(const string &);
     virtual void setDataMode(const string &);
     virtual void setWriteDataToFile(const string &);
@@ -63,12 +65,27 @@ class CtpMd : public CThostFtdcMdSpi {
     virtual void setInvestorID(const string &);
     virtual void setPassword(const string &);
 
-    int m_iRequestID;
+    //--------------------------------------------------
+    void SubscribeSymbol(const string &);
+    template <typename CollectionType>
+      void setSubscribeSymbols(const CollectionType & colSym)
+      {
+        m_subscribedSymbols.insert(colSym.begin(),colSym.end());
+      }
+    template <typename CollectionType>
+      void SubscribeSymbols(const CollectionType & colSym)
+      {
+        for(typename CollectionType::iterator it = colSym.begin(); it != colSym.end(); it++)
+          SubscribeSymbol(*it);
+      }
+    //--------------------------------------------------
 
   private:
-    CThostFtdcMdApi* m_pMdApi;
+    CThostFtdcMdApi* m_pCThostFtdcMdApi;
 
-    void*  m_p_ctp_lib_handle;
+    void* m_p_ctp_lib_handle;
+
+    int                      m_iRequestID;
 
     string                   m_DataFolder;
     DataMode                 m_DataMode;
@@ -81,6 +98,11 @@ class CtpMd : public CThostFtdcMdSpi {
     // TThostFtdcFrontIDType    m_front_id;
     set<string>              m_subscribedSymbols;
 
+    boost::shared_ptr<FILE>  m_data_outfile;
+
+    //--------------------------------------------------
+    // System objects
+    //--------------------------------------------------
     boost::shared_ptr<StdStreamLogger> m_Logger;
 };
 

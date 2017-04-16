@@ -1005,7 +1005,7 @@ string SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS()
   char sYYYYMMDD_HHMMSS[64];
   strftime(sYYYYMMDD_HHMMSS, sizeof(sYYYYMMDD_HHMMSS), "%Y%m%d_%H%M%S", tm);
   char sMicrosec[16];
-  sprintf(sMicrosec,"_%6d",tp.tv_usec);
+  sprintf(sMicrosec,"_%06d",tp.tv_usec);
   strcat(sYYYYMMDD_HHMMSS,sMicrosec);
   return string(sYYYYMMDD_HHMMSS);
 }

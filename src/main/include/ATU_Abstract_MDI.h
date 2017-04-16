@@ -104,7 +104,7 @@ typedef struct ATU_MDI_marketfeed_struct {
     buffer << mfs.m_timestamp     << ",";
     buffer << mfs.m_feedcode      << ",";
     buffer << mfs.m_traded_price  << ",";
-    buffer << mfs.m_traded_volume << ",B";
+    buffer << mfs.m_traded_volume << ",B,";
     buffer << mfs.m_bid_price_1   << ",";
     buffer << mfs.m_bid_volume_1  << ",";
     buffer << mfs.m_bid_price_2   << ",";
@@ -114,7 +114,7 @@ typedef struct ATU_MDI_marketfeed_struct {
     buffer << mfs.m_bid_price_4   << ",";
     buffer << mfs.m_bid_volume_4  << ",";
     buffer << mfs.m_bid_price_5   << ",";
-    buffer << mfs.m_bid_volume_5  << ",A";
+    buffer << mfs.m_bid_volume_5  << ",A,";
     buffer << mfs.m_ask_price_1   << ",";
     buffer << mfs.m_ask_volume_1  << ",";
     buffer << mfs.m_ask_price_2   << ",";
@@ -124,7 +124,7 @@ typedef struct ATU_MDI_marketfeed_struct {
     buffer << mfs.m_ask_price_4   << ",";
     buffer << mfs.m_ask_volume_4  << ",";
     buffer << mfs.m_ask_price_5   << ",";
-    buffer << mfs.m_ask_volume_5  << ",";
+    buffer << mfs.m_ask_volume_5        ;
     return buffer.str();
   }
   static bool ParseMDIString(const string & csv, ATU_MDI_marketfeed_struct & mfs)
