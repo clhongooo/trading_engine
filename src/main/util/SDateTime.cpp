@@ -997,6 +997,19 @@ string SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_000000()
 }
 
 
+string SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS()
+{
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+  struct tm *tm = localtime(&tp.tv_sec);
+  char sYYYYMMDD_HHMMSS[64];
+  strftime(sYYYYMMDD_HHMMSS, sizeof(sYYYYMMDD_HHMMSS), "%Y%m%d_%H%M%S", tm);
+  char sMicrosec[16];
+  sprintf(sMicrosec,"_%6d",tp.tv_usec);
+  strcat(sYYYYMMDD_HHMMSS,sMicrosec);
+  return string(sYYYYMMDD_HHMMSS);
+}
+
 
 
 YYYYMMDDHHMMSS SDateTime::ChangeTimeZone(const YYYYMMDDHHMMSS & ymdhmsFrom, const TIMEZONE fromTZ, const TIMEZONE toTZ)
