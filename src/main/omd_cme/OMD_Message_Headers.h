@@ -12,7 +12,7 @@
 #define NDEBUG
 
 #include "OMD_Global.h"
-#include "libjson.h"
+#include "jsoncpp/json/json.h"
 #include "Util.h"
 #include <cstring>
 #include <boost/algorithm/string.hpp>
@@ -771,135 +771,135 @@ typedef struct {
 
 #pragma pack(8)
 
-//--------------------------------------------------
-// OMD
-//--------------------------------------------------
-JSONNode genNode    (OMD_Sequence_Reset &s                        , string name, char *buffer, int bufferLength);
-string   printStruct(OMD_Sequence_Reset &s                        , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMD_Retransmission_Header &s                 , string name, char *buffer, int bufferLength);
-string   printStruct(OMD_Retransmission_Header &s                 , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMD_Logon &s                                 , string name, char *buffer, int bufferLength);
-string   printStruct(OMD_Logon &s                                 , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMD_Logon_Response &s                        , string name, char *buffer, int bufferLength);
-string   printStruct(OMD_Logon_Response &s                        , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMD_Retransmission_Request &s                , string name, char *buffer, int bufferLength);
-string   printStruct(OMD_Retransmission_Request &s                , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMD_Retransmission_Response &s               , string name, char *buffer, int bufferLength);
-string   printStruct(OMD_Retransmission_Response &s               , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMD_Refresh_Complete &s                      , string name, char *buffer, int bufferLength);
-string   printStruct(OMD_Refresh_Complete &s                      , string varName, char *buffer, int bufferLength);
+// //--------------------------------------------------
+// // OMD
+// //--------------------------------------------------
+// JSONNode genNode    (OMD_Sequence_Reset &s                        , string name, char *buffer, int bufferLength);
+// string   printStruct(OMD_Sequence_Reset &s                        , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMD_Retransmission_Header &s                 , string name, char *buffer, int bufferLength);
+// string   printStruct(OMD_Retransmission_Header &s                 , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMD_Logon &s                                 , string name, char *buffer, int bufferLength);
+// string   printStruct(OMD_Logon &s                                 , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMD_Logon_Response &s                        , string name, char *buffer, int bufferLength);
+// string   printStruct(OMD_Logon_Response &s                        , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMD_Retransmission_Request &s                , string name, char *buffer, int bufferLength);
+// string   printStruct(OMD_Retransmission_Request &s                , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMD_Retransmission_Response &s               , string name, char *buffer, int bufferLength);
+// string   printStruct(OMD_Retransmission_Response &s               , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMD_Refresh_Complete &s                      , string name, char *buffer, int bufferLength);
+// string   printStruct(OMD_Refresh_Complete &s                      , string varName, char *buffer, int bufferLength);
 
-//--------------------------------------------------
-// OMD-C
-//--------------------------------------------------
-JSONNode genNode    (OMDC_Market_Definition &s                    , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Market_Definition &s                    , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_UnderlyingSecurity &s                   , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_UnderlyingSecurity &s                   , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Security_Definition &s                  , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Security_Definition &s                  , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Liquidity_Provider &s                   , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Liquidity_Provider &s                   , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Currency_Rate &s                        , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Currency_Rate &s                        , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Trading_Session_Status &s               , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Trading_Session_Status &s               , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Security_Status &s                      , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Security_Status &s                      , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Add_Order &s                            , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Add_Order &s                            , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Modify_Order &s                         , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Modify_Order &s                         , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Delete_Order &s                         , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Delete_Order &s                         , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Add_Odd_Lot_Order &s                    , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Add_Odd_Lot_Order &s                    , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Delete_Odd_Lot_Order &s                 , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Delete_Odd_Lot_Order &s                 , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Aggregate_Order_Book_Update_Details &s  , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Aggregate_Order_Book_Update_Details &s  , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Aggregate_Order_Book_Update &s          , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Aggregate_Order_Book_Update &s          , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Broker_Queue_Item &s                    , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Broker_Queue_Item &s                    , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Broker_Queue &s                         , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Broker_Queue &s                         , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Trade &s                                , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Trade &s                                , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Trade_Cancel &s                         , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Trade_Cancel &s                         , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Trade_Ticker &s                         , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Trade_Ticker &s                         , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Closing_Price &s                        , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Closing_Price &s                        , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Nominal_Price &s                        , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Nominal_Price &s                        , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Indicative_Equilibrium_Price &s         , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Indicative_Equilibrium_Price &s         , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Statistics &s                           , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Statistics &s                           , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Market_Turnover &s                      , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Market_Turnover &s                      , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Yield &s                                , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Yield &s                                , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_News &s                                 , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_News &s                                 , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Index_Definition &s                     , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Index_Definition &s                     , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDC_Index_Data &s                           , string name, char *buffer, int bufferLength);
-string   printStruct(OMDC_Index_Data &s                           , string varName, char *buffer, int bufferLength);
+// //--------------------------------------------------
+// // OMD-C
+// //--------------------------------------------------
+// JSONNode genNode    (OMDC_Market_Definition &s                    , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Market_Definition &s                    , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_UnderlyingSecurity &s                   , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_UnderlyingSecurity &s                   , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Security_Definition &s                  , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Security_Definition &s                  , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Liquidity_Provider &s                   , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Liquidity_Provider &s                   , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Currency_Rate &s                        , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Currency_Rate &s                        , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Trading_Session_Status &s               , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Trading_Session_Status &s               , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Security_Status &s                      , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Security_Status &s                      , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Add_Order &s                            , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Add_Order &s                            , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Modify_Order &s                         , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Modify_Order &s                         , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Delete_Order &s                         , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Delete_Order &s                         , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Add_Odd_Lot_Order &s                    , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Add_Odd_Lot_Order &s                    , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Delete_Odd_Lot_Order &s                 , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Delete_Odd_Lot_Order &s                 , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Aggregate_Order_Book_Update_Details &s  , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Aggregate_Order_Book_Update_Details &s  , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Aggregate_Order_Book_Update &s          , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Aggregate_Order_Book_Update &s          , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Broker_Queue_Item &s                    , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Broker_Queue_Item &s                    , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Broker_Queue &s                         , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Broker_Queue &s                         , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Trade &s                                , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Trade &s                                , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Trade_Cancel &s                         , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Trade_Cancel &s                         , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Trade_Ticker &s                         , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Trade_Ticker &s                         , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Closing_Price &s                        , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Closing_Price &s                        , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Nominal_Price &s                        , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Nominal_Price &s                        , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Indicative_Equilibrium_Price &s         , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Indicative_Equilibrium_Price &s         , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Statistics &s                           , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Statistics &s                           , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Market_Turnover &s                      , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Market_Turnover &s                      , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Yield &s                                , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Yield &s                                , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_News &s                                 , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_News &s                                 , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Index_Definition &s                     , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Index_Definition &s                     , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDC_Index_Data &s                           , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDC_Index_Data &s                           , string varName, char *buffer, int bufferLength);
 
-//--------------------------------------------------
-// OMD-D
-//--------------------------------------------------
-JSONNode genNode    (OMDD_Commodity_Definition &s                 , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Commodity_Definition &s                 , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Class_Definition &s                     , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Class_Definition &s                     , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Series_Definition_Base &s               , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Series_Definition_Base &s               , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Series_Definition_Extended &s           , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Series_Definition_Extended &s           , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Combination_Definition &s               , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Combination_Definition &s               , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Market_Status &s                        , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Market_Status &s                        , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Series_Status &s                        , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Series_Status &s                        , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Commodity_Status &s                     , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Commodity_Status &s                     , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Add_Order &s                            , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Add_Order &s                            , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Modify_Order &s                         , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Modify_Order &s                         , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Delete_Order &s                         , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Delete_Order &s                         , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Aggregate_Order_Book_Update_Details &s  , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Aggregate_Order_Book_Update_Details &s  , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Aggregate_Order_Book_Update &s          , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Aggregate_Order_Book_Update &s          , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Order_Book_Clear &s                     , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Order_Book_Clear &s                     , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Quote_Request &s                        , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Quote_Request &s                        , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Trade &s                                , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Trade &s                                , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Trade_Amendment &s                      , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Trade_Amendment &s                      , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Trade_Statistics &s                     , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Trade_Statistics &s                     , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Series_Statistics &s                    , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Series_Statistics &s                    , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Calculated_Opening_Price &s             , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Calculated_Opening_Price &s             , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Estimated_Average_Settlement_Price &s   , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Estimated_Average_Settlement_Price &s   , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Market_Alert &s                         , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Market_Alert &s                         , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Open_Interest &s                        , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Open_Interest &s                        , string varName, char *buffer, int bufferLength);
-JSONNode genNode    (OMDD_Implied_Volatility &s                   , string name, char *buffer, int bufferLength);
-string   printStruct(OMDD_Implied_Volatility &s                   , string varName, char *buffer, int bufferLength);
+// //--------------------------------------------------
+// // OMD-D
+// //--------------------------------------------------
+// JSONNode genNode    (OMDD_Commodity_Definition &s                 , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Commodity_Definition &s                 , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Class_Definition &s                     , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Class_Definition &s                     , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Series_Definition_Base &s               , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Series_Definition_Base &s               , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Series_Definition_Extended &s           , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Series_Definition_Extended &s           , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Combination_Definition &s               , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Combination_Definition &s               , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Market_Status &s                        , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Market_Status &s                        , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Series_Status &s                        , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Series_Status &s                        , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Commodity_Status &s                     , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Commodity_Status &s                     , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Add_Order &s                            , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Add_Order &s                            , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Modify_Order &s                         , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Modify_Order &s                         , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Delete_Order &s                         , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Delete_Order &s                         , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Aggregate_Order_Book_Update_Details &s  , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Aggregate_Order_Book_Update_Details &s  , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Aggregate_Order_Book_Update &s          , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Aggregate_Order_Book_Update &s          , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Order_Book_Clear &s                     , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Order_Book_Clear &s                     , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Quote_Request &s                        , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Quote_Request &s                        , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Trade &s                                , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Trade &s                                , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Trade_Amendment &s                      , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Trade_Amendment &s                      , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Trade_Statistics &s                     , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Trade_Statistics &s                     , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Series_Statistics &s                    , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Series_Statistics &s                    , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Calculated_Opening_Price &s             , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Calculated_Opening_Price &s             , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Estimated_Average_Settlement_Price &s   , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Estimated_Average_Settlement_Price &s   , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Market_Alert &s                         , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Market_Alert &s                         , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Open_Interest &s                        , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Open_Interest &s                        , string varName, char *buffer, int bufferLength);
+// JSONNode genNode    (OMDD_Implied_Volatility &s                   , string name, char *buffer, int bufferLength);
+// string   printStruct(OMDD_Implied_Volatility &s                   , string varName, char *buffer, int bufferLength);
 
 
 

@@ -37,8 +37,8 @@ class ThreadHealthMonitor {
     void Run();
 
   private:
-    shared_ptr<Logger>          m_Logger;
-    shared_ptr<SharedObjects>   m_ShrObj;
+    boost::shared_ptr<Logger>          m_Logger;
+    boost::shared_ptr<SharedObjects>   m_ShrObj;
 
     static boost::weak_ptr <ThreadHealthMonitor> m_pInstance;
 

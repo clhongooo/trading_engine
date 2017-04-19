@@ -4,7 +4,7 @@ ExpandableCirBuffer::ExpandableCirBuffer(
     const unsigned short channelid,
     const unsigned int blocksize,
     const unsigned int rowsize,
-    shared_ptr<CentralMemMgr> cmm) :
+    boost::shared_ptr<CentralMemMgr> cmm) :
   m_ChannelID(channelid),
   m_BlockSize(blocksize),
   m_RowSize(rowsize),

@@ -60,7 +60,7 @@ class RTSClient
     } SeqNoRange;
 
     RTSClient();
-    static shared_ptr<RTSClient> Instance();
+    static boost::shared_ptr<RTSClient> Instance();
     ~RTSClient();
     void Run();
     void Init();
@@ -72,14 +72,14 @@ class RTSClient
   private:
     enum {TCPReadByte = 150000};
     enum {MILLISEC_RTSLOG = 10000 };
-    static weak_ptr<RTSClient> m_pInstance;
-    shared_ptr<DataProcFunctions> m_DataProcFunc;
+    static boost::weak_ptr<RTSClient> m_pInstance;
+    boost::shared_ptr<DataProcFunctions> m_DataProcFunc;
 
     template <typename MutableBufferSequence>
-      bool read_some_with_timeout(shared_ptr<boost::asio::ip::tcp::socket> sock, const MutableBufferSequence& buffers, boost::system::error_code& ec, std::size_t& bytes_transferred);
+      bool read_some_with_timeout(boost::shared_ptr<boost::asio::ip::tcp::socket> sock, const MutableBufferSequence& buffers, boost::system::error_code& ec, std::size_t& bytes_transferred);
 
     template <typename MutableBufferSequence>
-      bool write_some_with_timeout(shared_ptr<boost::asio::ip::tcp::socket> sock, const MutableBufferSequence& buffers, const size_t write_len, boost::system::error_code& ec);
+      bool write_some_with_timeout(boost::shared_ptr<boost::asio::ip::tcp::socket> sock, const MutableBufferSequence& buffers, const size_t write_len, boost::system::error_code& ec);
 
     void handle_read(const boost::system::error_code&, size_t);
     void handle_write(const boost::system::error_code&, size_t);
@@ -89,17 +89,17 @@ class RTSClient
     // Socket related
     //--------------------------------------------------
     boost::asio::io_service    m_io_service;
-    scoped_ptr<tcp::resolver>  m_resolver;
-    shared_ptr<tcp::socket>    m_socket;
-    scoped_ptr<deadline_timer> m_deadlinetimer;
+    boost::scoped_ptr<tcp::resolver>  m_resolver;
+    boost::shared_ptr<tcp::socket>    m_socket;
+    boost::scoped_ptr<deadline_timer> m_deadlinetimer;
 
     //--------------------------------------------------
     // Shared objects
     //--------------------------------------------------
-    shared_ptr<SystemConfig>   m_SysCfg;
-    shared_ptr<Logger>         m_Logger;
-    shared_ptr<SharedObjects>  m_ShrObj;
-    shared_ptr<ThreadHealthMonitor>  m_ThreadHealthMon;
+    boost::shared_ptr<SystemConfig>   m_SysCfg;
+    boost::shared_ptr<Logger>         m_Logger;
+    boost::shared_ptr<SharedObjects>  m_ShrObj;
+    boost::shared_ptr<ThreadHealthMonitor>  m_ThreadHealthMon;
     ExpandableCirBuffer4Msg*   m_MsgCirBuf;
 
     //--------------------------------------------------
@@ -107,8 +107,8 @@ class RTSClient
     //--------------------------------------------------
     string                              m_RTS_Username;
     string                              m_RTS_NumOfSvr;
-    shared_ptr<vector<string> >         m_pRTS_ServerIP;
-    shared_ptr<vector<unsigned short> > m_pRTS_ServerPort;
+    boost::shared_ptr<vector<string> >         m_pRTS_ServerIP;
+    boost::shared_ptr<vector<unsigned short> > m_pRTS_ServerPort;
     unsigned short                      m_RTS_SvrIndex;
     unsigned short                      m_RTS_NoOfTimeout;
     unsigned short                      m_RTS_ReconnectionWaitSec;

@@ -24,31 +24,31 @@ class DataProcFunctions {
   public:
     DataProcFunctions() {}
     virtual ~DataProcFunctions() {}
-    virtual void OutputJsonToLog(const char *, const unsigned short, shared_ptr<Logger>, const BYTE*, char[]) = 0;
-    virtual void OutputJsonToLog(const char *, const unsigned short, shared_ptr<Logger>, const BYTE*, unsigned short, char[], unsigned long) = 0;
-    virtual void ProcessOrderBookInstruction(const char *,shared_ptr<Logger>,const BYTE*,shared_ptr<SharedObjects>,bool) = 0;
-    virtual void ProcessMessageForMDI(shared_ptr<SharedObjects> shrobj, BYTE*,unsigned short);
+    virtual void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, char[]) = 0;
+    virtual void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, unsigned short, char[], unsigned long) = 0;
+    virtual void ProcessOrderBookInstruction(const char *,boost::shared_ptr<Logger>,const BYTE*,boost::shared_ptr<SharedObjects>,bool) = 0;
+    virtual void ProcessMessageForMDI(boost::shared_ptr<SharedObjects> shrobj, BYTE*,unsigned short);
 
   private:
-    shared_ptr<SystemConfig>  m_SysCfg;
+    boost::shared_ptr<SystemConfig>  m_SysCfg;
 };
 
 class DataProcFunctionsOMDC : public DataProcFunctions {
   public:
     DataProcFunctionsOMDC() : DataProcFunctions() {}
     virtual ~DataProcFunctionsOMDC() {}
-    void OutputJsonToLog(const char *, const unsigned short, shared_ptr<Logger>, const BYTE*, char[]);
-    void OutputJsonToLog(const char *, const unsigned short, shared_ptr<Logger>, const BYTE*, unsigned short, char[], unsigned long);
-    void ProcessOrderBookInstruction(const char *,shared_ptr<Logger>,const BYTE*,shared_ptr<SharedObjects>,bool);
+    void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, char[]);
+    void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, unsigned short, char[], unsigned long);
+    void ProcessOrderBookInstruction(const char *,boost::shared_ptr<Logger>,const BYTE*,boost::shared_ptr<SharedObjects>,bool);
 };
 
 class DataProcFunctionsOMDD : public DataProcFunctions {
   public:
     DataProcFunctionsOMDD() : DataProcFunctions() {}
     virtual ~DataProcFunctionsOMDD() {}
-    void OutputJsonToLog(const char *, const unsigned short, shared_ptr<Logger>, const BYTE*, char[]);
-    void OutputJsonToLog(const char *, const unsigned short, shared_ptr<Logger>, const BYTE*, unsigned short, char[], unsigned long);
-    void ProcessOrderBookInstruction(const char *,shared_ptr<Logger>,const BYTE*,shared_ptr<SharedObjects>,bool);
+    void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, char[]);
+    void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, unsigned short, char[], unsigned long);
+    void ProcessOrderBookInstruction(const char *,boost::shared_ptr<Logger>,const BYTE*,boost::shared_ptr<SharedObjects>,bool);
 };
 
 class DataProcFuncFactory {

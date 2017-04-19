@@ -14,6 +14,7 @@
 #include "STool.h"
 #include "Tokenizer.h"
 #include <stdexcept>
+#include "sys/time.h"
 
 using namespace std;
 using namespace boost;
@@ -98,6 +99,7 @@ class SDateTime
     static string fromUnixTimeToString(unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE, bool);
     static string GetCurrentTimeYYYYMMDD_HHMMSS_000000();
     static string GetCurrentTimeYYYYMMDD_HHMMSS();
+    static unsigned long GetCurrentTimeInMillsecSinceEpoch();
 
     template <class T1, class T2>
       static bool FromCashTSToYMDHMS(const string & ts, T1 & yyyymmdd, T2 & hhmmss)

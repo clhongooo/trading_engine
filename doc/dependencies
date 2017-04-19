@@ -1,0 +1,10 @@
+
+g++
+cmake
+boost
+pantheios
+stlsoft
+gsl
+zmq
+cppunit
+libjson-c-dev

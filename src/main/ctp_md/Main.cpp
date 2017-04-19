@@ -17,7 +17,7 @@
 using namespace std;
 using namespace boost;
 
-void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd)
+boost::shared_ptr<CtpMd> ReadConfigAndSpawnObj(const string & sConfigPath)
 {
   boost::shared_ptr<StdStreamLogger> m_Logger = StdStreamLogger::Instance();
   boost::property_tree::ptree pt;
@@ -36,6 +36,14 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd)
   m_Logger->Write(StdStreamLogger::INFO,"Reading Config file: %s", sConfigPath.c_str());
   m_Logger->Write(StdStreamLogger::INFO,"LogLevel: %s", sLogLevel.c_str());
 
+  //--------------------------------------------------
+  // CtpMd
+  //--------------------------------------------------
+  boost::shared_ptr<CtpMd> p_ctpmd;
+  CtpMd::DataMode dm = CtpMd::detDataMode(STool::Trim(pt.get<std::string>("General.DataMode")));
+  if (dm == CtpMd::DM_BINARY) p_ctpmd.reset(new CtpMdBin());
+  else if (dm == CtpMd::DM_CSV) p_ctpmd.reset(new CtpMdCsv());
+
   p_ctpmd->setDataFolder     (STool::Trim(pt.get<std::string>("General.DataFolder")));
   p_ctpmd->setDataMode       (STool::Trim(pt.get<std::string>("General.DataMode")));
   p_ctpmd->setWriteDataToFile(STool::Trim(pt.get<std::string>("General.WriteDataToFile")));
@@ -48,6 +56,7 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd)
   const string sSyms = pt.get<std::string>("General.SubscribeSymbols");
   boost::split(vSym,sSyms,boost::is_any_of(","));
   p_ctpmd->setSubscribeSymbols<vector<string> >(vSym);
+  return p_ctpmd;
 }
 
 int main(int argc, const char *argv[])
@@ -58,8 +67,7 @@ int main(int argc, const char *argv[])
     return 0;
   }
 
-  boost::shared_ptr<CtpMd> p_ctpmd(new CtpMd());
-  ReadConfig(argv[1],p_ctpmd);
+  boost::shared_ptr<CtpMd> p_ctpmd = ReadConfigAndSpawnObj(argv[1]);
 
   boost::scoped_ptr<boost::thread> m_p_init_and_run_thread(new boost::thread(boost::bind(&CtpMd::run,p_ctpmd.get())));
   m_p_init_and_run_thread->join();

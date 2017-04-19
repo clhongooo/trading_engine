@@ -18,7 +18,7 @@ using namespace boost;
 
 class CentralMemMgr {
   public:
-    static shared_ptr<CentralMemMgr> Instance();
+    static boost::shared_ptr<CentralMemMgr> Instance();
     virtual ~CentralMemMgr(){};
     BYTE** AcquireMemBlock(unsigned int &);
     void ReturnMemBlock(const unsigned int);
@@ -27,13 +27,13 @@ class CentralMemMgr {
     ptr_vector<BYTE> m_MemBlocks;
 
     CentralMemMgr();
-    static weak_ptr<CentralMemMgr> m_pInstance;
+    static boost::weak_ptr<CentralMemMgr> m_pInstance;
 };
 
-weak_ptr<CentralMemMgr > CentralMemMgr::m_pInstance;
+boost::weak_ptr<CentralMemMgr > CentralMemMgr::m_pInstance;
 
-shared_ptr<CentralMemMgr > CentralMemMgr::Instance() {
-  shared_ptr<CentralMemMgr> instance = m_pInstance.lock();
+boost::shared_ptr<CentralMemMgr > CentralMemMgr::Instance() {
+  boost::shared_ptr<CentralMemMgr> instance = m_pInstance.lock();
   if (!instance) {
     instance.reset(new CentralMemMgr());
     m_pInstance = instance;
@@ -41,7 +41,7 @@ shared_ptr<CentralMemMgr > CentralMemMgr::Instance() {
   return instance;
 }
 
-shared_ptr<BYTE*> CentralMemMgr::AcquireMemBlock()
+boost::shared_ptr<BYTE*> CentralMemMgr::AcquireMemBlock()
 {
   //TODO: Change to memory pool later
   BYTE** vbp = new BYTE*[iNumOfRows];

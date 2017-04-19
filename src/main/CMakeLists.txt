@@ -69,6 +69,8 @@ add_subdirectory(mcast_recorder)
 add_subdirectory(ctp_md)
 add_subdirectory(logger)
 add_subdirectory(util)
+add_subdirectory(omd_cme)
+add_subdirectory(bin_mdi_reader)
 
 
 include_directories(${PANTHEIOS_INC}

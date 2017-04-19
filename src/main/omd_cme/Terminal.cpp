@@ -119,7 +119,7 @@ void TerminalSession::handle_read(const boost::system::error_code& error, size_t
 
       {
         // Insert dummy data into the circular buffers to wake threads up
-        const shared_ptr<vector<unsigned short> > pvActiveMcastChnl = m_SysCfg->GetActiveMcastChnl();
+        const boost::shared_ptr<vector<unsigned short> > pvActiveMcastChnl = m_SysCfg->GetActiveMcastChnl();
 
         // Raw Cir Buf
         for (int i = 0; i < pvActiveMcastChnl->size(); ++i)
@@ -167,7 +167,7 @@ void TerminalSession::handle_read(const boost::system::error_code& error, size_t
     //--------------------------------------------------
     else if (strncmp(m_Buffer,CMD_REFRESH,strlen(CMD_REFRESH))==0)
     {
-      const shared_ptr<vector<unsigned short> > pvActiveMcastChnl = m_SysCfg->GetActiveMcastChnl();
+      const boost::shared_ptr<vector<unsigned short> > pvActiveMcastChnl = m_SysCfg->GetActiveMcastChnl();
 
       if (m_Buffer[strlen(CMD_REFRESH)] == 'a')
       {
@@ -299,7 +299,7 @@ void TerminalSession::handle_read(const boost::system::error_code& error, size_t
       uint32_t uiRTLastSeqNo = 0;
       uint32_t uiRFLastSeqNo = 0;
 
-      const shared_ptr<vector<unsigned short> > pvActiveMcastChnl = m_SysCfg->GetActiveMcastChnl();
+      const boost::shared_ptr<vector<unsigned short> > pvActiveMcastChnl = m_SysCfg->GetActiveMcastChnl();
       for (int i = 0; i < pvActiveMcastChnl->size(); ++i)
       {
 
@@ -408,7 +408,7 @@ void TerminalSession::handle_read(const boost::system::error_code& error, size_t
       uint32_t uiRTLastSeqNo = 0;
       uint32_t uiRFLastSeqNo = 0;
 
-      const shared_ptr<vector<unsigned short> > pvActiveMcastChnl = m_SysCfg->GetActiveMcastChnl();
+      const boost::shared_ptr<vector<unsigned short> > pvActiveMcastChnl = m_SysCfg->GetActiveMcastChnl();
       for (int i = 0; i < pvActiveMcastChnl->size(); ++i)
       {
         usChannelID = (*pvActiveMcastChnl)[i];

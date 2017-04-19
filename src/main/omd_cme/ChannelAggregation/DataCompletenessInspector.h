@@ -55,7 +55,7 @@ class DataCompletenessInspector
     boost::shared_ptr<SharedObjects>      m_ShrObj;
     boost::shared_ptr<SystemConfig>       m_SysCfg;
     boost::shared_ptr<RTSClient>          m_RTSClt;
-    shared_ptr<ThreadHealthMonitor>       m_ThreadHealthMon;
+    boost::shared_ptr<ThreadHealthMonitor>       m_ThreadHealthMon;
     ExpandableCirBuffer4Msg *             m_MsgCirBuf;
 
     unsigned long                         m_TriggerRetransmissionSeqNoGap;

@@ -5,7 +5,7 @@ ExpandableCirBuffer4Msg::ExpandableCirBuffer4Msg(
     const unsigned short channelid,
     const unsigned int blocksize,
     const unsigned int rowsize,
-    shared_ptr<CentralMemMgr> cmm,
+    boost::shared_ptr<CentralMemMgr> cmm,
     const unsigned long max1timealloc) :
   m_ChannelID(channelid),
   m_StartSeqNo(0),

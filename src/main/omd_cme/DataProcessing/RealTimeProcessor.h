@@ -30,7 +30,7 @@ class RealTimeProcessor {
     void Run();
     virtual ~RealTimeProcessor();
   private:
-    shared_ptr<DataProcFunctions>      m_DataProcFunc;
+    boost::shared_ptr<DataProcFunctions>      m_DataProcFunc;
 
     //Output related
     FILE *                             m_CannedProcessedDataFile;
@@ -42,10 +42,10 @@ class RealTimeProcessor {
 
     //Shared objects
     ExpandableCirBuffer4Msg *          m_MsgCirBuf;
-    shared_ptr<SharedObjects>          m_ShrObj;
-    shared_ptr<SystemConfig>           m_SysCfg;
-    shared_ptr<Logger>                 m_Logger;
-    shared_ptr<ThreadHealthMonitor>    m_ThreadHealthMon;
+    boost::shared_ptr<SharedObjects>          m_ShrObj;
+    boost::shared_ptr<SystemConfig>           m_SysCfg;
+    boost::shared_ptr<Logger>                 m_Logger;
+    boost::shared_ptr<ThreadHealthMonitor>    m_ThreadHealthMon;
 
     //Others
     unsigned short                     m_ChannelID;

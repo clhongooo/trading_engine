@@ -20,14 +20,14 @@ using namespace boost;
 
 class CentralMemMgr {
   public:
-    static shared_ptr<CentralMemMgr> Instance();
+    static boost::shared_ptr<CentralMemMgr> Instance();
     virtual ~CentralMemMgr(){};
     vector<BYTE*> * AcquireVectorBlock(const int,const int);
     void ReturnVectorBlock(vector<BYTE*> *, const int, const int);
 
   private:
     CentralMemMgr(){};
-    static weak_ptr<CentralMemMgr> m_pInstance;
+    static boost::weak_ptr<CentralMemMgr> m_pInstance;
 };
 
 #endif /* CENTRALMEMMGR_H_ */

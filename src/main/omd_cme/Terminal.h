@@ -61,9 +61,9 @@ class TerminalSession
     void output_tml_log();
 
   private:
-    shared_ptr<Logger>         m_Logger;
-    shared_ptr<SystemConfig>   m_SysCfg;
-    shared_ptr<SharedObjects>  m_ShrObj;
+    boost::shared_ptr<Logger>         m_Logger;
+    boost::shared_ptr<SystemConfig>   m_SysCfg;
+    boost::shared_ptr<SharedObjects>  m_ShrObj;
     tcp::socket                m_socket;
     boost::asio::io_service&   m_ios;
     char                       m_Buffer[SIZE];
@@ -81,8 +81,8 @@ class TerminalServer
     void start_accept();
     void handle_accept(TerminalSession*, const boost::system::error_code&);
 
-    shared_ptr<Logger>           m_Logger;
-    shared_ptr<SharedObjects>    m_ShrObj;
+    boost::shared_ptr<Logger>           m_Logger;
+    boost::shared_ptr<SharedObjects>    m_ShrObj;
     boost::asio::io_service&     io_service_;
     tcp::acceptor                acceptor_;
     ChannelController *          m_pChnlCtrlr;
@@ -96,7 +96,7 @@ class TerminalThread {
     void Run();
 
   private:
-    shared_ptr<SystemConfig>  m_SysCfg;
+    boost::shared_ptr<SystemConfig>  m_SysCfg;
     unsigned short            m_SystemServicePort;
     ChannelController *       m_pChnlCtrlr;
 };

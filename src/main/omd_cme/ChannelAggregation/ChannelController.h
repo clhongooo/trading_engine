@@ -68,9 +68,9 @@ class ChannelController {
     //------------------------------
     // System objects
     //------------------------------
-    shared_ptr<SystemConfig>    m_SysCfg;
-    shared_ptr<Logger>          m_Logger;
-    shared_ptr<SharedObjects>   m_ShrObj;
+    boost::shared_ptr<SystemConfig>    m_SysCfg;
+    boost::shared_ptr<Logger>          m_Logger;
+    boost::shared_ptr<SharedObjects>   m_ShrObj;
 };
 
 #endif

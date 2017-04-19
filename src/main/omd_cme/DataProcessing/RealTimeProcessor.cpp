@@ -19,7 +19,7 @@ RealTimeProcessor::RealTimeProcessor(const unsigned short id) :
   // m_RealTimeProcSleepMillisec = SystemConfig::Instance()->GetRealTimeProcSleepMillisec();
   m_bRunRealTimeProcessor = m_SysCfg->CheckIfRunRealTimeProcessor();
 
-  shared_ptr<vector<unsigned short> > pviCannedChnl = m_SysCfg->GetRealTimeProcCannedChnl();
+  boost::shared_ptr<vector<unsigned short> > pviCannedChnl = m_SysCfg->GetRealTimeProcCannedChnl();
   for (int i = 0; i < (*pviCannedChnl).size(); ++i)
     if ((*pviCannedChnl)[i] == m_ChannelID) m_bRecordProcessedData = true;
 

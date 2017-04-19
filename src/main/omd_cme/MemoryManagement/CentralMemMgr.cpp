@@ -1,9 +1,9 @@
 #include "CentralMemMgr.h"
 
-weak_ptr<CentralMemMgr> CentralMemMgr::m_pInstance;
+boost::weak_ptr<CentralMemMgr> CentralMemMgr::m_pInstance;
 
-shared_ptr<CentralMemMgr> CentralMemMgr::Instance() {
-  shared_ptr<CentralMemMgr> instance = m_pInstance.lock();
+boost::shared_ptr<CentralMemMgr> CentralMemMgr::Instance() {
+  boost::shared_ptr<CentralMemMgr> instance = m_pInstance.lock();
   if (!instance) {
     instance.reset(new CentralMemMgr());
     m_pInstance = instance;

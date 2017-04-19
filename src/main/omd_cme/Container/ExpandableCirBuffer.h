@@ -34,7 +34,7 @@ class ExpandableCirBuffer
   public:
     enum { TIMESTAMPSIZE = 8 };
 
-    ExpandableCirBuffer(const unsigned short, const unsigned int, const unsigned int, shared_ptr<CentralMemMgr>);
+    ExpandableCirBuffer(const unsigned short, const unsigned int, const unsigned int, boost::shared_ptr<CentralMemMgr>);
     ~ExpandableCirBuffer();
     BYTE * GetWritingPtr(); //Returns the pointer to the circular buffer entry that we can insert data to
     void PushBack();
@@ -74,7 +74,7 @@ class ExpandableCirBuffer
     //------------------------------
     // System objects
     //------------------------------
-    shared_ptr<CentralMemMgr>              m_MemMgr;
+    boost::shared_ptr<CentralMemMgr>              m_MemMgr;
 
 };
 

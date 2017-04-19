@@ -63,8 +63,8 @@ class OrderBook {
     bool AssessPriceIntegrity() const;
 
   protected:
-    shared_ptr<vector<OBElement> > _BIDQ;
-    shared_ptr<vector<OBElement> > _ASKQ;
+    boost::shared_ptr<vector<OBElement> > _BIDQ;
+    boost::shared_ptr<vector<OBElement> > _ASKQ;
     int16_t _BIDQstart;
     int16_t _BIDQend;
     int16_t _ASKQstart;

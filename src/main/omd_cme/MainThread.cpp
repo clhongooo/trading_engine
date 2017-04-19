@@ -21,11 +21,11 @@ void MainThread::RunMainThread()
   //--------------------------------------------------
   // Init the singleton instances first
   //--------------------------------------------------
-  shared_ptr<Logger>              pLogger     =  Logger::Instance();
-  shared_ptr<SystemConfig>        pSysCfg     =  SystemConfig::Instance();
-  shared_ptr<SharedObjects>       pShrObj     =  SharedObjects::Instance();
-  shared_ptr<RTSClient>           pRTSClt     =  RTSClient::Instance();
-  shared_ptr<ThreadHealthMonitor> pThrdHth    =  ThreadHealthMonitor::Instance();
+  boost::shared_ptr<Logger>              pLogger     =  Logger::Instance();
+  boost::shared_ptr<SystemConfig>        pSysCfg     =  SystemConfig::Instance();
+  boost::shared_ptr<SharedObjects>       pShrObj     =  SharedObjects::Instance();
+  boost::shared_ptr<RTSClient>           pRTSClt     =  RTSClient::Instance();
+  boost::shared_ptr<ThreadHealthMonitor> pThrdHth    =  ThreadHealthMonitor::Instance();
   //--------------------------------------------------
 
   boost::thread_group BoostThreadGrp;

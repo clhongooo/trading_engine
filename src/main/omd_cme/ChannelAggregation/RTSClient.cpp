@@ -1,9 +1,9 @@
 #include "RTSClient.h"
 
-weak_ptr<RTSClient> RTSClient::m_pInstance;
+boost::weak_ptr<RTSClient> RTSClient::m_pInstance;
 
-shared_ptr<RTSClient> RTSClient::Instance() {
-  shared_ptr<RTSClient> instance = m_pInstance.lock();
+boost::shared_ptr<RTSClient> RTSClient::Instance() {
+  boost::shared_ptr<RTSClient> instance = m_pInstance.lock();
   if (!instance) {
     instance.reset(new RTSClient());
     m_pInstance = instance;
@@ -1035,7 +1035,7 @@ void RTSClient::handle_write(const boost::system::error_code& ec, size_t bytes_t
 //Ref: http://www.ridgesolutions.ie/index.php/2012/12/13/boost-c-read-from-serial-port-with-timeout-example/
 // Returns true if successful - false if a timeout occurs
   template <typename MutableBufferSequence>
-bool RTSClient::read_some_with_timeout(shared_ptr<boost::asio::ip::tcp::socket> sock, const MutableBufferSequence& buffers, boost::system::error_code& ec, std::size_t& bytes_transferred)
+bool RTSClient::read_some_with_timeout(boost::shared_ptr<boost::asio::ip::tcp::socket> sock, const MutableBufferSequence& buffers, boost::system::error_code& ec, std::size_t& bytes_transferred)
 {
   //--------------------------------------------------
   // Re-Init
@@ -1062,7 +1062,7 @@ bool RTSClient::read_some_with_timeout(shared_ptr<boost::asio::ip::tcp::socket> 
 }
 
   template <typename MutableBufferSequence>
-bool RTSClient::write_some_with_timeout(shared_ptr<boost::asio::ip::tcp::socket> sock, const MutableBufferSequence& buffers, const size_t write_len, boost::system::error_code& ec)
+bool RTSClient::write_some_with_timeout(boost::shared_ptr<boost::asio::ip::tcp::socket> sock, const MutableBufferSequence& buffers, const size_t write_len, boost::system::error_code& ec)
 {
   //--------------------------------------------------
   // Re-Init

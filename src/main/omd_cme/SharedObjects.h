@@ -43,7 +43,7 @@ typedef boost::function < bool(long, ATU_MDI_marketfeed_struct &) >   OMD_OrderB
 class SharedObjects
 {
   public:
-    static shared_ptr<SharedObjects> Instance();
+    static boost::shared_ptr<SharedObjects> Instance();
     void ResetObjects();
     void ResetObjectsPurgeRawCirBuf();
     void DestroyObjects();
@@ -55,7 +55,7 @@ class SharedObjects
     //--------------------------------------------------
     // Order Book
     //--------------------------------------------------
-    shared_ptr<OrderBookCache> GetOrderBookCache();
+    boost::shared_ptr<OrderBookCache> GetOrderBookCache();
     void AddOrderBookIDInChnl(unsigned short, unsigned long);
     set<unsigned long> * GetOrderBookIDInChnl(unsigned short);
 
@@ -124,21 +124,21 @@ class SharedObjects
 
   private:
     SharedObjects();
-    static weak_ptr<SharedObjects>         m_pInstance;
+    static boost::weak_ptr<SharedObjects>         m_pInstance;
 
     //------------------------------
     // System config
     //------------------------------
-    shared_ptr<SystemConfig>               m_SysCfg;
-    shared_ptr<Logger>                     m_Logger;
-    shared_ptr<CentralMemMgr>              m_MemMgr;
+    boost::shared_ptr<SystemConfig>               m_SysCfg;
+    boost::shared_ptr<Logger>                     m_Logger;
+    boost::shared_ptr<CentralMemMgr>              m_MemMgr;
     //------------------------------
     // Shared objects
     //------------------------------
 
     //------------------------------
-    vector<shared_ptr<ExpandableCirBuffer> >      m_RawPktCirBuf;
-    vector<shared_ptr<ExpandableCirBuffer4Msg> >  m_MsgCirBuf;
+    vector<boost::shared_ptr<ExpandableCirBuffer> >      m_RawPktCirBuf;
+    vector<boost::shared_ptr<ExpandableCirBuffer4Msg> >  m_MsgCirBuf;
 
     //------------------------------
     // RTS limit of max num of connections per day
@@ -174,7 +174,7 @@ class SharedObjects
     //--------------------------------------------------
     // Order Books
     //--------------------------------------------------
-    shared_ptr<OrderBookCache>             m_OrderBookCache;
+    boost::shared_ptr<OrderBookCache>             m_OrderBookCache;
     vector<set<unsigned long> *>           m_OrderBookIDInEachChnl;
     vector<boost::shared_mutex*>           m_OrderBookIDInEachChnlMutex;
 

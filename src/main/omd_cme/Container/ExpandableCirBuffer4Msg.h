@@ -38,7 +38,7 @@ class ExpandableCirBuffer4Msg
     enum { DIRTYFLAGSIZE = 1 };
     enum { TIMESTAMPSIZE = 8 };
 
-    ExpandableCirBuffer4Msg(const unsigned short,const unsigned int, const unsigned int, shared_ptr<CentralMemMgr>, const unsigned long);
+    ExpandableCirBuffer4Msg(const unsigned short,const unsigned int, const unsigned int, boost::shared_ptr<CentralMemMgr>, const unsigned long);
     ~ExpandableCirBuffer4Msg();
     unsigned int AllocatedSize();
     unsigned int Size();
@@ -91,7 +91,7 @@ class ExpandableCirBuffer4Msg
     //------------------------------
     // System objects
     //------------------------------
-    shared_ptr<CentralMemMgr>    m_MemMgr;
+    boost::shared_ptr<CentralMemMgr>    m_MemMgr;
 
 };
 

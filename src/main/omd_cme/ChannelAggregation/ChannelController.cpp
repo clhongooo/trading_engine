@@ -58,7 +58,7 @@ void ChannelController::StartRecvMcast()
   //--------------------------------------------------
   // Overarching debug option for RTSClient 
   //--------------------------------------------------
-  const shared_ptr<vector<McastIdentifier> > pvMcastIdentifier = m_SysCfg->GetMcastIdentifiers();
+  const boost::shared_ptr<vector<McastIdentifier> > pvMcastIdentifier = m_SysCfg->GetMcastIdentifiers();
 
   for (int i = 0; i < pvMcastIdentifier->size(); ++i)
   {
@@ -86,7 +86,7 @@ void ChannelController::StartRecvMcast()
 
 void ChannelController::StartDataCompletenessInspectors()
 {
-  const shared_ptr<vector<unsigned short> > pvActiveMcastChnl = m_SysCfg->GetActiveMcastChnl();
+  const boost::shared_ptr<vector<unsigned short> > pvActiveMcastChnl = m_SysCfg->GetActiveMcastChnl();
 
   for (int i = 0; i < pvActiveMcastChnl->size(); ++i)
   {

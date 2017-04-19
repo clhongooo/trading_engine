@@ -4,6 +4,7 @@
 #include "StdStreamLogger.h"
 #include "STool.h"
 #include "SDateTime.h"
+#include "Constants.h"
 #include <dlfcn.h>
 #include <iostream>
 #include <fstream>
@@ -53,12 +54,14 @@ class CtpMd : public CThostFtdcMdSpi {
     virtual void OnFrontConnected();
     virtual void OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast);
     virtual void OnRspSubMarketData(CThostFtdcSpecificInstrumentField* pSpecificInstrument, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast);
-    virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData);
+    virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData) = 0;
     //--------------------------------------------------
 
     void release_CThostFtdcMdApi();
     virtual void setDataFolder(const string &);
+    static DataMode detDataMode(const string &);
     virtual void setDataMode(const string &);
+    virtual DataMode GetDataMode();
     virtual void setWriteDataToFile(const string &);
     virtual void setConnectString(const string &);
     virtual void setBrokerID(const string &);
@@ -80,7 +83,7 @@ class CtpMd : public CThostFtdcMdSpi {
       }
     //--------------------------------------------------
 
-  private:
+  protected:
     CThostFtdcMdApi* m_pCThostFtdcMdApi;
 
     void* m_p_ctp_lib_handle;
@@ -89,6 +92,7 @@ class CtpMd : public CThostFtdcMdSpi {
 
     string                   m_DataFolder;
     DataMode                 m_DataMode;
+    string                   m_sDataMode;
     bool                     m_WriteDataToFile;
     string                   m_connection_string;
     TThostFtdcBrokerIDType   m_broker_id;
@@ -105,5 +109,17 @@ class CtpMd : public CThostFtdcMdSpi {
     //--------------------------------------------------
     boost::shared_ptr<StdStreamLogger> m_Logger;
 };
+
+class CtpMdBin : public CtpMd {
+  public:
+    virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData);
+};
+
+class CtpMdCsv : public CtpMd {
+  public:
+    virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData);
+};
+
+
 
 #endif

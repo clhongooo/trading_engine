@@ -28,7 +28,7 @@ McastReceiver::McastReceiver(boost::asio::io_service& io_service,
   //--------------------------------------------------
   // Whether we should print packet headers
   //--------------------------------------------------
-  shared_ptr<vector<unsigned short> > pvMCPrintHdrChnl = m_SysCfg->GetMcastRecvrPrintPktHdr();
+  boost::shared_ptr<vector<unsigned short> > pvMCPrintHdrChnl = m_SysCfg->GetMcastRecvrPrintPktHdr();
   if ((*pvMCPrintHdrChnl)[m_Identifier.Channel_ID()] == 1) m_PrintPktHdr = true;
 
   // Create the socket so that multiple may be bound to the same address.

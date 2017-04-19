@@ -35,7 +35,7 @@ PreProcessor::PreProcessor(const McastIdentifier & mi) :
 
   if (mi.McastType() == McastIdentifier::REALTIME)
   {
-    shared_ptr<vector<unsigned short> > pviRTCannedChnl = m_SysCfg->GetPreProcessorRTCannedChnl();
+    boost::shared_ptr<vector<unsigned short> > pviRTCannedChnl = m_SysCfg->GetPreProcessorRTCannedChnl();
     for (int i = 0; i < (*pviRTCannedChnl).size(); ++i)
       if ((*pviRTCannedChnl)[i] == mi.Channel_ID()) m_bRecordMcast = true;
 
@@ -43,7 +43,7 @@ PreProcessor::PreProcessor(const McastIdentifier & mi) :
   }
   else if (mi.McastType() == McastIdentifier::REFRESH)
   {
-    shared_ptr<vector<unsigned short> > pviRFCannedChnl = m_SysCfg->GetPreProcessorRFCannedChnl();
+    boost::shared_ptr<vector<unsigned short> > pviRFCannedChnl = m_SysCfg->GetPreProcessorRFCannedChnl();
     for (int i = 0; i < (*pviRFCannedChnl).size(); ++i)
       if ((*pviRFCannedChnl)[i] == mi.Channel_ID()) m_bRecordMcast = true;
 

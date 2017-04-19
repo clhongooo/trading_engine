@@ -19,7 +19,7 @@ DataProcController::~DataProcController()
 
 void DataProcController::StartDataProcressing()
 {
-  const shared_ptr<vector<McastIdentifier> > pvMcastIdentifier = m_SysCfg->GetMcastIdentifiers();
+  const boost::shared_ptr<vector<McastIdentifier> > pvMcastIdentifier = m_SysCfg->GetMcastIdentifiers();
   for (int i = 0; i < pvMcastIdentifier->size(); ++i)
   {
     PreProcessor* dt = new PreProcessor((*pvMcastIdentifier)[i]);
@@ -32,7 +32,7 @@ void DataProcController::StartDataProcressing()
         (*pvMcastIdentifier)[i].Port());
   }
 
-  const shared_ptr<vector<unsigned short> > pvActiveMcastChnls = m_SysCfg->GetActiveMcastChnl();
+  const boost::shared_ptr<vector<unsigned short> > pvActiveMcastChnls = m_SysCfg->GetActiveMcastChnl();
 
   if (m_SysCfg->CheckIfRunRealTimeProcessor())
   {

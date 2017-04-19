@@ -35,7 +35,7 @@ class PreProcessor {
     void                Run();
   private:
     bool                DealingWithSeqNoGaps(uint32_t);
-    shared_ptr<DataProcFunctions>      m_DataProcFunc;
+    boost::shared_ptr<DataProcFunctions>      m_DataProcFunc;
 
     //Output related
     FILE *                             m_CannedMcastFile;
@@ -50,10 +50,10 @@ class PreProcessor {
     //Shared objects
     ExpandableCirBuffer *              m_RawPktCirBuf;
     ExpandableCirBuffer4Msg *          m_MsgCirBuf;
-    shared_ptr<SharedObjects>          m_ShrObj;
-    shared_ptr<SystemConfig>           m_SysCfg;
-    shared_ptr<Logger>                 m_Logger;
-    shared_ptr<ThreadHealthMonitor>    m_ThreadHealthMon;
+    boost::shared_ptr<SharedObjects>          m_ShrObj;
+    boost::shared_ptr<SystemConfig>           m_SysCfg;
+    boost::shared_ptr<Logger>                 m_Logger;
+    boost::shared_ptr<ThreadHealthMonitor>    m_ThreadHealthMon;
 
     //Others
     const McastIdentifier &            m_McastIdentifier;

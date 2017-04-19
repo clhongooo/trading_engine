@@ -17,9 +17,9 @@ int main(int argc, const char* argv[])
   //--------------------------------------------------
   // Init the singleton instances first
   //--------------------------------------------------
-  shared_ptr<Logger>          pLogger   =  Logger::Instance();
-  shared_ptr<SystemConfig>    pSysCfg   =  SystemConfig::Instance();
-  shared_ptr<SharedObjects>   pShrObj   =  SharedObjects::Instance();
+  boost::shared_ptr<Logger>          pLogger   =  Logger::Instance();
+  boost::shared_ptr<SystemConfig>    pSysCfg   =  SystemConfig::Instance();
+  boost::shared_ptr<SharedObjects>   pShrObj   =  SharedObjects::Instance();
   //--------------------------------------------------
 
   if (argc > 1)

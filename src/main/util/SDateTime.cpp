@@ -1088,9 +1088,17 @@ YYYYMMDDHHMMSS SDateTime::ChangeTimeZone(const YYYYMMDDHHMMSS & ymdhmsFrom, cons
 //!
 //! \param date to convert
 //! \return unix timestamp 
-time_t to_time_t(const boost::gregorian::date& date ){
-  using namespace boost::posix_time;
-  static ptime epoch(boost::gregorian::date(1970, 1, 1));
-  time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
-  return time_t(secs);
+// time_t SDateTime::to_time_t(const boost::gregorian::date& date){
+//   using namespace boost::posix_time;
+//   static ptime epoch(boost::gregorian::date(1970, 1, 1));
+//   time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
+//   return time_t(secs);
+// }
+
+
+unsigned long SDateTime::GetCurrentTimeInMillsecSinceEpoch()
+{
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+  return tp.tv_sec * 1000 + tp.tv_usec / 1000;
 }

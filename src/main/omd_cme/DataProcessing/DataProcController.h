@@ -38,8 +38,8 @@ class DataProcController {
     //------------------------------
     // System objects
     //------------------------------
-    shared_ptr<SystemConfig>  m_SysCfg;
-    shared_ptr<Logger>        m_Logger;
+    boost::shared_ptr<SystemConfig>  m_SysCfg;
+    boost::shared_ptr<Logger>        m_Logger;
 };
 
 #endif /* DATAPROCCONTROLLER_H_ */

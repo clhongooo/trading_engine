@@ -1,0 +1,5 @@
+project(bin_mdi_reader)
+include_directories(. ../include ../util)
+link_directories(/usr/local/pantheios/lib)
+add_executable(${PROJECT_NAME} Main.cpp)
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} util)

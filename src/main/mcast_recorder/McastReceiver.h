@@ -5,6 +5,7 @@
 #ifndef MCASTRECEIVER_H_
 #define MCASTRECEIVER_H_
 
+#include "SDateTime.h"
 #include <iostream>
 #include <string>
 #include <ctime>

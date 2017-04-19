@@ -7,7 +7,7 @@
 
 #include "ThreadHealthMonitor.h"
 
-weak_ptr<ThreadHealthMonitor> ThreadHealthMonitor::m_pInstance;
+boost::weak_ptr<ThreadHealthMonitor> ThreadHealthMonitor::m_pInstance;
 
 
 ThreadHealthMonitor::ThreadHealthMonitor() :

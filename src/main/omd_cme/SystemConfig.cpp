@@ -1,10 +1,10 @@
 #include "SystemConfig.h"
 
-weak_ptr<SystemConfig> SystemConfig::m_pInstance;
+boost::weak_ptr<SystemConfig> SystemConfig::m_pInstance;
 
 
-shared_ptr<SystemConfig> SystemConfig::Instance() {
-  shared_ptr<SystemConfig> instance = m_pInstance.lock();
+boost::shared_ptr<SystemConfig> SystemConfig::Instance() {
+  boost::shared_ptr<SystemConfig> instance = m_pInstance.lock();
   if (!instance) {
     instance.reset(new SystemConfig());
     m_pInstance = instance;
@@ -92,17 +92,17 @@ boost::posix_time::ptime SystemConfig::GetProgramStartTime() const
   return m_ProgramStartTime;
 }
 
-const  shared_ptr<vector<McastIdentifier> >   SystemConfig::GetMcastIdentifiers()                 const     {  return  m_pMcastIdentifiers;            }
-const  shared_ptr<vector<unsigned  short>  >  SystemConfig::GetActiveMcastChnl()                  const     {  return  m_pActiveMcastChannels;         }
-const  shared_ptr<vector<unsigned  short>  >  SystemConfig::GetPreProcessorRTCannedChnl()         const     {  return  m_pPreProcessorRTCannedChnl;    }
-const  shared_ptr<vector<unsigned  short>  >  SystemConfig::GetPreProcessorRFCannedChnl()         const     {  return  m_pPreProcessorRFCannedChnl;    }
-const  shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRealTimeProcCannedChnl()           const     {  return  m_pRealTimeProcCannedChnl;      }
-const  shared_ptr<vector<unsigned  short>  >  SystemConfig::GetMcastRecvrPrintPktHdr()            const     {  return  m_pMcastRecvrPrintPktHdr;       }
-const  shared_ptr<vector<unsigned  short>  >  SystemConfig::GetPreProcessorRTJson()               const     {  return  m_pPreProcessorRTJson;          }
-const  shared_ptr<vector<unsigned  short>  >  SystemConfig::GetPreProcessorRFJson()               const     {  return  m_pPreProcessorRFJson;          }
-const  shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRealTimeProcessorJson()            const     {  return  m_pRealTimeProcessorJson;       }
-const  shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRefreshProcessorJson()             const     {  return  m_pRefreshProcessorJson;        }
-const  shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRTSClientJson()                    const     {  return  m_pRTSClientJson;               }
+const  boost::shared_ptr<vector<McastIdentifier> >   SystemConfig::GetMcastIdentifiers()                 const     {  return  m_pMcastIdentifiers;            }
+const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetActiveMcastChnl()                  const     {  return  m_pActiveMcastChannels;         }
+const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetPreProcessorRTCannedChnl()         const     {  return  m_pPreProcessorRTCannedChnl;    }
+const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetPreProcessorRFCannedChnl()         const     {  return  m_pPreProcessorRFCannedChnl;    }
+const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRealTimeProcCannedChnl()           const     {  return  m_pRealTimeProcCannedChnl;      }
+const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetMcastRecvrPrintPktHdr()            const     {  return  m_pMcastRecvrPrintPktHdr;       }
+const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetPreProcessorRTJson()               const     {  return  m_pPreProcessorRTJson;          }
+const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetPreProcessorRFJson()               const     {  return  m_pPreProcessorRFJson;          }
+const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRealTimeProcessorJson()            const     {  return  m_pRealTimeProcessorJson;       }
+const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRefreshProcessorJson()             const     {  return  m_pRefreshProcessorJson;        }
+const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRTSClientJson()                    const     {  return  m_pRTSClientJson;               }
 
 const  SystemConfig::Identity SystemConfig::GetIdentity()                           const  {  return  m_Identity;                                      }
 
@@ -128,8 +128,8 @@ const  unsigned  long  SystemConfig::GetRTSClientSleepMillisec()                
 
 const string                              SystemConfig::GetRTSUsername()            const  {  return  m_RTS_Username;                   }
 const unsigned short                      SystemConfig::GetRTSNumOfSvr()            const  {  return  m_RTS_NumOfSvr;                   }
-const shared_ptr<vector<string> >         SystemConfig::GetRTSServerIP()            const  {  return  m_pRTS_ServerIP;                  }
-const shared_ptr<vector<unsigned short> > SystemConfig::GetRTSServerPort()          const  {  return  m_pRTS_ServerPort;                }
+const boost::shared_ptr<vector<string> >         SystemConfig::GetRTSServerIP()            const  {  return  m_pRTS_ServerIP;                  }
+const boost::shared_ptr<vector<unsigned short> > SystemConfig::GetRTSServerPort()          const  {  return  m_pRTS_ServerPort;                }
 const unsigned short                      SystemConfig::GetRTSReconnectionWaitSec() const  {  return  m_RTS_ReconnectionWaitSec;        }
 const unsigned short                      SystemConfig::GetSystemServicePort()      const  {  return  m_SystemServicePort;              }
 const unsigned int                        SystemConfig::GetRFMsgCirBufProtection()  const  {  return  m_RFMsgCirBufProtection;          }
@@ -352,7 +352,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   //--------------------------------------------------
   // At the end of each ReadConfig or ReadConfigOptional, our SharedObjects need to be reinit
   //--------------------------------------------------
-  shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+  boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
   pShrObj->InitializeSharedObjects(false);
   pShrObj->ResetObjects();
 
@@ -689,7 +689,7 @@ void SystemConfig::ReadConfigOptional(const string & sConfigPath)
   //--------------------------------------------------
   // At the end of each ReadConfig or ReadConfigOptional, our SharedObjects need to be reinit
   //--------------------------------------------------
-  shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+  boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
   pShrObj->InitializeSharedObjects(false);
   pShrObj->ResetObjects();
 

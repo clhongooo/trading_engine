@@ -35,7 +35,7 @@ class SystemConfig : boost::noncopyable
 {
   public:
     enum Identity { OMDC, OMDD };
-    static shared_ptr<SystemConfig> Instance();
+    static boost::shared_ptr<SystemConfig> Instance();
     void SetConfigPath(const string &);
     ~SystemConfig(){};
     void Reset();
@@ -44,48 +44,48 @@ class SystemConfig : boost::noncopyable
     void SetProgramStartTime();
     boost::posix_time::ptime GetProgramStartTime() const;
 
-    const Identity                             GetIdentity()                                      const;
-    const shared_ptr<vector<McastIdentifier> > GetMcastIdentifiers()                              const;
-    const shared_ptr<vector<unsigned short> >  GetActiveMcastChnl()                               const;
-    const shared_ptr<vector<unsigned short> >  GetPreProcessorRTCannedChnl()                      const;
-    const shared_ptr<vector<unsigned short> >  GetPreProcessorRFCannedChnl()                      const;
-    const shared_ptr<vector<unsigned short> >  GetRealTimeProcCannedChnl()                        const;
-    const shared_ptr<vector<unsigned short> >  GetMcastRecvrPrintPktHdr()                         const;
-    const shared_ptr<vector<unsigned short> >  GetPreProcessorRTJson()                            const;
-    const shared_ptr<vector<unsigned short> >  GetPreProcessorRFJson()                            const;
-    const shared_ptr<vector<unsigned short> >  GetRealTimeProcessorJson()                         const;
-    const shared_ptr<vector<unsigned short> >  GetRefreshProcessorJson()                          const;
-    const shared_ptr<vector<unsigned short> >  GetRTSClientJson()                                 const;
-    const unsigned int                         GetMemoryBlockSize()                               const;
-    const unsigned long                        GetMaxOneTimeAlloc()                               const;
-    const unsigned long                        GetTrashSeqNoGapLargerThan()                       const;
-    // const unsigned long                        GetPreProcessorSleepMillisec()                     const;
-    // const unsigned long                        GetRealTimeProcSleepMillisec()                     const;
-    const unsigned long                        GetRefreshProcSleepMillisec()                      const;
-    const unsigned long                        GetDataComplInspectorSleepMillisec()               const;
-    const unsigned long                        GetRTSClientSleepMillisec()                        const;
-    const string &                             GetCannedMcastFilePath()                           const;
-    const string &                             GetCannedProcessedDataFilePath()                   const;
-    const string &                             GetCannedRefreshProcFilePath()                     const;
-    const string &                             GetCannedMcastFopenFlag()                          const;
-    const string &                             GetCannedProcessedDataFopenFlag()                  const;
-    const unsigned long                        GetTriggerRetransmissionSeqNoGap()                 const;
-    const unsigned long                        GetTriggerRetransmissionTimeGapMillisec()          const;
-    const unsigned long                        GetTriggerRefreshSeqNoGap()                        const;
-    const unsigned long                        GetTriggerRefreshTimeGapMillisec()                 const;
-    const unsigned long                        GetRTSRequestMaxSeqNoRange()                       const;
-    const unsigned long                        GetRTSRequestMaxMsg()                              const;
-    // const unsigned long                        GetRTSRequestBuffer()                              const;
+    const Identity                                    GetIdentity()                                      const;
+    const boost::shared_ptr<vector<McastIdentifier> > GetMcastIdentifiers()                              const;
+    const boost::shared_ptr<vector<unsigned short> >  GetActiveMcastChnl()                               const;
+    const boost::shared_ptr<vector<unsigned short> >  GetPreProcessorRTCannedChnl()                      const;
+    const boost::shared_ptr<vector<unsigned short> >  GetPreProcessorRFCannedChnl()                      const;
+    const boost::shared_ptr<vector<unsigned short> >  GetRealTimeProcCannedChnl()                        const;
+    const boost::shared_ptr<vector<unsigned short> >  GetMcastRecvrPrintPktHdr()                         const;
+    const boost::shared_ptr<vector<unsigned short> >  GetPreProcessorRTJson()                            const;
+    const boost::shared_ptr<vector<unsigned short> >  GetPreProcessorRFJson()                            const;
+    const boost::shared_ptr<vector<unsigned short> >  GetRealTimeProcessorJson()                         const;
+    const boost::shared_ptr<vector<unsigned short> >  GetRefreshProcessorJson()                          const;
+    const boost::shared_ptr<vector<unsigned short> >  GetRTSClientJson()                                 const;
+    const unsigned int                                GetMemoryBlockSize()                               const;
+    const unsigned long                               GetMaxOneTimeAlloc()                               const;
+    const unsigned long                               GetTrashSeqNoGapLargerThan()                       const;
+    // const unsigned long                               GetPreProcessorSleepMillisec()                     const;
+    // const unsigned long                               GetRealTimeProcSleepMillisec()                     const;
+    const unsigned long                               GetRefreshProcSleepMillisec()                      const;
+    const unsigned long                               GetDataComplInspectorSleepMillisec()               const;
+    const unsigned long                               GetRTSClientSleepMillisec()                        const;
+    const string &                                    GetCannedMcastFilePath()                           const;
+    const string &                                    GetCannedProcessedDataFilePath()                   const;
+    const string &                                    GetCannedRefreshProcFilePath()                     const;
+    const string &                                    GetCannedMcastFopenFlag()                          const;
+    const string &                                    GetCannedProcessedDataFopenFlag()                  const;
+    const unsigned long                               GetTriggerRetransmissionSeqNoGap()                 const;
+    const unsigned long                               GetTriggerRetransmissionTimeGapMillisec()          const;
+    const unsigned long                               GetTriggerRefreshSeqNoGap()                        const;
+    const unsigned long                               GetTriggerRefreshTimeGapMillisec()                 const;
+    const unsigned long                               GetRTSRequestMaxSeqNoRange()                       const;
+    const unsigned long                               GetRTSRequestMaxMsg()                              const;
+    // const unsigned long                               GetRTSRequestBuffer()                              const;
 
 
 
-    const string                               GetRTSUsername()                           const;
-    const unsigned short                       GetRTSNumOfSvr()                           const;
-    const shared_ptr<vector<string> >          GetRTSServerIP()                           const;
-    const shared_ptr<vector<unsigned short> >  GetRTSServerPort()                         const;
-    const unsigned short                       GetRTSReconnectionWaitSec()                const;
-    const unsigned short                       GetSystemServicePort()                     const;
-    const unsigned int                         GetRFMsgCirBufProtection()                 const;
+    const string                                      GetRTSUsername()                           const;
+    const unsigned short                              GetRTSNumOfSvr()                           const;
+    const boost::shared_ptr<vector<string> >          GetRTSServerIP()                           const;
+    const boost::shared_ptr<vector<unsigned short> >  GetRTSServerPort()                         const;
+    const unsigned short                              GetRTSReconnectionWaitSec()                const;
+    const unsigned short                              GetSystemServicePort()                     const;
+    const unsigned int                                GetRFMsgCirBufProtection()                 const;
 
 
 
@@ -103,61 +103,61 @@ class SystemConfig : boost::noncopyable
     SystemConfig();
     SystemConfig(SystemConfig const&);
     SystemConfig& operator=(SystemConfig const&){};
-    static weak_ptr<SystemConfig> m_pInstance;
+    static boost::weak_ptr<SystemConfig> m_pInstance;
 
     //--------------------------------------------------
     string m_ConfigPath;
 
     //--------------------------------------------------
-    shared_ptr<Logger> m_Logger;
+    boost::shared_ptr<Logger> m_Logger;
     //--------------------------------------------------
     // Config.ini fields
     //--------------------------------------------------
-    Identity                                m_Identity;
-    boost::posix_time::ptime                m_ProgramStartTime;
-    string                                  m_CannedMcastFilePath;
-    string                                  m_CannedProcessedDataFilePath;
-    string                                  m_CannedMcastFopenFlag;
-    string                                  m_CannedProcessedDataFopenFlag;
-    // unsigned long                           m_PreProcessorSleepMillisec;
-    // unsigned long                           m_RealTimeProcSleepMillisec;
-    unsigned long                           m_RefreshProcSleepMillisec;
-    unsigned long                           m_DataComplInspectorSleepMillisec;
-    unsigned long                           m_RTSClientSleepMillisec;
-    bool                                    m_RunRealTimeProcessor;
-    bool                                    m_RunRefreshProcessor;
-    unsigned int                            m_MemoryBlockSize;
-    unsigned long                           m_MaxOneTimeAlloc;
-    unsigned long                           m_TrashSeqNoGapLargerThan;
-    unsigned long                           m_TriggerRetransmissionSeqNoGap;
-    unsigned long                           m_TriggerRetransmissionTimeGapMillisec;
-    unsigned long                           m_TriggerRefreshSeqNoGap;
-    unsigned long                           m_TriggerRefreshTimeGapMillisec;
-    unsigned long                           m_RTSRequestMaxSeqNoRange;
-    unsigned long                           m_RTSRequestMaxMsg;
-    // unsigned long                           m_RTSRequestBuffer;
-    shared_ptr<vector<unsigned short> >     m_pActiveMcastChannels;
-    shared_ptr<vector<unsigned short> >     m_pPreProcessorRTCannedChnl;
-    shared_ptr<vector<unsigned short> >     m_pPreProcessorRFCannedChnl;
-    shared_ptr<vector<unsigned short> >     m_pRealTimeProcCannedChnl;
-    shared_ptr<vector<unsigned short> >     m_pMcastRecvrPrintPktHdr;
-    shared_ptr<vector<unsigned short> >     m_pPreProcessorRTJson;
-    shared_ptr<vector<unsigned short> >     m_pPreProcessorRFJson;
-    shared_ptr<vector<unsigned short> >     m_pRealTimeProcessorJson;
-    shared_ptr<vector<unsigned short> >     m_pRefreshProcessorJson;
-    shared_ptr<vector<unsigned short> >     m_pRTSClientJson;
-    shared_ptr<vector<McastIdentifier> >    m_pMcastIdentifiers;
-    bool                                    m_PrintPreProcSeqNoAsInfo;
-    bool                                    m_PrintRealTimeProcSeqNoAsInfo;
-    bool                                    m_PrintRefreshProcSeqNoAsInfo;
-    bool                                    m_PrintOrderBookAsInfo;
-    string                                  m_RTS_Username;
-    unsigned short                          m_RTS_NumOfSvr;
-    shared_ptr<vector<string> >             m_pRTS_ServerIP;
-    shared_ptr<vector<unsigned short> >     m_pRTS_ServerPort;
-    unsigned short                          m_RTS_ReconnectionWaitSec;
-    unsigned short                          m_SystemServicePort;
-    unsigned int                            m_RFMsgCirBufProtection;
+    Identity                                       m_Identity;
+    boost::posix_time::ptime                       m_ProgramStartTime;
+    string                                         m_CannedMcastFilePath;
+    string                                         m_CannedProcessedDataFilePath;
+    string                                         m_CannedMcastFopenFlag;
+    string                                         m_CannedProcessedDataFopenFlag;
+    // unsigned long                                  m_PreProcessorSleepMillisec;
+    // unsigned long                                  m_RealTimeProcSleepMillisec;
+    unsigned long                                  m_RefreshProcSleepMillisec;
+    unsigned long                                  m_DataComplInspectorSleepMillisec;
+    unsigned long                                  m_RTSClientSleepMillisec;
+    bool                                           m_RunRealTimeProcessor;
+    bool                                           m_RunRefreshProcessor;
+    unsigned int                                   m_MemoryBlockSize;
+    unsigned long                                  m_MaxOneTimeAlloc;
+    unsigned long                                  m_TrashSeqNoGapLargerThan;
+    unsigned long                                  m_TriggerRetransmissionSeqNoGap;
+    unsigned long                                  m_TriggerRetransmissionTimeGapMillisec;
+    unsigned long                                  m_TriggerRefreshSeqNoGap;
+    unsigned long                                  m_TriggerRefreshTimeGapMillisec;
+    unsigned long                                  m_RTSRequestMaxSeqNoRange;
+    unsigned long                                  m_RTSRequestMaxMsg;
+    // unsigned long                                  m_RTSRequestBuffer;
+    boost::shared_ptr<vector<unsigned short> >     m_pActiveMcastChannels;
+    boost::shared_ptr<vector<unsigned short> >     m_pPreProcessorRTCannedChnl;
+    boost::shared_ptr<vector<unsigned short> >     m_pPreProcessorRFCannedChnl;
+    boost::shared_ptr<vector<unsigned short> >     m_pRealTimeProcCannedChnl;
+    boost::shared_ptr<vector<unsigned short> >     m_pMcastRecvrPrintPktHdr;
+    boost::shared_ptr<vector<unsigned short> >     m_pPreProcessorRTJson;
+    boost::shared_ptr<vector<unsigned short> >     m_pPreProcessorRFJson;
+    boost::shared_ptr<vector<unsigned short> >     m_pRealTimeProcessorJson;
+    boost::shared_ptr<vector<unsigned short> >     m_pRefreshProcessorJson;
+    boost::shared_ptr<vector<unsigned short> >     m_pRTSClientJson;
+    boost::shared_ptr<vector<McastIdentifier> >    m_pMcastIdentifiers;
+    bool                                           m_PrintPreProcSeqNoAsInfo;
+    bool                                           m_PrintRealTimeProcSeqNoAsInfo;
+    bool                                           m_PrintRefreshProcSeqNoAsInfo;
+    bool                                           m_PrintOrderBookAsInfo;
+    string                                         m_RTS_Username;
+    unsigned short                                 m_RTS_NumOfSvr;
+    boost::shared_ptr<vector<string> >             m_pRTS_ServerIP;
+    boost::shared_ptr<vector<unsigned short> >     m_pRTS_ServerPort;
+    unsigned short                                 m_RTS_ReconnectionWaitSec;
+    unsigned short                                 m_SystemServicePort;
+    unsigned int                                   m_RFMsgCirBufProtection;
 };
 
 #endif

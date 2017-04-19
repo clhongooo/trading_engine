@@ -1,6 +1,6 @@
 #include "SharedObjects.h"
 
-weak_ptr<SharedObjects> SharedObjects::m_pInstance;
+boost::weak_ptr<SharedObjects> SharedObjects::m_pInstance;
 
 SharedObjects::SharedObjects() : m_omd_trade_call_back_func(NULL), m_omd_orderbook_call_back_func(NULL)
 {
@@ -17,9 +17,9 @@ SharedObjects::~SharedObjects()
   DestroyObjects();
 }
 
-shared_ptr<SharedObjects> SharedObjects::Instance()
+boost::shared_ptr<SharedObjects> SharedObjects::Instance()
 {
-  shared_ptr<SharedObjects> instance = m_pInstance.lock();
+  boost::shared_ptr<SharedObjects> instance = m_pInstance.lock();
   if (!instance) {
     instance.reset(new SharedObjects());
     m_pInstance = instance;
@@ -190,8 +190,8 @@ void SharedObjects::InitializeSharedObjects(bool bFirstUse)
   {
     for (int i = 0; i < McastIdentifier::GetMaxHash(); ++i)
     {
-      m_RawPktCirBuf.push_back(shared_ptr<ExpandableCirBuffer>());
-      m_MsgCirBuf.push_back(shared_ptr<ExpandableCirBuffer4Msg>());
+      m_RawPktCirBuf.push_back(boost::shared_ptr<ExpandableCirBuffer>());
+      m_MsgCirBuf.push_back(boost::shared_ptr<ExpandableCirBuffer4Msg>());
       m_bRefreshActivated.push_back(1); // initialize to 1 meaning refresh mode is on on system start
       m_RefreshActnMutex.push_back(NULL);
       m_RTSeqResetOffset.push_back(NULL);
@@ -209,7 +209,7 @@ void SharedObjects::InitializeSharedObjects(bool bFirstUse)
     m_omd_orderbook_call_back_func = NULL;
   }
 
-  shared_ptr<vector<McastIdentifier> > vMcastId = m_SysCfg->GetMcastIdentifiers();
+  boost::shared_ptr<vector<McastIdentifier> > vMcastId = m_SysCfg->GetMcastIdentifiers();
   for (int i = 0; i < vMcastId->size(); ++i)
   {
     m_RawPktCirBuf[(*vMcastId)[i].Hash_MC()].reset(new ExpandableCirBuffer((*vMcastId)[i].Channel_ID(),m_SysCfg->GetMemoryBlockSize(),MAX_OMD_PACKET_SIZE,m_MemMgr));
@@ -218,7 +218,7 @@ void SharedObjects::InitializeSharedObjects(bool bFirstUse)
       m_MsgCirBuf[(*vMcastId)[i].Hash_Chnl()].reset(new ExpandableCirBuffer4Msg((*vMcastId)[i].Channel_ID(),m_SysCfg->GetMemoryBlockSize(),MAX_OMD_PACKET_SIZE,m_MemMgr,m_SysCfg->GetMaxOneTimeAlloc()));
   }
 
-  shared_ptr<vector<unsigned short> > vActvChnl = m_SysCfg->GetActiveMcastChnl();
+  boost::shared_ptr<vector<unsigned short> > vActvChnl = m_SysCfg->GetActiveMcastChnl();
   for (int i = 0; i < vActvChnl->size(); ++i)
   {
     if (!m_RefreshActnMutex[(*vActvChnl)[i]])
@@ -591,7 +591,7 @@ void SharedObjects::SetSystemState(ESysState newstate)
 //--------------------------------------------------
 // Order Book
 //--------------------------------------------------
-shared_ptr<OrderBookCache> SharedObjects::GetOrderBookCache()
+boost::shared_ptr<OrderBookCache> SharedObjects::GetOrderBookCache()
 {
   return m_OrderBookCache;
 }
