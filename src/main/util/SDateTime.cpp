@@ -916,26 +916,15 @@ int SDateTime::DaysInYear(int year)
   return (IsLeapYear(year) ? 366 : 365);
 }
 
-
-// std::string SDateTime::FormatPTime(boost::posix_time::ptime pt)
-// {
-//   using namespace boost::posix_time;
-//   static std::locale loc(std::wcout.getloc(), new wtime_facet(L"%Y%m%d_%H%M%s"));
-//
-//   std::stringstream ss;
-//   ss.imbue(loc);
-//   ss << pt;
-//   return ss.str();
-// }
-std::wstring SDateTime::FormatPTime(boost::posix_time::ptime pt)
+std::string SDateTime::FormatPTime(boost::posix_time::ptime pt)
 {
   using namespace boost::posix_time;
-  static std::locale loc(std::wcout.getloc(), new wtime_facet(L"%Y%m%d_%H%M%s"));
+  static std::locale loc(std::cout.getloc(), new time_facet("%Y%m%d_%H%M%s"));
 
-  std::basic_stringstream<wchar_t> wss;
-  wss.imbue(loc);
-  wss << pt;
-  return wss.str();
+  std::basic_stringstream<char> ss;
+  ss.imbue(loc);
+  ss << pt;
+  return ss.str();
 }
 
 string SDateTime::fromUnixTimeToString(unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)
@@ -959,8 +948,7 @@ string SDateTime::fromUnixTimeToString(unsigned long ulUnixTime, TIMEPRECISION t
     default:       {                                                                                                                      break; }
   }
 
-  std::wstring ws = FormatPTime(*p_pt);
-  std::string s((const char*)&ws[0], sizeof(wchar_t)/sizeof(char)*ws.size());
+  std::string s = FormatPTime(*p_pt);
   boost::replace_all(s,".","_");
   return s;
 }

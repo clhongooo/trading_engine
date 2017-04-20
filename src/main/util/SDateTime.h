@@ -97,7 +97,7 @@ class SDateTime
     static bool IsValidYMD  (int year, int month, int day);
     static int  DaysInMonth (int y,int m);
     static int  DaysInYear  (int year);
-    static std::wstring FormatPTime(boost::posix_time::ptime);
+    static std::string FormatPTime(boost::posix_time::ptime);
     static string fromUnixTimeToString(unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE);
     static string GetCurrentTimeYYYYMMDD_HHMMSS_000000();
     static string GetCurrentTimeYYYYMMDD_HHMMSS();
