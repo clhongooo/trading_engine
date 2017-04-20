@@ -166,13 +166,13 @@ bool ATU_CTP_OTI::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
 		// Sunny added - [start]
 		//--------------------------------------------------
 		if (s.m_order_id != "" &&
-			s.m_feedcode != "")
+			s.m_instrument != "")
 		{
-			map<string,string>::iterator it = m_orderid_feedcode.find(s.m_order_id);
+			map<string,string>::iterator it = m_orderid_instrument.find(s.m_order_id);
 
-			if (it == m_orderid_feedcode.end())
+			if (it == m_orderid_instrument.end())
 			{
-				m_orderid_feedcode[s.m_order_id] = s.m_feedcode;
+				m_orderid_instrument[s.m_order_id] = s.m_instrument;
 			}
 		}
 		//--------------------------------------------------
@@ -182,7 +182,7 @@ bool ATU_CTP_OTI::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
 		memset(&req, 0, sizeof(req));
 		strcpy(req.BrokerID, m_broker_id);
 		strcpy(req.InvestorID, m_investor_id);
-		strcpy(req.InstrumentID, s.m_feedcode.c_str());
+		strcpy(req.InstrumentID, s.m_instrument.c_str());
 		string orderref=createOrderRef(s.m_order_id);
 		strcpy(req.OrderRef, orderref.c_str());
 
@@ -285,13 +285,13 @@ bool ATU_CTP_OTI::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
 		//--------------------------------------------------
 		// Sunny added - [start]
 		//--------------------------------------------------
-		if (s.m_feedcode == "" &&
-				m_orderid_feedcode.find(s.m_order_id) != m_orderid_feedcode.end())
-			s.m_feedcode = m_orderid_feedcode[s.m_order_id];
+		if (s.m_instrument == "" &&
+				m_orderid_instrument.find(s.m_order_id) != m_orderid_instrument.end())
+			s.m_instrument = m_orderid_instrument[s.m_order_id];
 		//--------------------------------------------------
 		// Sunny added - [end]
 		//--------------------------------------------------
-		strcpy(req.InstrumentID, s.m_feedcode.c_str());
+		strcpy(req.InstrumentID, s.m_instrument.c_str());
 		addLog(__LOGSOURCE__,ATU_logfeed_struct::INFO,"Order Deleted from CTP order id=%s","s",s.m_order_id.c_str());
 		boost::unique_lock<boost::recursive_mutex> lock(m_requestIDMutex);
 		int iResult = m_pUserApi->ReqOrderAction(&req, ++m_iRequestID);
@@ -460,7 +460,7 @@ void ATU_CTP_OTI::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder,
 	string timestamp=Toolbox::timeStamp_full();
 	of.m_timestamp = timestamp;
 	of.m_market = "CFFEX";
-	of.m_feedcode = string(pInputOrder->InstrumentID);
+	of.m_instrument = string(pInputOrder->InstrumentID);
 	of.m_order_id = getOrderID(string(pInputOrder->OrderRef));
 	of.m_price = pInputOrder->LimitPrice;
 	of.m_qty = pInputOrder->VolumeTotalOriginal;
@@ -521,7 +521,7 @@ void ATU_CTP_OTI::OnRspOrderAction(
 		of.m_islast=0;
 		of.m_timestamp = Toolbox::timeStamp_full();
 		of.m_market = "CFFEX";
-		of.m_feedcode = string(pInputOrderAction->InstrumentID);
+		of.m_instrument = string(pInputOrderAction->InstrumentID);
 		of.m_order_id = getOrderID(string(pInputOrderAction->OrderRef));
 		of.m_price = pInputOrderAction->LimitPrice;
 		//cancel order failed, pInputOrderAction don't provide quantity
@@ -558,7 +558,7 @@ void ATU_CTP_OTI::OnRtnOrder(CThostFtdcOrderField *pOrder) {
 
 	of.m_timestamp = Toolbox::timeStamp_full();
 	of.m_market = "CFFEX";
-	of.m_feedcode = string(pOrder->InstrumentID);
+	of.m_instrument = string(pOrder->InstrumentID);
 	of.m_order_id = getOrderID(string(pOrder->OrderRef));
 	of.m_price = pOrder->LimitPrice;
 	of.m_qty = pOrder->VolumeTotalOriginal;
@@ -633,7 +633,7 @@ void ATU_CTP_OTI::OnRtnTrade(CThostFtdcTradeField *pTrade) {
 
 	tf.m_timestamp=Toolbox::timeStamp_full();
 	tf.m_market="CFFEX";
-	tf.m_feedcode=string(pTrade->InstrumentID);
+	tf.m_instrument=string(pTrade->InstrumentID);
 	tf.m_order_id=getOrderID(string(pTrade->OrderRef));
 	tf.m_price=pTrade->Price;
 	tf.m_qty=pTrade->Volume;
@@ -724,7 +724,7 @@ void ATU_CTP_OTI::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoF
 
 		of.m_timestamp = Toolbox::timeStamp_full();
 		of.m_market = "CFFEX";
-		of.m_feedcode = string(pOrder->InstrumentID);
+		of.m_instrument = string(pOrder->InstrumentID);
 		of.m_order_id = getOrderID(string(pOrder->OrderRef));
 		of.m_price = pOrder->LimitPrice;
 		of.m_qty = pOrder->VolumeTotalOriginal;
@@ -785,7 +785,7 @@ void ATU_CTP_OTI::OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoF
 		}
 		tf.m_timestamp=Toolbox::timeStamp_full();
 		tf.m_market="CFFEX";
-		tf.m_feedcode=string(pTrade->InstrumentID);
+		tf.m_instrument=string(pTrade->InstrumentID);
 		tf.m_order_id=getOrderID(string(pTrade->OrderRef));
 		tf.m_price=pTrade->Price;
 		tf.m_qty=pTrade->Volume;

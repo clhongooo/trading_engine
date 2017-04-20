@@ -45,7 +45,7 @@ void ContFut::Add(const YYYYMMDDHHMMSS & ymdhms, const ATU_MDI_marketfeed_struct
 {
   if (sMD.m_traded_price == 0 || !STool::IsValidPriceOrVol(sMD.m_traded_price)) return;
 
-  const string & symbol = sMD.m_feedcode;
+  const string & symbol = sMD.m_instrument;
 
   EExchange pri_ex = m_Exchg->GetPrimaryExchange(symbol);
 

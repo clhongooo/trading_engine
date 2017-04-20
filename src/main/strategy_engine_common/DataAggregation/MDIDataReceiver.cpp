@@ -213,7 +213,7 @@ void MDIDataReceiver::BatchMktFeedSubscription(const vector<string>& symbols, co
 
   for (int i = 0; i < symbols.size(); i++)
   {
-    ss.m_feedcode  = symbols[i];
+    ss.m_instrument  = symbols[i];
     ss.m_begindate = begDate;
     ss.m_enddate   = endDate;
     // ss.m_subscription_attribute;

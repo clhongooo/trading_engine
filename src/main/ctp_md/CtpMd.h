@@ -29,7 +29,7 @@ using namespace std;
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/lexical_cast.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 using namespace boost::filesystem;
 using namespace boost::interprocess;
 #include "ThostFtdcMdApi.h"

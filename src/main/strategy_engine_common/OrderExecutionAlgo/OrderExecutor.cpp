@@ -74,7 +74,7 @@ void OrderExecutor::HandleOrderFeedRecv(const vector<string> & feedMsg)
   //--------------------------------------------------
   ATU_OTI_orderfeed_struct of;
   of.m_timestamp         = feedMsg[0];
-  of.m_feedcode          = feedMsg[3];
+  of.m_instrument          = feedMsg[3];
   of.m_order_id          = feedMsg[4];
   of.m_price             = boost::lexical_cast<double>(feedMsg[5]);
   of.m_qty               = boost::lexical_cast<double>(feedMsg[6]);
@@ -146,7 +146,7 @@ void OrderExecutor::HandleOrderFeedRecv(const ATU_OTI_orderfeed_struct & of)
 void OrderExecutor::HandleTradeFeedRecv(const vector<string> & feedMsg)
 {
   ATU_OTI_tradefeed_struct tf;
-  tf.m_feedcode             = feedMsg[3];
+  tf.m_instrument             = feedMsg[3];
   tf.m_order_id             = feedMsg[4];
   tf.m_price                = boost::lexical_cast<double>(feedMsg[5]);
   tf.m_qty                  = boost::lexical_cast<double>(feedMsg[6]);
@@ -160,7 +160,7 @@ void OrderExecutor::HandleTradeFeedRecv(const vector<string> & feedMsg)
 
 void OrderExecutor::HandleTradeFeedRecv(const ATU_OTI_tradefeed_struct & tf)
 {
-  const string & symbol     = tf.m_feedcode;
+  const string & symbol     = tf.m_instrument;
   const string & order_id   = tf.m_order_id;
   const double price        = tf.m_price;
   const long signed_qty     = ((tf.m_buy_or_sell == 1) ? 1 : -1) * boost::lexical_cast<long>(tf.m_qty);

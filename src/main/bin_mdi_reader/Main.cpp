@@ -25,6 +25,7 @@ int main(int argc, const char *argv[])
   ATU_MDI_binary_marketfeed_struct bin_mdi_struct;
   while (ferror( fp ) != 0) {
     fread(&bin_mdi_struct, sizeof(ATU_MDI_binary_marketfeed_struct), 1, fp);
+    cout << bin_mdi_struct.m_instrument << endl;
     cout << bin_mdi_struct.m_traded_price << endl;
   }
 

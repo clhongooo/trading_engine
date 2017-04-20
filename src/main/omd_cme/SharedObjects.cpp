@@ -69,7 +69,7 @@ void SharedObjects::ResetObjectsPurgeRawCirBuf()
   for (unsigned int i = 0; i < m_bRefreshActivated.size(); ++i)
     m_bRefreshActivated[i] = 0; // this is not immediately after system start, no need to turn on refresh mode.
 
-  m_omd_mdi_subscribed_feedcode.clear();
+  m_omd_mdi_subscribed_instrument.clear();
 
   m_bCapTest = false;
   m_NumOfRTSConn = 0;
@@ -660,29 +660,29 @@ bool SharedObjects::notify_orderbook(long tradeid, ATU_MDI_marketfeed_struct &s)
   }
   return true;
 }
-void SharedObjects::omd_mdi_subscribe_feedcode(const string &sFeedCode)
+void SharedObjects::omd_mdi_subscribe_instrument(const string &sFeedCode)
 {
   try
   {
     unsigned long ulCode = boost::lexical_cast<unsigned long>(sFeedCode);
 
     boost::unique_lock<boost::shared_mutex> lock(m_omd_mdi_subscription_Mutex);
-    set<unsigned long>::iterator it = m_omd_mdi_subscribed_feedcode.find(ulCode);
-    if (it == m_omd_mdi_subscribed_feedcode.end())
+    set<unsigned long>::iterator it = m_omd_mdi_subscribed_instrument.find(ulCode);
+    if (it == m_omd_mdi_subscribed_instrument.end())
     {
-      m_omd_mdi_subscribed_feedcode.insert(ulCode);
+      m_omd_mdi_subscribed_instrument.insert(ulCode);
       Logger::Instance()->Write(Logger::INFO, "OMD_MDI: New marketfeed subscription received. %s", sFeedCode.c_str());
     }
   }
   catch (const boost::bad_lexical_cast & e)
   {
-    Logger::Instance()->Write(Logger::ERROR, "%s:: lexical_cast: feedcode = |%s|. %s", __FUNCTION__, sFeedCode.c_str(), e.what());
+    Logger::Instance()->Write(Logger::ERROR, "%s:: lexical_cast: instrument = |%s|. %s", __FUNCTION__, sFeedCode.c_str(), e.what());
   }
   return;
 }
 bool SharedObjects::omd_mdi_check_if_subscribed(unsigned long ulCode)
 {
   boost::shared_lock<boost::shared_mutex> lock(m_omd_mdi_subscription_Mutex);
-  return (m_omd_mdi_subscribed_feedcode.find(ulCode) != m_omd_mdi_subscribed_feedcode.end());
+  return (m_omd_mdi_subscribed_instrument.find(ulCode) != m_omd_mdi_subscribed_instrument.end());
 }
 

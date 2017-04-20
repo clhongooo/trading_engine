@@ -159,7 +159,7 @@ void MarketData::UpdateInternalDataWithMDIstruct(const ATU_MDI_marketfeed_struct
     double price_ratio = 1;
     bool bCorpAction = false;
 
-    const string & symbol = sMDa.m_feedcode;
+    const string & symbol = sMDa.m_instrument;
     bool bHKT = (m_Exchg->GetPrimaryExchange(symbol) == EX_HKFE || m_Exchg->GetPrimaryExchange(symbol) == EX_HKSE);
     bool bUST = (m_Exchg->GetPrimaryExchange(symbol) == EX_NYSE || m_Exchg->GetPrimaryExchange(symbol) == EX_CME);
 
@@ -203,7 +203,7 @@ void MarketData::UpdateInternalDataWithMDIstruct(const ATU_MDI_marketfeed_struct
   //--------------------------------------------------
   if (m_SysCfg->GetErroneousTickPxChg() > 0)
   {
-    const string & symbol    = p_sMD->m_feedcode;
+    const string & symbol    = p_sMD->m_instrument;
     const double price       = GetTradePriceOrElseWeightedMidQuote(*p_sMD);
     const double dTickReturn = ComputeTickReturn(symbol,price);
 
@@ -235,20 +235,20 @@ void MarketData::UpdateInternalDataWithMDIstruct(const ATU_MDI_marketfeed_struct
   if (m_SysCfg->Get_MktDataTradeVolumeMode() == SystemConfig::ACCUMULATED_VOLUME_MODE)
   {
     double dCurAccVol = p_sMD->m_traded_volume;
-    double dLastAccVol = GetLastAccumTradeVolume(p_sMD->m_feedcode);
+    double dLastAccVol = GetLastAccumTradeVolume(p_sMD->m_instrument);
     if (dCurAccVol < dLastAccVol)
     {
-      UpdateBarAggregators(yyyymmdd,hhmmss,p_sMD->m_feedcode,p_sMD->m_traded_price,dCurAccVol);
+      UpdateBarAggregators(yyyymmdd,hhmmss,p_sMD->m_instrument,p_sMD->m_traded_price,dCurAccVol);
     }
     else
     {
-      UpdateBarAggregators(yyyymmdd,hhmmss,p_sMD->m_feedcode,p_sMD->m_traded_price,dCurAccVol-dLastAccVol);
+      UpdateBarAggregators(yyyymmdd,hhmmss,p_sMD->m_instrument,p_sMD->m_traded_price,dCurAccVol-dLastAccVol);
     }
-    UpdateLastAccumTradeVolume(p_sMD->m_feedcode,dCurAccVol);
+    UpdateLastAccumTradeVolume(p_sMD->m_instrument,dCurAccVol);
   }
   else
   {
-    UpdateBarAggregators(yyyymmdd,hhmmss,p_sMD->m_feedcode,p_sMD->m_traded_price,p_sMD->m_traded_volume);
+    UpdateBarAggregators(yyyymmdd,hhmmss,p_sMD->m_instrument,p_sMD->m_traded_price,p_sMD->m_traded_volume);
   }
 
   //--------------------------------------------------
@@ -262,7 +262,7 @@ void MarketData::UpdateInternalDataWithMDIstruct(const ATU_MDI_marketfeed_struct
   UpdateBarAggregatorsAndLatestSnapshotContFut(YYYYMMDDHHMMSS(yyyymmdd,hhmmss),*p_sMD);
 
   //--------------------------------------------------
-  const string & sym = p_sMD->m_feedcode;
+  const string & sym = p_sMD->m_instrument;
   AddUpdatedSymbol(sym);
   if (m_ContFut->DoesSymHaveContFut(sym)) AddUpdatedSymbol(ContFut::GetContFutFrRglrSym(sym,1));
 
@@ -524,14 +524,14 @@ void MarketData::UpdateLatestSnapshot(const YYYYMMDD & yyyymmdd, const HHMMSS & 
   //--------------------------------------------------
   // Update Latest Snapshot
   //--------------------------------------------------
-  boost::unique_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(structMD.m_feedcode)));
+  boost::unique_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(structMD.m_instrument)));
 
-  map<string,TupMDIStructTS>::iterator it = m_LatestSnapshots.find(structMD.m_feedcode);
+  map<string,TupMDIStructTS>::iterator it = m_LatestSnapshots.find(structMD.m_instrument);
 
   if (it == m_LatestSnapshots.end())
   {
-    m_LatestSnapshots[structMD.m_feedcode] = TupMDIStructTS();
-    it = m_LatestSnapshots.find(structMD.m_feedcode);
+    m_LatestSnapshots[structMD.m_instrument] = TupMDIStructTS();
+    it = m_LatestSnapshots.find(structMD.m_instrument);
   }
 
   {
@@ -680,11 +680,11 @@ void MarketData::NotifyConsumers()
   m_cvDataAvb.notify_all();
 }
 
-bool MarketData::GetLatestNominalPrice(const string & feedcode, double & nominalprice)
+bool MarketData::GetLatestNominalPrice(const string & instrument, double & nominalprice)
 {
-  boost::shared_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(feedcode)));
+  boost::shared_lock<boost::shared_mutex> lock(*(GetLatestSnapshotsMutex(instrument)));
 
-  map<string,TupMDIStructTS>::iterator it = m_LatestSnapshots.find(feedcode);
+  map<string,TupMDIStructTS>::iterator it = m_LatestSnapshots.find(instrument);
 
   if (it == m_LatestSnapshots.end()) return false;
   if (!it->second.IsReady()) return false;

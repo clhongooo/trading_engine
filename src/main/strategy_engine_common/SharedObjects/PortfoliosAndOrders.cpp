@@ -371,7 +371,7 @@ void PortfoliosAndOrders::ConstructSignalFeedsAndChgOrderState(vector<string>& v
       std::setprecision(NUMOFDECIMALPLACEINPRICE) <<
       it->m_timestamp        <<  ",signalfeed," <<
       it->m_market           <<  "," <<
-      it->m_feedcode         <<  "," <<
+      it->m_instrument         <<  "," <<
       it->m_order_id         <<  "," <<
       it->m_price            <<  "," <<   setprecision(2) << fixed <<
       it->m_qty              <<  "," <<
@@ -424,7 +424,7 @@ void PortfoliosAndOrders::MarketOrderConstructor(const OrderInstruction oi, ATU_
 
   strctMktOrder.m_timestamp      = oi.m_time_stamp;
   strctMktOrder.m_market         = "HKIF";
-  strctMktOrder.m_feedcode       = oi.m_symbol;
+  strctMktOrder.m_instrument       = oi.m_symbol;
   strctMktOrder.m_order_id       = oi.m_order_id;
   strctMktOrder.m_price          = (oi.m_signed_qty > 0) ? dBestAsk * 1.02 : dBestBid * 0.98;
   strctMktOrder.m_qty            = fabs(oi.m_signed_qty);
@@ -451,7 +451,7 @@ void PortfoliosAndOrders::LimitOrderConstructor(const OrderInstruction oi, ATU_O
 
   strctLimitOrder.m_timestamp      = oi.m_time_stamp;
   strctLimitOrder.m_market         = "HKIF";
-  strctLimitOrder.m_feedcode       = oi.m_symbol;
+  strctLimitOrder.m_instrument       = oi.m_symbol;
   strctLimitOrder.m_order_id       = oi.m_order_id;
   strctLimitOrder.m_qty            = fabs(oi.m_signed_qty);
   strctLimitOrder.m_open_or_close  = "open";

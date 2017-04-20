@@ -9,7 +9,7 @@ using namespace std;
 typedef struct ATU_OTI_signalfeed_struct{
   string m_timestamp;
   string m_market;
-  string m_feedcode;
+  string m_instrument;
   string m_order_id;
   double m_price;
   double m_qty;
@@ -24,7 +24,7 @@ typedef struct ATU_OTI_signalfeed_struct{
   ATU_OTI_signalfeed_struct():
     m_timestamp(""),
     m_market(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_order_id(""),
     m_price(0),
     m_qty(0),
@@ -41,7 +41,7 @@ typedef struct ATU_OTI_signalfeed_struct{
 typedef struct ATU_OTI_orderfeed_struct{
   string m_timestamp;
   string m_market;
-  string m_feedcode;
+  string m_instrument;
   string m_order_id;
   double m_price;
   double m_qty;
@@ -61,7 +61,7 @@ typedef struct ATU_OTI_orderfeed_struct{
   ATU_OTI_orderfeed_struct():
     m_timestamp(""),
     m_market(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_order_id(""),
     m_price(0),
     m_qty(0),
@@ -83,13 +83,13 @@ typedef struct ATU_OTI_orderfeed_struct{
 typedef struct ATU_OTI_riskfeed_struct{
   string m_timestamp;
   string m_market;
-  string m_feedcode;
+  string m_instrument;
   string m_order_id;
   string m_msg_description;
   ATU_OTI_riskfeed_struct():
     m_timestamp(""),
     m_market(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_order_id(""),
     m_msg_description(""){}
 } ATU_OTI_riskfeed_struct;
@@ -97,13 +97,13 @@ typedef struct ATU_OTI_riskfeed_struct{
 typedef struct ATU_OTI_riskstatusfeed_struct{
   string m_timestamp;
   string m_identity;
-  string m_feedcode;
+  string m_instrument;
   string m_key;
   string m_value;
   ATU_OTI_riskstatusfeed_struct():
     m_timestamp(""),
     m_identity(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_key(""),
     m_value(""){}
 } ATU_OTI_riskstatusfeed_struct;
@@ -117,7 +117,7 @@ typedef struct ATU_OTI_ping_struct{
 typedef struct ATU_OTI_tradefeed_struct{
   string m_timestamp;
   string m_market;
-  string m_feedcode;
+  string m_instrument;
   string m_order_id;
   double m_price;
   double m_qty;
@@ -131,7 +131,7 @@ typedef struct ATU_OTI_tradefeed_struct{
   ATU_OTI_tradefeed_struct():
     m_timestamp(""),
     m_market(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_order_id(""),
     m_price(0),
     m_qty(0),
@@ -147,7 +147,7 @@ typedef struct ATU_OTI_tradefeed_struct{
 typedef struct ATU_OTI_portfoliofeed_struct{
   string m_timestamp;
   string m_market;
-  string m_feedcode;
+  string m_instrument;
   double m_net_position;
   double m_average_open_price;
   double m_net_invested;
@@ -158,7 +158,7 @@ typedef struct ATU_OTI_portfoliofeed_struct{
   ATU_OTI_portfoliofeed_struct():
     m_timestamp(""),
     m_market(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_net_position(0),
     m_average_open_price(0),
     m_net_invested(0),
@@ -215,7 +215,7 @@ typedef struct ATU_OTI_risk_setting_struct{
 typedef struct ATU_OTI_insert_order_struct{
   string m_timestamp;
   string m_market;
-  string m_feedcode;
+  string m_instrument;
   string m_order_id;
   double m_price;
   double m_qty;
@@ -227,7 +227,7 @@ typedef struct ATU_OTI_insert_order_struct{
   ATU_OTI_insert_order_struct():
     m_timestamp(""),
     m_market(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_order_id(""),
     m_price(0),
     m_qty(0),
@@ -241,25 +241,25 @@ typedef struct ATU_OTI_insert_order_struct{
 typedef struct ATU_OTI_delete_order_struct{
   string m_timestamp;
   string m_market;
-  string m_feedcode;
+  string m_instrument;
   string m_order_id;
   ATU_OTI_delete_order_struct():
     m_timestamp(""),
     m_market(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_order_id(""){}
 } ATU_OTI_delete_order_struct;
 
 typedef struct ATU_OTI_quoterequestfeed_struct{
   string m_timestamp;
   string m_market;
-  string m_feedcode;
+  string m_instrument;
   int m_buysellboth;
   double m_volume;
   ATU_OTI_quoterequestfeed_struct():
     m_timestamp(""),
     m_market(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_buysellboth(0),
     m_volume(0){}
 } ATU_OTI_quoterequestfeed_struct;

@@ -14,14 +14,14 @@ using namespace boost;
 typedef struct ATU_MDI_subscription_struct {
   string m_timestamp;
   string m_market;
-  string m_feedcode;
+  string m_instrument;
   string m_begindate;
   string m_enddate;
   string m_subscription_attribute;
   ATU_MDI_subscription_struct():
     m_timestamp(""),
     m_market(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_begindate(""),
     m_enddate(""),
     m_subscription_attribute(""){}
@@ -30,11 +30,11 @@ typedef struct ATU_MDI_subscription_struct {
 typedef struct ATU_MDI_unsubscription_struct {
   string m_timestamp;
   string m_market;
-  string m_feedcode;
+  string m_instrument;
   ATU_MDI_unsubscription_struct():
     m_timestamp(""),
     m_market(""),
-    m_feedcode(""){}
+    m_instrument(""){}
 } ATU_MDI_unsubscription_struct;
 
 typedef struct ATU_MDI_acknowledgement_struct {
@@ -49,7 +49,7 @@ typedef struct ATU_MDI_acknowledgement_struct {
 
 typedef struct ATU_MDI_marketfeed_struct {
   string m_timestamp;
-  string m_feedcode;
+  string m_instrument;
   double m_traded_price;
   double m_traded_volume;
   double m_bid_price_1;
@@ -74,7 +74,7 @@ typedef struct ATU_MDI_marketfeed_struct {
   double m_ask_volume_5;
   ATU_MDI_marketfeed_struct():
     m_timestamp(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_traded_price(0),
     m_traded_volume(0),
     m_bid_price_1(0),
@@ -102,7 +102,7 @@ typedef struct ATU_MDI_marketfeed_struct {
   {
     std::ostringstream buffer; 
     buffer << mfs.m_timestamp     << ",";
-    buffer << mfs.m_feedcode      << ",";
+    buffer << mfs.m_instrument      << ",";
     buffer << mfs.m_traded_price  << ",";
     buffer << mfs.m_traded_volume << ",B,";
     buffer << mfs.m_bid_price_1   << ",";
@@ -134,7 +134,7 @@ typedef struct ATU_MDI_marketfeed_struct {
     if (vMDI.size() != 26) return false;
 
     mfs.m_timestamp     =                             vMDI[ 0] ;
-    mfs.m_feedcode      =                             vMDI[ 1] ;
+    mfs.m_instrument      =                             vMDI[ 1] ;
     mfs.m_traded_price  = boost::lexical_cast<double>(vMDI[ 2]);
     mfs.m_traded_volume = boost::lexical_cast<double>(vMDI[ 3]);
     mfs.m_bid_price_1   = boost::lexical_cast<double>(vMDI[ 5]);
@@ -164,29 +164,28 @@ typedef struct ATU_MDI_marketfeed_struct {
 
 typedef struct ATU_MDI_binary_marketfeed_struct {
   uint64_t m_millisec_since_epoch;
-  char m_feedcode[50];
-  int16_t m_price_decimal_places;
-  int32_t m_traded_price;
+  char m_instrument[50];
+  double  m_traded_price;
   int32_t m_traded_volume;
-  int32_t m_bid_price_1;
+  double  m_bid_price_1;
   int32_t m_bid_volume_1;
-  int32_t m_bid_price_2;
+  double  m_bid_price_2;
   int32_t m_bid_volume_2;
-  int32_t m_bid_price_3;
+  double  m_bid_price_3;
   int32_t m_bid_volume_3;
-  int32_t m_bid_price_4;
+  double  m_bid_price_4;
   int32_t m_bid_volume_4;
-  int32_t m_bid_price_5;
+  double  m_bid_price_5;
   int32_t m_bid_volume_5;
-  int32_t m_ask_price_1;
+  double  m_ask_price_1;
   int32_t m_ask_volume_1;
-  int32_t m_ask_price_2;
+  double  m_ask_price_2;
   int32_t m_ask_volume_2;
-  int32_t m_ask_price_3;
+  double  m_ask_price_3;
   int32_t m_ask_volume_3;
-  int32_t m_ask_price_4;
+  double  m_ask_price_4;
   int32_t m_ask_volume_4;
-  int32_t m_ask_price_5;
+  double  m_ask_price_5;
   int32_t m_ask_volume_5;
 } ATU_MDI_binary_marketfeed_struct;
 
@@ -205,7 +204,7 @@ typedef struct ATU_MDI_reset_struct {
 typedef struct ATU_MDI_ohlcfeed_struct {
   string m_timestamp;
   string m_market;
-  string m_feedcode;
+  string m_instrument;
   double m_open;
   double m_high;
   double m_low;
@@ -214,7 +213,7 @@ typedef struct ATU_MDI_ohlcfeed_struct {
   ATU_MDI_ohlcfeed_struct():
     m_timestamp(""),
     m_market(""),
-    m_feedcode(""),
+    m_instrument(""),
     m_open(0),
     m_high(0),
     m_low(0),

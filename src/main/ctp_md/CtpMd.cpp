@@ -134,22 +134,21 @@ void CtpMdBin::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarket
   ATU_MDI_binary_marketfeed_struct mfs;
 
   mfs.m_millisec_since_epoch = SDateTime::GetCurrentTimeInMillsecSinceEpoch();
-  strcpy(mfs.m_feedcode,pDepthMarketData->InstrumentID);
+  memset(mfs.m_instrument,'\0',strlen(mfs.m_instrument)); // just to enable better compression ratio in the output binary data file.
+  strcpy(mfs.m_instrument,pDepthMarketData->InstrumentID);
 
-  const int iDP = 3;
-  mfs.m_price_decimal_places = iDP;
-  mfs.m_traded_price  = (pDepthMarketData->LastPrice  == DBL_MAX) ? ATU_INVALID_PRICE : boost::lexical_cast<int>(pDepthMarketData->LastPrice * iDP);
-  mfs.m_bid_price_1   = (pDepthMarketData->BidPrice1  == DBL_MAX) ? ATU_INVALID_PRICE : boost::lexical_cast<int>(pDepthMarketData->BidPrice1 * iDP);
-  mfs.m_bid_price_2   = (pDepthMarketData->BidPrice2  == DBL_MAX) ? ATU_INVALID_PRICE : boost::lexical_cast<int>(pDepthMarketData->BidPrice2 * iDP);
-  mfs.m_bid_price_3   = (pDepthMarketData->BidPrice3  == DBL_MAX) ? ATU_INVALID_PRICE : boost::lexical_cast<int>(pDepthMarketData->BidPrice3 * iDP);
-  mfs.m_bid_price_4   = (pDepthMarketData->BidPrice4  == DBL_MAX) ? ATU_INVALID_PRICE : boost::lexical_cast<int>(pDepthMarketData->BidPrice4 * iDP);
-  mfs.m_bid_price_5   = (pDepthMarketData->BidPrice5  == DBL_MAX) ? ATU_INVALID_PRICE : boost::lexical_cast<int>(pDepthMarketData->BidPrice5 * iDP);
-  mfs.m_ask_price_1   = (pDepthMarketData->AskPrice1  == DBL_MAX) ? ATU_INVALID_PRICE : boost::lexical_cast<int>(pDepthMarketData->AskPrice1 * iDP);
-  mfs.m_ask_price_2   = (pDepthMarketData->AskPrice2  == DBL_MAX) ? ATU_INVALID_PRICE : boost::lexical_cast<int>(pDepthMarketData->AskPrice2 * iDP);
-  mfs.m_ask_price_3   = (pDepthMarketData->AskPrice3  == DBL_MAX) ? ATU_INVALID_PRICE : boost::lexical_cast<int>(pDepthMarketData->AskPrice3 * iDP);
-  mfs.m_ask_price_4   = (pDepthMarketData->AskPrice4  == DBL_MAX) ? ATU_INVALID_PRICE : boost::lexical_cast<int>(pDepthMarketData->AskPrice4 * iDP);
-  mfs.m_ask_price_5   = (pDepthMarketData->AskPrice5  == DBL_MAX) ? ATU_INVALID_PRICE : boost::lexical_cast<int>(pDepthMarketData->AskPrice5 * iDP);
-  mfs.m_traded_volume = (pDepthMarketData->Volume     == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->Volume    ;
+  mfs.m_traded_price  = (pDepthMarketData->LastPrice  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->LastPrice;
+  mfs.m_bid_price_1   = (pDepthMarketData->BidPrice1  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice1;
+  mfs.m_bid_price_2   = (pDepthMarketData->BidPrice2  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice2;
+  mfs.m_bid_price_3   = (pDepthMarketData->BidPrice3  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice3;
+  mfs.m_bid_price_4   = (pDepthMarketData->BidPrice4  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice4;
+  mfs.m_bid_price_5   = (pDepthMarketData->BidPrice5  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice5;
+  mfs.m_ask_price_1   = (pDepthMarketData->AskPrice1  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice1;
+  mfs.m_ask_price_2   = (pDepthMarketData->AskPrice2  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice2;
+  mfs.m_ask_price_3   = (pDepthMarketData->AskPrice3  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice3;
+  mfs.m_ask_price_4   = (pDepthMarketData->AskPrice4  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice4;
+  mfs.m_ask_price_5   = (pDepthMarketData->AskPrice5  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice5;
+  mfs.m_traded_volume = (pDepthMarketData->Volume     == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->Volume;
   mfs.m_bid_volume_1  = (pDepthMarketData->BidVolume1 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume1;
   mfs.m_bid_volume_2  = (pDepthMarketData->BidVolume2 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume2;
   mfs.m_bid_volume_3  = (pDepthMarketData->BidVolume3 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume3;
@@ -185,7 +184,7 @@ void CtpMdCsv::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarket
   // mfs.m_timestamp     = tradingDay+"_"+updateTime+"_"+string(sMicrosec);
   //--------------------------------------------------
   mfs.m_timestamp     = SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS();
-  mfs.m_feedcode      = pDepthMarketData->InstrumentID;
+  mfs.m_instrument      = pDepthMarketData->InstrumentID;
   mfs.m_traded_price  = (pDepthMarketData->LastPrice  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->LastPrice;
   mfs.m_traded_volume = (pDepthMarketData->Volume     == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->Volume;
 
@@ -232,8 +231,8 @@ void CtpMdCsv::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarket
 //--------------------------------------------------
 void CtpMd::on_process_subscription(const ATU_MDI_subscription_struct & ssub)
 {
-  SubscribeSymbol(ssub.m_feedcode);
-  m_subscribedSymbols.insert(ssub.m_feedcode);
+  SubscribeSymbol(ssub.m_instrument);
+  m_subscribedSymbols.insert(ssub.m_instrument);
 }
 
 void CtpMd::SubscribeSymbol(const string & sym)
