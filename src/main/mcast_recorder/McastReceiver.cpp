@@ -141,7 +141,7 @@ void McastReceiverUnixTime::handle_receive_from(const boost::system::error_code&
     uint16_t uiPktSize = *((uint16_t*)&m_Buffer[0]);
     if (uiPktSize <= BUFFER_SIZE)
     {
-      unsigned long uiUnixTime = SDateTime::GetCurrentTimeInMillsecSinceEpoch();
+      unsigned long uiUnixTime = SDateTime::GetCurrentTimeInMillsecSinceEpochGMT();
       fwrite(&uiUnixTime,8,1,m_CannedFile);
 
       //--------------------------------------------------

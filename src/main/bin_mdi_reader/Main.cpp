@@ -1,9 +1,6 @@
-#include <boost/cstdint.hpp>
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <boost/lexical_cast.hpp>
-#include "SDateTime.h"
 #include "ATU_Abstract_MDI.h"
 
 using namespace std;
@@ -20,14 +17,21 @@ int main(int argc, const char *argv[])
   fpos_t pos;
 
   FILE *fp = fopen(argv[1], "rb");
-  if (!fp) return 1;
-
-  ATU_MDI_binary_marketfeed_struct bin_mdi_struct;
-  while (ferror( fp ) != 0) {
-    fread(&bin_mdi_struct, sizeof(ATU_MDI_binary_marketfeed_struct), 1, fp);
-    cout << bin_mdi_struct.m_instrument << endl;
-    cout << bin_mdi_struct.m_traded_price << endl;
+  if (!fp)
+  {
+    cerr << "Error opening " << argv[1] << endl << flush;
+    return 0;
   }
+
+  fseek(fp,0,SEEK_SET);
+  ATU_MDI_binary_marketfeed_struct bin_mdi_struct;
+  size_t iReadSize = 0;
+  do {
+    iReadSize = fread(&bin_mdi_struct, sizeof(ATU_MDI_binary_marketfeed_struct), 1, fp);
+    if (iReadSize == 0) break;
+    cout << ATU_MDI_binary_marketfeed_struct::ToString(bin_mdi_struct) << endl;
+  }
+  while (iReadSize > 0);
 
   return 0;
 }

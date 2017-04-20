@@ -9,7 +9,7 @@ foreach (_headerFile ${strat_eng_HEADERS})
 endforeach()
 list(REMOVE_DUPLICATES strat_eng_INC)
 
-include_directories(../include ${PANTHEIOS_INC} ${strat_eng_INC} ../atu_tcp_library ../logger ../util)
+include_directories(${PANTHEIOS_INC} ${strat_eng_INC} ../atu_tcp_library ../logger ../util)
 link_directories(/usr/local/pantheios/lib)
 
 add_executable(${PROJECT_NAME} Main.cpp)

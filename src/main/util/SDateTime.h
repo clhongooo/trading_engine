@@ -9,12 +9,14 @@
 
 #include "PCH.h"
 #include "Constants.h"
-#include <boost/date_time/gregorian/greg_date.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include "STool.h"
 #include "Tokenizer.h"
-#include <stdexcept>
 #include "sys/time.h"
+#include <boost/date_time/gregorian/greg_date.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/scoped_ptr.hpp>
+#include <stdexcept>
+#include <sstream>
 
 using namespace std;
 using namespace boost;
@@ -95,11 +97,12 @@ class SDateTime
     static bool IsValidYMD  (int year, int month, int day);
     static int  DaysInMonth (int y,int m);
     static int  DaysInYear  (int year);
+    static std::wstring FormatPTime(boost::posix_time::ptime);
     static string fromUnixTimeToString(unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE);
-    static string fromUnixTimeToString(unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE, bool);
     static string GetCurrentTimeYYYYMMDD_HHMMSS_000000();
     static string GetCurrentTimeYYYYMMDD_HHMMSS();
-    static unsigned long GetCurrentTimeInMillsecSinceEpoch();
+    static unsigned long GetCurrentTimeInMillsecSinceEpochGMT();
+    static unsigned long GetCurrentTimeInMicrosecSinceEpochGMT();
 
     template <class T1, class T2>
       static bool FromCashTSToYMDHMS(const string & ts, T1 & yyyymmdd, T2 & hhmmss)

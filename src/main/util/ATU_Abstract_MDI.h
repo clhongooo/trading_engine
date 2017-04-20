@@ -1,12 +1,10 @@
 #ifndef ATU_ABSTRACT_MDI_H_
 #define ATU_ABSTRACT_MDI_H_
 
-#include <boost/bind.hpp>
 #include <sstream>
-#include <boost/function.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-#include "ATU_Logger.h"
+#include "SDateTime.h"
 
 using namespace std;
 using namespace boost;
@@ -163,30 +161,59 @@ typedef struct ATU_MDI_marketfeed_struct {
 } ATU_MDI_marketfeed_struct;
 
 typedef struct ATU_MDI_binary_marketfeed_struct {
-  uint64_t m_millisec_since_epoch;
-  char m_instrument[50];
-  double  m_traded_price;
-  int32_t m_traded_volume;
-  double  m_bid_price_1;
-  int32_t m_bid_volume_1;
-  double  m_bid_price_2;
-  int32_t m_bid_volume_2;
-  double  m_bid_price_3;
-  int32_t m_bid_volume_3;
-  double  m_bid_price_4;
-  int32_t m_bid_volume_4;
-  double  m_bid_price_5;
-  int32_t m_bid_volume_5;
-  double  m_ask_price_1;
-  int32_t m_ask_volume_1;
-  double  m_ask_price_2;
-  int32_t m_ask_volume_2;
-  double  m_ask_price_3;
-  int32_t m_ask_volume_3;
-  double  m_ask_price_4;
-  int32_t m_ask_volume_4;
-  double  m_ask_price_5;
-  int32_t m_ask_volume_5;
+  uint64_t m_microsec_since_epoch_gmt;
+  char     m_instrument[50];
+  double   m_traded_price;
+  int32_t  m_traded_volume;
+  double   m_bid_price_1;
+  int32_t  m_bid_volume_1;
+  double   m_bid_price_2;
+  int32_t  m_bid_volume_2;
+  double   m_bid_price_3;
+  int32_t  m_bid_volume_3;
+  double   m_bid_price_4;
+  int32_t  m_bid_volume_4;
+  double   m_bid_price_5;
+  int32_t  m_bid_volume_5;
+  double   m_ask_price_1;
+  int32_t  m_ask_volume_1;
+  double   m_ask_price_2;
+  int32_t  m_ask_volume_2;
+  double   m_ask_price_3;
+  int32_t  m_ask_volume_3;
+  double   m_ask_price_4;
+  int32_t  m_ask_volume_4;
+  double   m_ask_price_5;
+  int32_t  m_ask_volume_5;
+  static string ToString(const ATU_MDI_binary_marketfeed_struct & mfs)
+  {
+    std::ostringstream buffer; 
+    buffer << SDateTime::fromUnixTimeToString(mfs.m_microsec_since_epoch_gmt, SDateTime::MICROSEC, SDateTime::GMT, SDateTime::HKT) << ",";
+    buffer << mfs.m_instrument    << ",";
+    buffer << mfs.m_traded_price  << ",";
+    buffer << mfs.m_traded_volume << ",B,";
+    buffer << mfs.m_bid_price_1   << ",";
+    buffer << mfs.m_bid_volume_1  << ",";
+    buffer << mfs.m_bid_price_2   << ",";
+    buffer << mfs.m_bid_volume_2  << ",";
+    buffer << mfs.m_bid_price_3   << ",";
+    buffer << mfs.m_bid_volume_3  << ",";
+    buffer << mfs.m_bid_price_4   << ",";
+    buffer << mfs.m_bid_volume_4  << ",";
+    buffer << mfs.m_bid_price_5   << ",";
+    buffer << mfs.m_bid_volume_5  << ",A,";
+    buffer << mfs.m_ask_price_1   << ",";
+    buffer << mfs.m_ask_volume_1  << ",";
+    buffer << mfs.m_ask_price_2   << ",";
+    buffer << mfs.m_ask_volume_2  << ",";
+    buffer << mfs.m_ask_price_3   << ",";
+    buffer << mfs.m_ask_volume_3  << ",";
+    buffer << mfs.m_ask_price_4   << ",";
+    buffer << mfs.m_ask_volume_4  << ",";
+    buffer << mfs.m_ask_price_5   << ",";
+    buffer << mfs.m_ask_volume_5        ;
+    return buffer.str();
+  }
 } ATU_MDI_binary_marketfeed_struct;
 
 typedef struct ATU_MDI_ping_struct {

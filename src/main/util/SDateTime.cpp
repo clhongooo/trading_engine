@@ -917,65 +917,52 @@ int SDateTime::DaysInYear(int year)
 }
 
 
+// std::string SDateTime::FormatPTime(boost::posix_time::ptime pt)
+// {
+//   using namespace boost::posix_time;
+//   static std::locale loc(std::wcout.getloc(), new wtime_facet(L"%Y%m%d_%H%M%s"));
+//
+//   std::stringstream ss;
+//   ss.imbue(loc);
+//   ss << pt;
+//   return ss.str();
+// }
+std::wstring SDateTime::FormatPTime(boost::posix_time::ptime pt)
+{
+  using namespace boost::posix_time;
+  static std::locale loc(std::wcout.getloc(), new wtime_facet(L"%Y%m%d_%H%M%s"));
+
+  std::basic_stringstream<wchar_t> wss;
+  wss.imbue(loc);
+  wss << pt;
+  return wss.str();
+}
 
 string SDateTime::fromUnixTimeToString(unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)
 {
-  return fromUnixTimeToString(ulUnixTime, timePrecision, tzSrc, tzDest, false);
-}
+  boost::gregorian::date d(1970,1,1);
+  boost::scoped_ptr<boost::posix_time::ptime> p_pt;
 
-string SDateTime::fromUnixTimeToString(unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest, bool bMicrosec)
-{
-  unsigned long ulMicrosec = 0;
-  if (bMicrosec)
-  {
-    switch(timePrecision)
-    {
-      case NANOSEC:  { ulMicrosec = (ulUnixTime / 1000) % 1000000; break; }
-      case MICROSEC: { ulMicrosec = (ulUnixTime       ) % 1000000; break; }
-      case MILLISEC: { ulMicrosec = (ulUnixTime * 1000) % 1000000; break; }
-      default:       {                                             break; }
-    }
-  }
+  if (tzSrc  != HKT && tzSrc  != GMT) return "";
+  if (tzDest != HKT && tzDest != GMT) return "";
+
+  unsigned long ulAdjSeconds = 0;
+  if      (tzSrc == HKT && tzDest == GMT) ulAdjSeconds -= 8*60*60;
+  else if (tzSrc == GMT && tzDest == HKT) ulAdjSeconds += 8*60*60;
 
   switch(timePrecision)
   {
-    case NANOSEC:
-      {
-        ulUnixTime = (ulUnixTime/1000000000);
-        break;
-      }
-    case MICROSEC:
-      {
-        ulUnixTime = (ulUnixTime/1000000);
-
-        break;
-      }
-    case MILLISEC:
-      {
-        ulUnixTime = (ulUnixTime/1000);
-        break;
-      }
-    default:
-      {
-        break;
-      }
+    case NANOSEC:  { p_pt.reset(new boost::posix_time::ptime(d, boost::posix_time::microsec(ulUnixTime/1000 + ulAdjSeconds*1000000000))); break; }
+    case MICROSEC: { p_pt.reset(new boost::posix_time::ptime(d, boost::posix_time::microsec(ulUnixTime      + ulAdjSeconds*1000000   ))); break; }
+    case MILLISEC: { p_pt.reset(new boost::posix_time::ptime(d, boost::posix_time::millisec(ulUnixTime      + ulAdjSeconds*1000      ))); break; }
+    case SECOND:   { p_pt.reset(new boost::posix_time::ptime(d, boost::posix_time::seconds (ulUnixTime      + ulAdjSeconds           ))); break; }
+    default:       {                                                                                                                      break; }
   }
 
-  if (tzSrc == HKT && tzDest == GMT)
-  {
-    ulUnixTime -= 8*60*60;
-  }
-  else if (tzSrc == GMT && tzDest == HKT)
-  {
-    ulUnixTime += 8*60*60;
-  }
-
-  boost::gregorian::date d(1970,1,1);
-  boost::posix_time::ptime t1(d, boost::posix_time::seconds(ulUnixTime));
-  ostringstream oo;
-  oo << to_simple_string(t1);
-  if (bMicrosec) oo << ". Microsec: " << std::setw(6) << std::setfill('0') << ulMicrosec;
-  return oo.str();
+  std::wstring ws = FormatPTime(*p_pt);
+  std::string s((const char*)&ws[0], sizeof(wchar_t)/sizeof(char)*ws.size());
+  boost::replace_all(s,".","_");
+  return s;
 }
 
 
@@ -1095,10 +1082,15 @@ YYYYMMDDHHMMSS SDateTime::ChangeTimeZone(const YYYYMMDDHHMMSS & ymdhmsFrom, cons
 //   return time_t(secs);
 // }
 
-
-unsigned long SDateTime::GetCurrentTimeInMillsecSinceEpoch()
+unsigned long SDateTime::GetCurrentTimeInMillsecSinceEpochGMT()
 {
   struct timeval tp;
   gettimeofday(&tp, NULL);
   return tp.tv_sec * 1000 + tp.tv_usec / 1000;
+}
+unsigned long SDateTime::GetCurrentTimeInMicrosecSinceEpochGMT()
+{
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+  return tp.tv_sec * 1000000 + tp.tv_usec;
 }

@@ -8,9 +8,9 @@ foreach (_headerFile ${proj_HEADERS})
 endforeach()
 list(REMOVE_DUPLICATES proj_INC)
 
-include_directories(../include ${PANTHEIOS_INC} ${proj_INC})
+include_directories(${PANTHEIOS_INC} ${proj_INC} ../util)
 link_directories(/usr/local/pantheios/lib)
 
 file(GLOB_RECURSE proj_SOURCES "*.cpp")
 add_executable(omd ${proj_SOURCES})
-target_link_libraries(omd ${Boost_LIBRARIES} pthread pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)
+target_link_libraries(omd ${Boost_LIBRARIES} util pthread pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)
