@@ -3,6 +3,8 @@
 CORE_MINUS_1=$(cat /proc/cpuinfo | grep processor | tail -n 1 | awk '{print $3}')
 TARGET_FOLDER=target
 BIN_FOLDER=bin
+BUILD_MODE=DEBUG
+
 if [[ $@ == *"c"* && -d $TARGET_FOLDER ]]
 then
     rm -rf $TARGET_FOLDER
@@ -11,13 +13,13 @@ fi
 [[ ! -d $BIN_FOLDER ]] && mkdir $BIN_FOLDER
 cd $TARGET_FOLDER
 
-if [[ $@ == *"d"* ]]
+if [[ $BUILD_MODE == "DEBUG" ]]
 then
     cmake -DCMAKE_BUILD_TYPE=Debug ../src/main/
-elif [[ $@ == *"r"* ]]
-then
+else
     cmake -DCMAKE_BUILD_TYPE=Release ../src/main/
 fi
+
 MAKE_VERBOSITY=""
 if [[ $@ == *"v"* ]]
 then

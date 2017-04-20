@@ -45,6 +45,7 @@ typedef struct ATU_MDI_acknowledgement_struct {
     m_errormsg(""){}
 } ATU_MDI_acknowledgement_struct;
 
+
 typedef struct ATU_MDI_marketfeed_struct {
   string m_timestamp;
   string m_instrument;
@@ -132,7 +133,7 @@ typedef struct ATU_MDI_marketfeed_struct {
     if (vMDI.size() != 26) return false;
 
     mfs.m_timestamp     =                             vMDI[ 0] ;
-    mfs.m_instrument      =                             vMDI[ 1] ;
+    mfs.m_instrument    =                             vMDI[ 1] ;
     mfs.m_traded_price  = boost::lexical_cast<double>(vMDI[ 2]);
     mfs.m_traded_volume = boost::lexical_cast<double>(vMDI[ 3]);
     mfs.m_bid_price_1   = boost::lexical_cast<double>(vMDI[ 5]);
@@ -185,34 +186,67 @@ typedef struct ATU_MDI_binary_marketfeed_struct {
   int32_t  m_ask_volume_4;
   double   m_ask_price_5;
   int32_t  m_ask_volume_5;
-  static string ToString(const ATU_MDI_binary_marketfeed_struct & mfs)
+  static string ToString(const ATU_MDI_binary_marketfeed_struct & bmfs)
   {
     std::ostringstream buffer; 
-    buffer << SDateTime::fromUnixTimeToString(mfs.m_microsec_since_epoch_gmt, SDateTime::MICROSEC, SDateTime::GMT, SDateTime::HKT) << ",";
-    buffer << mfs.m_instrument    << ",";
-    buffer << mfs.m_traded_price  << ",";
-    buffer << mfs.m_traded_volume << ",B,";
-    buffer << mfs.m_bid_price_1   << ",";
-    buffer << mfs.m_bid_volume_1  << ",";
-    buffer << mfs.m_bid_price_2   << ",";
-    buffer << mfs.m_bid_volume_2  << ",";
-    buffer << mfs.m_bid_price_3   << ",";
-    buffer << mfs.m_bid_volume_3  << ",";
-    buffer << mfs.m_bid_price_4   << ",";
-    buffer << mfs.m_bid_volume_4  << ",";
-    buffer << mfs.m_bid_price_5   << ",";
-    buffer << mfs.m_bid_volume_5  << ",A,";
-    buffer << mfs.m_ask_price_1   << ",";
-    buffer << mfs.m_ask_volume_1  << ",";
-    buffer << mfs.m_ask_price_2   << ",";
-    buffer << mfs.m_ask_volume_2  << ",";
-    buffer << mfs.m_ask_price_3   << ",";
-    buffer << mfs.m_ask_volume_3  << ",";
-    buffer << mfs.m_ask_price_4   << ",";
-    buffer << mfs.m_ask_volume_4  << ",";
-    buffer << mfs.m_ask_price_5   << ",";
-    buffer << mfs.m_ask_volume_5        ;
+    buffer << SDateTime::fromUnixTimeToString(bmfs.m_microsec_since_epoch_gmt, SDateTime::MICROSEC, SDateTime::GMT, SDateTime::HKT) << ",";
+    buffer << bmfs.m_instrument    << ",";
+    buffer << bmfs.m_traded_price  << ",";
+    buffer << bmfs.m_traded_volume << ",B,";
+    buffer << bmfs.m_bid_price_1   << ",";
+    buffer << bmfs.m_bid_volume_1  << ",";
+    buffer << bmfs.m_bid_price_2   << ",";
+    buffer << bmfs.m_bid_volume_2  << ",";
+    buffer << bmfs.m_bid_price_3   << ",";
+    buffer << bmfs.m_bid_volume_3  << ",";
+    buffer << bmfs.m_bid_price_4   << ",";
+    buffer << bmfs.m_bid_volume_4  << ",";
+    buffer << bmfs.m_bid_price_5   << ",";
+    buffer << bmfs.m_bid_volume_5  << ",A,";
+    buffer << bmfs.m_ask_price_1   << ",";
+    buffer << bmfs.m_ask_volume_1  << ",";
+    buffer << bmfs.m_ask_price_2   << ",";
+    buffer << bmfs.m_ask_volume_2  << ",";
+    buffer << bmfs.m_ask_price_3   << ",";
+    buffer << bmfs.m_ask_volume_3  << ",";
+    buffer << bmfs.m_ask_price_4   << ",";
+    buffer << bmfs.m_ask_volume_4  << ",";
+    buffer << bmfs.m_ask_price_5   << ",";
+    buffer << bmfs.m_ask_volume_5        ;
     return buffer.str();
+  }
+  static bool ParseMDIString(const string & csv, ATU_MDI_binary_marketfeed_struct & bmfs)
+  {
+    vector<string> vMDI;
+    boost::split(vMDI, csv, boost::is_any_of(","));
+    if (vMDI.size() != 26) return false;
+
+    // bmfs.m_timestamp     =                             vMDI[ 0] ;
+    // bmfs.m_instrument    =                             vMDI[ 1] ;
+    // bmfs.m_traded_price  = boost::lexical_cast<double>(vMDI[ 2]);
+    // bmfs.m_traded_volume = boost::lexical_cast<double>(vMDI[ 3]);
+    // bmfs.m_bid_price_1   = boost::lexical_cast<double>(vMDI[ 5]);
+    // bmfs.m_bid_volume_1  = boost::lexical_cast<double>(vMDI[ 6]);
+    // bmfs.m_bid_price_2   = boost::lexical_cast<double>(vMDI[ 7]);
+    // bmfs.m_bid_volume_2  = boost::lexical_cast<double>(vMDI[ 8]);
+    // bmfs.m_bid_price_3   = boost::lexical_cast<double>(vMDI[ 9]);
+    // bmfs.m_bid_volume_3  = boost::lexical_cast<double>(vMDI[10]);
+    // bmfs.m_bid_price_4   = boost::lexical_cast<double>(vMDI[11]);
+    // bmfs.m_bid_volume_4  = boost::lexical_cast<double>(vMDI[12]);
+    // bmfs.m_bid_price_5   = boost::lexical_cast<double>(vMDI[13]);
+    // bmfs.m_bid_volume_5  = boost::lexical_cast<double>(vMDI[14]);
+    // bmfs.m_ask_price_1   = boost::lexical_cast<double>(vMDI[16]);
+    // bmfs.m_ask_volume_1  = boost::lexical_cast<double>(vMDI[17]);
+    // bmfs.m_ask_price_2   = boost::lexical_cast<double>(vMDI[18]);
+    // bmfs.m_ask_volume_2  = boost::lexical_cast<double>(vMDI[19]);
+    // bmfs.m_ask_price_3   = boost::lexical_cast<double>(vMDI[20]);
+    // bmfs.m_ask_volume_3  = boost::lexical_cast<double>(vMDI[21]);
+    // bmfs.m_ask_price_4   = boost::lexical_cast<double>(vMDI[22]);
+    // bmfs.m_ask_volume_4  = boost::lexical_cast<double>(vMDI[23]);
+    // bmfs.m_ask_price_5   = boost::lexical_cast<double>(vMDI[24]);
+    // bmfs.m_ask_volume_5  = boost::lexical_cast<double>(vMDI[25]);
+
+    return true;
   }
 } ATU_MDI_binary_marketfeed_struct;
 
