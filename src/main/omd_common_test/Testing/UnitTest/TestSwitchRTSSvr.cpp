@@ -17,10 +17,10 @@ TestSwitchRTSSvr::~TestSwitchRTSSvr()
 
 void TestSwitchRTSSvr::RunTest()
 {
-  shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
+  boost::shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
   unsigned int uiChannelID          = 91;
 
-  shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
+  boost::shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
 
   //--------------------------------------------------
   // 1.1 First RTS server ok, Second not ok

@@ -108,7 +108,7 @@ class SDateTime
     static string fromGeniumDateToString(unsigned int);
     static string GetCurrentTimeYYYYMMDD_HHMMSS_000000();
     static string GetCurrentTimeYYYYMMDD_HHMMSS();
-    static unsigned long GetCurrentUnixTimeInMillsecGMT();
+    static unsigned long GetCurrentUnixTimeInMillisecGMT();
     static unsigned long GetCurrentUnixTimeInMicrosecGMT();
 
     template <class T1, class T2>

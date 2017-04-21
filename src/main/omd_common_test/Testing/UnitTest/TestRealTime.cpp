@@ -18,17 +18,17 @@ TestRealTime::~TestRealTime() {
 
 void TestRealTime::RunTest()
 {
-  shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
+  boost::shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
   unsigned int uiChannelID          = 91;
 
-  shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
+  boost::shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
 
   //--------------------------------------------------
   // 1.1 Should stop processing and popping msg when the RefreshActivation flag is on
   //--------------------------------------------------
   {
     cout << __FILE__ << ": Unit Test: Trigger RealTime: 1.1" << endl << flush;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RT-1.1.ini");
 
     rtsClt->Init();
@@ -50,7 +50,7 @@ void TestRealTime::RunTest()
     oss->SecurityCode = 9394;
     oss->SecurityTradingStatus = 0;
 
-    for (uint32_t i = 1; i < 1001; ++i) pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime());
+    for (uint32_t i = 1; i < 1001; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
 
     boost::this_thread::sleep(boost::posix_time::seconds(2));
     CPPUNIT_ASSERT(pMsgCirBuf->GetStartSeqNo() == 1);

@@ -17,10 +17,10 @@ TestTriggeringRTSClient::~TestTriggeringRTSClient()
 
 void TestTriggeringRTSClient::RunTest()
 {
-  shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
+  boost::shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
   unsigned int uiChannelID          = 91;
 
-  shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
+  boost::shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
 
   //--------------------------------------------------
   // 5.1. Test ignoring RTS response if channel is incorrect
@@ -28,7 +28,7 @@ void TestTriggeringRTSClient::RunTest()
   {
     cout << __FILE__ << ": Unit Test: Trigger RTS: 5.1" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTS5.1.ini");
 
     rtsClt->Init();
@@ -65,7 +65,7 @@ void TestTriggeringRTSClient::RunTest()
   {
     cout << __FILE__ << ": Unit Test: Trigger RTS: 6.1" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTS6.1.ini");
 
     rtsClt->Init();
@@ -93,9 +93,9 @@ void TestTriggeringRTSClient::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
 
-    pMsgCirBuf->PushMsg(pbMsg,35,Util::getCurrentUnixTime()); // Introduce seq no gap here, gap size == 11
+    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 11
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector *dci = new DataCompletenessInspector(uiChannelID,true); //deliberately use heap rather than stack, so that undead threads won't crash
@@ -119,7 +119,7 @@ void TestTriggeringRTSClient::RunTest()
   {
     cout << __FILE__ << ": Unit Test: Trigger RTS: 1.1" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTS1.1.ini");
 
     rtsClt->Init();
@@ -147,9 +147,9 @@ void TestTriggeringRTSClient::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
 
-    pMsgCirBuf->PushMsg(pbMsg,35,Util::getCurrentUnixTime()); // Introduce seq no gap here, gap size == 11
+    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 11
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector *dci = new DataCompletenessInspector(uiChannelID,true); //deliberately use heap rather than stack, so that undead threads won't crash
@@ -173,7 +173,7 @@ void TestTriggeringRTSClient::RunTest()
   {
     cout << __FILE__ << ": Unit Test: Trigger RTS: 1.2" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTS1.2.ini");
 
     rtsClt->Init();
@@ -200,9 +200,9 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime());
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
 
-    pMsgCirBuf->PushMsg(pbMsg,25,Util::getCurrentUnixTime()); // Introduce seq no gap here, gap size == 4, but that's smaller than our setting
+    pMsgCirBuf->PushMsg(pbMsg,25,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 4, but that's smaller than our setting
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
 
@@ -227,7 +227,7 @@ void TestTriggeringRTSClient::RunTest()
   {
     cout << __FILE__ << ": Unit Test: Trigger RTS: 2.1" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTS2.1.ini");
 
     rtsClt->Init();
@@ -254,9 +254,9 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime()); // in i-th millisec
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
 
-    pMsgCirBuf->PushMsg(pbMsg,24,Util::getCurrentUnixTime()); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
+    pMsgCirBuf->PushMsg(pbMsg,24,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
 
     boost::this_thread::sleep(boost::posix_time::seconds(9)); // time gap larger than threshold
 
@@ -281,7 +281,7 @@ void TestTriggeringRTSClient::RunTest()
   {
     cout << __FILE__ << ": Unit Test: Trigger RTS: 2.2" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTS2.2.ini");
 
     rtsClt->Init();
@@ -308,9 +308,9 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime()); // in i-th millisec
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
 
-    pMsgCirBuf->PushMsg(pbMsg,24,Util::getCurrentUnixTime()); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
+    pMsgCirBuf->PushMsg(pbMsg,24,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
 
@@ -335,7 +335,7 @@ void TestTriggeringRTSClient::RunTest()
   {
     cout << __FILE__ << ": Unit Test: Trigger RTS: 2.3" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTS2.3.ini");
 
     rtsClt->Init();
@@ -362,9 +362,9 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime()); // in i-th millisec
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
 
-    pMsgCirBuf->PushMsg(pbMsg,21,Util::getCurrentUnixTime());
+    pMsgCirBuf->PushMsg(pbMsg,21,SDateTime::GetCurrentUnixTimeInMillisecGMT());
 
     DataCompletenessInspector *dci = new DataCompletenessInspector(uiChannelID,true); //deliberately use heap rather than stack, so that undead threads won't crash
     boost::thread dciThd(&DataCompletenessInspector::Run,dci);
@@ -388,7 +388,7 @@ void TestTriggeringRTSClient::RunTest()
   {
     cout << __FILE__ << ": Unit Test: Trigger RTS: 3.1" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTS3.1.ini");
 
     rtsClt->Init();
@@ -415,9 +415,9 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime()); // in i-th millisec
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
 
-    pMsgCirBuf->PushMsg(pbMsg,99,Util::getCurrentUnixTime()); // Introduce seq no. gap here, seq no gap is larger than trigger threshold.
+    pMsgCirBuf->PushMsg(pbMsg,99,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no. gap here, seq no gap is larger than trigger threshold.
 
     boost::this_thread::sleep(boost::posix_time::seconds(3)); // time gap larger than threshold
 
@@ -443,7 +443,7 @@ void TestTriggeringRTSClient::RunTest()
   {
     cout << __FILE__ << ": Unit Test: Trigger RTS: 4.1" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTS4.1.ini");
 
     rtsClt->Init();
@@ -470,8 +470,8 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime()); // in i-th millisec
-    pMsgCirBuf->PushMsg(pbMsg,999,Util::getCurrentUnixTime()); // Introduce seq no. gap here
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
+    pMsgCirBuf->PushMsg(pbMsg,999,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no. gap here
 
     DataCompletenessInspector *dci = new DataCompletenessInspector(uiChannelID,true); //deliberately use heap rather than stack, so that undead threads won't crash
     boost::thread dciThd(&DataCompletenessInspector::Run,dci);
@@ -495,7 +495,7 @@ void TestTriggeringRTSClient::RunTest()
     cout << __FILE__ << ": Unit Test: Trigger RTS: 7.1" << endl << flush;
     UTest ut;
     UTest ut_dummy;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTS7.1.ini");
 
     rtsClt->Init();
@@ -526,9 +526,9 @@ void TestTriggeringRTSClient::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
 
-    pMsgCirBuf->PushMsg(pbMsg,35,Util::getCurrentUnixTime()); // Introduce seq no gap here, gap size == 11
+    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 11
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector *dci = new DataCompletenessInspector(uiChannelID,false); //deliberately use heap rather than stack, so that undead threads won't crash

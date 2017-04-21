@@ -13,6 +13,7 @@
 #include "..//RTSTestingServer/RTSTestingServer.h"
 #include "SystemConfig.h"
 #include "SharedObjects.h"
+#include "SDateTime.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 

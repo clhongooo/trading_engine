@@ -13,7 +13,7 @@
 #include "../RTSTestingServer/RTSTestingServer.h"
 #include "ChannelAggregation/DataCompletenessInspector.h"
 #include "../UTest/UTest.h"
-#include "Util.h"
+#include "SDateTime.h"
 #include "DataProcessing/RefreshProcessor.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>

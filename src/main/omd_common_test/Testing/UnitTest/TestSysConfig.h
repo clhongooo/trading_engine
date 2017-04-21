@@ -13,7 +13,6 @@
 #include "DataProcessing/RealTimeProcessor.h"
 #include "DataProcessing/RefreshProcessor.h"
 #include "../UTest/UTest.h"
-#include "Util.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 

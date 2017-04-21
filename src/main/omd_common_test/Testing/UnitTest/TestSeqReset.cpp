@@ -17,8 +17,8 @@ TestSeqReset::~TestSeqReset()
 
 void TestSeqReset::RunTest()
 {
-  shared_ptr<SystemConfig>  pSysCfg  = SystemConfig::Instance();
-  shared_ptr<SharedObjects> pShrObj  = SharedObjects::Instance();
+  boost::shared_ptr<SystemConfig>  pSysCfg  = SystemConfig::Instance();
+  boost::shared_ptr<SharedObjects> pShrObj  = SharedObjects::Instance();
   unsigned int uiChannelID           = 91;
 
   pSysCfg->Reset();

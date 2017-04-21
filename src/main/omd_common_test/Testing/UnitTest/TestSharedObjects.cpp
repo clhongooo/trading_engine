@@ -17,7 +17,7 @@ TestSharedObjects::~TestSharedObjects()
 
 void TestSharedObjects::RunTest()
 {
-  shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
+  boost::shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
   unsigned int uiChannelID          = 91;
 
   //--------------------------------------------------
@@ -26,7 +26,7 @@ void TestSharedObjects::RunTest()
   {
     cout << __FILE__ << ": Unit Test: SharedObjects: 1.1" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-SO1.1.ini");
 
     //--------------------------------------------------
@@ -86,7 +86,7 @@ void TestSharedObjects::RunTest()
   {
     cout << __FILE__ << ": Unit Test: SharedObjects: 2.1" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-SO2.1.ini");
 
     //--------------------------------------------------

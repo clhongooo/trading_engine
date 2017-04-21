@@ -17,10 +17,10 @@ TestRTSResponse::~TestRTSResponse()
 
 void TestRTSResponse::RunTest()
 {
-  shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
+  boost::shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
   unsigned int uiChannelID          = 91;
 
-  shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
+  boost::shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
 
   //--------------------------------------------------
   // 1.1 1 Unknown/Unauthorized channel ID
@@ -28,7 +28,7 @@ void TestRTSResponse::RunTest()
   {
     cout << __FILE__ << ": Unit Test: RTS Response: 1.1" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTSRes1.1.ini");
 
     rtsClt->Init();
@@ -53,9 +53,9 @@ void TestRTSResponse::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
 
-    pMsgCirBuf->PushMsg(pbMsg,35,Util::getCurrentUnixTime()); // Introduce seq no gap here, gap size == 11
+    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 11
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector dci(uiChannelID,true);
@@ -75,7 +75,7 @@ void TestRTSResponse::RunTest()
   {
     cout << __FILE__ << ": Unit Test: RTS Response: 1.2" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTSRes1.2.ini");
 
     rtsClt->Init();
@@ -100,9 +100,9 @@ void TestRTSResponse::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
 
-    pMsgCirBuf->PushMsg(pbMsg,35,Util::getCurrentUnixTime()); // Introduce seq no gap here, gap size == 11
+    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 11
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector dci(uiChannelID,true);
@@ -122,7 +122,7 @@ void TestRTSResponse::RunTest()
   {
     cout << __FILE__ << ": Unit Test: RTS Response: 1.3" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTSRes1.3.ini");
 
     rtsClt->Init();
@@ -147,9 +147,9 @@ void TestRTSResponse::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
 
-    pMsgCirBuf->PushMsg(pbMsg,35,Util::getCurrentUnixTime()); // Introduce seq no gap here, gap size == 11
+    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 11
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector dci(uiChannelID,true);
@@ -169,7 +169,7 @@ void TestRTSResponse::RunTest()
   {
     cout << __FILE__ << ": Unit Test: RTS Response: 1.4" << endl << flush;
     UTest ut;
-    shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
+    boost::shared_ptr<SharedObjects> pShrObj = SharedObjects::Instance();
     pSysCfg->ReadConfigOptional("Testing/Config-RTSRes1.4.ini");
 
     rtsClt->Init();
@@ -194,9 +194,9 @@ void TestRTSResponse::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,Util::getCurrentUnixTime());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
 
-    pMsgCirBuf->PushMsg(pbMsg,35,Util::getCurrentUnixTime()); // Introduce seq no gap here, gap size == 11
+    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 11
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector dci(uiChannelID,true);

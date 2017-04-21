@@ -22,7 +22,7 @@ void TestSysConfig::RunTest()
   // Test ReadConfig
   //--------------------------------------------------
 
-  shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
+  boost::shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
   //pSysCfg->Reset("Testing/Config-SysCfg1.1.ini");
 
 

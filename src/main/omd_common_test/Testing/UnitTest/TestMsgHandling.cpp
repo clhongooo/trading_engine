@@ -18,7 +18,7 @@ TestMsgHandling::~TestMsgHandling() {
 
 void TestMsgHandling::RunTest()
 {
-  shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
+  boost::shared_ptr<SystemConfig> pSysCfg  = SystemConfig::Instance();
   unsigned int uiChannelID          = 91;
 
   {

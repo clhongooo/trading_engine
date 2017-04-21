@@ -11,6 +11,7 @@
 #include "../UTest/UTest.h"
 #include "ChannelAggregation/DataCompletenessInspector.h"
 #include "../RTSTestingServer/RTSTestingServer.h"
+#include "SDateTime.h"
 #include "SystemConfig.h"
 #include "SharedObjects.h"
 #include <boost/shared_ptr.hpp>

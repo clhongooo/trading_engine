@@ -144,7 +144,7 @@ void DataCompletenessInspector::Run()
       {
         if (!bDirFlag)
         {
-          uint64_t uiCurTime = SDateTime::GetCurrentUnixTimeInMillsecGMT();
+          uint64_t uiCurTime = SDateTime::GetCurrentUnixTimeInMillisecGMT();
 
           bool bCanPrintRTSLog = false;
           boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();

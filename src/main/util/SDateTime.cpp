@@ -1147,7 +1147,7 @@ YYYYMMDDHHMMSS SDateTime::ChangeTimeZone(const YYYYMMDDHHMMSS & ymdhmsFrom, cons
   return YYYYMMDDHHMMSS(ymd,hms);
 }
 
-unsigned long SDateTime::GetCurrentUnixTimeInMillsecGMT()
+unsigned long SDateTime::GetCurrentUnixTimeInMillisecGMT()
 {
   struct timeval tp;
   gettimeofday(&tp, NULL);
