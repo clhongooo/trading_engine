@@ -5,7 +5,7 @@
  *      Author: sunny
  */
 
-#include "MainThread.h"
+#include "OMD_MainThread.h"
 
 MainThread::MainThread() {
 }

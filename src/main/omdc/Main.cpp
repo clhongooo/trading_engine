@@ -8,7 +8,7 @@
 #include "DataProcController.h"
 #include "SystemConfig.h"
 
-#include "MainThread.h"
+#include "OMD_MainThread.h"
 
 using namespace std;
 
