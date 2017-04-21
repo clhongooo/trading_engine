@@ -732,6 +732,7 @@ void TestSDateTime::RunTest()
   }
 
   {
+    // cout << "SunnyDebug: " << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ") " << SDateTime::fromUnixTimeToString(634695410, SDateTime::SECOND, SDateTime::GMT, SDateTime::GMT) << endl << flush;
     CPPUNIT_ASSERT(SDateTime::fromUnixTimeToString(634695410, SDateTime::SECOND, SDateTime::GMT, SDateTime::GMT) == "19900211_001650_000000");
     CPPUNIT_ASSERT(SDateTime::fromUnixTimeToString(634695410150, SDateTime::MILLISEC, SDateTime::GMT, SDateTime::GMT) == "19900211_001650_150000");
     CPPUNIT_ASSERT(SDateTime::fromUnixTimeToString(634695410150250, SDateTime::MICROSEC, SDateTime::GMT, SDateTime::GMT) == "19900211_001650_150250");
@@ -741,6 +742,15 @@ void TestSDateTime::RunTest()
     CPPUNIT_ASSERT(SDateTime::fromStringToUnixTime("19900211_001650_150250", SDateTime::MILLISEC) == 634695410150);
     CPPUNIT_ASSERT(SDateTime::fromStringToUnixTime("19900211_001650_150250", SDateTime::MICROSEC) == 634695410150250);
     CPPUNIT_ASSERT(SDateTime::fromStringToUnixTime("19900211_001650_150250", SDateTime::NANOSEC) == 634695410150250000);
+  }
+
+  {
+    YYYYMMDDHHMMSS ymdhms1(634695410150250,SDateTime::MICROSEC,"");
+    CPPUNIT_ASSERT(ymdhms1 == YYYYMMDDHHMMSS(1990,2,11,0,16,50));
+    YYYYMMDDHHMMSS ymdhms2(634695410150,SDateTime::MILLISEC,"");
+    CPPUNIT_ASSERT(ymdhms2 == YYYYMMDDHHMMSS(1990,2,11,0,16,50));
+    YYYYMMDDHHMMSS ymdhms3(634695410,SDateTime::SECOND,"");
+    CPPUNIT_ASSERT(ymdhms3 == YYYYMMDDHHMMSS(1990,2,11,0,16,50));
   }
 
   //	//Get Year / Month / Day

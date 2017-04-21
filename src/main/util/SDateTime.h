@@ -98,9 +98,12 @@ class SDateTime
     static bool IsValidYMD  (int year, int month, int day);
     static int  DaysInMonth (int y,int m);
     static int  DaysInYear  (int year);
-    static std::string FormatPTime(boost::posix_time::ptime);
-    static string        fromUnixTimeToString(const unsigned long,  TIMEPRECISION, TIMEZONE, TIMEZONE);
-    static unsigned long fromStringToUnixTime(const string &, TIMEPRECISION);
+    static std::string FormatPTimeYYYYMMDDHHMMSS(const boost::posix_time::ptime &);
+    static std::string FormatPTimeYYYYMMDD(const boost::posix_time::ptime &);
+    static std::string FormatPTimeHHMMSS(const boost::posix_time::ptime &);
+    static boost::shared_ptr<boost::posix_time::ptime> fromUnixTimeToPTime (const unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE);
+    static string                                      fromUnixTimeToString(const unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE);
+    static unsigned long                               fromStringToUnixTime(const string &,      TIMEPRECISION                    );
     static string GetCurrentTimeYYYYMMDD_HHMMSS_000000();
     static string GetCurrentTimeYYYYMMDD_HHMMSS();
     static unsigned long GetCurrentTimeInMillsecSinceEpochGMT();
@@ -500,6 +503,7 @@ class YYYYMMDDHHMMSS
   YYYYMMDDHHMMSS(const YYYYMMDD &,const HHMMSS &);
   YYYYMMDDHHMMSS(const string &,const string &);
   YYYYMMDDHHMMSS(const int, const int, const int, const int, const int, const int);
+  YYYYMMDDHHMMSS(const unsigned long, const SDateTime::TIMEPRECISION, const char *); // just to avoid ambiguous function overloading
   void Set(const YYYYMMDD &,const HHMMSS &);
   void Set(const YYYYMMDDHHMMSS &);
   void Set(const YMDHMS &);
@@ -511,6 +515,8 @@ class YYYYMMDDHHMMSS
   const YYYYMMDD GetYYYYMMDD() const;
   void GetYMD(YMD &) const;
   const HHMMSS GetHHMMSS() const;
+  const YYYYMMDD * GetYYYYMMDDPtr() const;
+  const HHMMSS * GetHHMMSSPtr() const;
 
   bool operator==(const YYYYMMDDHHMMSS & ymdhms) const;
   bool operator!=(const YYYYMMDDHHMMSS & ymdhms) const;

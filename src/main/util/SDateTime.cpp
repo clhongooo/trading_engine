@@ -603,6 +603,13 @@ YYYYMMDDHHMMSS::YYYYMMDDHHMMSS(const int y, const int m, const int d, const int 
   _hms.Set(h,min,s);
 }
 
+YYYYMMDDHHMMSS::YYYYMMDDHHMMSS(const unsigned long ulUnixTime, const SDateTime::TIMEPRECISION tp, const char * c)
+{
+  boost::shared_ptr<boost::posix_time::ptime> p_pt = SDateTime::fromUnixTimeToPTime(ulUnixTime, tp, SDateTime::GMT, SDateTime::GMT);
+  _ymd.Set(boost::lexical_cast<int>(SDateTime::FormatPTimeYYYYMMDD(*p_pt)));
+  _hms.Set(boost::lexical_cast<int>(SDateTime::FormatPTimeHHMMSS(*p_pt)));
+}
+
 void YYYYMMDDHHMMSS::Set(const YYYYMMDD & ymd,const HHMMSS & hms)
 {
   _ymd.Set(ymd);
@@ -632,6 +639,11 @@ const YYYYMMDD YYYYMMDDHHMMSS::GetYYYYMMDD() const
   return _ymd;
 }
 
+const YYYYMMDD * YYYYMMDDHHMMSS::GetYYYYMMDDPtr() const
+{
+  return &_ymd;
+}
+
 void YYYYMMDDHHMMSS::GetYMD(YMD & ymdrtn) const
 {
   ymdrtn.Set(_ymd);
@@ -640,6 +652,11 @@ void YYYYMMDDHHMMSS::GetYMD(YMD & ymdrtn) const
 const HHMMSS YYYYMMDDHHMMSS::GetHHMMSS() const
 {
   return _hms;
+}
+
+const HHMMSS * YYYYMMDDHHMMSS::GetHHMMSSPtr() const
+{
+  return &_hms;
 }
 
 bool YYYYMMDDHHMMSS::operator==(const YYYYMMDDHHMMSS & ymdhms) const
@@ -916,7 +933,7 @@ int SDateTime::DaysInYear(int year)
   return (IsLeapYear(year) ? 366 : 365);
 }
 
-std::string SDateTime::FormatPTime(boost::posix_time::ptime pt)
+std::string SDateTime::FormatPTimeYYYYMMDDHHMMSS(const boost::posix_time::ptime & pt)
 {
   using namespace boost::posix_time;
   static std::locale loc(std::cout.getloc(), new time_facet("%Y%m%d_%H%M%s"));
@@ -924,16 +941,36 @@ std::string SDateTime::FormatPTime(boost::posix_time::ptime pt)
   std::basic_stringstream<char> ss;
   ss.imbue(loc);
   ss << pt;
+  string s = ss.str();
+  boost::replace_all(s,".","_");
+  return s;
+}
+
+std::string SDateTime::FormatPTimeYYYYMMDD(const boost::posix_time::ptime & pt)
+{
+  using namespace boost::posix_time;
+  static std::locale loc(std::cout.getloc(), new time_facet("%Y%m%d"));
+
+  std::basic_stringstream<char> ss;
+  ss.imbue(loc);
+  ss << pt;
   return ss.str();
 }
 
-string SDateTime::fromUnixTimeToString(const unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)
+std::string SDateTime::FormatPTimeHHMMSS(const boost::posix_time::ptime & pt)
+{
+  using namespace boost::posix_time;
+  static std::locale loc(std::cout.getloc(), new time_facet("%H%M%S"));
+
+  std::basic_stringstream<char> ss;
+  ss.imbue(loc);
+  ss << pt;
+  return ss.str();
+}
+
+boost::shared_ptr<boost::posix_time::ptime> SDateTime::fromUnixTimeToPTime(const unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)
 {
   boost::gregorian::date d(1970,1,1);
-  boost::scoped_ptr<boost::posix_time::ptime> p_pt;
-
-  if (tzSrc  != HKT && tzSrc  != GMT) return "";
-  if (tzDest != HKT && tzDest != GMT) return "";
 
   unsigned long ulAdjSeconds = 0;
   if      (tzSrc == HKT && tzDest == GMT) ulAdjSeconds -= 8*60*60;
@@ -941,16 +978,19 @@ string SDateTime::fromUnixTimeToString(const unsigned long ulUnixTime, TIMEPRECI
 
   switch(timePrecision)
   {
-    case NANOSEC:  { p_pt.reset(new boost::posix_time::ptime(d, boost::posix_time::microsec(ulUnixTime/1000 + ulAdjSeconds*1000000000))); break; }
-    case MICROSEC: { p_pt.reset(new boost::posix_time::ptime(d, boost::posix_time::microsec(ulUnixTime      + ulAdjSeconds*1000000   ))); break; }
-    case MILLISEC: { p_pt.reset(new boost::posix_time::ptime(d, boost::posix_time::millisec(ulUnixTime      + ulAdjSeconds*1000      ))); break; }
-    case SECOND:   { p_pt.reset(new boost::posix_time::ptime(d, boost::posix_time::seconds (ulUnixTime      + ulAdjSeconds           ))); break; }
-    default:       {                                                                                                                      break; }
+    case NANOSEC:  { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(d, boost::posix_time::microsec(ulUnixTime/1000 + ulAdjSeconds*1000000000))); break; }
+    case MICROSEC: { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(d, boost::posix_time::microsec(ulUnixTime      + ulAdjSeconds*1000000   ))); break; }
+    case MILLISEC: { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(d, boost::posix_time::millisec(ulUnixTime      + ulAdjSeconds*1000      ))); break; }
+    case SECOND:   { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(d, boost::posix_time::seconds (ulUnixTime      + ulAdjSeconds           ))); break; }
+    default:       {                                                                                                                                                              break; }
   }
+}
 
-  std::string s = FormatPTime(*p_pt);
-  boost::replace_all(s,".","_");
-  return s;
+string SDateTime::fromUnixTimeToString(const unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)
+{
+  boost::shared_ptr<boost::posix_time::ptime> p_pt = SDateTime::fromUnixTimeToPTime(ulUnixTime, timePrecision, tzSrc, tzDest);
+  if (!p_pt) return "";
+  return FormatPTimeYYYYMMDDHHMMSS(*p_pt);
 }
 
 unsigned long SDateTime::fromStringToUnixTime(const string & yyyymmdd_hhmmss_ffffff, TIMEPRECISION timePrecision)
@@ -1092,23 +1132,6 @@ YYYYMMDDHHMMSS SDateTime::ChangeTimeZone(const YYYYMMDDHHMMSS & ymdhmsFrom, cons
 }
 
 
-
-//==============================================================================
-//! Convert boost::gregorian::date to Unix timestamp (time_t)
-//!
-//! Converts a boost date to a Unix timestamp pointing to 00:00 hours, 0 seconds
-//! of the day given by date.
-//!
-//! time_t contains the number of seconds since 00:00 hours, Jan 1, 1970 UTC.
-//!
-//! \param date to convert
-//! \return unix timestamp 
-// time_t SDateTime::to_time_t(const boost::gregorian::date& date){
-//   using namespace boost::posix_time;
-//   static ptime epoch(boost::gregorian::date(1970, 1, 1));
-//   time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
-//   return time_t(secs);
-// }
 
 unsigned long SDateTime::GetCurrentTimeInMillsecSinceEpochGMT()
 {

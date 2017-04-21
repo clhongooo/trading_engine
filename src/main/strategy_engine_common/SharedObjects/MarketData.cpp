@@ -275,14 +275,8 @@ void MarketData::UpdateInternalDataWithMDIstruct(const ATU_MDI_marketfeed_struct
 
 bool MarketData::UpdateMarketData(const ATU_MDI_marketfeed_struct & structMD)
 {
-  YYYYMMDD yyyymmdd;
-  HHMMSS hhmmss;
-
-  if (!SDateTime::FromCashTSToYMDHMS(SDateTime::fromUnixTimeToString(structMD.m_microsec_since_epoch_gmt, SDateTime::MICROSEC, SDateTime::GMT, SDateTime::GMT),yyyymmdd,hhmmss))
-    return false;
-
-  UpdateInternalDataWithMDIstruct(structMD,yyyymmdd,hhmmss);
-
+  YYYYMMDDHHMMSS ymdhms(structMD.m_microsec_since_epoch_gmt,SDateTime::MICROSEC);
+  UpdateInternalDataWithMDIstruct(structMD,*ymdhms.GetYYYYMMDDPtr(),*ymdhms.GetHHMMSSPtr());
   NotifyConsumers();
   return true;
 }
