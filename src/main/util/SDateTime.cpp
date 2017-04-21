@@ -1,6 +1,7 @@
 #include "SDateTime.h"
 
 int SDateTime::DAYSINMTH[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+scoped_ptr<boost::gregorian::date> SDateTime::EpochDate;
 YYYYMMDD YYYYMMDD::BAD_DATE(-1);
 YMD YMD::BAD_DATE(0,0,-1);
 HHMMSS HHMMSS::BAD_TIME(-1);
@@ -970,7 +971,7 @@ std::string SDateTime::FormatPTimeHHMMSS(const boost::posix_time::ptime & pt)
 
 boost::shared_ptr<boost::posix_time::ptime> SDateTime::fromUnixTimeToPTime(const unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)
 {
-  boost::gregorian::date d(1970,1,1);
+  if (!SDateTime::EpochDate) SDateTime::EpochDate.reset(new boost::gregorian::date(1970,1,1));
 
   unsigned long ulAdjSeconds = 0;
   if      (tzSrc == HKT && tzDest == GMT) ulAdjSeconds -= 8*60*60;
@@ -978,11 +979,11 @@ boost::shared_ptr<boost::posix_time::ptime> SDateTime::fromUnixTimeToPTime(const
 
   switch(timePrecision)
   {
-    case NANOSEC:  { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(d, boost::posix_time::microsec(ulUnixTime/1000 + ulAdjSeconds*1000000000))); break; }
-    case MICROSEC: { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(d, boost::posix_time::microsec(ulUnixTime      + ulAdjSeconds*1000000   ))); break; }
-    case MILLISEC: { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(d, boost::posix_time::millisec(ulUnixTime      + ulAdjSeconds*1000      ))); break; }
-    case SECOND:   { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(d, boost::posix_time::seconds (ulUnixTime      + ulAdjSeconds           ))); break; }
-    default:       {                                                                                                                                                              break; }
+    case NANOSEC:  { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::microsec(ulUnixTime/1000 + ulAdjSeconds*1000000000))); break; }
+    case MICROSEC: { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::microsec(ulUnixTime      + ulAdjSeconds*1000000   ))); break; }
+    case MILLISEC: { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::millisec(ulUnixTime      + ulAdjSeconds*1000      ))); break; }
+    case SECOND:   { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::seconds (ulUnixTime      + ulAdjSeconds           ))); break; }
+    default:       {                                                                                                                                                                                  break; }
   }
 }
 
@@ -1032,6 +1033,21 @@ unsigned long SDateTime::fromStringToUnixTime(const string & yyyymmdd_hhmmss_fff
   }
 
   return mul * sec_since_epoch + frac_sec;
+}
+
+//--------------------------------------------------
+// For MsgType 304 ExpirationDate
+//--------------------------------------------------
+string SDateTime::fromGeniumDateToString(unsigned int expdate)
+{
+  unsigned int a=expdate;
+  unsigned int siza=(sizeof(a)-2)*8;
+  unsigned int month=(a<<(7+siza))>>(7+siza+5) ;
+  unsigned int day=(a<<(7+siza+4))>>(7+siza+4) ;
+  unsigned int year= (a>>9)-1+1990;
+  char tmp[100];
+  sprintf(tmp,"%d-%02d-%02d",year,month,day);
+  return string(tmp);
 }
 
 string SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_000000()
@@ -1131,15 +1147,13 @@ YYYYMMDDHHMMSS SDateTime::ChangeTimeZone(const YYYYMMDDHHMMSS & ymdhmsFrom, cons
   return YYYYMMDDHHMMSS(ymd,hms);
 }
 
-
-
-unsigned long SDateTime::GetCurrentTimeInMillsecSinceEpochGMT()
+unsigned long SDateTime::GetCurrentUnixTimeInMillsecGMT()
 {
   struct timeval tp;
   gettimeofday(&tp, NULL);
   return tp.tv_sec * 1000 + tp.tv_usec / 1000;
 }
-unsigned long SDateTime::GetCurrentTimeInMicrosecSinceEpochGMT()
+unsigned long SDateTime::GetCurrentUnixTimeInMicrosecGMT()
 {
   struct timeval tp;
   gettimeofday(&tp, NULL);

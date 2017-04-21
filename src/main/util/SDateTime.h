@@ -41,6 +41,7 @@ class SDateTime
     static int DAYSINMTH[12];
     enum TIMEPRECISION {SECOND, MILLISEC, MICROSEC, NANOSEC};
     enum TIMEZONE {GMT, HKT, CST, EST};
+    static scoped_ptr<boost::gregorian::date> EpochDate;
     //static void JulianDayNum2YMD(JulianDayNum jdn, YMD & ymd);
     static JulianDayNum CalcJulianDayNum(int y, int m, int d);
     static GregorianDayNum CalcGregorianDayNum(int y, int m, int d);
@@ -104,10 +105,11 @@ class SDateTime
     static boost::shared_ptr<boost::posix_time::ptime> fromUnixTimeToPTime (const unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE);
     static string                                      fromUnixTimeToString(const unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE);
     static unsigned long                               fromStringToUnixTime(const string &,      TIMEPRECISION                    );
+    static string fromGeniumDateToString(unsigned int);
     static string GetCurrentTimeYYYYMMDD_HHMMSS_000000();
     static string GetCurrentTimeYYYYMMDD_HHMMSS();
-    static unsigned long GetCurrentTimeInMillsecSinceEpochGMT();
-    static unsigned long GetCurrentTimeInMicrosecSinceEpochGMT();
+    static unsigned long GetCurrentUnixTimeInMillsecGMT();
+    static unsigned long GetCurrentUnixTimeInMicrosecGMT();
 
     template <class T1, class T2>
       static bool FromCashTSToYMDHMS(const string & ts, T1 & yyyymmdd, T2 & hhmmss)

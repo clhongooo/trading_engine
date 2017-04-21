@@ -189,7 +189,7 @@ void CtpMd::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketDat
   // sprintf(sMicrosec,"%06d",pDepthMarketData->UpdateMillisec*1000);
   // mfs.m_timestamp     = tradingDay+"_"+updateTime+"_"+string(sMicrosec);
   //--------------------------------------------------
-  mfs.m_microsec_since_epoch_gmt = SDateTime::GetCurrentTimeInMicrosecSinceEpochGMT();
+  mfs.m_microsec_since_epoch_gmt = SDateTime::GetCurrentUnixTimeInMicrosecGMT();
   memset(mfs.m_instrument,'\0',strlen(mfs.m_instrument)); // just to enable better compression ratio in the output binary data file.
   strcpy(mfs.m_instrument,pDepthMarketData->InstrumentID);
 
