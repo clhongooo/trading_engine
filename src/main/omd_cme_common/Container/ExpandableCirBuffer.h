@@ -14,7 +14,7 @@
 #include <vector>
 #include <deque>
 #include <iostream>
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>

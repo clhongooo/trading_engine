@@ -14,7 +14,7 @@
 #include <boost/shared_ptr.hpp>
 #include "Container/ExpandableCirBuffer.h"
 #include "MemoryManagement/CentralMemMgr.h"
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include <iostream>
 #include <cstdlib>
 #include <time.h>

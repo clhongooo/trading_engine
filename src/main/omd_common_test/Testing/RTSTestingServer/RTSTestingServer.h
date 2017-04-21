@@ -22,7 +22,7 @@
 #include <string>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "OMD_Message_Headers.h"
 #include <boost/thread.hpp>
 #include "../UTest/UTest.h"

@@ -13,7 +13,7 @@
 #include <boost/weak_ptr.hpp>
 #include <vector>
 #include <string.h>
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 
 using namespace std;
 using namespace boost;

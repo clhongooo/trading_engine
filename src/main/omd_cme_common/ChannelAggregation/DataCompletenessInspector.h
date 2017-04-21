@@ -21,7 +21,7 @@
 #include <boost/date_time/gregorian/greg_date.hpp>
 #include <boost/chrono.hpp>
 
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "McastIdentifier.h"
 #include "RTSClient.h"
 #include "SDateTime.h"

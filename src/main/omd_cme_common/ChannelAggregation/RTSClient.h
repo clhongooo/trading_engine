@@ -8,7 +8,7 @@
 #ifndef RTSCLIENT_H_
 #define RTSCLIENT_H_
 
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "OMD_Message_Headers.h"
 #include "SystemConfig.h"
 #include "SharedObjects.h"

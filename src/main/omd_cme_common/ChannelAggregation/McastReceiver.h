@@ -16,7 +16,7 @@
 #include <boost/bind.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/shared_ptr.hpp>
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "McastIdentifier.h"
 #include "Logger.h"
 #include "SharedObjects.h"

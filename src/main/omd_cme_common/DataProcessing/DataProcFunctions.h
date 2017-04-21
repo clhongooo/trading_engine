@@ -9,7 +9,7 @@
 #define DATAPROCFUNC_H_
 
 #include "OrderBook.h"
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "OMD_Message_Headers.h"
 #include "Logger.h"
 #include "SystemConfig.h"

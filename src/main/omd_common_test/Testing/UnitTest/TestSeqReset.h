@@ -9,7 +9,7 @@
 #define TESTSEQRESET_H_
 
 #include "../UTest/UTest.h"
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "SystemConfig.h"
 #include "SharedObjects.h"
 #include "DataProcessing/PreProcessor.h"

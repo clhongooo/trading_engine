@@ -17,7 +17,7 @@
 #include "McastIdentifier.h"
 #include "McastReceiver.h"
 #include "DataCompletenessInspector.h"
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "SystemConfig.h"
 #include "SharedObjects.h"
 #include "Logger.h"

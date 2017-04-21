@@ -22,7 +22,7 @@
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "CentralMemMgr.h"
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/condition_variable.hpp>

@@ -11,7 +11,7 @@
 #include "Logger.h"
 #include "SharedObjects.h"
 #include "SystemConfig.h"
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "OMD_Message_Headers.h"
 #include "ExpandableCirBuffer4Msg.h"
 #include "OrderBook.h"

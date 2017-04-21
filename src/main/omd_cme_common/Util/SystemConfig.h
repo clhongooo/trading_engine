@@ -20,7 +20,7 @@
 
 #include "McastIdentifier.h"
 #include "Logger.h"
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "SharedObjects.h"
 #include <vector>
 #include <string>

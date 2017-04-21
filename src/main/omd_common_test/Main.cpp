@@ -4,7 +4,7 @@
 //  Description: Unit tests for the code in omd_common
 //
 //**************************************************
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "Testing/UTest/UTest.h"
 
 #include "MemoryManagement/CentralMemMgr.h"

@@ -21,7 +21,7 @@
 #include <set>
 #include <string>
 #include "McastIdentifier.h"
-#include "OMD_Global.h"
+#include "BinaryTools.h"
 #include "OMD_Message_Headers.h"
 #include "OrderBook.h"
 #include "OrderBookCache.h"
