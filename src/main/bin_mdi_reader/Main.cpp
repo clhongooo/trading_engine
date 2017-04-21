@@ -24,12 +24,12 @@ int main(int argc, const char *argv[])
   }
 
   fseek(fp,0,SEEK_SET);
-  ATU_MDI_binary_marketfeed_struct bin_mdi_struct;
+  ATU_MDI_marketfeed_struct mdi_strct;
   size_t iReadSize = 0;
   do {
-    iReadSize = fread(&bin_mdi_struct, sizeof(ATU_MDI_binary_marketfeed_struct), 1, fp);
+    iReadSize = fread(&mdi_strct, sizeof(ATU_MDI_marketfeed_struct), 1, fp);
     if (iReadSize == 0) break;
-    cout << ATU_MDI_binary_marketfeed_struct::ToString(bin_mdi_struct) << endl;
+    cout << ATU_MDI_marketfeed_struct::ToString(mdi_strct) << endl;
   }
   while (iReadSize > 0);
 

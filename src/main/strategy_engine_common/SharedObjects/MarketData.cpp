@@ -278,7 +278,7 @@ bool MarketData::UpdateMarketData(const ATU_MDI_marketfeed_struct & structMD)
   YYYYMMDD yyyymmdd;
   HHMMSS hhmmss;
 
-  if (!SDateTime::FromCashTSToYMDHMS(structMD.m_timestamp,yyyymmdd,hhmmss))
+  if (!SDateTime::FromCashTSToYMDHMS(SDateTime::fromUnixTimeToString(structMD.m_microsec_since_epoch_gmt, SDateTime::MICROSEC, SDateTime::GMT, SDateTime::GMT),yyyymmdd,hhmmss))
     return false;
 
   UpdateInternalDataWithMDIstruct(structMD,yyyymmdd,hhmmss);

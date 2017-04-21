@@ -38,7 +38,7 @@ using namespace boost::interprocess;
 
 class CtpMd : public CThostFtdcMdSpi {
   public:
-    typedef boost::function < void(const ATU_MDI_binary_marketfeed_struct &) > WriteDataToFile_CallBackFunc;
+    typedef boost::function < void(const ATU_MDI_marketfeed_struct &) > WriteDataToFile_CallBackFunc;
     CtpMd();
     virtual void run();
     virtual ~CtpMd(){}
@@ -48,8 +48,8 @@ class CtpMd : public CThostFtdcMdSpi {
     virtual void on_process_subscription(const ATU_MDI_subscription_struct &s);
 
     virtual void ReadConfig(const string &);
-    virtual inline void WriteDataToFile(const ATU_MDI_binary_marketfeed_struct &);
-    virtual inline void DoNotWriteDataToFile(const ATU_MDI_binary_marketfeed_struct &);
+    virtual inline void WriteDataToFile(const ATU_MDI_marketfeed_struct &);
+    virtual inline void DoNotWriteDataToFile(const ATU_MDI_marketfeed_struct &);
     //--------------------------------------------------
     // CTP callback
     //--------------------------------------------------
