@@ -17,6 +17,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <stdexcept>
 #include <sstream>
+#include <stdexcept>
 
 using namespace std;
 using namespace boost;
@@ -98,7 +99,8 @@ class SDateTime
     static int  DaysInMonth (int y,int m);
     static int  DaysInYear  (int year);
     static std::string FormatPTime(boost::posix_time::ptime);
-    static string fromUnixTimeToString(unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE);
+    static string        fromUnixTimeToString(const unsigned long,  TIMEPRECISION, TIMEZONE, TIMEZONE);
+    static unsigned long fromStringToUnixTime(const string &, TIMEPRECISION);
     static string GetCurrentTimeYYYYMMDD_HHMMSS_000000();
     static string GetCurrentTimeYYYYMMDD_HHMMSS();
     static unsigned long GetCurrentTimeInMillsecSinceEpochGMT();

@@ -71,6 +71,7 @@ add_subdirectory(logger)
 add_subdirectory(util)
 add_subdirectory(omd_cme)
 add_subdirectory(bin_mdi_reader)
+add_subdirectory(unit_tests)
 
 
 include_directories(${PANTHEIOS_INC}

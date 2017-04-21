@@ -12,7 +12,6 @@
 // #include "UnitTest/ut-lr.hpp"
 // #include "UnitTest/ut-obs.hpp"
 // #include "UnitTest/ut-re.hpp"
-// #include "UnitTest/ut-sdt.hpp"
 // #include "UnitTest/ut-slb.hpp"
 // #include "UnitTest/ut-sm1.hpp"
 // #include "UnitTest/ut-sma.hpp"
@@ -28,7 +27,7 @@
 // #include "UnitTest/ut-oblma.hpp"
 #include <iostream>
 
-#include "UnitTest/TestVolSurf.h"
+// #include "UnitTest/TestVolSurf.h"
 #include "UnitTest/TestProbDistrnFunc.h"
 #include "UnitTest/TestProbMassFunc.h"
 #include "UnitTest/TestMACD.h"
@@ -55,6 +54,7 @@
 #include "UnitTest/TestExchange.h"
 #include "UnitTest/TestRglrMiniCtrtMgr.h"
 #include "UnitTest/TestSFunctional.h"
+#include "UnitTest/TestSDateTime.h"
 
 #include <cppunit/ui/text/TestRunner.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -66,7 +66,7 @@ int main ( int argc, const char* argv[] )
 {
   cout << "Starting Unit Tests..." << endl;
 
-  TestAcct();
+  // TestAcct();
   // TestATR();
   // TestBisec();
   // TestBP();
@@ -89,7 +89,6 @@ int main ( int argc, const char* argv[] )
   // TestTS();
   // TestWMA();
   // TestWR();
-  // TestSDT();
   // TestBM();
   // TestSM();
   // TestMSM();
@@ -123,6 +122,7 @@ int main ( int argc, const char* argv[] )
   // utTestRunner.addTest(TestPeriodicTask::suite());
   // utTestRunner.addTest(TestRglrMiniCtrtMgr::suite());
   utTestRunner.addTest(TestSFunctional::suite());
+  utTestRunner.addTest(TestSDateTime::suite());
   utTestRunner.run();
 
   cout << "Finished." << endl;

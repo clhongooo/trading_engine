@@ -927,7 +927,7 @@ std::string SDateTime::FormatPTime(boost::posix_time::ptime pt)
   return ss.str();
 }
 
-string SDateTime::fromUnixTimeToString(unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)
+string SDateTime::fromUnixTimeToString(const unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)
 {
   boost::gregorian::date d(1970,1,1);
   boost::scoped_ptr<boost::posix_time::ptime> p_pt;
@@ -953,6 +953,46 @@ string SDateTime::fromUnixTimeToString(unsigned long ulUnixTime, TIMEPRECISION t
   return s;
 }
 
+unsigned long SDateTime::fromStringToUnixTime(const string & yyyymmdd_hhmmss_ffffff, TIMEPRECISION timePrecision)
+{
+  vector<string> vs;
+  boost::split(vs, yyyymmdd_hhmmss_ffffff, boost::is_any_of("_"));
+  if (vs.size() != 3) throw std::exception();
+  //--------------------------------------------------
+  const int ymd      = boost::lexical_cast<int>(vs[0]);
+  const int hms      = boost::lexical_cast<int>(vs[1]);
+  const int microsec = boost::lexical_cast<int>(vs[2]);
+  const int y        = ymd / 10000;
+  const int m        = (ymd % 10000) / 100;
+  const int d        = ymd % 100;
+  const int H        = hms / 10000;
+  const int M        = (hms % 10000) / 100;
+  const int S        = hms % 100;
+  //--------------------------------------------------
+  tm t;
+  t.tm_year = y - 1900; // years since 1900
+  t.tm_mon = m - 1; // 0-11
+  t.tm_mday = d; // day of the month
+  t.tm_hour = H;
+  t.tm_min = M;
+  t.tm_sec = S;
+  t.tm_isdst = 0;
+
+  const long sec_since_epoch = timegm(&t);
+
+  long mul = 1;
+  long frac_sec = 0;
+  switch(timePrecision)
+  {
+    case NANOSEC:  { mul = 1000000000; frac_sec = microsec * 1000; break; }
+    case MICROSEC: { mul = 1000000   ; frac_sec = microsec       ; break; }
+    case MILLISEC: { mul = 1000      ; frac_sec = microsec / 1000; break; }
+    case SECOND:   { mul = 1         ; frac_sec = 0              ; break; }
+    default:       { mul = 1         ; frac_sec = 0              ; break; }
+  }
+
+  return mul * sec_since_epoch + frac_sec;
+}
 
 string SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_000000()
 {

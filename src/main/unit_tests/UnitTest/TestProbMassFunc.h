@@ -1,25 +1,24 @@
-#ifndef TESTPROBDISTRNFUNC_H_
-#define TESTPROBDISTRNFUNC_H_
+#ifndef TESTPROBMASSFUNC_H_
+#define TESTPROBMASSFUNC_H_
 
 #include "UTest.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
-#include "VolSurf.h"
 #include <cmath>
-#include "ProbDistrnFunc.h"
+#include "ProbMassFunc.h"
 
 #include <cppunit/ui/text/TestRunner.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-class TestProbDistrnFunc : public CppUnit::TestFixture
+class TestProbMassFunc : public CppUnit::TestFixture
 {
   public:
-    TestProbDistrnFunc();
-    virtual ~TestProbDistrnFunc();
+    TestProbMassFunc();
+    virtual ~TestProbMassFunc();
     void RunTest();
     void setUp();
     void tearDown();
     static CppUnit::Test *suite();
 };
 
-#endif /* TESTPROBDISTRNFUNC_H_ */
+#endif
