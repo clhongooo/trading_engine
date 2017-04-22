@@ -82,7 +82,6 @@ BYTE* ExpandableCirBuffer4Msg::GetPtrOfSeqNoXNoLock(const uint32_t iSeqNo)
 BYTE* ExpandableCirBuffer4Msg::GetMsgPtrOfSeqNo(const uint32_t iSeqNo)
 {
   boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
 
   BYTE* bT = GetPtrOfSeqNoNoLock(iSeqNo);
 
@@ -97,7 +96,6 @@ BYTE* ExpandableCirBuffer4Msg::GetMsgPtrOfSeqNo(const uint32_t iSeqNo)
 bool ExpandableCirBuffer4Msg::GetSmallestMissingSeqNo(uint32_t & iMissingSeqNo)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
 
   if (m_SetMissingSeqNo.empty()) return false;
   else
@@ -110,7 +108,6 @@ bool ExpandableCirBuffer4Msg::GetSmallestMissingSeqNo(uint32_t & iMissingSeqNo)
 bool ExpandableCirBuffer4Msg::GetLargestMissingSeqNo(uint32_t & iMissingSeqNo)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
 
   if (m_SetMissingSeqNo.empty()) return false;
   else
@@ -123,7 +120,6 @@ bool ExpandableCirBuffer4Msg::GetLargestMissingSeqNo(uint32_t & iMissingSeqNo)
 bool ExpandableCirBuffer4Msg::GetLatestSeqNo(uint32_t& iLatestSeqNo)
 {
   boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
 
   if (EmptyNoLock()) return false;
   else
@@ -137,7 +133,6 @@ bool ExpandableCirBuffer4Msg::GetLatestSeqNo(uint32_t& iLatestSeqNo)
 string ExpandableCirBuffer4Msg::GetAllMissingSeqNo()
 {
   boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
 
   bool bSkipped = false;
   uint32_t uiLastSeqNo = 0;
@@ -180,7 +175,6 @@ void ExpandableCirBuffer4Msg::ExpandCapacity()
 void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, uint64_t uiTStamp)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
 
   unsigned short usMsgSize = READ_UINT16(pTArg);
   if (usMsgSize > MAX_OMD_PACKET_SIZE) return; // ignore erroneous msg
@@ -391,7 +385,6 @@ void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, 
 StateOfNextSeqNo ExpandableCirBuffer4Msg::GetMsgSeqNoTStamp(BYTE* & pArg, uint32_t* uiSeqNo, uint64_t* ulTS)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
 
   // Sanity check
   if (EmptyNoLock())
@@ -425,7 +418,6 @@ StateOfNextSeqNo ExpandableCirBuffer4Msg::GetMsgSeqNoTStamp(BYTE* & pArg, uint32
 bool ExpandableCirBuffer4Msg::CheckDirtyFlagTStamp(const uint32_t iSeqNo, bool & bDirtyFlag, uint64_t & ulTStamp)
 {
   boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
 
   BYTE* pbTmp = GetPtrOfSeqNoNoLock(iSeqNo);
   if (!pbTmp)
@@ -443,7 +435,6 @@ bool ExpandableCirBuffer4Msg::CheckDirtyFlagTStamp(const uint32_t iSeqNo, bool &
 void ExpandableCirBuffer4Msg::PopFront()
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
   PopFrontNoLock();
 }
 
@@ -470,7 +461,6 @@ void ExpandableCirBuffer4Msg::PopFrontNoLock()
 void ExpandableCirBuffer4Msg::PurgeMsgB4SeqNoInclusive(const uint32_t uiSeqNo)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
   PurgeMsgB4SeqNoInclusiveNoLock(uiSeqNo);
 }
 
@@ -555,14 +545,12 @@ void ExpandableCirBuffer4Msg::PurgeMsgB4SeqNoInclusiveNoLock(uint32_t uiSeqNo)
 unsigned int ExpandableCirBuffer4Msg::AllocatedSize()
 {
   boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
   return m_DqCirBuf.size()*m_BlockSize*m_RowSize;
 }
 
 unsigned int ExpandableCirBuffer4Msg::Size()
 {
   boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
 
   return SizeNoLock();
 }
@@ -584,7 +572,6 @@ unsigned int ExpandableCirBuffer4Msg::SizeNoLock()
 bool ExpandableCirBuffer4Msg::Empty()
 {
   boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
   return EmptyNoLock();
 
 }
@@ -602,7 +589,6 @@ bool ExpandableCirBuffer4Msg::EmptyNoLock()
 void ExpandableCirBuffer4Msg::Reset()
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
   ResetNoLock();
 }
 
@@ -622,7 +608,6 @@ void ExpandableCirBuffer4Msg::ResetNoLock()
 uint32_t ExpandableCirBuffer4Msg::GetStartSeqNo()
 {
   boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
   return m_StartSeqNo;
 }
 

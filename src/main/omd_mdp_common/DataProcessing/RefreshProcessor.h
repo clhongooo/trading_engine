@@ -27,9 +27,9 @@ using namespace boost;
 class RefreshProcessor {
   public:
     RefreshProcessor(const unsigned short);
-    void Run();
+    virtual void Run() = 0;
     virtual ~RefreshProcessor() {}
-  private:
+  protected:
     boost::shared_ptr<DataProcFunctions>      m_DataProcFunc;
 
     //Output related
@@ -61,5 +61,18 @@ class RefreshProcessor {
     uint32_t                           m_RTSeqNo2;
 };
 
-#endif /* REFRESHPROCESSOR_H_ */
+class RefreshProcessor_OMD : public RefreshProcessor {
+  public:
+    RefreshProcessor_OMD(const unsigned short us) : RefreshProcessor(us) {}
+    virtual ~RefreshProcessor_OMD() {}
+    virtual void Run();
+};
 
+class RefreshProcessor_MDP : public RefreshProcessor {
+  public:
+    RefreshProcessor_MDP(const unsigned short us) : RefreshProcessor(us) {}
+    virtual ~RefreshProcessor_MDP() {}
+    virtual void Run();
+};
+
+#endif /* REFRESHPROCESSOR_H_ */

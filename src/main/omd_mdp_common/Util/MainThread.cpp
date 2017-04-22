@@ -5,7 +5,7 @@
  *      Author: sunny
  */
 
-#include "OMD_MainThread.h"
+#include "MainThread.h"
 
 MainThread::MainThread() {
 }
@@ -33,7 +33,8 @@ void MainThread::RunMainThread()
   ChannelController ChnlCtrlr;
   BoostThreadGrp.add_thread(new boost::thread(&ChannelController::StartRecvMcast, &ChnlCtrlr));
   BoostThreadGrp.add_thread(new boost::thread(&ChannelController::StartDataCompletenessInspectors, &ChnlCtrlr));
-  BoostThreadGrp.add_thread(new boost::thread(&RTSClient::Run, pRTSClt.get()));
+  if (pSysCfg->GetIdentity() != SystemConfig::MDP)
+    BoostThreadGrp.add_thread(new boost::thread(&RTSClient::Run, pRTSClt.get()));
   BoostThreadGrp.add_thread(new boost::thread(&ThreadHealthMonitor::Run, pThrdHth.get()));
 
   DataProcController DataProcCtrlr;

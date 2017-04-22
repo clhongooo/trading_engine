@@ -36,23 +36,23 @@ class ExpandableCirBuffer
 
     ExpandableCirBuffer(const unsigned short, const unsigned int, const unsigned int, boost::shared_ptr<CentralMemMgr>);
     ~ExpandableCirBuffer();
-    BYTE * GetWritingPtr(); //Returns the pointer to the circular buffer entry that we can insert data to
-    void PushBack();
-    const BYTE* GetReadingPtr(); //Returns the pointer to the circular buffer entry that we can read data from
-    bool GetReadingPtrTStamp(BYTE* &, unsigned long *); //Returns the pointer to the circular buffer entry that we can read data from, as well as the timestamp
+    BYTE *        GetWritingPtr(); //Returns the pointer to the circular buffer entry that we can insert data to
+    void          PushBack();
+    const BYTE*   GetReadingPtr(); //Returns the pointer to the circular buffer entry that we can read data from
+    bool          GetReadingPtrTStamp(BYTE* &, unsigned long *); //Returns the pointer to the circular buffer entry that we can read data from, as well as the timestamp
     unsigned long GetTimeStamp();
-    void PopFront();
-    void PopFrontNoLock();
-    void Purge();
-    unsigned int AllocatedSize();
-    unsigned int SizeNoLock();
-    unsigned int Size();
-    bool EmptyNoLock();
-    bool Empty();
-    void PrintDebugInfo(const unsigned int);
-    void Reset();
-    void WaitForData();
-    void NotifyConsumer();
+    void          PopFront();
+    void          PopFrontNoLock();
+    void          Purge();
+    unsigned int  AllocatedSize();
+    unsigned int  SizeNoLock();
+    unsigned int  Size();
+    bool          EmptyNoLock();
+    bool          Empty();
+    void          PrintDebugInfo(const unsigned int);
+    void          Reset();
+    void          WaitForData();
+    void          NotifyConsumer();
 
   private:
     //------------------------------
@@ -61,10 +61,8 @@ class ExpandableCirBuffer
 
     unsigned short                         m_ChannelID;
     boost::shared_mutex                    m_SharedMutex;
-    // boost::recursive_mutex                    m_Mutex;
     boost::mutex                           m_Mutex;
     boost::condition_variable              m_cvDataAvb;
-    // volatile bool                          m_bDataAvb;
     deque<vector<BYTE*> *>                 m_DqCirBuf;
     deque<unsigned int>                    m_DqStartIdx;
     deque<unsigned int>                    m_DqEndIdx;

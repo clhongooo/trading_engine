@@ -40,8 +40,8 @@ class ExpandableCirBuffer4Msg
 
     ExpandableCirBuffer4Msg(const unsigned short,const unsigned int, const unsigned int, boost::shared_ptr<CentralMemMgr>, const unsigned long);
     ~ExpandableCirBuffer4Msg();
-    unsigned int AllocatedSize();
-    unsigned int Size();
+    unsigned int     AllocatedSize();
+    unsigned int     Size();
     StateOfNextSeqNo GetMsgSeqNoTStamp(BYTE* &,uint32_t*,uint64_t*);
 
     bool      CheckDirtyFlagTStamp(const uint32_t,bool&,uint64_t&);
@@ -76,10 +76,8 @@ class ExpandableCirBuffer4Msg
 
     unsigned short               m_ChannelID;
     boost::shared_mutex          m_SharedMutex;
-    // boost::recursive_mutex      m_Mutex;
     boost::mutex                 m_Mutex;
     boost::condition_variable    m_cvDataAvb;
-    // volatile bool                m_bDataAvb;
     uint32_t                     m_StartSeqNo;
     deque<vector<BYTE*> *>       m_DqCirBuf;
     deque<int>                   m_DqStartIdx;

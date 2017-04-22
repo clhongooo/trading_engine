@@ -42,7 +42,7 @@ RefreshProcessor::RefreshProcessor(const unsigned short id) :
   m_RFMsgCirBufProtection       = m_SysCfg->GetRFMsgCirBufProtection();
 }
 
-void RefreshProcessor::Run()
+void RefreshProcessor_OMD::Run()
 {
   for (;;)
   {
@@ -574,4 +574,8 @@ void RefreshProcessor::Run()
     m_LastCheckedAdjSeqNo++;
 
   } // for (;;)
+}
+
+void RefreshProcessor_MDP::Run()
+{
 }

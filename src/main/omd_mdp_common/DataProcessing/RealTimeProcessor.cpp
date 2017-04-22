@@ -50,7 +50,7 @@ RealTimeProcessor::~RealTimeProcessor()
   }
 }
 
-void RealTimeProcessor::Run()
+void RealTimeProcessor_OMD::Run()
 {
   for (;;)
   {
@@ -172,4 +172,8 @@ void RealTimeProcessor::Run()
 
     m_MsgCirBuf->PopFront();
   }
+}
+
+void RealTimeProcessor_MDP::Run()
+{
 }

@@ -8,7 +8,7 @@
 #include "DataProcController.h"
 #include "SystemConfig.h"
 
-#include "OMD_MainThread.h"
+#include "MainThread.h"
 
 using namespace std;
 
@@ -29,10 +29,9 @@ int main(int argc, const char* argv[])
     //--------------------------------------------------
     if (argv[1][0]=='h')
     {
-      cout << "NAME:   Cash AT OMD-C" << endl;
-      cout << "USAGE:  omdc                 , use the default Config.ini" << endl;
-      cout << "        omdc /path/to/config , use the specified Config.ini" << endl;
-      cout << "        omdc STest 2.1       , use the config file for scenario test 2.1" << endl;
+      cout << "USAGE:  omd_mdp                 , use the default Config.ini" << endl;
+      cout << "        omd_mdp /path/to/config , use the specified Config.ini" << endl;
+      cout << "        omd_mdp STest 2.1       , use the config file for scenario test 2.1" << endl;
     }
     //--------------------------------------------------
     // Scenario test

@@ -133,7 +133,7 @@ bool PreProcessor::DealingWithSeqNoGaps(uint32_t uiAdjSeqNo)
   return true;
 }
 
-void PreProcessor::Run()
+void PreProcessor_OMD::Run()
 {
   for (;;)
   {
@@ -542,4 +542,8 @@ void PreProcessor::Run()
 
     m_RawPktCirBuf->PopFront();
   } // for (;;)
+}
+
+void PreProcessor_MDP::Run()
+{
 }

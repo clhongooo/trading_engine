@@ -344,8 +344,8 @@ void TestRefresh::RunTest()
     // pShrObj->UnsetRTSUnderway();
     CPPUNIT_ASSERT(!pShrObj->CheckRefreshActivatnStatus(uiChannelID));
 
-    RefreshProcessor rp(uiChannelID);
-    boost::thread t(&RefreshProcessor::Run,&rp);
+    RefreshProcessor *rp = new RefreshProcessor_OMD(uiChannelID);
+    boost::thread t(&RefreshProcessor::Run,rp);
 
     //--------------------------------------------------
     // Insert dummy data into circular buffer

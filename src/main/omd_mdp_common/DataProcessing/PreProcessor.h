@@ -30,12 +30,12 @@ using namespace boost;
 
 class PreProcessor {
   public:
-    PreProcessor(const  McastIdentifier  &);
-    virtual             ~PreProcessor();
-    void                Run();
-  private:
-    bool                DealingWithSeqNoGaps(uint32_t);
-    boost::shared_ptr<DataProcFunctions>      m_DataProcFunc;
+    PreProcessor(const McastIdentifier &);
+    virtual ~PreProcessor();
+    virtual void Run() = 0;
+  protected:
+    bool DealingWithSeqNoGaps(uint32_t);
+    boost::shared_ptr<DataProcFunctions> m_DataProcFunc;
 
     //Output related
     FILE *                             m_CannedMcastFile;
@@ -68,6 +68,20 @@ class PreProcessor {
     unsigned long                      m_MaxOneTimeAlloc;
     unsigned long                      m_TrashSeqNoGapLargerThan;
     uint32_t                           m_LocalLastAdjSeqNo;
+};
+
+class PreProcessor_OMD : public PreProcessor {
+  public:
+    PreProcessor_OMD(const McastIdentifier & m) : PreProcessor(m) {}
+    virtual ~PreProcessor_OMD() {}
+    void Run();
+};
+
+class PreProcessor_MDP : public PreProcessor {
+  public:
+    PreProcessor_MDP(const McastIdentifier & m) : PreProcessor(m) {}
+    virtual ~PreProcessor_MDP() {}
+    void Run();
 };
 
 #endif /* PREPROCESSOR_H_ */

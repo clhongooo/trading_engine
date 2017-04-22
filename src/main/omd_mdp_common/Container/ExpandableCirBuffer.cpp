@@ -44,7 +44,6 @@ void ExpandableCirBuffer::PushBack()
   WRITE_UINT64(pTmp,ulTS);
 
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
 
   unsigned int uiIdx = (m_DqEndIdx.back()+1)%m_BlockSize;
   m_DqEndIdx.back() = uiIdx;
@@ -95,7 +94,6 @@ bool ExpandableCirBuffer::GetReadingPtrTStamp(BYTE* & pArg, unsigned long * ulTS
 void ExpandableCirBuffer::PopFront()
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
   PopFrontNoLock();
   return;
 }
@@ -119,7 +117,6 @@ void ExpandableCirBuffer::PopFrontNoLock()
 void ExpandableCirBuffer::Purge()
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
 
   if (m_DqCirBuf.size() == 0) return;
   else if (m_DqCirBuf.size() > 1)
@@ -144,8 +141,6 @@ void ExpandableCirBuffer::Purge()
 unsigned int ExpandableCirBuffer::AllocatedSize()
 {
   boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::shared_lock<boost::recursive_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
   return m_DqCirBuf.size()*m_BlockSize*m_RowSize;
 }
 
@@ -165,8 +160,6 @@ unsigned int ExpandableCirBuffer::SizeNoLock()
 unsigned int ExpandableCirBuffer::Size()
 {
   boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::shared_lock<boost::recursive_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
   return SizeNoLock();
 }
 
@@ -182,8 +175,6 @@ bool ExpandableCirBuffer::EmptyNoLock()
 bool ExpandableCirBuffer::Empty()
 {
   boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::shared_lock<boost::recursive_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
   return EmptyNoLock();
 }
 
@@ -203,7 +194,6 @@ void ExpandableCirBuffer::PrintDebugInfo(const unsigned int iId) {
 void ExpandableCirBuffer::Reset()
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
-  // boost::unique_lock<boost::recursive_mutex> lock(m_SharedMutex);
   ResetNoLock();
 }
 

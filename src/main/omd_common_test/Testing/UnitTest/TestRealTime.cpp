@@ -35,7 +35,7 @@ void TestRealTime::RunTest()
     rtsClt->PurgeAllRTSRequests();
     pShrObj->ActivateRefresh(uiChannelID);
 
-    RealTimeProcessor *rtp = new RealTimeProcessor(uiChannelID);
+    RealTimeProcessor *rtp = new RealTimeProcessor_OMD(uiChannelID);
     boost::thread t(&RealTimeProcessor::Run,rtp);
 
     //--------------------------------------------------

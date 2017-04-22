@@ -1,4 +1,4 @@
-project(omd_cme_common)
+project(omd_mdp_common)
 file(GLOB_RECURSE proj_HEADERS "*.h")
 
 set (proj_INC "")

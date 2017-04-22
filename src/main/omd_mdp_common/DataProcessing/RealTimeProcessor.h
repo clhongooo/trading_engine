@@ -27,9 +27,9 @@ using namespace boost;
 class RealTimeProcessor {
   public:
     RealTimeProcessor(const unsigned short);
-    void Run();
+    virtual void Run() = 0;
     virtual ~RealTimeProcessor();
-  private:
+  protected:
     boost::shared_ptr<DataProcFunctions>      m_DataProcFunc;
 
     //Output related
@@ -51,6 +51,20 @@ class RealTimeProcessor {
     unsigned short                     m_ChannelID;
     // unsigned short                     m_RealTimeProcSleepMillisec;
     char                               m_JsonBuffer[JSON_BUFFER_SIZE];
+};
+
+class RealTimeProcessor_OMD : public RealTimeProcessor {
+  public:
+    RealTimeProcessor_OMD(const unsigned short us) : RealTimeProcessor(us) {}
+    virtual ~RealTimeProcessor_OMD() {}
+    void Run();
+};
+
+class RealTimeProcessor_MDP : public RealTimeProcessor {
+  public:
+    RealTimeProcessor_MDP(const unsigned short us) : RealTimeProcessor(us) {}
+    virtual ~RealTimeProcessor_MDP() {}
+    void Run();
 };
 
 #endif /* FULLFUNCTIONPROCESSOR_H_ */

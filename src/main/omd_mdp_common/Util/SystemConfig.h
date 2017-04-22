@@ -34,7 +34,7 @@ class SharedObjects;
 class SystemConfig : boost::noncopyable
 {
   public:
-    enum Identity { OMDC, OMDD };
+    enum Identity { UNKNOWN, OMDC, OMDD, MDP };
     static boost::shared_ptr<SystemConfig> Instance();
     void SetConfigPath(const string &);
     ~SystemConfig(){};
@@ -59,8 +59,6 @@ class SystemConfig : boost::noncopyable
     const unsigned int                                GetMemoryBlockSize()                               const;
     const unsigned long                               GetMaxOneTimeAlloc()                               const;
     const unsigned long                               GetTrashSeqNoGapLargerThan()                       const;
-    // const unsigned long                               GetPreProcessorSleepMillisec()                     const;
-    // const unsigned long                               GetRealTimeProcSleepMillisec()                     const;
     const unsigned long                               GetRefreshProcSleepMillisec()                      const;
     const unsigned long                               GetDataComplInspectorSleepMillisec()               const;
     const unsigned long                               GetRTSClientSleepMillisec()                        const;
@@ -75,7 +73,6 @@ class SystemConfig : boost::noncopyable
     const unsigned long                               GetTriggerRefreshTimeGapMillisec()                 const;
     const unsigned long                               GetRTSRequestMaxSeqNoRange()                       const;
     const unsigned long                               GetRTSRequestMaxMsg()                              const;
-    // const unsigned long                               GetRTSRequestBuffer()                              const;
 
 
 
@@ -119,8 +116,6 @@ class SystemConfig : boost::noncopyable
     string                                         m_CannedProcessedDataFilePath;
     string                                         m_CannedMcastFopenFlag;
     string                                         m_CannedProcessedDataFopenFlag;
-    // unsigned long                                  m_PreProcessorSleepMillisec;
-    // unsigned long                                  m_RealTimeProcSleepMillisec;
     unsigned long                                  m_RefreshProcSleepMillisec;
     unsigned long                                  m_DataComplInspectorSleepMillisec;
     unsigned long                                  m_RTSClientSleepMillisec;
@@ -135,7 +130,6 @@ class SystemConfig : boost::noncopyable
     unsigned long                                  m_TriggerRefreshTimeGapMillisec;
     unsigned long                                  m_RTSRequestMaxSeqNoRange;
     unsigned long                                  m_RTSRequestMaxMsg;
-    // unsigned long                                  m_RTSRequestBuffer;
     boost::shared_ptr<vector<unsigned short> >     m_pActiveMcastChannels;
     boost::shared_ptr<vector<unsigned short> >     m_pPreProcessorRTCannedChnl;
     boost::shared_ptr<vector<unsigned short> >     m_pPreProcessorRFCannedChnl;

@@ -19,7 +19,7 @@ void TestSeqReset::RunTest()
 {
   boost::shared_ptr<SystemConfig>  pSysCfg  = SystemConfig::Instance();
   boost::shared_ptr<SharedObjects> pShrObj  = SharedObjects::Instance();
-  unsigned int uiChannelID           = 91;
+  unsigned int uiChannelID                  = 91;
 
   pSysCfg->Reset();
 
@@ -72,14 +72,14 @@ void TestSeqReset::RunTest()
     pShrObj->DeactivateRefresh(uiChannelID);
     CPPUNIT_ASSERT(!pShrObj->CheckRefreshActivatnStatus(uiChannelID));
 
-    PreProcessor pprf(mci_rf);
-    boost::thread tpprf(&PreProcessor::Run,&pprf);
+    PreProcessor *pprf = new PreProcessor_OMD(mci_rf);
+    boost::thread tpprf(&PreProcessor::Run,pprf);
 
-    PreProcessor pprt(mci_rt);
-    boost::thread tpprt(&PreProcessor::Run,&pprt);
+    PreProcessor *pprt = new PreProcessor_OMD(mci_rt);
+    boost::thread tpprt(&PreProcessor::Run,pprt);
 
-    RefreshProcessor rfp(uiChannelID);
-    boost::thread trfp(&RefreshProcessor::Run,&rfp);
+    RefreshProcessor *rfp = new RefreshProcessor_OMD(uiChannelID);
+    boost::thread trfp(&RefreshProcessor::Run,rfp);
 
     ExpandableCirBuffer *     pRawCirBuf_RT = pShrObj->GetRawPktCirBufPtr(mci_rt);
     ExpandableCirBuffer *     pRawCirBuf_RF = pShrObj->GetRawPktCirBufPtr(mci_rf);
@@ -306,14 +306,14 @@ void TestSeqReset::RunTest()
     pShrObj->DeactivateRefresh(uiChannelID);
     CPPUNIT_ASSERT(!pShrObj->CheckRefreshActivatnStatus(uiChannelID));
 
-    PreProcessor pprf(mci_rf);
-    boost::thread tpprf(&PreProcessor::Run,&pprf);
+    PreProcessor *pprf = new PreProcessor_OMD(mci_rf);
+    boost::thread tpprf(&PreProcessor::Run,pprf);
 
-    PreProcessor pprt(mci_rt);
-    boost::thread tpprt(&PreProcessor::Run,&pprt);
+    PreProcessor *pprt = new PreProcessor_OMD(mci_rt);
+    boost::thread tpprt(&PreProcessor::Run,pprt);
 
-    RefreshProcessor rfp(uiChannelID);
-    boost::thread trfp(&RefreshProcessor::Run,&rfp);
+    RefreshProcessor *rfp = new RefreshProcessor_OMD(uiChannelID);
+    boost::thread trfp(&RefreshProcessor::Run,rfp);
 
     ExpandableCirBuffer *     pRawCirBuf_RT = pShrObj->GetRawPktCirBufPtr(mci_rt);
     ExpandableCirBuffer *     pRawCirBuf_RF = pShrObj->GetRawPktCirBufPtr(mci_rf);
@@ -545,14 +545,14 @@ void TestSeqReset::RunTest()
     pShrObj->DeactivateRefresh(uiChannelID);
     CPPUNIT_ASSERT(!pShrObj->CheckRefreshActivatnStatus(uiChannelID));
 
-    PreProcessor pprf(mci_rf);
-    boost::thread tpprf(&PreProcessor::Run,&pprf);
+    PreProcessor *pprf = new PreProcessor_OMD(mci_rf);
+    boost::thread tpprf(&PreProcessor::Run,pprf);
 
-    PreProcessor pprt(mci_rt);
-    boost::thread tpprt(&PreProcessor::Run,&pprt);
+    PreProcessor *pprt = new PreProcessor_OMD(mci_rt);
+    boost::thread tpprt(&PreProcessor::Run,pprt);
 
-    RefreshProcessor rfp(uiChannelID);
-    boost::thread trfp(&RefreshProcessor::Run,&rfp);
+    RefreshProcessor *rfp = new RefreshProcessor_OMD(uiChannelID);
+    boost::thread trfp(&RefreshProcessor::Run,rfp);
 
     ExpandableCirBuffer *     pRawCirBuf_RT = pShrObj->GetRawPktCirBufPtr(mci_rt);
     ExpandableCirBuffer *     pRawCirBuf_RF = pShrObj->GetRawPktCirBufPtr(mci_rf);
@@ -848,14 +848,14 @@ void TestSeqReset::RunTest()
     pShrObj->DeactivateRefresh(uiChannelID);
     CPPUNIT_ASSERT(!pShrObj->CheckRefreshActivatnStatus(uiChannelID));
 
-    PreProcessor pprf(mci_rf);
-    boost::thread tpprf(&PreProcessor::Run,&pprf);
+    PreProcessor *pprf = new PreProcessor_OMD(mci_rf);
+    boost::thread tpprf(&PreProcessor::Run,pprf);
 
-    PreProcessor pprt(mci_rt);
-    boost::thread tpprt(&PreProcessor::Run,&pprt);
+    PreProcessor *pprt = new PreProcessor_OMD(mci_rt);
+    boost::thread tpprt(&PreProcessor::Run,pprt);
 
-    RefreshProcessor rfp(uiChannelID);
-    boost::thread trfp(&RefreshProcessor::Run,&rfp);
+    RefreshProcessor *rfp = new RefreshProcessor_OMD(uiChannelID);
+    boost::thread trfp(&RefreshProcessor::Run,rfp);
 
     ExpandableCirBuffer *     pRawCirBuf_RTA = pShrObj->GetRawPktCirBufPtr(mci_rta);
     ExpandableCirBuffer *     pRawCirBuf_RTB = pShrObj->GetRawPktCirBufPtr(mci_rtb);
@@ -1067,14 +1067,14 @@ void TestSeqReset::RunTest()
     pShrObj->DeactivateRefresh(uiChannelID);
     CPPUNIT_ASSERT(!pShrObj->CheckRefreshActivatnStatus(uiChannelID));
 
-    PreProcessor pprf(mci_rf);
-    boost::thread tpprf(&PreProcessor::Run,&pprf);
+    PreProcessor *pprf = new PreProcessor_OMD(mci_rf);
+    boost::thread tpprf(&PreProcessor::Run,pprf);
 
-    PreProcessor pprt(mci_rt);
-    boost::thread tpprt(&PreProcessor::Run,&pprt);
+    PreProcessor *pprt = new PreProcessor_OMD(mci_rt);
+    boost::thread tpprt(&PreProcessor::Run,pprt);
 
-    RefreshProcessor rfp(uiChannelID);
-    boost::thread trfp(&RefreshProcessor::Run,&rfp);
+    RefreshProcessor *rfp = new RefreshProcessor_OMD(uiChannelID);
+    boost::thread trfp(&RefreshProcessor::Run,rfp);
 
     ExpandableCirBuffer *     pRawCirBuf_RTA = pShrObj->GetRawPktCirBufPtr(mci_rta);
     ExpandableCirBuffer *     pRawCirBuf_RTB = pShrObj->GetRawPktCirBufPtr(mci_rtb);
@@ -1324,14 +1324,14 @@ void TestSeqReset::RunTest()
     pShrObj->DeactivateRefresh(uiChannelID);
     CPPUNIT_ASSERT(!pShrObj->CheckRefreshActivatnStatus(uiChannelID));
 
-    PreProcessor pprf(mci_rf);
-    boost::thread tpprf(&PreProcessor::Run,&pprf);
+    PreProcessor *pprf = new PreProcessor_OMD(mci_rf);
+    boost::thread tpprf(&PreProcessor::Run,pprf);
 
-    PreProcessor pprt(mci_rt);
-    boost::thread tpprt(&PreProcessor::Run,&pprt);
+    PreProcessor *pprt = new PreProcessor_OMD(mci_rt);
+    boost::thread tpprt(&PreProcessor::Run,pprt);
 
-    RefreshProcessor rfp(uiChannelID);
-    boost::thread trfp(&RefreshProcessor::Run,&rfp);
+    RefreshProcessor *rfp = new RefreshProcessor_OMD(uiChannelID);
+    boost::thread trfp(&RefreshProcessor::Run,rfp);
 
     ExpandableCirBuffer *     pRawCirBuf_RTA = pShrObj->GetRawPktCirBufPtr(mci_rta);
     ExpandableCirBuffer *     pRawCirBuf_RTB = pShrObj->GetRawPktCirBufPtr(mci_rtb);

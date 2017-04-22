@@ -13,15 +13,13 @@ boost::shared_ptr<SystemConfig> SystemConfig::Instance() {
 }
 
 SystemConfig::SystemConfig() :
-  m_Identity(SystemConfig::OMDD),
+  m_Identity(SystemConfig::UNKNOWN),
   m_ProgramStartTime(boost::posix_time::microsec_clock::local_time()),
   m_ConfigPath("Config.ini"),
   m_CannedMcastFilePath(""),
   m_CannedProcessedDataFilePath("wb+"),
   m_CannedMcastFopenFlag("wb+"),
   m_CannedProcessedDataFopenFlag("wb+"),
-  // m_PreProcessorSleepMillisec(10),
-  // m_RealTimeProcSleepMillisec(10),
   m_RefreshProcSleepMillisec(10),
   m_DataComplInspectorSleepMillisec(15),
   m_RTSClientSleepMillisec(1000),
@@ -36,7 +34,6 @@ SystemConfig::SystemConfig() :
   m_TriggerRefreshTimeGapMillisec(180000),
   m_RTSRequestMaxSeqNoRange(10000),
   m_RTSRequestMaxMsg(50000),
-  // m_RTSRequestBuffer(100),
   m_PrintPreProcSeqNoAsInfo(false),
   m_PrintRealTimeProcSeqNoAsInfo(false),
   m_PrintRefreshProcSeqNoAsInfo(false),
@@ -112,7 +109,6 @@ const  unsigned  long  SystemConfig::GetTriggerRefreshSeqNoGap()                
 const  unsigned  long  SystemConfig::GetTriggerRefreshTimeGapMillisec()             const  {  return  m_TriggerRefreshTimeGapMillisec;                 }
 const  unsigned  long  SystemConfig::GetRTSRequestMaxSeqNoRange()                   const  {  return  m_RTSRequestMaxSeqNoRange;                       }
 const  unsigned  long  SystemConfig::GetRTSRequestMaxMsg()                          const  {  return  m_RTSRequestMaxMsg;                              }
-// const  unsigned  long  SystemConfig::GetRTSRequestBuffer()                          const  {  return  m_RTSRequestBuffer;                              }
 const  string    &     SystemConfig::GetCannedMcastFilePath()                       const  {  return  m_CannedMcastFilePath;                           }
 const  string    &     SystemConfig::GetCannedProcessedDataFilePath()               const  {  return  m_CannedProcessedDataFilePath;                   }
 const  string    &     SystemConfig::GetCannedMcastFopenFlag()                      const  {  return  m_CannedMcastFopenFlag;                          }
@@ -120,8 +116,6 @@ const  string    &     SystemConfig::GetCannedProcessedDataFopenFlag()          
 const  unsigned  int   SystemConfig::GetMemoryBlockSize()                           const  {  return  m_MemoryBlockSize;                               }
 const  unsigned  long  SystemConfig::GetMaxOneTimeAlloc()                           const  {  return  m_MaxOneTimeAlloc;                               }
 const  unsigned  long  SystemConfig::GetTrashSeqNoGapLargerThan()                   const  {  return  m_TrashSeqNoGapLargerThan;                       }
-// const  unsigned  long  SystemConfig::GetPreProcessorSleepMillisec()                 const  {  return  m_PreProcessorSleepMillisec;                     }
-// const  unsigned  long  SystemConfig::GetRealTimeProcSleepMillisec()                 const  {  return  m_RealTimeProcSleepMillisec;                     }
 const  unsigned  long  SystemConfig::GetRefreshProcSleepMillisec()                  const  {  return  m_RefreshProcSleepMillisec;                      }
 const  unsigned  long  SystemConfig::GetDataComplInspectorSleepMillisec()           const  {  return  m_DataComplInspectorSleepMillisec;               }
 const  unsigned  long  SystemConfig::GetRTSClientSleepMillisec()                    const  {  return  m_RTSClientSleepMillisec;                        }
@@ -163,24 +157,22 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   string sIdentity = pt.get<std::string>("SystemSettings.Identity");
   if      (sIdentity == "OMDC") m_Identity = SystemConfig::OMDC;
   else if (sIdentity == "OMDD") m_Identity = SystemConfig::OMDD;
+  else if (sIdentity == "MDP" ) m_Identity = SystemConfig::MDP;
 
   m_CannedMcastFilePath                               = pt.get<std::string>   ("SystemSettings.CannedMcastFilePath");
   m_CannedMcastFopenFlag                              = pt.get<std::string>   ("SystemSettings.CannedMcastFopenFlag");
   m_CannedProcessedDataFilePath                       = pt.get<std::string>   ("SystemSettings.CannedProcessedDataFilePath");
   m_CannedProcessedDataFopenFlag                      = pt.get<std::string>   ("SystemSettings.CannedProcessedDataFopenFlag");
   m_DataComplInspectorSleepMillisec                   = pt.get<unsigned short>("SystemSettings.DataCompletenessInspectorSleepMillisec");
-  // m_RealTimeProcSleepMillisec                         = pt.get<unsigned short>("SystemSettings.RealTimeProcSleepMillisec");
   m_RefreshProcSleepMillisec                          = pt.get<unsigned short>("SystemSettings.RefreshProcSleepMillisec");
   m_MemoryBlockSize                                   = pt.get<unsigned int>  ("SystemSettings.MemoryBlockSize");
   m_MaxOneTimeAlloc                                   = pt.get<unsigned long> ("SystemSettings.MaxOneTimeAlloc");
   m_TrashSeqNoGapLargerThan                           = pt.get<unsigned long> ("SystemSettings.TrashSeqNoGapLargerThan");
-  // m_PreProcessorSleepMillisec                         = pt.get<unsigned short>("SystemSettings.PreProcessorSleepMillisec");
   m_PrintRealTimeProcSeqNoAsInfo                      = pt.get<bool>          ("SystemSettings.PrintRealTimeProcSeqNoAsInfo");
   m_PrintRefreshProcSeqNoAsInfo                       = pt.get<bool>          ("SystemSettings.PrintRefreshProcSeqNoAsInfo");
   m_PrintOrderBookAsInfo                              = pt.get<bool>          ("SystemSettings.PrintOrderBookAsInfo");
   m_PrintPreProcSeqNoAsInfo                           = pt.get<bool>          ("SystemSettings.PrintPreProcSeqNoAsInfo");
   m_RTSClientSleepMillisec                            = pt.get<unsigned short>("SystemSettings.RTSClientSleepMillisec");
-  // m_RTSRequestBuffer                                  = pt.get<unsigned long> ("Retransmission.RTSRequestBuffer");
   m_RTSRequestMaxMsg                                  = pt.get<unsigned long> ("Retransmission.RTSRequestMaxMsg");
   m_RTSRequestMaxSeqNoRange                           = pt.get<unsigned long> ("Retransmission.RTSRequestMaxSeqNoRange");
   m_RTS_NumOfSvr                                      = pt.get<unsigned short>("Retransmission.NumOfServers");
@@ -396,7 +388,6 @@ void SystemConfig::ReadConfigOptional(const string & sConfigPath)
   boost::optional<unsigned int>    oMemoryBlockSize                                        =  pt.get_optional<unsigned int>    ("SystemSettings.MemoryBlockSize");
   boost::optional<unsigned long>   oMaxOneTimeAlloc                                        =  pt.get_optional<unsigned long>   ("SystemSettings.MaxOneTimeAlloc");
   boost::optional<unsigned long>   oTrashSeqNoGapLargerThan                                =  pt.get_optional<unsigned long>   ("SystemSettings.TrashSeqNoGapLargerThan");
-  // boost::optional<unsigned long>   oRTSRequestBuffer                                       =  pt.get_optional<unsigned long>   ("Retransmission.RTSRequestBuffer");
   boost::optional<unsigned long>   oRTSRequestMaxMsg                                       =  pt.get_optional<unsigned long>   ("Retransmission.RTSRequestMaxMsg");
   boost::optional<unsigned long>   oRTSRequestMaxSeqNoRange                                =  pt.get_optional<unsigned long>   ("Retransmission.RTSRequestMaxSeqNoRange");
   boost::optional<unsigned long>   oTriggerRefreshSeqNoGap                                 =  pt.get_optional<unsigned long>   ("RefreshProcessor.TriggerRefreshSeqNoGap");
@@ -421,18 +412,15 @@ void SystemConfig::ReadConfigOptional(const string & sConfigPath)
   }
 
   if  (oDataComplInspectorSleepMillisec              )  {  m_DataComplInspectorSleepMillisec           =  oDataComplInspectorSleepMillisec     .           get();  }
-  // if  (oRealTimeProcSleepMillisec                    )  {  m_RealTimeProcSleepMillisec                 =  oRealTimeProcSleepMillisec           .           get();  }
   if  (oRefreshProcSleepMillisec                     )  {  m_RefreshProcSleepMillisec                  =  oRefreshProcSleepMillisec            .           get();  }
   if  (oMemoryBlockSize                              )  {  m_MemoryBlockSize                           =  oMemoryBlockSize                     .           get();  }
   if  (oMaxOneTimeAlloc                              )  {  m_MaxOneTimeAlloc                           =  oMaxOneTimeAlloc                     .           get();  }
   if  (oTrashSeqNoGapLargerThan                      )  {  m_TrashSeqNoGapLargerThan                   =  oTrashSeqNoGapLargerThan             .           get();  }
-  // if  (oPreProcessorSleepMillisec                    )  {  m_PreProcessorSleepMillisec                 =  oPreProcessorSleepMillisec           .           get();  }
   if  (oRTSClientSleepMillisec                       )  {  m_RTSClientSleepMillisec                    =  oRTSClientSleepMillisec              .           get();  }
   if  (oTriggerRetransmissionSeqNoGap                )  {  m_TriggerRetransmissionSeqNoGap             =  oTriggerRetransmissionSeqNoGap       .           get();  }
   if  (oTriggerRetransmissionTimeGapMillisec         )  {  m_TriggerRetransmissionTimeGapMillisec      =  oTriggerRetransmissionTimeGapMillisec.           get();  }
   if  (oRTSRequestMaxSeqNoRange                      )  {  m_RTSRequestMaxSeqNoRange                   =  oRTSRequestMaxSeqNoRange             .           get();  }
   if  (oRTSRequestMaxMsg                             )  {  m_RTSRequestMaxMsg                          =  oRTSRequestMaxMsg                    .           get();  }
-  // if  (oRTSRequestBuffer                             )  {  m_RTSRequestBuffer                          =  oRTSRequestBuffer                    .           get();  }
   if  (oTriggerRefreshSeqNoGap                       )  {  m_TriggerRefreshSeqNoGap                    =  oTriggerRefreshSeqNoGap              .           get();  }
   if  (oTriggerRefreshTimeGapMillisec                )  {  m_TriggerRefreshTimeGapMillisec             =  oTriggerRefreshTimeGapMillisec       .           get();  }
   if  (oRunRealTimeProcessor                         )  {  m_RunRealTimeProcessor                      =  oRunRealTimeProcessor                .           get();  }
