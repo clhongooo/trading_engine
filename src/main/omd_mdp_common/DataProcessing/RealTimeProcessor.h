@@ -67,4 +67,9 @@ class RealTimeProcessor_MDP : public RealTimeProcessor {
     void Run();
 };
 
+class RealTimeProcessorFactory {
+  public:
+    static RealTimeProcessor* GetRealTimeProcessor(SystemConfig::Identity, const unsigned short);
+};
+
 #endif /* FULLFUNCTIONPROCESSOR_H_ */

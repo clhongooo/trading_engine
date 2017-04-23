@@ -7,6 +7,16 @@
 
 #include "RefreshProcessor.h"
 
+//--------------------------------------------------
+// Factory method
+//--------------------------------------------------
+RefreshProcessor* RefreshProcessorFactory::GetRefreshProcessor(SystemConfig::Identity id, const unsigned short us)
+{
+  if      (id == SystemConfig::OMDC) return new RefreshProcessor_OMD(us);
+  else if (id == SystemConfig::OMDD) return new RefreshProcessor_OMD(us);
+  else if (id == SystemConfig::MDP ) return new RefreshProcessor_MDP(us);
+}
+
 RefreshProcessor::RefreshProcessor(const unsigned short id) :
   m_bOutputJson(false),
   m_bRunRefreshProcessor(false),

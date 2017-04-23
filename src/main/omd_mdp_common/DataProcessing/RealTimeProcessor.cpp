@@ -1,5 +1,15 @@
 #include "RealTimeProcessor.h"
 
+//--------------------------------------------------
+// Factory method
+//--------------------------------------------------
+RealTimeProcessor* RealTimeProcessorFactory::GetRealTimeProcessor(SystemConfig::Identity id, const unsigned short us)
+{
+  if      (id == SystemConfig::OMDC) return new RealTimeProcessor_OMD(us);
+  else if (id == SystemConfig::OMDD) return new RealTimeProcessor_OMD(us);
+  else if (id == SystemConfig::MDP ) return new RealTimeProcessor_MDP(us);
+}
+
 RealTimeProcessor::RealTimeProcessor(const unsigned short id) :
   m_CannedProcessedDataFile(NULL),
   m_bRecordProcessedData(false),

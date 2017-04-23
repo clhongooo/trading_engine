@@ -58,72 +58,24 @@ ThreadHealthMonitor::ThreadIdentity ThreadHealthMonitor::NumToEnum(unsigned shor
 {
   switch(id)
   {
-    case 1:
-      {
-        return REALTIMEPROCESSOR;
-        break;
-      }
-    case 2:
-      {
-        return REFRESHPROCESSOR;
-        break;
-      }
-    case 3:
-      {
-        return DATACOMPLETENESSINSPECTOR;
-        break;
-      }
-    case 4:
-      {
-        return RTSCLIENT;
-        break;
-      }
-    case 5:
-      {
-        return PREPROCESSOR;
-        break;
-      }
-    default:
-      {
-        return REALTIMEPROCESSOR;
-        break;
-      }
+    case 1:  { return REALTIMEPROCESSOR;         break; }
+    case 2:  { return REFRESHPROCESSOR;          break; }
+    case 3:  { return DATACOMPLETENESSINSPECTOR; break; }
+    case 4:  { return RTSCLIENT;                 break; }
+    case 5:  { return PREPROCESSOR;              break; }
+    default: { return REALTIMEPROCESSOR;         break; }
   }
 }
 void ThreadHealthMonitor::EnumToString(ThreadIdentity id, char * sTmp)
 {
   switch (id)
   {
-    case 1:
-      {
-        strcpy(sTmp,"RealTimeProcessor");
-        break;
-      }
-    case 2:
-      {
-        strcpy(sTmp,"RefreshProcessor");
-        break;
-      }
-    case 3:
-      {
-        strcpy(sTmp,"DataCompletenessInspector");
-        break;
-      }
-    case 4:
-      {
-        strcpy(sTmp,"RTSClient");
-        break;
-      }
-    case 5:
-      {
-        strcpy(sTmp,"PreProcessor");
-        break;
-      }
-    default:
-      {
-        strcpy(sTmp,"");
-        break;
-      }
+    case 1:  { strcpy(sTmp,"RealTimeProcessor");         break; }
+    case 2:  { strcpy(sTmp,"RefreshProcessor");          break; }
+    case 3:  { strcpy(sTmp,"DataCompletenessInspector"); break; }
+    case 4:  { strcpy(sTmp,"RTSClient");                 break; }
+    case 5:  { strcpy(sTmp,"PreProcessor");              break; }
+    default: { strcpy(sTmp,"");                          break; }
   }
   return;
 }

@@ -75,4 +75,9 @@ class RefreshProcessor_MDP : public RefreshProcessor {
     virtual void Run();
 };
 
+class RefreshProcessorFactory {
+  public:
+    static RefreshProcessor* GetRefreshProcessor(SystemConfig::Identity, const unsigned short);
+};
+
 #endif /* REFRESHPROCESSOR_H_ */

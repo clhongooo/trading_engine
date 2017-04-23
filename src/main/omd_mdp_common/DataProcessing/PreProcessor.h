@@ -84,4 +84,9 @@ class PreProcessor_MDP : public PreProcessor {
     void Run();
 };
 
+class PreProcessorFactory {
+  public:
+    static PreProcessor* GetPreProcessor(SystemConfig::Identity, const McastIdentifier &);
+};
+
 #endif /* PREPROCESSOR_H_ */
