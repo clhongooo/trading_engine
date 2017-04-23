@@ -19,7 +19,6 @@ PreProcessor::PreProcessor(const McastIdentifier & mi) :
   m_ChannelID(0),
   m_LocalLastBaseSeqNo(0),
   // m_LastUnadjSeqNo(0),
-  // m_PreProcessorSleepMillisec(100),
   // m_PrevPktHdrTime(0),
   m_MaxOneTimeAlloc(0),
   m_TrashSeqNoGapLargerThan(0),
@@ -39,7 +38,6 @@ PreProcessor::PreProcessor(const McastIdentifier & mi) :
 
   m_RawPktCirBuf = m_ShrObj->GetRawPktCirBufPtr(m_McastIdentifier);
   m_MsgCirBuf = m_ShrObj->GetMsgCirBufPtr(m_McastIdentifier.McastType(), m_McastIdentifier.Channel_ID());
-  // m_PreProcessorSleepMillisec = SystemConfig::Instance()->GetPreProcessorSleepMillisec();
   m_MaxOneTimeAlloc = SystemConfig::Instance()->GetMaxOneTimeAlloc();
   m_TrashSeqNoGapLargerThan = SystemConfig::Instance()->GetTrashSeqNoGapLargerThan();
 
@@ -167,7 +165,6 @@ void PreProcessor_OMD::Run()
     BYTE * pbPkt = NULL;
     if (!m_RawPktCirBuf->GetReadingPtrTStamp(pbPkt,&ulTStamp))
     {
-      // boost::this_thread::sleep(boost::posix_time::milliseconds(m_PreProcessorSleepMillisec));
       m_RawPktCirBuf->WaitForData();
       continue;
     }

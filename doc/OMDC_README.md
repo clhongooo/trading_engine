@@ -78,4 +78,4 @@ E.g. Channel 10
 -   Can turn on / off the outputing of parsed data as JSON at each component.
 -   Log is written using the Pantheios library.
 -   Can issue manual commands (e.g. To force refresh to be performed) into the system by telnet'ing the port 8000.
-
+-   Conditional variable and is used for signaling among threads to achieve maximum speed

@@ -60,7 +60,6 @@ class PreProcessor {
     unsigned short                     m_ChannelID;
     uint32_t                           m_LocalLastBaseSeqNo;
     // uint32_t                           m_LastUnadjSeqNo;
-    // unsigned short                     m_PreProcessorSleepMillisec;
     char                               m_JsonBuffer[JSON_BUFFER_SIZE];
     char                               m_NameBuffer[256];
     boost::posix_time::ptime           m_ProgramStartTime;
