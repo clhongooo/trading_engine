@@ -13,6 +13,7 @@
 #include "OMD_Message_Headers.h"
 #include "Logger.h"
 #include "SystemConfig.h"
+#include "DataTransmission.h"
 #include <boost/shared_ptr.hpp>
 #include <vector>
 #include <sstream>
@@ -21,15 +22,16 @@
 
 class DataProcFunctions {
   public:
-    DataProcFunctions() {}
+    DataProcFunctions();
     virtual ~DataProcFunctions() {}
     virtual void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, char[]) = 0;
     virtual void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, unsigned short, char[], unsigned long) = 0;
     virtual void ProcessOrderBookInstruction(const char *,boost::shared_ptr<Logger>,const BYTE*,boost::shared_ptr<SharedObjects>,bool) = 0;
-    virtual void ProcessMessageForMDI(boost::shared_ptr<SharedObjects> shrobj, BYTE*,unsigned short);
+    virtual void ProcessMessageForTransmission(BYTE*,unsigned short);
 
-  private:
-    boost::shared_ptr<SystemConfig>  m_SysCfg;
+  protected:
+    boost::shared_ptr<SystemConfig>      m_SysCfg;
+    boost::shared_ptr<DataTransmission>  m_DataTrans;
 };
 
 class DataProcFunctions_OMDC : public DataProcFunctions {
@@ -51,10 +53,10 @@ class DataProcFunctions_OMDD : public DataProcFunctions {
 };
 
 class DataProcFuncFactory {
-public:
-	DataProcFuncFactory();
-	virtual ~DataProcFuncFactory();
-  static DataProcFunctions* GetDataProcFunc(SystemConfig::Identity);
+  public:
+    DataProcFuncFactory();
+    virtual ~DataProcFuncFactory();
+    static DataProcFunctions* GetDataProcFunc(SystemConfig::Identity);
 };
 
 #endif /* DATAPROCFUNC_H_ */

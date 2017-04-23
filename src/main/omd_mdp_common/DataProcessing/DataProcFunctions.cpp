@@ -9,11 +9,16 @@ DataProcFunctions* DataProcFuncFactory::GetDataProcFunc(SystemConfig::Identity i
   else if (id == SystemConfig::OMDD) return new DataProcFunctions_OMDD();
 }
 
+DataProcFunctions::DataProcFunctions()
+{
+  m_SysCfg    = SystemConfig::Instance();
+  m_DataTrans = DataTransmission::Instance();
+}
 
 //--------------------------------------------------
 // omd_mdi
 //--------------------------------------------------
-void DataProcFunctions::ProcessMessageForMDI(boost::shared_ptr<SharedObjects> shrobj, BYTE* pbMsg, unsigned short usMsgType)
+void DataProcFunctions::ProcessMessageForTransmission(BYTE* pbMsg, unsigned short usMsgType)
 {
   switch (usMsgType)
   {
@@ -26,9 +31,9 @@ void DataProcFunctions::ProcessMessageForMDI(boost::shared_ptr<SharedObjects> sh
     case OMDC_TRADE:
       {
         OMDC_Trade * ost = (OMDC_Trade *) pbMsg;
-        if (shrobj->omd_mdi_check_if_subscribed(ost->SecurityCode))
+        if (m_DataTrans->CheckIfSubscribed(ost->SecurityCode))
         {
-          shrobj->notify_trade(ost->TradeID,ost->SecurityCode,(double)(ost->Price)/1000,(double)ost->Quantity);
+          m_DataTrans->NotifyTrade(ost->TradeID,ost->SecurityCode,(double)(ost->Price)/1000,(double)ost->Quantity);
         }
         break;
       }
@@ -36,18 +41,18 @@ void DataProcFunctions::ProcessMessageForMDI(boost::shared_ptr<SharedObjects> sh
     case OMDC_TRADE_TICKER:
       {
         OMDC_Trade_Ticker * ost = (OMDC_Trade_Ticker *) pbMsg;
-        if (shrobj->omd_mdi_check_if_subscribed(ost->SecurityCode))
+        if (m_DataTrans->CheckIfSubscribed(ost->SecurityCode))
         {
-          shrobj->notify_trade(ost->TickerID,ost->SecurityCode,(double)(ost->Price)/1000,(double)ost->AggregateQuantity);
+          m_DataTrans->NotifyTrade(ost->TickerID,ost->SecurityCode,(double)(ost->Price)/1000,(double)ost->AggregateQuantity);
         }
         break;
       }
     case OMDD_TRADE:
       {
         OMDD_Trade * ost = (OMDD_Trade *) pbMsg;
-        if (shrobj->omd_mdi_check_if_subscribed(ost->OrderbookID))
+        if (m_DataTrans->CheckIfSubscribed(ost->OrderbookID))
         {
-          shrobj->notify_trade(ost->TradeID,ost->OrderbookID,(double)(ost->Price)/1000,(double)ost->Quantity);
+          m_DataTrans->NotifyTrade(ost->TradeID,ost->OrderbookID,(double)(ost->Price)/1000,(double)ost->Quantity);
         }
         break;
       }
@@ -137,11 +142,11 @@ void DataProcFunctions_OMDC::ProcessOrderBookInstruction(const char *sCaller, bo
   //--------------------------------------------------
   // omd_mdi Callback
   //--------------------------------------------------
-  if (shrobj->omd_mdi_check_if_subscribed(aobu->SecurityCode))
+  if (m_DataTrans->CheckIfSubscribed(aobu->SecurityCode))
   {
     ATU_MDI_marketfeed_struct mfs;
     ob->Dump(mfs);
-    shrobj->notify_orderbook(aobu->SecurityCode,mfs);
+    m_DataTrans->NotifyOrderBookUpdate(aobu->SecurityCode,mfs);
   }
 
   return;
@@ -282,11 +287,11 @@ void DataProcFunctions_OMDD::ProcessOrderBookInstruction(const char *sCaller, bo
   //--------------------------------------------------
   // omd_mdi Callback
   //--------------------------------------------------
-  if (shrobj->omd_mdi_check_if_subscribed(aobu->OrderbookID))
+  if (m_DataTrans->CheckIfSubscribed(aobu->OrderbookID))
   {
     ATU_MDI_marketfeed_struct mfs;
     ob->Dump(mfs);
-    shrobj->notify_orderbook(aobu->OrderbookID,mfs);
+    m_DataTrans->NotifyOrderBookUpdate(aobu->OrderbookID,mfs);
   }
 
   return;

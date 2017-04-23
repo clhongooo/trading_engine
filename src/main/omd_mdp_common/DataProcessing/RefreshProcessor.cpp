@@ -443,7 +443,7 @@ void RefreshProcessor_OMD::Run()
           //--------------------------------------------------
           // Process message for omd_mdi
           //--------------------------------------------------
-          m_DataProcFunc->ProcessMessageForMDI(m_ShrObj, pbMsg2, usMsgType2);
+          m_DataProcFunc->ProcessMessageForTransmission(pbMsg2, usMsgType2);
           //--------------------------------------------------
 
           if (usMsgType2 == OMDC_AGGREGATE_ORDER_BOOK_UPDATE || usMsgType2 == OMDD_AGGREGATE_ORDER_BOOK_UPDATE)

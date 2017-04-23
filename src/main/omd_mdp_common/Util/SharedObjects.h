@@ -65,16 +65,6 @@ class SharedObjects
     // unsigned short GetSpreadTable(unsigned long);
     // void           AddSpreadTable(unsigned long,unsigned short);
 
-    //--------------------------------------------------
-    // omd_mdi
-    //--------------------------------------------------
-    virtual void omd_mdi_subscribe_instrument(const string &);
-    virtual bool omd_mdi_check_if_subscribed(unsigned long);
-    virtual void register_trade_call_back_func(OMD_Trade_CallBackFunc* callback);
-    virtual void register_orderbook_call_back_func(OMD_OrderBook_CallBackFunc* callback);
-    virtual bool notify_trade(long, long, double, double);
-    virtual bool notify_orderbook(long, ATU_MDI_marketfeed_struct &);
-
     //------------------------------
     // RTS limit of max num of connections per day
     //------------------------------
@@ -174,7 +164,7 @@ class SharedObjects
     //--------------------------------------------------
     // Order Books
     //--------------------------------------------------
-    boost::shared_ptr<OrderBookCache>             m_OrderBookCache;
+    boost::shared_ptr<OrderBookCache>      m_OrderBookCache;
     vector<set<unsigned long> *>           m_OrderBookIDInEachChnl;
     vector<boost::shared_mutex*>           m_OrderBookIDInEachChnlMutex;
 
@@ -183,16 +173,6 @@ class SharedObjects
     // //--------------------------------------------------
     // map<unsigned long,unsigned short>      m_SpreadTable; // OrderBookID
     // boost::shared_mutex                    m_SpreadTableMutex;
-
-    //--------------------------------------------------
-    // omd_mdi
-    //--------------------------------------------------
-    OMD_Trade_CallBackFunc     * m_omd_trade_call_back_func;
-    OMD_OrderBook_CallBackFunc * m_omd_orderbook_call_back_func;
-
-    set<unsigned long>           m_omd_mdi_subscribed_instrument;
-    boost::shared_mutex          m_omd_mdi_subscription_Mutex;
-    //--------------------------------------------------
 };
 
 #endif

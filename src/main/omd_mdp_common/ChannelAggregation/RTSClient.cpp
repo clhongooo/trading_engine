@@ -901,7 +901,7 @@ void RTSClient::Run()
               //--------------------------------------------------
               // Process message for omd_mdi
               //--------------------------------------------------
-              m_DataProcFunc->ProcessMessageForMDI(m_ShrObj, pbMsg, READ_UINT16(pbMsg+2));
+              m_DataProcFunc->ProcessMessageForTransmission(pbMsg, READ_UINT16(pbMsg+2));
               //--------------------------------------------------
 
               m_MsgCirBuf->PushMsg(pbMsg,uiUnadjSeqNo+uiLatestRTOffset,ulSendTime); // Not the current local server time, but the time in the packet header

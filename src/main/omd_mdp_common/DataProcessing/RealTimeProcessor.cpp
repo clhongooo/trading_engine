@@ -159,7 +159,7 @@ void RealTimeProcessor_OMD::Run()
     //--------------------------------------------------
     // Process message for omd_mdi
     //--------------------------------------------------
-    m_DataProcFunc->ProcessMessageForMDI(m_ShrObj, pbMsg, usMsgType);
+    m_DataProcFunc->ProcessMessageForTransmission(pbMsg, usMsgType);
     //--------------------------------------------------
 
     //--------------------------------------------------
