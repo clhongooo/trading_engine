@@ -17,7 +17,7 @@ DataProcController::~DataProcController()
 {
 }
 
-void DataProcController::StartDataProcressing()
+void DataProcController::StartDataProcessing()
 {
   const boost::shared_ptr<vector<McastIdentifier> > pvMcastIdentifier = m_SysCfg->GetMcastIdentifiers();
   for (int i = 0; i < pvMcastIdentifier->size(); ++i)

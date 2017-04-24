@@ -1,9 +1,6 @@
 //**************************************************
 //  Author:      Sunny Yan
 //  Created On:  Fri Apr 11 12:04:04 HKT 2014
-//  Description: There is 1 data processor for each multicast channel
-//               Note that 1 channel consists of 4 multicast streams RT_A RT_B RF_A RF_B,
-//               so there are 4 McastReceivers for each of them. But there is only 1 data processor.
 //
 //
 //**************************************************
@@ -24,6 +21,7 @@
 #include <cstring>
 #include <set>
 #include "ThreadHealthMonitor.h"
+#include "MDP_Message_Headers.h"
 
 using namespace std;
 using namespace boost;
@@ -38,9 +36,9 @@ class PreProcessor {
     boost::shared_ptr<DataProcFunctions> m_DataProcFunc;
 
     //Output related
-    FILE *                             m_CannedMcastFile;
-    bool                               m_bRecordMcast;
-    bool                               m_bOutputJson;
+    FILE * m_CannedMcastFile;
+    bool   m_bRecordMcast;
+    bool   m_bOutputJson;
 
     //--------------------------------------------------
     // Special Debug options, to be turned off in production

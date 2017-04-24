@@ -38,7 +38,7 @@ void MainThread::RunMainThread()
   BoostThreadGrp.add_thread(new boost::thread(&ThreadHealthMonitor::Run, pThrdHth.get()));
 
   DataProcController DataProcCtrlr;
-  BoostThreadGrp.add_thread(new boost::thread(&DataProcController::StartDataProcressing, &DataProcCtrlr));
+  BoostThreadGrp.add_thread(new boost::thread(&DataProcController::StartDataProcessing, &DataProcCtrlr));
 
   TerminalThread tthd(&ChnlCtrlr);
   BoostThreadGrp.add_thread(new boost::thread(&TerminalThread::Run, &tthd));

@@ -23,7 +23,7 @@ class DataProcController {
   public:
     DataProcController();
     virtual ~DataProcController();
-    void StartDataProcressing();
+    void StartDataProcessing();
 
   private:
     boost::thread_group                m_BoostThreadGrp;

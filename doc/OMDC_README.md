@@ -27,6 +27,8 @@ E.g. Channel 10
 
 ## McastReceiver
 -   Simply stores received data into circular buffers as is.
+-   1 channel consists of 4 multicast streams `RT_A RT_B RF_A RF_B`,
+-   so there are 4 McastReceivers for each of them.
 
 ## PreProcessor
 -   Optionally records binary data or parses data into JSON format.
@@ -41,6 +43,9 @@ E.g. Channel 10
 -   Continuously monitor circular buffers to determine if recovery options are needed.
 -   When determined necessary, triggers retransmission client or switch a channel into refresh mode.
 -   Recovery can be triggered by sequence number gap or inactive time gap.
+
+## RealTime / Refresh Processor
+-   There is 1 Data Processor for each multicast channel.
 
 ## Refresh
 -   To minimize the time needed to finish refresh, the data in refresh channels are continuously listened to and buffered up
