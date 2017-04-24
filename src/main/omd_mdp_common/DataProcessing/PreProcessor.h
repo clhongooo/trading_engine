@@ -32,11 +32,10 @@ class PreProcessor {
     virtual ~PreProcessor();
     virtual void Run() = 0;
   protected:
-    bool DealingWithSeqNoGaps(uint32_t);
     boost::shared_ptr<DataProcFunctions> m_DataProcFunc;
 
     //Output related
-    FILE * m_CannedMcastFile;
+    BinaryRecorder m_BinaryRecorder;
     bool   m_bRecordMcast;
     bool   m_bOutputJson;
 
@@ -56,7 +55,6 @@ class PreProcessor {
     //Others
     const McastIdentifier &            m_McastIdentifier;
     unsigned short                     m_ChannelID;
-    uint32_t                           m_LocalLastBaseSeqNo;
     // uint32_t                           m_LastUnadjSeqNo;
     char                               m_JsonBuffer[JSON_BUFFER_SIZE];
     char                               m_NameBuffer[256];
@@ -69,9 +67,12 @@ class PreProcessor {
 
 class PreProcessor_OMD : public PreProcessor {
   public:
-    PreProcessor_OMD(const McastIdentifier & m) : PreProcessor(m) {}
+    PreProcessor_OMD(const McastIdentifier & m) : m_LocalLastBaseSeqNo(0), PreProcessor(m) {}
     virtual ~PreProcessor_OMD() {}
     void Run();
+    bool DealingWithSeqNoGaps(uint32_t);
+  private:
+    uint32_t m_LocalLastBaseSeqNo;
 };
 
 class PreProcessor_MDP : public PreProcessor {

@@ -16,7 +16,7 @@ void PreProcessor_OMD::Run()
     //--------------------------------------------------
     // Report Health
     //--------------------------------------------------
-    m_ThreadHealthMon->ReportHealthy(ThreadHealthMonitor::PREPROCESSOR, m_ChannelID);
+    m_ThreadHealthMon->ReportThatIAmHealthy(ThreadHealthMonitor::PREPROCESSOR, m_ChannelID);
 
     //--------------------------------------------------
     unsigned long ulTStamp = 0;
@@ -184,11 +184,6 @@ void PreProcessor_OMD::Run()
       if (m_bOutputJson)
       {
         memset(m_JsonBuffer,'\0',JSON_BUFFER_SIZE);
-
-        strcpy(m_NameBuffer, __FILE__);
-        strcat(m_NameBuffer, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? ": RealTime(" : ": Refresh("));
-        strcat(m_NameBuffer, (m_McastIdentifier.Channel() == McastIdentifier::A ? "A)" : "B)"));
-
         m_DataProcFunc->OutputJsonToLog(m_NameBuffer, m_ChannelID, m_Logger, pbMsg, usMsgType, m_JsonBuffer, oph->SendTime);
       }
 
@@ -406,5 +401,50 @@ void PreProcessor_OMD::Run()
     //--------------------------------------------------
 
     m_RawPktCirBuf->PopFront();
+    m_MsgCirBuf->NotifyConsumer();
   } // for (;;)
+}
+
+bool PreProcessor::DealingWithSeqNoGaps(uint32_t uiAdjSeqNo)
+{
+  //--------------------------------------------------
+  // Ref: Session 2, Test case for security code 288
+  //
+  // Initially:
+  //           m_LocalLastAdjSeqNo == 0, and we won't check for gaps
+  //
+  // Ridiculously huge gap:
+  //           Activate refresh and dump the packet
+  //
+  // Huge gap:
+  //           Because there is a protection mechanism in our circular buffers (MaxOneTimeAlloc)
+  //           Old messages will be purged. It's alright but get the latest snapshot first.
+  //--------------------------------------------------
+  if (m_LocalLastAdjSeqNo == 0)
+  {
+    m_LocalLastAdjSeqNo = uiAdjSeqNo;
+    return true;
+  }
+  else if (uiAdjSeqNo > m_LocalLastAdjSeqNo + m_TrashSeqNoGapLargerThan)
+  {
+    //--------------------------------------------------
+    // Ridiculous gap
+    //--------------------------------------------------
+    m_ShrObj->ActivateRefresh(m_ChannelID);
+    return false;
+  }
+  else if (uiAdjSeqNo > m_LocalLastAdjSeqNo + m_MaxOneTimeAlloc)
+  {
+    //--------------------------------------------------
+    // Huge gap
+    //--------------------------------------------------
+    m_ShrObj->ActivateRefresh(m_ChannelID);
+    m_LocalLastAdjSeqNo = uiAdjSeqNo;
+    return true;
+  }
+  //--------------------------------------------------
+  // Normal case
+  //--------------------------------------------------
+  m_LocalLastAdjSeqNo = uiAdjSeqNo;
+  return true;
 }

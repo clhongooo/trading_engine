@@ -16,7 +16,7 @@ void PreProcessor_MDP::Run()
     //--------------------------------------------------
     // Report Health
     //--------------------------------------------------
-    m_ThreadHealthMon->ReportHealthy(ThreadHealthMonitor::PREPROCESSOR, m_ChannelID);
+    m_ThreadHealthMon->ReportThatIAmHealthy(ThreadHealthMonitor::PREPROCESSOR, m_ChannelID);
 
     //--------------------------------------------------
     unsigned long ulTStamp = 0;
@@ -30,28 +30,22 @@ void PreProcessor_MDP::Run()
     //--------------------------------------------------
     // Output Packet Header info
     //--------------------------------------------------
-    MDP_Binary_Packet_Header * mph = (MDP_Binary_Packet_Header*)(pbPkt);
+    MDP_Packet_Header * mph = (MDP_Packet_Header*)(pbPkt);
+    size_t usSizeMDPPktHdr = sizeof(MDP_Packet_Header);
+    SDateTime::fromUnixTimeToString(mph->SendingTime);
 
-  size_t szPktHdr = sizeof(MDP_Binary_Packet_Header);
+    //--------------------------------------------------
+    // FIXME subseq msg not processed
+    //--------------------------------------------------
+    MessageHeader msgHdr;
+    int16_t iMsgSize = READ_INT16(&pbPkt[usSizeMDPPktHdr]);
+    msgHdr.wrap(pbPkt, usSizeMDPPktHdr+sizeof(iMsgSize), MDP_VERSION, usSizeMDPPktHdr+iMsgSize);
 
-  while (SDateTime::Sane(mph->SendingTime))
-
-  MessageHeader hdr;
-
-  while (offset < len) {
-    int16_t msg_size = *(int16_t *)&buf[offset];
-    hdr.wrap(buf, offset + sizeof(msg_size), ver, offset + msg_size);
-  }
-
-
-
-
-
-    m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Packet size:   %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), mph->PktSize);
-    m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Msg Count:     %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), mph->MsgCount);
-
-    m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Base Seq No:   %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), m_LocalLastBaseSeqNo);
-    m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Send Time:     %s", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(mph->SendingTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str());
+    if (m_PrintPreProcSeqNoAsInfo)
+      m_Logger->Write(Logger::INFO, "PreProcessor: ChannelID:%u. %s (%c): Packet Header: MsgSeqNum:  %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), mph->MsgSeqNum);
+    else
+      m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: MsgSeqNum:  %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), mph->MsgSeqNum);
+    m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Send Time:  %s", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(mph->SendingTime, SDateTime::NANOSEC).c_str());
 
     //--------------------------------------------------
     // Output other Debug info
@@ -59,123 +53,25 @@ void PreProcessor_MDP::Run()
     m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : m_RawPktCirBuf.Size()          %u", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_RawPktCirBuf->Size());
     m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : m_RawPktCirBuf.AllocatedSize() %u", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_RawPktCirBuf->AllocatedSize());
 
-    if (m_PrintPreProcSeqNoAsInfo)
-      m_Logger->Write(Logger::INFO ,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Actual Seq No: %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), mph->SeqNum);
-    else
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Actual Seq No: %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), mph->SeqNum);
-
     //--------------------------------------------------
-    // Error checking
+    // FIXME now missing Error checking
     //--------------------------------------------------
-    else if (mph->PktSize > MAX_OMD_PACKET_SIZE)
-    {
-      m_Logger->Write(Logger::WARNING,"PreProcessor: ChannelID:%u. %s (%c): Received erroneous packet size: Send Time: %s, PktSize = %u.",
-                      m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(mph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str(), mph->PktSize);
-      m_RawPktCirBuf->PopFront();
-      continue;
-    }
-    else if (mph->PktSize == 0)
-    {
-      m_RawPktCirBuf->PopFront();
-      continue;
-    }
-
-    // //--------------------------------------------------
-    // // Guarding the crazy Session 2, Test case for security code 288
-    // //--------------------------------------------------
-    // if (mph->SendTime < m_PrevPktHdrTime - 86400000000000) // # of nano sec in 1 day
-    // {
-    //   m_Logger->Write(Logger::WARNING,"PreProcessor: ChannelID:%u. %s (%c): Trashed packet with erroneous Send Time in packet header: %s.",
-    //       m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(mph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str());
-    //   m_RawPktCirBuf->PopFront();
-    //   continue;
-    // }
-    // else
-    // {
-    //   m_PrevPktHdrTime = mph->SendTime;
-    // }
 
     //--------------------------------------------------
     // Record canned data, with heartbeat
     //--------------------------------------------------
-    if (m_bRecordMcast)
-    {
-      {
-        //--------------------------------------------------
-        // Custom format:
-        // 8 bytes - Relative time stamp in millisec
-        // n bytes - The actual packet
-        //--------------------------------------------------
-        uint16_t uiPktSize = *((uint16_t*)pbPkt);
-        if (uiPktSize <= MAX_OMD_PACKET_SIZE)
-        {
-          //--------------------------------------------------
-          // Relative time in millisec
-          //--------------------------------------------------
-          boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
-          boost::posix_time::time_duration diff = now - m_ProgramStartTime;
-          uint64_t uiRelTime = diff.total_milliseconds();
-          fwrite(&uiRelTime,8,1,m_CannedMcastFile);
-          //--------------------------------------------------
-          // Msg itself
-          //--------------------------------------------------
-          uint16_t uiPktSize = *((uint16_t*)pbPkt);
-          fwrite(pbPkt,1,uiPktSize,m_CannedMcastFile);
-          fflush(m_CannedMcastFile);
-        }
-      }
-    }
-
-    //--------------------------------------------------
-    // Heartbeat
-    //--------------------------------------------------
-    size_t iMsgCnt = READ_UINT8(&(mph->MsgCount));
-    if (iMsgCnt == 0)
-    {
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : This is a HEARTBEAT packet", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port());
-      m_RawPktCirBuf->PopFront();
-      m_MsgCirBuf->NotifyConsumer();
-      continue;
-    }
-
-    // //--------------------------------------------------
-    // // Record canned data without heartbeat
-    // //--------------------------------------------------
-    // if (m_bRecordMcast)
-    // {
-    //   {
-    //     //--------------------------------------------------
-    //     // HKEx simulator format
-    //     //--------------------------------------------------
-    //     //--------------------------------------------------
-    //     // Record Mcast as "canned data"
-    //     // Writing to file (in the format of HKEx simulator)
-    //     //--------------------------------------------------
-    //     unsigned short iPktLen = READ_UINT16(pbPkt);
-    //     unsigned short iMsgCnt = READ_UINT8(pbPkt+2);
-    //
-    //     //--------------------------------------------------
-    //     // If it's Heartbeat, don't record it to file
-    //     //--------------------------------------------------
-    //     if (iMsgCnt == 0)
-    //     {
-    //       m_RawPktCirBuf->PopFront();
-    //       continue;
-    //     }
-    //     fwrite(pbPkt+1,1,1,m_CannedMcastFile);
-    //     fwrite(pbPkt,1,1,m_CannedMcastFile);
-    //     fwrite(pbPkt,1,iPktLen,m_CannedMcastFile);
-    //     fflush(m_CannedMcastFile);
-    //   }
-    // }
+    m_BinaryRecorder.WriteHKExUnixTime(pbPkt);
 
     //--------------------------------------------------
     // Message Parsing and Json Output
     //--------------------------------------------------
-    uint32_t iStartUnadjSeqNo = mph->SeqNum;
-    uint64_t iSendTime = mph->SendTime;
-    size_t iOffset = sizeof(OMD_Packet_Header);
-    for (int i = 0; i < iMsgCnt; ++i)
+    uint32_t iStartUnadjSeqNo = mph->MsgSeqNum;
+    uint64_t iSendTime        = mph->SendingTime;
+    size_t   iOffset          = usSizeMDPPktHdr;
+    //--------------------------------------------------
+    // FIXME missing the number of messages from header...
+    //--------------------------------------------------
+    // for (int i = 0; i < iMsgCnt; ++i)
     {
       const BYTE *pbMsg = pbPkt+iOffset;
       iOffset += READ_UINT16(pbPkt+iOffset);
@@ -192,146 +88,34 @@ void PreProcessor_MDP::Run()
       //--------------------------------------------------
       // Printing results in log
       //--------------------------------------------------
-      if (m_bOutputJson)
+      if (m_bOutputJson) m_DataProcFunc->OutputJsonToLog(m_NameBuffer, m_ChannelID, m_Logger, pbMsg, usMsgType, mph->SendTime);
+
+      //--------------------------------------------------
+      // Heartbeat
+      //--------------------------------------------------
+      if (msgHdr.templateId() == MDP_HEARTBEAT)
       {
-        memset(m_JsonBuffer,'\0',JSON_BUFFER_SIZE);
-
-        strcpy(m_NameBuffer, __FILE__);
-        strcat(m_NameBuffer, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? ": RealTime(" : ": Refresh("));
-        strcat(m_NameBuffer, (m_McastIdentifier.Channel() == McastIdentifier::A ? "A)" : "B)"));
-
-        m_DataProcFunc->OutputJsonToLog(m_NameBuffer, m_ChannelID, m_Logger, pbMsg, usMsgType, m_JsonBuffer, mph->SendTime);
+        m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : This is a HEARTBEAT packet", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port());
+        continue;
       }
 
       //--------------------------------------------------
-      // Check latest seq reset base num
-      // Of course if both streams A and B have missed the OMD_SEQUENCE_RESET message, then there's no way we'll know the correct base number
-      //
-      // Should check every time now because system reset can be called from the terminal at any given time
+      // Channel Reset
       //--------------------------------------------------
-      if (m_McastIdentifier.McastType() == McastIdentifier::REALTIME)
-        m_LocalLastBaseSeqNo = m_ShrObj->CheckRTChnlLatestSeqNoOffset(m_ChannelID);
-      else
-        m_LocalLastBaseSeqNo = m_ShrObj->CheckRFChnlLatestSeqNoOffset(m_ChannelID);
-
-      //--------------------------------------------------
-      // Handling OMD_SEQUENCE_RESET
-      //--------------------------------------------------
-      //
-      //--------------------------------------------------
-      // Where to handle sequence reset
-      // Can't handle in RealTimeProcessor and RefreshProcessor, because already need to adjust sequence number with the base offset before putting them in the circular buffer.
-      //--------------------------------------------------
-      // Why purge msg cir buffer on seq reset?
-      // Because if you don't, any missing packets in the cir buffer before reset will trigger recovery.
-      // RTS server won't entertain us. Then we wait for refresh. But since the last seq num in refresh are already reset too, we will have to wait almost forever.
-      // Then rather than having an offset for the seq no, why not simply purge the msg cir buffer? Because I knew this too late...
-      //--------------------------------------------------
-      // Refresh activation
-      // Upon reception of a RT seq no reset, Refresh mode should be "Activated" so that the latest snapshot can be obtained.
-      //--------------------------------------------------
-      //
-      //--------------------------------------------------
-      // Time of seq reset messages
-      //--------------------------------------------------
-      // Refresh:   09:51       11:20 12:16 14:49 16:04 17:10 17:33
-      // Real-time:       10:51 11:20 12:16 14:49 16:04
-      //
-      //--------------------------------------------------
-      // ***
-      // From the experience of Readiness test (Session 5 10:51)
-      // At 10:51, HKEx sent out seq reset for RT only, but both RT RF have their seq no reset
-      // Therefore don't trust HKEx on this seq reset message
-      // Not sure about the actual behaviour in production
-      //--------------------------------------------------
-      // ***
-      // Session 2: 288 11280
-      // The seq reset at 14:59 had raw seq no 1, which is different from what I expected.
-      // I expected the raw seq no to follow from previous messages
-      //--------------------------------------------------
-      //--------------------------------------------------
-      // Session 5: Test case 1: (09:00 - 09:20) ***
-      // After the Sequence Reset messages and the Securities Definition messages for market open, OMD sends out another Sequence Reset message in each channel.
-      // Clients are expected to clear the securities information in cache and replace it with data from the new Securities Definition sent after the second round of Sequence Reset messages.
-      //
-      // Session 5: Test case 2: (09:20 - 10:20)
-      // OMD simulates a real-time data publisher failure that will trigger a failover of the affected component.
-      // This interruption should be transparent to clients except SS clients may receive duplicate trade tickers (i.e. trade ticker ID same as one received previously) which they should discard
-      //
-      // Session 5: Test case 3: (09:20 - 10:20) ***
-      // OMD simulates a refresh (RFS) service failure that will trigger a failover, as a result, a sequence reset (100) message will be transmitted in each of the refresh channel.
-      // *** Clients are expected to handle RFS failover properly without affecting the reception of real-time market data and can capture a full latest market image from RFS.
-      //
-      // Session 5: Test case 4: (09:20 - 10:20)
-      // OMD simulates a primary Retransmission (RTS) server failure as a result only the secondary RTS server remains operational to provide service.
-      // Clients are expected to detect such failure and auto-switch to the secondary RTS server to make retransmission requests.
-      //
-      // Session 5: Test case 5: (11:00 - 11:30) ***
-      // OMD simulates a primary site failure resulting in failover to the DR site. Upon the takeover of the DR site, OMD will deliver a sequence reset (100) messages from each channels.
-      // Clients are expected to clear the data in cache upon receipt of the sequence reset messages and then obtain the latest market image from the refresh service and real-time channels at the DR site.
-      //--------------------------------------------------
-      if (usMsgType == OMD_SEQUENCE_RESET)// ||                     // explicit seq no reset
-        //(iUnadjSeqNo < 20 && iUnadjSeqNo < m_LastUnadjSeqNo))     // implicit seq no reset, this will cause other problems, so disabled
+      if (msgHdr.templateId() == MDP_CHANNEL_RESET)
       {
-
-        //--------------------------------------------------
-        // Since there are channels A and B, need to guard against doing OMD_SEQUENCE_RESET twice
-        //--------------------------------------------------
-        boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
-        boost::posix_time::time_duration diff = now - m_ProgramStartTime;
-        unsigned long ulRelTime = diff.total_milliseconds();
-
-        if (m_McastIdentifier.McastType() == McastIdentifier::REALTIME && !m_ShrObj->CheckRTSeqResetAlreadyHandled(m_ChannelID, ulRelTime))
-        {
-          //--------------------------------------------------
-          // Special guard against the unexpected / wrong seq no of 1 at OMDC Readiness Test 14:50, Channel 20. It doesn't follow from previous seq no
-          //--------------------------------------------------
-          if (iUnadjSeqNo == 1 && m_MsgCirBuf->GetStartSeqNo() > 1)
-          {
-            m_LocalLastBaseSeqNo = m_MsgCirBuf->GetNextSeqNo(); // not +=
-          }
-          else // normal expected case
-          {
-            m_LocalLastBaseSeqNo += iUnadjSeqNo;
-          }
-          m_ShrObj->AddRTSeqResetAlreadyHandled(m_ChannelID, ulRelTime);
-        }
-        else if (m_McastIdentifier.McastType() == McastIdentifier::REFRESH && !m_ShrObj->CheckRFSeqResetAlreadyHandled(m_ChannelID, ulRelTime))
-        {
-          //--------------------------------------------------
-          // Special guard against the unexpected / wrong seq no of 1 at OMDC Readiness Test 14:50, Channel 20. It doesn't follow from previous seq no
-          //--------------------------------------------------
-          if (iUnadjSeqNo == 1 && m_MsgCirBuf->GetStartSeqNo() > 1)
-          {
-            m_LocalLastBaseSeqNo = m_MsgCirBuf->GetNextSeqNo(); // not +=
-          }
-          else // normal expected case
-          {
-            m_LocalLastBaseSeqNo += iUnadjSeqNo;
-          }
-          m_ShrObj->AddRFSeqResetAlreadyHandled(m_ChannelID, ulRelTime);
-        }
-        else
-        {
-          m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. R%c (%c) OMD_SEQUENCE_RESET received. But we have already processed it in the other line. Skipping",
-                          m_ChannelID,
-                          (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? 'T' : 'F'),
-                          (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A': 'B'));
-          continue;
-        }
 
         if (m_McastIdentifier.McastType() == McastIdentifier::REALTIME)
         {
           //--------------------------------------------------
           // RealTime channel
           //--------------------------------------------------
-          m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. RT (%c) OMD_SEQUENCE_RESET received. Seq No of OMD_REFRESH_COMPLETE(raw/unadj): %u, New Base Seq No (adj): %u. Start Seq No (adj, and before seq reset msg): %u.",
+          m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. RT (%c) MDP_CHANNEL_RESET received. Seq No of OMD_REFRESH_COMPLETE(raw/unadj): %u, New Base Seq No (adj): %u. Start Seq No (adj, and before seq reset msg): %u.",
                           m_ChannelID,
                           (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A': 'B'),
                           iUnadjSeqNo,
                           m_LocalLastBaseSeqNo,
                           m_MsgCirBuf->GetStartSeqNo());
-          m_ShrObj->AddRTChnlSeqNoOffset(m_ChannelID, m_LocalLastBaseSeqNo);
 
           // if (usMsgType == OMD_SEQUENCE_RESET)
           m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. Refresh activated after receiving OMD_SEQUENCE_RESET.", m_ChannelID);
@@ -393,7 +177,7 @@ void PreProcessor_MDP::Run()
           m_ShrObj->AddRFSeqResetAlreadyHandled(m_ChannelID, ulRelTime);
         }
 
-      } // if (usMsgType == OMD_SEQUENCE_RESET)
+      } // if (usMsgType == MDP_CHANNEL_RESET)
       else
       {
         //--------------------------------------------------
@@ -416,5 +200,6 @@ void PreProcessor_MDP::Run()
       //--------------------------------------------------
 
       m_RawPktCirBuf->PopFront();
+      m_MsgCirBuf->NotifyConsumer();
     } // for (;;)
   }
