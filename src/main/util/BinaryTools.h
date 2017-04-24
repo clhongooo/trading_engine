@@ -44,6 +44,7 @@ typedef      uint8_t                               BYTE;
 #define      MAX_MDP_PACKET_SIZE                   32768
 #define      JSON_BUFFER_SIZE                      65536
 
+//--------------------------------------------------
 class BinaryRecorder
 {
   public:
@@ -51,8 +52,10 @@ class BinaryRecorder
     static const unsigned int BUFFER_SIZE = 1500;
     BinaryRecorder();
     ~BinaryRecorder();
-    void SetOutFilePathAndOpen(const string &);
-    void SetProgramStartTime(boost::posix_time::ptime);
+    //--------------------------------------------------
+    bool SetOutFilePathAndOpen(const string &, const string &);
+    void SetFlushOnEveryWrite(const bool);
+    //--------------------------------------------------
     void WriteHKExSim(const char *);
     void WriteHKExRelTime(const char *);
     void WriteHKExUnixTime(const char *);
@@ -66,10 +69,11 @@ class BinaryRecorder
     //--------------------------------------------------
 
   protected:
-    boost::posix_time::ptime m_ProgramStartTime;
+    boost::posix_time::ptime m_BinRecStartTime;
     string m_File;
     FILE * m_OutFile;
     char   m_TmpCharArray[BUFFER_SIZE];
+    bool   m_FlushOnEveryWrite;
     //--------------------------------------------------
     inline void _WriteATUMDIStruct(const ATU_MDI_marketfeed_struct &);
     inline void _DoNotWriteATUMDIStruct(const ATU_MDI_marketfeed_struct &) {}

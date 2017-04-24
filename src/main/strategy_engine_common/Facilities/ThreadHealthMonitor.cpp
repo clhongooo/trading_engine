@@ -25,13 +25,13 @@ boost::shared_ptr<ThreadHealthMonitor> ThreadHealthMonitor::Instance() {
   return instance;
 }
 
-void ThreadHealthMonitor::ReportHealthy(const char * sIdentity)
+void ThreadHealthMonitor::ReportThatIAmHealthy(const char * sIdentity)
 {
   // char sTmp[HEALTHKEYLEN+1];
   // memset(sTmp,'\0',HEALTHKEYLEN+1);
   // strncpy(sTmp,sIdentity,STool::Min(strlen(sIdentity),HEALTHKEYLEN));
 
-  if (strlen(sIdentity) > HEALTHKEYLEN) m_Logger->Write(Logger::ERROR, "ThreadHealthMonitor: ReportHealthy: sIdentity too long. Exiting.");
+  if (strlen(sIdentity) > HEALTHKEYLEN) m_Logger->Write(Logger::ERROR, "ThreadHealthMonitor: ReportThatIAmHealthy: sIdentity too long. Exiting.");
 
   boost::unique_lock<boost::shared_mutex> lock(m_Mutex);
   m_LastReportedHealth[sIdentity] = boost::posix_time::microsec_clock::local_time();

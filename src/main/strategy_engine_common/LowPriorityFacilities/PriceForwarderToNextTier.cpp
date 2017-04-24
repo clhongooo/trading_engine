@@ -51,7 +51,7 @@ void PriceForwarderToNextTier::Run()
   {
     if (m_SystemState->ChkIfThreadShouldStop()) break;
 
-    m_ThrdHlthMon->ReportHealthy(ID_PRICEFWDR);
+    m_ThrdHlthMon->ReportThatIAmHealthy(ID_PRICEFWDR);
 
     //--------------------------------------------------
     YYYYMMDDHHMMSS m_ymdhms_SysTimeHKT = m_MarketData->GetSystemTimeHKT();

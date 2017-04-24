@@ -32,7 +32,7 @@ void VolSurfCalculator::Run()
 
     if (m_SystemState->ChkIfThreadShouldStop()) break;
 
-    m_ThrdHlthMon->ReportHealthy(ID_VOLSURFCALC);
+    m_ThrdHlthMon->ReportThatIAmHealthy(ID_VOLSURFCALC);
 
     //--------------------------------------------------
     // Figure out system time and which volatility surfaces should be calculated

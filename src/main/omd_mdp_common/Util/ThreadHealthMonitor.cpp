@@ -31,7 +31,7 @@ boost::shared_ptr <ThreadHealthMonitor> ThreadHealthMonitor::Instance() {
   return instance;
 }
 
-void ThreadHealthMonitor::ReportHealthy(ThreadIdentity id, unsigned short channelid)
+void ThreadHealthMonitor::ReportThatIAmHealthy(ThreadIdentity id, unsigned short channelid)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_Mutex);
   m_LastReportedHealth[ToHash(id,channelid)] = boost::posix_time::microsec_clock::local_time();

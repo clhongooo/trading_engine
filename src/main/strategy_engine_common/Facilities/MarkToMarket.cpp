@@ -41,7 +41,7 @@ void MarkToMarket::Run()
 
     if (m_SystemState->ChkIfThreadShouldStop()) break;
 
-    m_ThrdHlthMon->ReportHealthy(ID_MTM);
+    m_ThrdHlthMon->ReportThatIAmHealthy(ID_MTM);
 
     YYYYMMDDHHMMSS ymdhms_MDITime = m_MarketData->GetSystemTimeHKT();
 

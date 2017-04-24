@@ -39,6 +39,10 @@ void CtpMd::ReadConfig(const string & sConfigPath)
   const string sSyms = pt.get<std::string>("General.SubscribeSymbols");
   boost::split(vSym,sSyms,boost::is_any_of(","));
   setSubscribeSymbols<vector<string> >(vSym);
+
+  string sFlushOnEveryWrite = pt.get<std::string>("General.FlushOnEveryWrite");
+  boost::algorithm::to_lower(sFlushOnEveryWrite);
+  if (sFlushOnEveryWrite == "true" || sFlushOnEveryWrite == "t" || sFlushOnEveryWrite == "yes" || sFlushOnEveryWrite == "y") SetFlushOnEveryWrite(true);
 }
 
 
@@ -48,7 +52,7 @@ void CtpMd::ReadConfig(const string & sConfigPath)
 void CtpMd::setDataFolder(const string & df)
 {
   m_DataFolder = df;
-  m_BinaryRecorder.SetOutFilePathAndOpen(m_DataFolder+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS()+".csv");
+  m_BinaryRecorder.SetOutFilePathAndOpen(m_DataFolder+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS()+".csv","w+");
 }
 void CtpMd::setWriteDataToFile(const string & wdtf)
 {
@@ -57,6 +61,10 @@ void CtpMd::setWriteDataToFile(const string & wdtf)
   if (wdtf2 == "true" || wdtf2 == "t" || wdtf2 == "yes" || wdtf2 == "y") m_WriteDataToFile = true;
   else                                                                   m_WriteDataToFile = false;
   m_BinaryRecorder.SetIfWriteATUMDIStruct(m_WriteDataToFile);
+}
+void CtpMd::SetFlushOnEveryWrite(const bool b)
+{
+  m_BinaryRecorder.SetFlushOnEveryWrite(b);
 }
 void CtpMd::setConnectString(const string & connStr)
 {
@@ -113,7 +121,7 @@ void CtpMd::OnFrontConnected()
   strcpy(req.UserID, m_user_id);
   strcpy(req.Password, m_password);
   int iResult = m_pCThostFtdcMdApi->ReqUserLogin(&req, ++m_iRequestID);
-  m_Logger->Write(StdStreamLogger::CRITICAL,"User Login is %s",(iResult == 0) ? "OK" : "Fail");
+  m_Logger->Write(StdStreamLogger::NOTICE,"User Login is %s",(iResult == 0) ? "OK" : "Fail");
   SubscribeSymbols(m_subscribedSymbols);
 }
 
@@ -125,7 +133,7 @@ void CtpMd::OnRspError(CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bI
 
 void CtpMd::OnFrontDisconnected(int nReason)
 {
-  m_Logger->Write(StdStreamLogger::EMERGENCY,"Front is disconnected!");
+  m_Logger->Write(StdStreamLogger::NOTICE,"Front is disconnected!");
 }
 
 void CtpMd::OnHeartBeatWarning(int nTimeLapse)

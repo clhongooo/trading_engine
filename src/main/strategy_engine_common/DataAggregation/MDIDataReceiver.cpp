@@ -120,7 +120,7 @@ void MDIDataReceiver::Run()
   {
     if (m_SystemState->ChkIfThreadShouldStop()) break;
 
-    m_ThrdHlthMon->ReportHealthy(ID_DATAAGG);
+    m_ThrdHlthMon->ReportThatIAmHealthy(ID_DATAAGG);
 
     sleep(2);
   }

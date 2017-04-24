@@ -115,7 +115,7 @@ void TechIndUpdater::Run()
 
     if (m_SystemState->ChkIfThreadShouldStop()) break;
 
-    m_ThrdHlthMon->ReportHealthy(ID_TECHINDUPDATER);
+    m_ThrdHlthMon->ReportThatIAmHealthy(ID_TECHINDUPDATER);
 
     //--------------------------------------------------
     if (!m_ymdhms_LastMonitorTime.IsValid())

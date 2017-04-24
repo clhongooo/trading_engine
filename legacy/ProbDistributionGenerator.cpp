@@ -106,7 +106,7 @@ void ProbDistributionGenerator::Run()
 
     if (m_SystemState->ChkIfThreadShouldStop()) break;
 
-    m_ThrdHlthMon->ReportHealthy(ID_PROBDISTGENR);
+    m_ThrdHlthMon->ReportThatIAmHealthy(ID_PROBDISTGENR);
 
     //--------------------------------------------------
     // Figure out system time and whether should generate again

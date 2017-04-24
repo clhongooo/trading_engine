@@ -18,8 +18,11 @@ McastReceiver::McastReceiver(
   m_Mode(_Mode)
 {
   string sFile = string(sDataFolder) + "/fmt" + boost::lexical_cast<string>(m_Mode) + "_" + m_Name + "_" + to_iso_string(m_ProgramStartTime).substr(0,15);
-  m_BinaryRecorder.SetProgramStartTime(m_ProgramStartTime);
-  m_BinaryRecorder.SetOutFilePathAndOpen(sFile);
+  if (!m_BinaryRecorder.SetOutFilePathAndOpen(sFile, "wb+"))
+  {
+    cerr << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ") " << "Cannot open file: " << sFile << endl << flush;
+    exit(1);
+  }
 
   // Create the socket so that multiple may be bound to the same address.
   boost::asio::ip::udp::endpoint listen_endpoint(multicast_address, multicast_port);

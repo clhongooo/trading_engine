@@ -27,7 +27,7 @@ class ThreadHealthMonitor {
   public:
     ThreadHealthMonitor();
     virtual ~ThreadHealthMonitor();
-    void ReportHealthy(const char *);
+    void ReportThatIAmHealthy(const char *);
     bool IsSystemHealthy();
     static boost::shared_ptr<ThreadHealthMonitor> Instance();
     void Run();

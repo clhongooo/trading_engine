@@ -112,7 +112,7 @@ void DataCompletenessInspector::Run()
     //--------------------------------------------------
     // Report Health
     //--------------------------------------------------
-    m_ThreadHealthMon->ReportHealthy(ThreadHealthMonitor::DATACOMPLETENESSINSPECTOR, m_ChannelID);
+    m_ThreadHealthMon->ReportThatIAmHealthy(ThreadHealthMonitor::DATACOMPLETENESSINSPECTOR, m_ChannelID);
 
     //--------------------------------------------------
     // System shutdown

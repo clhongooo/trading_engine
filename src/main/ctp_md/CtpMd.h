@@ -64,6 +64,7 @@ class CtpMd : public CThostFtdcMdSpi {
     void release_CThostFtdcMdApi();
     virtual void setDataFolder(const string &);
     virtual void setWriteDataToFile(const string &);
+    virtual void SetFlushOnEveryWrite(const bool);
     virtual void setConnectString(const string &);
     virtual void setBrokerID(const string &);
     virtual void setInvestorID(const string &);

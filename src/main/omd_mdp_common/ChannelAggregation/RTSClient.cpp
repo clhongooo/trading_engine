@@ -141,7 +141,7 @@ void RTSClient::Run()
       //--------------------------------------------------
       // Report Health
       //--------------------------------------------------
-      m_ThreadHealthMon->ReportHealthy(ThreadHealthMonitor::RTSCLIENT, 0);
+      m_ThreadHealthMon->ReportThatIAmHealthy(ThreadHealthMonitor::RTSCLIENT, 0);
 
       //--------------------------------------------------
       // System shutdown

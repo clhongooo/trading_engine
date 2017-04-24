@@ -531,7 +531,7 @@ void StrategyBase::Run()
 
     //--------------------------------------------------
     if (m_caStyName[0] == '\0' || m_caStyName[0] == '_') GetStrategyNameCStr(m_StyID,m_caStyName);
-    m_ThrdHlthMon->ReportHealthy(m_caStyName);
+    m_ThrdHlthMon->ReportThatIAmHealthy(m_caStyName);
     //--------------------------------------------------
 
     m_ymdhms_SysTime_HKT = m_MarketData->GetSystemTimeHKT();

@@ -201,7 +201,7 @@ void OrderExecutor::Run()
 
       if (m_SystemState->ChkIfThreadShouldStop()) break;
 
-      m_ThrdHlthMon->ReportHealthy(ID_ORDEREXEC);
+      m_ThrdHlthMon->ReportThatIAmHealthy(ID_ORDEREXEC);
 
       while (m_PortAndOrders->GetUnprocessedWorkingOrdersCount() > 0)
       {
@@ -237,7 +237,7 @@ void OrderExecutor::Run()
 //     for (;;)
 //     {
 //       m_MarketData->WaitForData();
-//       m_ThrdHlthMon->ReportHealthy(ID_ORDEREXECCHKORD);
+//       m_ThrdHlthMon->ReportThatIAmHealthy(ID_ORDEREXECCHKORD);
 //
 //       // Check system time and determine whether there are orders that should be cancelled.
 //       m_PortAndOrders->CheckAndReplaceOrders(m_MarketData->GetSystemTimeHKT().GetHHMMSS());
@@ -250,7 +250,7 @@ void OrderExecutor::RunPersistPos()
 {
   for (;;)
   {
-    m_ThrdHlthMon->ReportHealthy(ID_ORDEREXEPERSISTPOS);
+    m_ThrdHlthMon->ReportThatIAmHealthy(ID_ORDEREXEPERSISTPOS);
     m_PortAndOrders->WriteActualPortToPersistentPosFile();
     m_PortAndOrders->WriteActualPortToPersistentPosToLog();
     sleep(1);

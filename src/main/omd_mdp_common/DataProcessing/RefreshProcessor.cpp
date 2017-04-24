@@ -59,7 +59,7 @@ void RefreshProcessor_OMD::Run()
     //--------------------------------------------------
     // Report Health
     //--------------------------------------------------
-    m_ThreadHealthMon->ReportHealthy(ThreadHealthMonitor::REFRESHPROCESSOR, m_ChannelID);
+    m_ThreadHealthMon->ReportThatIAmHealthy(ThreadHealthMonitor::REFRESHPROCESSOR, m_ChannelID);
 
     //--------------------------------------------------
     // Init / Self-correction

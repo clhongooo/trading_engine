@@ -76,7 +76,7 @@ void RealTimeProcessor_OMD::Run()
     //--------------------------------------------------
     // Report Health
     //--------------------------------------------------
-    m_ThreadHealthMon->ReportHealthy(ThreadHealthMonitor::REALTIMEPROCESSOR, m_ChannelID);
+    m_ThreadHealthMon->ReportThatIAmHealthy(ThreadHealthMonitor::REALTIMEPROCESSOR, m_ChannelID);
 
     //--------------------------------------------------
     BYTE *pbMsg = NULL;

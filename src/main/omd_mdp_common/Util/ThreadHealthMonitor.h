@@ -32,7 +32,7 @@ class ThreadHealthMonitor {
     enum ThreadIdentity {REALTIMEPROCESSOR=1, REFRESHPROCESSOR=2, DATACOMPLETENESSINSPECTOR=3, RTSCLIENT=4, PREPROCESSOR=5};
     ThreadHealthMonitor();
     virtual ~ThreadHealthMonitor();
-    void ReportHealthy(ThreadIdentity, unsigned short);
+    void ReportThatIAmHealthy(ThreadIdentity, unsigned short);
     static boost::shared_ptr<ThreadHealthMonitor> Instance();
     void Run();
 
