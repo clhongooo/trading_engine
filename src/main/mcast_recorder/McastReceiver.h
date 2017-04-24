@@ -6,6 +6,7 @@
 #define MCASTRECEIVER_H_
 
 #include "SDateTime.h"
+#include "BinaryTools.h"
 #include <iostream>
 #include <string>
 #include <ctime>
@@ -43,9 +44,9 @@ class McastReceiver
     boost::asio::ip::udp::endpoint  m_SenderEndpoint;
     char                            m_Buffer[BUFFER_SIZE];
     string                          m_Name;
-    FILE *                          m_CannedFile;
     boost::posix_time::ptime        m_ProgramStartTime;
     short                           m_Mode;
+    BinaryRecorder                  m_BinaryRecorder;
 };
 
 class McastReceiverHKExSim : public McastReceiver {

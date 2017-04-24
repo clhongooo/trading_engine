@@ -1,10 +1,9 @@
 #include "CtpMd.h"
 
-CtpMd::CtpMd() : m_pCThostFtdcMdApi(NULL),m_p_ctp_lib_handle(NULL),m_DataFolder(""),m_WriteDataToFile(false),m_connection_string(""),m_WriteDataToFile_CallBackFunc(NULL)
+CtpMd::CtpMd() : m_pCThostFtdcMdApi(NULL),m_p_ctp_lib_handle(NULL),m_DataFolder(""),m_WriteDataToFile(false),m_connection_string("")
 {
   m_Logger = StdStreamLogger::Instance();
   m_subscribedSymbols.clear();
-  m_WriteDataToFile_CallBackFunc = new WriteDataToFile_CallBackFunc(boost::bind(&CtpMd::DoNotWriteDataToFile,this,_1));
 }
 
 void CtpMd::ReadConfig(const string & sConfigPath)
@@ -49,21 +48,15 @@ void CtpMd::ReadConfig(const string & sConfigPath)
 void CtpMd::setDataFolder(const string & df)
 {
   m_DataFolder = df;
+  m_BinaryRecorder.SetOutFilePathAndOpen(m_DataFolder+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS()+".csv");
 }
 void CtpMd::setWriteDataToFile(const string & wdtf)
 {
   string wdtf2 = wdtf;
   boost::algorithm::to_lower(wdtf2);
-  if (wdtf2 == "true" || wdtf2 == "t" || wdtf2 == "yes" || wdtf2 == "y")
-  {
-    m_WriteDataToFile = true;
-    m_WriteDataToFile_CallBackFunc = new WriteDataToFile_CallBackFunc(boost::bind(&CtpMd::WriteDataToFile,this,_1));
-  }
-  else
-  {
-    m_WriteDataToFile = false;
-    m_WriteDataToFile_CallBackFunc = new WriteDataToFile_CallBackFunc(boost::bind(&CtpMd::DoNotWriteDataToFile,this,_1));
-  }
+  if (wdtf2 == "true" || wdtf2 == "t" || wdtf2 == "yes" || wdtf2 == "y") m_WriteDataToFile = true;
+  else                                                                   m_WriteDataToFile = false;
+  m_BinaryRecorder.SetIfWriteATUMDIStruct(m_WriteDataToFile);
 }
 void CtpMd::setConnectString(const string & connStr)
 {
@@ -152,30 +145,6 @@ void CtpMd::OnRspSubMarketData(CThostFtdcSpecificInstrumentField* pSpecificInstr
 {
 }
 
-void CtpMd::WriteDataToFile(const ATU_MDI_marketfeed_struct & mfs)
-{
-  // const string sFile(m_DataFolder+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS()+".csv");
-  // if (!m_data_outfile) m_data_outfile.reset(fopen(sFile.c_str(),"w"));
-  //
-  // fwrite(&mfs,sizeof(ATU_MDI_marketfeed_struct),1,m_data_outfile.get());
-  // // fflush(m_data_outfile.get());
-
-  // m_Logger->Write(StdStreamLogger::DEBUG,"%s.", ATU_MDI_marketfeed_struct::ToString(mfs).c_str());
-  const string sFile(m_DataFolder+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS()+".csv");
-  if (!m_data_outfile) m_data_outfile.reset(fopen(sFile.c_str(),"w"));
-
-  const int iSize = 1024;
-  char cStr[iSize];
-  strcpy(cStr,ATU_MDI_marketfeed_struct::ToString(mfs).c_str());
-  strcat(cStr,"\n");
-  fwrite(cStr,sizeof(char),strlen(cStr),m_data_outfile.get());
-  // fflush(m_data_outfile.get());
-}
-void CtpMd::DoNotWriteDataToFile(const ATU_MDI_marketfeed_struct & mfs)
-{
-  return;
-}
-
 void CtpMd::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData)
 {
   ATU_MDI_marketfeed_struct mfs;
@@ -216,7 +185,7 @@ void CtpMd::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketDat
   mfs.m_ask_volume_4  = (pDepthMarketData->AskVolume4 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume4;
   mfs.m_ask_volume_5  = (pDepthMarketData->AskVolume5 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume5;
 
-  (*m_WriteDataToFile_CallBackFunc)(mfs);
+  m_BinaryRecorder.WriteATUMDIStruct(mfs);
   // notify_marketfeed(mfs);
 }
 

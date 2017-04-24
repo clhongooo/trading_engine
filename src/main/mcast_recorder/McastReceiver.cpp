@@ -14,13 +14,12 @@ McastReceiver::McastReceiver(
   const short _Mode)
   : m_Socket(io_service),
   m_Name(sName),
-  m_CannedFile(NULL),
   m_ProgramStartTime(progstarttime),
   m_Mode(_Mode)
 {
-
   string sFile = string(sDataFolder) + "/fmt" + boost::lexical_cast<string>(m_Mode) + "_" + m_Name + "_" + to_iso_string(m_ProgramStartTime).substr(0,15);
-  m_CannedFile = fopen(sFile.c_str(), "w");
+  m_BinaryRecorder.SetProgramStartTime(m_ProgramStartTime);
+  m_BinaryRecorder.SetOutFilePathAndOpen(sFile);
 
   // Create the socket so that multiple may be bound to the same address.
   boost::asio::ip::udp::endpoint listen_endpoint(multicast_address, multicast_port);
@@ -82,11 +81,7 @@ void McastReceiverHKExSim::handle_receive_from(const boost::system::error_code& 
 {
   if (!error)
   {
-    unsigned short iPktLen = *((uint16_t*)(&m_Buffer[0]));
-    fwrite((&m_Buffer[0])+1,1,1,m_CannedFile);
-    fwrite(m_Buffer,1,1,m_CannedFile);
-    fwrite(m_Buffer,1,iPktLen,m_CannedFile);
-    fflush(m_CannedFile);
+    m_BinaryRecorder.WriteHKExSim(m_Buffer);
 
     m_Socket.async_receive_from(
       boost::asio::buffer(m_Buffer, BUFFER_SIZE),
@@ -101,25 +96,7 @@ void McastReceiverRelTime::handle_receive_from(const boost::system::error_code& 
 {
   if (!error)
   {
-    //--------------------------------------------------
-    // 8 bytes - Relative time stamp in millisec
-    // n bytes - The actual packet
-    //--------------------------------------------------
-    uint16_t uiPktSize = *((uint16_t*)&m_Buffer[0]);
-    if (uiPktSize <= BUFFER_SIZE)
-    {
-      boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
-      boost::posix_time::time_duration diff = now - m_ProgramStartTime;
-      uint64_t uiRelTime = diff.total_milliseconds();
-      fwrite(&uiRelTime,8,1,m_CannedFile);
-
-      //--------------------------------------------------
-      // The msg itself
-      //--------------------------------------------------
-      uint16_t uiPktSize = *((uint16_t*)&m_Buffer[0]);
-      fwrite(m_Buffer,1,uiPktSize,m_CannedFile);
-      fflush(m_CannedFile);
-    }
+    m_BinaryRecorder.WriteHKExRelTime(m_Buffer);
 
     m_Socket.async_receive_from(
       boost::asio::buffer(m_Buffer, BUFFER_SIZE),
@@ -134,23 +111,7 @@ void McastReceiverUnixTime::handle_receive_from(const boost::system::error_code&
 {
   if (!error)
   {
-    //--------------------------------------------------
-    // 8 bytes - Unix time stamp in millisec
-    // n bytes - The actual packet
-    //--------------------------------------------------
-    uint16_t uiPktSize = *((uint16_t*)&m_Buffer[0]);
-    if (uiPktSize <= BUFFER_SIZE)
-    {
-      unsigned long uiUnixTime = SDateTime::GetCurrentUnixTimeInMillisecGMT();
-      fwrite(&uiUnixTime,8,1,m_CannedFile);
-
-      //--------------------------------------------------
-      // The msg itself
-      //--------------------------------------------------
-      uint16_t uiPktSize = *((uint16_t*)&m_Buffer[0]);
-      fwrite(m_Buffer,1,uiPktSize,m_CannedFile);
-      fflush(m_CannedFile);
-    }
+    m_BinaryRecorder.WriteHKExUnixTime(m_Buffer);
 
     m_Socket.async_receive_from(
       boost::asio::buffer(m_Buffer, BUFFER_SIZE),

@@ -969,6 +969,10 @@ std::string SDateTime::FormatPTimeHHMMSS(const boost::posix_time::ptime & pt)
   return ss.str();
 }
 
+boost::shared_ptr<boost::posix_time::ptime> SDateTime::fromUnixTimeToPTime(const unsigned long ulUnixTime, TIMEPRECISION timePrecision)
+{
+  return SDateTime::fromUnixTimeToPTime(ulUnixTime, timePrecision, SDateTime::GMT, SDateTime::GMT);
+}
 boost::shared_ptr<boost::posix_time::ptime> SDateTime::fromUnixTimeToPTime(const unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)
 {
   if (!SDateTime::EpochDate) SDateTime::EpochDate.reset(new boost::gregorian::date(1970,1,1));
@@ -985,6 +989,11 @@ boost::shared_ptr<boost::posix_time::ptime> SDateTime::fromUnixTimeToPTime(const
     case SECOND:   { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::seconds (ulUnixTime      + ulAdjSeconds           ))); break; }
     default:       {                                                                                                                                                                                  break; }
   }
+}
+
+string SDateTime::fromUnixTimeToString(const unsigned long ulUnixTime, TIMEPRECISION timePrecision)
+{
+  return SDateTime::fromUnixTimeToString(ulUnixTime, timePrecision, SDateTime::GMT, SDateTime::GMT);
 }
 
 string SDateTime::fromUnixTimeToString(const unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)

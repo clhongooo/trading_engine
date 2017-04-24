@@ -5,6 +5,8 @@
 #include "STool.h"
 #include "SDateTime.h"
 #include "Constants.h"
+#include "BinaryTools.h"
+
 #include <dlfcn.h>
 #include <iostream>
 #include <fstream>
@@ -38,7 +40,6 @@ using namespace boost::interprocess;
 
 class CtpMd : public CThostFtdcMdSpi {
   public:
-    typedef boost::function < void(const ATU_MDI_marketfeed_struct &) > WriteDataToFile_CallBackFunc;
     CtpMd();
     virtual void run();
     virtual ~CtpMd(){}
@@ -48,8 +49,6 @@ class CtpMd : public CThostFtdcMdSpi {
     virtual void on_process_subscription(const ATU_MDI_subscription_struct &s);
 
     virtual void ReadConfig(const string &);
-    virtual inline void WriteDataToFile(const ATU_MDI_marketfeed_struct &);
-    virtual inline void DoNotWriteDataToFile(const ATU_MDI_marketfeed_struct &);
     //--------------------------------------------------
     // CTP callback
     //--------------------------------------------------
@@ -86,12 +85,9 @@ class CtpMd : public CThostFtdcMdSpi {
     //--------------------------------------------------
 
   protected:
-    CThostFtdcMdApi* m_pCThostFtdcMdApi;
-
-    void* m_p_ctp_lib_handle;
-
+    CThostFtdcMdApi*         m_pCThostFtdcMdApi;
+    void*                    m_p_ctp_lib_handle;
     int                      m_iRequestID;
-
     string                   m_DataFolder;
     bool                     m_WriteDataToFile;
     string                   m_connection_string;
@@ -102,8 +98,8 @@ class CtpMd : public CThostFtdcMdSpi {
     // TThostFtdcFrontIDType    m_front_id;
     set<string>              m_subscribedSymbols;
 
+    BinaryRecorder           m_BinaryRecorder;
     boost::shared_ptr<FILE>  m_data_outfile;
-    WriteDataToFile_CallBackFunc * m_WriteDataToFile_CallBackFunc;
 
     //--------------------------------------------------
     // System objects

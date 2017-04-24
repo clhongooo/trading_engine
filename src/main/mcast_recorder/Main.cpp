@@ -2,7 +2,6 @@
 //  Author:      Sunny Yan
 //  Created On:  Tue May 20 13:49:52 HKT 2014
 //  Description: Minimalist Multicast Recorder
-//
 //**************************************************
 
 #include "McastReceiver.h"
