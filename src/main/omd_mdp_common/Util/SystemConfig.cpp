@@ -14,7 +14,6 @@ boost::shared_ptr<SystemConfig> SystemConfig::Instance() {
 
 SystemConfig::SystemConfig() :
   m_Identity(SystemConfig::UNKNOWN),
-  m_ProgramStartTime(boost::posix_time::microsec_clock::local_time()),
   m_ConfigPath("Config.ini"),
   m_CannedMcastFilePath(""),
   m_CannedProcessedDataFilePath("wb+"),
@@ -44,7 +43,6 @@ SystemConfig::SystemConfig() :
   m_SystemServicePort(8000),
   m_RFMsgCirBufProtection(30000)
 {
-  SetProgramStartTime();
   Reset();
 }
 
@@ -77,16 +75,6 @@ void SystemConfig::Reset()
 void SystemConfig::SetConfigPath(const string & sConfigPath)
 {
   m_ConfigPath = sConfigPath;
-}
-
-void SystemConfig::SetProgramStartTime()
-{
-  m_ProgramStartTime = boost::posix_time::microsec_clock::local_time();
-}
-
-boost::posix_time::ptime SystemConfig::GetProgramStartTime() const
-{
-  return m_ProgramStartTime;
 }
 
 const  boost::shared_ptr<vector<McastIdentifier> >   SystemConfig::GetMcastIdentifiers()                 const     {  return  m_pMcastIdentifiers;            }

@@ -13,10 +13,6 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/date_time/time_duration.hpp>
-#include <boost/date_time/date.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/gregorian/greg_date.hpp>
 
 #include "McastIdentifier.h"
 #include "Logger.h"
@@ -41,8 +37,6 @@ class SystemConfig : boost::noncopyable
     void Reset();
     void ReadConfig(const string &);
     void ReadConfigOptional(const string &);
-    void SetProgramStartTime();
-    boost::posix_time::ptime GetProgramStartTime() const;
 
     const Identity                                    GetIdentity()                                      const;
     const boost::shared_ptr<vector<McastIdentifier> > GetMcastIdentifiers()                              const;
@@ -111,7 +105,6 @@ class SystemConfig : boost::noncopyable
     // Config.ini fields
     //--------------------------------------------------
     Identity                                       m_Identity;
-    boost::posix_time::ptime                       m_ProgramStartTime;
     string                                         m_CannedMcastFilePath;
     string                                         m_CannedProcessedDataFilePath;
     string                                         m_CannedMcastFopenFlag;

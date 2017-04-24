@@ -112,6 +112,11 @@ class SharedObjects
     bool ThreadShouldExit();
     void SetSystemState(ESysState);
 
+    //--------------------------------------------------
+    void SetProgramStartTime();
+    boost::posix_time::ptime GetProgramStartTime() const;
+    //--------------------------------------------------
+
   private:
     SharedObjects();
     static boost::weak_ptr<SharedObjects>         m_pInstance;
@@ -173,6 +178,12 @@ class SharedObjects
     // //--------------------------------------------------
     // map<unsigned long,unsigned short>      m_SpreadTable; // OrderBookID
     // boost::shared_mutex                    m_SpreadTableMutex;
+
+
+    //--------------------------------------------------
+    // Program start time
+    //--------------------------------------------------
+    boost::posix_time::ptime                       m_ProgramStartTime;
 };
 
 #endif

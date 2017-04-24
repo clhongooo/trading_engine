@@ -2,7 +2,7 @@
 
 boost::weak_ptr<SharedObjects> SharedObjects::m_pInstance;
 
-SharedObjects::SharedObjects()
+SharedObjects::SharedObjects() : m_ProgramStartTime(boost::posix_time::microsec_clock::local_time())
 {
   m_SysCfg = SystemConfig::Instance();
   m_Logger = Logger::Instance();
@@ -10,6 +10,8 @@ SharedObjects::SharedObjects()
 
   InitializeSharedObjects(true);
   ResetObjects();
+
+  SetProgramStartTime();
 }
 
 SharedObjects::~SharedObjects()
@@ -627,4 +629,14 @@ set<unsigned long>* SharedObjects::GetOrderBookIDInChnl(unsigned short channelid
 //   }
 //   return;
 // }
+
+void SharedObjects::SetProgramStartTime()
+{
+  m_ProgramStartTime = boost::posix_time::microsec_clock::local_time();
+}
+
+boost::posix_time::ptime SharedObjects::GetProgramStartTime() const
+{
+  return m_ProgramStartTime;
+}
 
