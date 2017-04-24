@@ -1,4 +1,15 @@
-This note comes from the OMD sharing section with EA.
+# Packet Structure
+[CME MDP Message Structure](http://www.cmegroup.com/confluence/display/EPICSANDBOX/MDP+3.0+-+Packet+and+Message+Headers)
+
+## HKEx OMD
+
+| Field    | Length  | Description                                        |
+| :---     | :---    |                                                    |
+| PktSize  | uint16  | Size of the packet (including this field)          |
+| MsgCount | uint8   | Number of messages included in the packet          |
+| Filler   | char(1) |                                                    |
+| SeqNum   | uint32  | Sequence number of the first message in the packet |
+| SendTime | uint64  | UTC Unix Timestamp in nanoseconds.                 |
 
 # Major System Components
 -   Multicast Receiver

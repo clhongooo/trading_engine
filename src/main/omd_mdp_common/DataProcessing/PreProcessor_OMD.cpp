@@ -18,7 +18,6 @@ void PreProcessor_OMD::Run()
     //--------------------------------------------------
     m_ThreadHealthMon->ReportHealthy(ThreadHealthMonitor::PREPROCESSOR, m_ChannelID);
 
-
     //--------------------------------------------------
     unsigned long ulTStamp = 0;
     BYTE * pbPkt = NULL;
