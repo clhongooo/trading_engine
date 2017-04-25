@@ -8,7 +8,7 @@ foreach (_headerFile ${proj_HEADERS})
 endforeach()
 list(REMOVE_DUPLICATES proj_INC)
 
-include_directories(${PANTHEIOS_INC} ${proj_INC} ../logger ../util)
+include_directories(. ${PANTHEIOS_INC} ${proj_INC} ../logger ../util)
 link_directories(/usr/local/pantheios/lib)
 
 file(GLOB_RECURSE proj_SOURCES "*.cpp")

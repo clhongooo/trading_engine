@@ -1,4 +1,4 @@
-project(omd_common_test)
+project(unit_tests_omd_mdp)
  
 file(GLOB_RECURSE proj_SOURCES "*.cpp")
 
