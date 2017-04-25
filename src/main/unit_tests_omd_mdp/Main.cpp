@@ -54,18 +54,25 @@ int main(int argc, const char* argv[])
     boost::shared_ptr<CentralMemMgr> cmm = CentralMemMgr::Instance();
     extern const unsigned int MSGSIZE;
 
-    ecbPkt = new ExpandableCirBuffer(91,3,sizeof(uint32_t)*2,cmm);
-    TestExpandableCirBuffer(ut);
-    delete ecbPkt;
+    // //--------------------------------------------------
+    // // Test ExpandableCirBuffer
+    // //--------------------------------------------------
+    // ecbPkt = new ExpandableCirBuffer(91,3,sizeof(uint32_t)*2,cmm);
+    // TestExpandableCirBuffer(ut);
+    // delete ecbPkt;
+    //
+    // ecbPkt = new ExpandableCirBuffer(91,65536,sizeof(uint32_t)*2,cmm);
+    // TestExpandableCirBuffer(ut);
+    // delete ecbPkt;
+    // //--------------------------------------------------
 
-    ecbPkt = new ExpandableCirBuffer(91,65536,sizeof(uint32_t)*2,cmm);
-    TestExpandableCirBuffer(ut);
-    delete ecbPkt;
-
+    //--------------------------------------------------
+    // Test ExpandableCirBuffer4Msg
+    //--------------------------------------------------
     ecbMsg  = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
     ecbMsg2 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
     ecbMsg3 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
-    ecbMsg4 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
+    ecbMsg4 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,4096);
     ecbMsg5 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
     TestExpandableCirBuffer4Msg(ut);
     TestExpandableCirBuffer4Msg2(ut);
@@ -81,7 +88,7 @@ int main(int argc, const char* argv[])
     ecbMsg  = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
     ecbMsg2 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
     ecbMsg3 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
-    ecbMsg4 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
+    ecbMsg4 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,4096);
     ecbMsg5 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
     TestExpandableCirBuffer4Msg(ut);
     TestExpandableCirBuffer4Msg2(ut);
@@ -98,39 +105,39 @@ int main(int argc, const char* argv[])
   }
 
 
-  //--------------------------------------------------
-  // Others
-  //--------------------------------------------------
-  boost::shared_ptr<Logger>          pLogger   =  Logger::Instance();
-  boost::shared_ptr<SystemConfig>    pSysCfg   =  SystemConfig::Instance();
-  boost::shared_ptr<SharedObjects>   pShrObj   =  SharedObjects::Instance();
-
-  string sConfigPath("Config.ini"); // default Config path
-  pSysCfg->ReadConfig(sConfigPath);
-
-  //--------------------------------------------------
-  // Test canned data
-  //--------------------------------------------------
-
-  CppUnit::TextUi::TestRunner utTestRunner;
-
-  boost::shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
-  boost::thread rtsCltThd(&RTSClient::Run, rtsClt.get());
-
-  // utTestRunner.addTest(TestSharedObjects::suite());
-  // utTestRunner.addTest(TestTriggeringRTSClient::suite());
-  // utTestRunner.addTest(TestOrderBook::suite());
-  // utTestRunner.addTest(TestOrderBookOMDDSP::suite());
-  // utTestRunner.addTest(TestRTSResponse::suite());
-  // utTestRunner.addTest(TestTriggeringRTSClient::suite());
-  // utTestRunner.addTest(TestRealTime::suite());
-  // utTestRunner.addTest(TestSwitchRTSSvr::suite());
-  // utTestRunner.addTest(TestMsgHandling::suite());
-  // utTestRunner.addTest(TestRefresh::suite());
-  // utTestRunner.addTest(TestSeqReset::suite());
-
-  //utTestRunner.addTest(TestSysConfig::suite());
-  utTestRunner.run();
+  // //--------------------------------------------------
+  // // Others
+  // //--------------------------------------------------
+  // boost::shared_ptr<Logger>          pLogger   =  Logger::Instance();
+  // boost::shared_ptr<SystemConfig>    pSysCfg   =  SystemConfig::Instance();
+  // boost::shared_ptr<SharedObjects>   pShrObj   =  SharedObjects::Instance();
+  //
+  // string sConfigPath("Config.ini"); // default Config path
+  // pSysCfg->ReadConfig(sConfigPath);
+  //
+  // //--------------------------------------------------
+  // // Test canned data
+  // //--------------------------------------------------
+  //
+  // CppUnit::TextUi::TestRunner utTestRunner;
+  //
+  // boost::shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
+  // boost::thread rtsCltThd(&RTSClient::Run, rtsClt.get());
+  //
+  // // utTestRunner.addTest(TestSharedObjects::suite());
+  // // utTestRunner.addTest(TestTriggeringRTSClient::suite());
+  // // utTestRunner.addTest(TestOrderBook::suite());
+  // // utTestRunner.addTest(TestOrderBookOMDDSP::suite());
+  // // utTestRunner.addTest(TestRTSResponse::suite());
+  // // utTestRunner.addTest(TestTriggeringRTSClient::suite());
+  // // utTestRunner.addTest(TestRealTime::suite());
+  // // utTestRunner.addTest(TestSwitchRTSSvr::suite());
+  // // utTestRunner.addTest(TestMsgHandling::suite());
+  // // utTestRunner.addTest(TestRefresh::suite());
+  // // utTestRunner.addTest(TestSeqReset::suite());
+  //
+  // //utTestRunner.addTest(TestSysConfig::suite());
+  // utTestRunner.run();
 
   return 0;
 }

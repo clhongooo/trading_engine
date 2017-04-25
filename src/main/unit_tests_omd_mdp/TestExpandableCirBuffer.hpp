@@ -55,25 +55,25 @@ void TestExpandableCirBuffer(UTest & ut)
 
   unsigned int uiCount = 0;
 
-  cout << "Is lock-free: " << (ctrlExptPkt.is_lock_free() ? 'T' : 'F') << endl;
+  // cout << "Is lock-free: " << (ctrlExptPkt.is_lock_free() ? 'T' : 'F') << endl;
 
-  ut.Assert(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
-  ut.Assert(ecbPkt->Size() == 0, __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Empty(),                 __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Size() == 0,             __FILE__, __FUNCTION__, __LINE__);
   ut.Assert(ecbPkt->GetReadingPtr() == NULL, __FILE__, __FUNCTION__, __LINE__);
-  ut.Assert(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
-  ut.Assert(ecbPkt->Size() == 0, __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Empty(),                 __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Size() == 0,             __FILE__, __FUNCTION__, __LINE__);
   ecbPkt->GetWritingPtr();
-  ut.Assert(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
-  ut.Assert(ecbPkt->Size() == 0, __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Empty(),                 __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Size() == 0,             __FILE__, __FUNCTION__, __LINE__);
   ecbPkt->PushBack();
-  ut.AssertF(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
-  ut.Assert(ecbPkt->Size() == 1, __FILE__, __FUNCTION__, __LINE__);
+  ut.AssertF(ecbPkt->Empty(),                __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Size() == 1,             __FILE__, __FUNCTION__, __LINE__);
   ecbPkt->GetReadingPtr();
-  ut.AssertF(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
-  ut.Assert(ecbPkt->Size() == 1, __FILE__, __FUNCTION__, __LINE__);
+  ut.AssertF(ecbPkt->Empty(),                __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Size() == 1,             __FILE__, __FUNCTION__, __LINE__);
   ecbPkt->PopFront();
-  ut.Assert(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
-  ut.Assert(ecbPkt->Size() == 0, __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Empty(),                 __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Size() == 0,             __FILE__, __FUNCTION__, __LINE__);
 
   for (unsigned int i = 0; i < 10; ++i)
   {
@@ -84,63 +84,67 @@ void TestExpandableCirBuffer(UTest & ut)
   }
 
   ecbPkt->Reset();
-  ut.Assert(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
-  ut.Assert(ecbPkt->Size() == 0, __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Empty(),                   __FILE__, __FUNCTION__, __LINE__);
+  ut.Assert(ecbPkt->Size() == 0,               __FILE__, __FUNCTION__, __LINE__);
 
-  for (unsigned int i = 0; i < 467; ++i)
+  unsigned int uiRandTimes = (rand() % 50) + 1000;
+  unsigned int uiRandTestNum = (rand() % 50) + 31416;
+  cout << "uiRandTimes: " << uiRandTimes << endl;
+  cout << "uiRandTestNum: " << uiRandTestNum << endl;
+  for (unsigned int i = 0; i < uiRandTimes; ++i)
   {
     BYTE * pw = ecbPkt->GetWritingPtr();
-    WRITE_UINT32(pw,31416);
-    WRITE_UINT32(pw+4,31416);
+    WRITE_UINT32(pw,uiRandTestNum);
+    WRITE_UINT32(pw+4,uiRandTestNum);
     ecbPkt->PushBack();
-    ut.Assert(ecbPkt->Size() == i+1, __FILE__, __FUNCTION__, __LINE__);
-    ut.AssertF(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(ecbPkt->Size() == i+1,           __FILE__, __FUNCTION__, __LINE__);
+    ut.AssertF(ecbPkt->Empty(),                __FILE__, __FUNCTION__, __LINE__);
   }
 
-  for (unsigned int i = 0; i < 467; ++i)
+  for (unsigned int i = 0; i < uiRandTimes; ++i)
   {
     BYTE * pr = NULL;
     unsigned long ulTS2 = 0;
     ecbPkt->GetReadingPtrTStamp(pr,&ulTS2);
-    ut.Assert(READ_UINT32(pr) == 31416, __FILE__, __FUNCTION__, __LINE__);
-    ut.Assert(READ_UINT32(pr+4) == 31416, __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(READ_UINT32(pr) == uiRandTestNum,    __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(READ_UINT32(pr+4) == uiRandTestNum,  __FILE__, __FUNCTION__, __LINE__);
     ecbPkt->PopFront();
-    ut.Assert(ecbPkt->Size() == 467-1-i, __FILE__, __FUNCTION__, __LINE__);
-    if (i != 466) ut.AssertF(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
-    else ut.Assert(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(ecbPkt->Size() == uiRandTimes-1-i,   __FILE__, __FUNCTION__, __LINE__);
+    if (i != uiRandTimes-1) ut.AssertF(ecbPkt->Empty(),      __FILE__, __FUNCTION__, __LINE__);
+    else ut.Assert(ecbPkt->Empty(),                __FILE__, __FUNCTION__, __LINE__);
   }
 
-  for (unsigned int i = 0; i < 465; ++i)
+  for (unsigned int i = 0; i < uiRandTimes; ++i)
   {
     BYTE * pw = ecbPkt->GetWritingPtr();
-    WRITE_UINT32(pw,31416);
-    WRITE_UINT32(pw+4,31416);
+    WRITE_UINT32(pw,uiRandTestNum);
+    WRITE_UINT32(pw+4,uiRandTestNum);
     ecbPkt->PushBack();
-    ut.Assert(ecbPkt->Size() == i+1, __FILE__, __FUNCTION__, __LINE__);
-    ut.AssertF(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(ecbPkt->Size() == i+1,  __FILE__, __FUNCTION__, __LINE__);
+    ut.AssertF(ecbPkt->Empty(),       __FILE__, __FUNCTION__, __LINE__);
   }
 
-  for (unsigned int i = 0; i < 465; ++i)
+  for (unsigned int i = 0; i < uiRandTimes; ++i)
   {
     const BYTE * pr = ecbPkt->GetReadingPtr();
-    ut.Assert(READ_UINT32(pr) == 31416, __FILE__, __FUNCTION__, __LINE__);
-    ut.Assert(READ_UINT32(pr+4) == 31416, __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(READ_UINT32(pr) == uiRandTestNum,          __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(READ_UINT32(pr+4) == uiRandTestNum,        __FILE__, __FUNCTION__, __LINE__);
     ecbPkt->PopFront();
-    ut.Assert(ecbPkt->Size() == 465-1-i, __FILE__, __FUNCTION__, __LINE__);
-    if (i != 464) ut.AssertF(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
-    else ut.Assert(ecbPkt->Empty(), __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(ecbPkt->Size() == uiRandTimes-1-i,         __FILE__, __FUNCTION__, __LINE__);
+    if (i != uiRandTimes-1) ut.AssertF(ecbPkt->Empty(),  __FILE__, __FUNCTION__, __LINE__);
+    else ut.Assert(ecbPkt->Empty(),                      __FILE__, __FUNCTION__, __LINE__);
   }
 
   //--------------------------------------------------
   // Test Purge
   //--------------------------------------------------
-  for (unsigned int i = 0; i < 500; i+=50)
+  for (unsigned int i = 0; i < uiRandTimes; i+=50)
   {
     ecbPkt->Reset();
     for (unsigned int j = 0; j < i; ++j)
     {
       BYTE * pw = ecbPkt->GetWritingPtr();
-      WRITE_UINT32(pw,31416);
+      WRITE_UINT32(pw,uiRandTestNum);
       ecbPkt->PushBack();
     }
     ut.Assert(ecbPkt->Size() == i, __FILE__, __FUNCTION__, __LINE__);
@@ -148,6 +152,7 @@ void TestExpandableCirBuffer(UTest & ut)
     ut.Assert(ecbPkt->Size() == 0, __FILE__, __FUNCTION__, __LINE__);
 
   }
+  //--------------------------------------------------
 
   // Start thread
   boost::thread t(&TestExpandableCirBufProducer, ut);
@@ -167,14 +172,14 @@ void TestExpandableCirBuffer(UTest & ut)
         //cout << ulTS << " " << ulTS2 << " " << endl;
         //cout << ecbPkt->Size() << " " << ut.ChkResult() << " " << endl;
         //ut.Assert(READ_UINT32(pr) == ctrlExptPkt.front(), __FILE__, __FUNCTION__, __LINE__);
-        ut.Assert(ulTS == ulTS2, __FILE__, __FUNCTION__, __LINE__);
+        ut.Assert(ulTS == ulTS2,                            __FILE__, __FUNCTION__, __LINE__);
         if (ulTS != ulTS2) cout << ulTS << ", " << ulTS2 << endl;
         unsigned int iCtrlExpt;
         ctrlExptPkt.pop(iCtrlExpt);
-        ut.Assert(READ_UINT32(pr) == iCtrlExpt, __FILE__, __FUNCTION__, __LINE__);
-        ut.Assert(READ_UINT32(pr+4) == iCtrlExpt, __FILE__, __FUNCTION__, __LINE__);
-        ut.Assert(READ_UINT32(pr2) == iCtrlExpt, __FILE__, __FUNCTION__, __LINE__);
-        ut.Assert(READ_UINT32(pr2+4) == iCtrlExpt, __FILE__, __FUNCTION__, __LINE__);
+        ut.Assert(READ_UINT32(pr) == iCtrlExpt,             __FILE__, __FUNCTION__, __LINE__);
+        ut.Assert(READ_UINT32(pr+4) == iCtrlExpt,           __FILE__, __FUNCTION__, __LINE__);
+        ut.Assert(READ_UINT32(pr2) == iCtrlExpt,            __FILE__, __FUNCTION__, __LINE__);
+        ut.Assert(READ_UINT32(pr2+4) == iCtrlExpt,          __FILE__, __FUNCTION__, __LINE__);
         ecbPkt->PopFront();
         //ctrlExptPkt.pop_front();
       }
@@ -195,16 +200,16 @@ void TestExpandableCirBuffer(UTest & ut)
     unsigned long ulTS2 = 0;
     bool bRtn = ecbPkt->GetReadingPtrTStamp(pr2,&ulTS2);
 
-    ut.Assert(bRtn, __FILE__, __FUNCTION__, __LINE__);
-    ut.Assert(ulTS == ulTS2, __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(bRtn,                                 __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(ulTS == ulTS2,                        __FILE__, __FUNCTION__, __LINE__);
     unsigned int iCtrlExpt;
     ctrlExptPkt.pop(iCtrlExpt);
-    ut.Assert(READ_UINT32(pr) == iCtrlExpt, __FILE__, __FUNCTION__, __LINE__);
-    ut.Assert(READ_UINT32(pr+4) == iCtrlExpt, __FILE__, __FUNCTION__, __LINE__);
-    ut.Assert(READ_UINT32(pr2) == iCtrlExpt, __FILE__, __FUNCTION__, __LINE__);
-    ut.Assert(READ_UINT32(pr2+4) == iCtrlExpt, __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(READ_UINT32(pr) == iCtrlExpt,         __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(READ_UINT32(pr+4) == iCtrlExpt,       __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(READ_UINT32(pr2) == iCtrlExpt,        __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(READ_UINT32(pr2+4) == iCtrlExpt,      __FILE__, __FUNCTION__, __LINE__);
     ecbPkt->PopFront();
-    ut.Assert(ecbPkt->Size() == finalsize-1-j, __FILE__, __FUNCTION__, __LINE__);
+    ut.Assert(ecbPkt->Size() == finalsize-1-j,      __FILE__, __FUNCTION__, __LINE__);
   }
   ut.Assert(ecbPkt->Empty() == ctrlExptPkt.empty(), __FILE__, __FUNCTION__, __LINE__);
 
