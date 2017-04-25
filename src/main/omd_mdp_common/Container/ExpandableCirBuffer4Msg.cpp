@@ -183,9 +183,9 @@ void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, 
   // Just ignore old data
   //--------------------------------------------------
   if (iSeqNo < m_StartSeqNo) return;
-
   //--------------------------------------------------
   // Just insertion into existing rows of non-empty circular buffer, no buffer expansion needed
+  // This covers the case of duplicated sequence number insertion, which is always an insertion.
   //--------------------------------------------------
   else if (m_StartSeqNo != 0 && !EmptyNoLock() && iSeqNo <= m_StartSeqNo + SizeNoLock() - 1)
   {
