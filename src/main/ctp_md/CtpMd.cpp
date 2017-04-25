@@ -127,8 +127,8 @@ void CtpMd::OnFrontConnected()
 
 void CtpMd::OnRspError(CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
-  if ((pRspInfo) && (pRspInfo->ErrorID != 0))
-    m_Logger->Write(StdStreamLogger::ERROR,"ErrorID=%s, ErrorMsg=%s",pRspInfo->ErrorID,pRspInfo->ErrorMsg);
+  if (pRspInfo && (pRspInfo->ErrorID != 0) && )
+    m_Logger->Write(StdStreamLogger::ERROR,"ErrorID=%d, ErrorMsg=%s",pRspInfo->ErrorID,pRspInfo->ErrorMsg);
 }
 
 void CtpMd::OnFrontDisconnected(int nReason)
