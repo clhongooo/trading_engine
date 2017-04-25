@@ -59,6 +59,9 @@ class BinaryRecorder
     void WriteHKExSim(const char *);
     void WriteHKExRelTime(const char *);
     void WriteHKExUnixTime(const char *);
+    void WriteHKExSim(const BYTE * b) {WriteHKExSim(b);}
+    void WriteHKExRelTime(const BYTE * b) {WriteHKExRelTime(b);}
+    void WriteHKExUnixTime(const BYTE * b) {WriteHKExUnixTime(b);}
 
     //--------------------------------------------------
     // to allow late function binding

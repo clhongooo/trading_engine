@@ -87,33 +87,7 @@ void PreProcessor_OMD::Run()
     //--------------------------------------------------
     // Record canned data, with heartbeat
     //--------------------------------------------------
-    if (m_bRecordMcast)
-    {
-      {
-        //--------------------------------------------------
-        // Custom format:
-        // 8 bytes - Relative time stamp in millisec
-        // n bytes - The actual packet
-        //--------------------------------------------------
-        uint16_t uiPktSize = *((uint16_t*)pbPkt);
-        if (uiPktSize <= MAX_OMD_PACKET_SIZE)
-        {
-          //--------------------------------------------------
-          // Relative time in millisec
-          //--------------------------------------------------
-          boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
-          boost::posix_time::time_duration diff = now - m_ProgramStartTime;
-          uint64_t uiRelTime = diff.total_milliseconds();
-          fwrite(&uiRelTime,8,1,m_CannedMcastFile);
-          //--------------------------------------------------
-          // Msg itself
-          //--------------------------------------------------
-          uint16_t uiPktSize = *((uint16_t*)pbPkt);
-          fwrite(pbPkt,1,uiPktSize,m_CannedMcastFile);
-          fflush(m_CannedMcastFile);
-        }
-      }
-    }
+    m_BinaryRecorder.WriteHKExUnixTime(pbPkt);
 
     //--------------------------------------------------
     // Heartbeat
@@ -405,7 +379,7 @@ void PreProcessor_OMD::Run()
   } // for (;;)
 }
 
-bool PreProcessor::DealingWithSeqNoGaps(uint32_t uiAdjSeqNo)
+bool PreProcessor_OMD::DealingWithSeqNoGaps(uint32_t uiAdjSeqNo)
 {
   //--------------------------------------------------
   // Ref: Session 2, Test case for security code 288

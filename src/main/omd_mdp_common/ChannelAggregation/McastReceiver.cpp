@@ -62,7 +62,7 @@ void McastReceiver::handle_receive_from(const boost::system::error_code& error, 
       m_Logger->Write(Logger::DEBUG, "MulticastReceiver: Send Time:    %u", (unsigned long )(READ_UINT64(m_WritePtr+8)));
     }
 
-    m_RawPktCirBuf->PushBack();
+    m_RawPktCirBuf->PushBack(bytes_recvd);
 
     m_WritePtr = m_RawPktCirBuf->GetWritingPtr();
 

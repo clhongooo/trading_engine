@@ -5,6 +5,7 @@
 //               when the current buffer is full rather than over-writing the old data.
 //               Note that the first TIMESTAMPSIZE bytes of each row is used internally for time stamp,
 //               in the format of local time since epoch (1970/1/1) in millisec.
+//               The next PKTSIZE is used to record the number of bytes of the packet.
 //
 //**************************************************
 
@@ -33,26 +34,28 @@ class ExpandableCirBuffer
 {
   public:
     enum { TIMESTAMPSIZE = 8 };
+    enum { PKTSIZE       = 2 };
 
     ExpandableCirBuffer(const unsigned short, const unsigned int, const unsigned int, boost::shared_ptr<CentralMemMgr>);
     ~ExpandableCirBuffer();
-    BYTE *        GetWritingPtr(); //Returns the pointer to the circular buffer entry that we can insert data to
-    void          PushBack();
-    const BYTE*   GetReadingPtr(); //Returns the pointer to the circular buffer entry that we can read data from
-    bool          GetReadingPtrTStamp(BYTE* &, unsigned long *); //Returns the pointer to the circular buffer entry that we can read data from, as well as the timestamp
-    unsigned long GetTimeStamp();
-    void          PopFront();
-    void          PopFrontNoLock();
-    void          Purge();
-    unsigned int  AllocatedSize();
-    unsigned int  SizeNoLock();
-    unsigned int  Size();
-    bool          EmptyNoLock();
-    bool          Empty();
-    void          PrintDebugInfo(const unsigned int);
-    void          Reset();
-    void          WaitForData();
-    void          NotifyConsumer();
+    BYTE *         GetWritingPtr(); //Returns the pointer to the circular buffer entry that we can insert data to
+    void           PushBack(const size_t);
+    const BYTE*    GetReadingPtr(); //Returns the pointer to the circular buffer entry that we can read data from
+    bool           GetReadingPtrTStamp(BYTE* &, unsigned long *); //Returns the pointer to the circular buffer entry that we can read data from, as well as the timestamp
+    unsigned long  GetTimeStamp();
+    unsigned short GetPktSize();
+    void           PopFront();
+    void           PopFrontNoLock();
+    void           Purge();
+    unsigned int   AllocatedSize();
+    unsigned int   SizeNoLock();
+    unsigned int   Size();
+    bool           EmptyNoLock();
+    bool           Empty();
+    void           PrintDebugInfo(const unsigned int);
+    void           Reset();
+    void           WaitForData();
+    void           NotifyConsumer();
 
   private:
     //------------------------------

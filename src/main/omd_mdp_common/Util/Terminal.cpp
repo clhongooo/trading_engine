@@ -136,10 +136,10 @@ void TerminalSession::handle_read(const boost::system::error_code& error, size_t
           ExpandableCirBuffer* m_RawPktCirBuf_RFA = m_ShrObj->GetRawPktCirBufPtr(mcRFA);
           ExpandableCirBuffer* m_RawPktCirBuf_RFB = m_ShrObj->GetRawPktCirBufPtr(mcRFB);
 
-          m_RawPktCirBuf_RTA->PushBack();
-          m_RawPktCirBuf_RTB->PushBack();
-          m_RawPktCirBuf_RFA->PushBack();
-          m_RawPktCirBuf_RFB->PushBack();
+          m_RawPktCirBuf_RTA->PushBack(1); // any size will do
+          m_RawPktCirBuf_RTB->PushBack(1); // any size will do
+          m_RawPktCirBuf_RFA->PushBack(1); // any size will do
+          m_RawPktCirBuf_RFB->PushBack(1); // any size will do
         }
 
         // Msg Cir Buf

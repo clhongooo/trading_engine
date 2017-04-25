@@ -116,7 +116,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RT->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RT->PushBack();
+      pRawCirBuf_RT->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -145,7 +145,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RF->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RF->PushBack();
+      pRawCirBuf_RF->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -174,7 +174,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RT->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RT->PushBack();
+      pRawCirBuf_RT->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -207,7 +207,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RT->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RT->PushBack();
+      pRawCirBuf_RT->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -261,7 +261,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RF->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RF->PushBack();
+      pRawCirBuf_RF->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -350,7 +350,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RT->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RT->PushBack();
+      pRawCirBuf_RT->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -379,7 +379,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RF->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RF->PushBack();
+      pRawCirBuf_RF->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -408,7 +408,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RF->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RF->PushBack();
+      pRawCirBuf_RF->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -440,7 +440,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RF->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RF->PushBack();
+      pRawCirBuf_RF->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -500,7 +500,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RF->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RF->PushBack();
+      pRawCirBuf_RF->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -589,7 +589,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RT->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RT->PushBack();
+      pRawCirBuf_RT->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -618,7 +618,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RF->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RF->PushBack();
+      pRawCirBuf_RF->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -647,7 +647,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RT->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RT->PushBack();
+      pRawCirBuf_RT->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -680,7 +680,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RF->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RF->PushBack();
+      pRawCirBuf_RF->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -712,7 +712,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RT->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RT->PushBack();
+      pRawCirBuf_RT->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -741,7 +741,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RF->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RF->PushBack();
+      pRawCirBuf_RF->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -802,7 +802,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RF->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RF->PushBack();
+      pRawCirBuf_RF->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -889,7 +889,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTA->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTA->PushBack();
+      pRawCirBuf_RTA->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -919,7 +919,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTB->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTB->PushBack();
+      pRawCirBuf_RTB->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -949,7 +949,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTA->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTA->PushBack();
+      pRawCirBuf_RTA->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -982,7 +982,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTB->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTB->PushBack();
+      pRawCirBuf_RTB->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1020,7 +1020,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTB->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTB->PushBack();
+      pRawCirBuf_RTB->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1108,7 +1108,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTA->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTA->PushBack();
+      pRawCirBuf_RTA->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1145,7 +1145,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTA->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTA->PushBack();
+      pRawCirBuf_RTA->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1178,7 +1178,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTB->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTB->PushBack();
+      pRawCirBuf_RTB->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1211,7 +1211,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTB->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTB->PushBack();
+      pRawCirBuf_RTB->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1244,7 +1244,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTB->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTB->PushBack();
+      pRawCirBuf_RTB->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1278,7 +1278,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTB->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTB->PushBack();
+      pRawCirBuf_RTB->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1365,7 +1365,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTA->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTA->PushBack();
+      pRawCirBuf_RTA->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1397,7 +1397,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTB->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTB->PushBack();
+      pRawCirBuf_RTB->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1429,7 +1429,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTA->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTA->PushBack();
+      pRawCirBuf_RTA->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1462,7 +1462,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTA->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTA->PushBack();
+      pRawCirBuf_RTA->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1494,7 +1494,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTB->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTB->PushBack();
+      pRawCirBuf_RTB->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -1527,7 +1527,7 @@ void TestSeqReset::RunTest()
 
       BYTE *bT = pRawCirBuf_RTB->GetWritingPtr();
       memcpy(bT,oph,oph->PktSize);
-      pRawCirBuf_RTB->PushBack();
+      pRawCirBuf_RTB->PushBack(oph->PktSize);
     }
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));

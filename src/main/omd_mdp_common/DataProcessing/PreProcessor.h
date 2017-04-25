@@ -22,6 +22,7 @@
 #include <set>
 #include "ThreadHealthMonitor.h"
 #include "MDP_Message_Headers.h"
+#include "MessageHeader.h"
 
 using namespace std;
 using namespace boost;
@@ -42,27 +43,27 @@ class PreProcessor {
     //--------------------------------------------------
     // Special Debug options, to be turned off in production
     //--------------------------------------------------
-    bool                               m_PrintPreProcSeqNoAsInfo;
+    bool   m_PrintPreProcSeqNoAsInfo;
 
     //Shared objects
     ExpandableCirBuffer *              m_RawPktCirBuf;
     ExpandableCirBuffer4Msg *          m_MsgCirBuf;
-    boost::shared_ptr<SharedObjects>          m_ShrObj;
-    boost::shared_ptr<SystemConfig>           m_SysCfg;
-    boost::shared_ptr<Logger>                 m_Logger;
-    boost::shared_ptr<ThreadHealthMonitor>    m_ThreadHealthMon;
+    boost::shared_ptr<SharedObjects>        m_ShrObj;
+    boost::shared_ptr<SystemConfig>         m_SysCfg;
+    boost::shared_ptr<Logger>               m_Logger;
+    boost::shared_ptr<ThreadHealthMonitor>  m_ThreadHealthMon;
 
     //Others
-    const McastIdentifier &            m_McastIdentifier;
-    unsigned short                     m_ChannelID;
-    // uint32_t                           m_LastUnadjSeqNo;
-    char                               m_JsonBuffer[JSON_BUFFER_SIZE];
-    char                               m_NameBuffer[256];
-    boost::posix_time::ptime           m_ProgramStartTime;
-    // uint64_t                           m_PrevPktHdrTime;
-    unsigned long                      m_MaxOneTimeAlloc;
-    unsigned long                      m_TrashSeqNoGapLargerThan;
-    uint32_t                           m_LocalLastAdjSeqNo;
+    const McastIdentifier &    m_McastIdentifier;
+    unsigned short             m_ChannelID;
+    // uint32_t                   m_LastUnadjSeqNo;
+    char                       m_JsonBuffer[JSON_BUFFER_SIZE];
+    char                       m_NameBuffer[256];
+    boost::posix_time::ptime   m_ProgramStartTime;
+    // uint64_t                   m_PrevPktHdrTime;
+    unsigned long              m_MaxOneTimeAlloc;
+    unsigned long              m_TrashSeqNoGapLargerThan;
+    uint32_t                   m_LocalLastAdjSeqNo;
 };
 
 class PreProcessor_OMD : public PreProcessor {

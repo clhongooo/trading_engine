@@ -47,24 +47,24 @@ int main(int argc, const char* argv[])
 {
 
   //--------------------------------------------------
-  // Circular Buffer
+  // Test Circular Buffers
   //--------------------------------------------------
   {
     UTest ut;
     boost::shared_ptr<CentralMemMgr> cmm = CentralMemMgr::Instance();
     extern const unsigned int MSGSIZE;
 
-    // //--------------------------------------------------
-    // // Test ExpandableCirBuffer
-    // //--------------------------------------------------
-    // ecbPkt = new ExpandableCirBuffer(91,3,sizeof(uint32_t)*2,cmm);
-    // TestExpandableCirBuffer(ut);
-    // delete ecbPkt;
-    //
-    // ecbPkt = new ExpandableCirBuffer(91,65536,sizeof(uint32_t)*2,cmm);
-    // TestExpandableCirBuffer(ut);
-    // delete ecbPkt;
-    // //--------------------------------------------------
+    //--------------------------------------------------
+    // Test ExpandableCirBuffer
+    //--------------------------------------------------
+    ecbPkt = new ExpandableCirBuffer(91,3,sizeof(uint32_t)*2,cmm);
+    TestExpandableCirBuffer(ut);
+    delete ecbPkt;
+
+    ecbPkt = new ExpandableCirBuffer(91,65536,sizeof(uint32_t)*2,cmm);
+    TestExpandableCirBuffer(ut);
+    delete ecbPkt;
+    //--------------------------------------------------
 
     //--------------------------------------------------
     // Test ExpandableCirBuffer4Msg

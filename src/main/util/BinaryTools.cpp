@@ -78,7 +78,7 @@ void BinaryRecorder::WriteHKExRelTime(const char * buffer)
     //--------------------------------------------------
     uint16_t uiPktSize = *((uint16_t*)&buffer[0]);
     fwrite(buffer,1,uiPktSize,m_OutFile);
-  if (m_FlushOnEveryWrite) fflush(m_OutFile);
+    if (m_FlushOnEveryWrite) fflush(m_OutFile);
   }
 }
 
@@ -99,7 +99,7 @@ void BinaryRecorder::WriteHKExUnixTime(const char * buffer)
     //--------------------------------------------------
     uint16_t uiPktSize = *((uint16_t*)&buffer[0]);
     fwrite(buffer,1,uiPktSize,m_OutFile);
-  if (m_FlushOnEveryWrite) fflush(m_OutFile);
+    if (m_FlushOnEveryWrite) fflush(m_OutFile);
   }
 }
 

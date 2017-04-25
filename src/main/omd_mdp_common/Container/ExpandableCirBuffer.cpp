@@ -21,7 +21,7 @@ ExpandableCirBuffer::~ExpandableCirBuffer()
 
 void ExpandableCirBuffer::ExpandCapacity()
 {
-  m_DqCirBuf.push_back(m_MemMgr->AcquireVectorBlock(m_BlockSize,m_RowSize+TIMESTAMPSIZE));
+  m_DqCirBuf.push_back(m_MemMgr->AcquireVectorBlock(m_BlockSize,m_RowSize+TIMESTAMPSIZE+PKTSIZE));
   m_DqStartIdx.push_back(0);
   m_DqEndIdx.push_back(0);
 }
@@ -32,16 +32,18 @@ BYTE * ExpandableCirBuffer::GetWritingPtr()
   if (m_DqCirBuf.empty()) ExpandCapacity();
 
   BYTE* pT = (*m_DqCirBuf.back())[m_DqEndIdx.back()];
-  return (BYTE*)((BYTE*)pT+TIMESTAMPSIZE); //because the first N bytes are designated to time stamp
+  return (BYTE*)((BYTE*)pT+TIMESTAMPSIZE+PKTSIZE); //because the first N bytes are designated to time stamp
 }
 
-void ExpandableCirBuffer::PushBack()
+void ExpandableCirBuffer::PushBack(const size_t iSize)
 {
   BYTE * pTmp = (BYTE*)(*m_DqCirBuf.back())[m_DqEndIdx.back()];
   boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
   boost::posix_time::time_duration diff = now - (*m_TimeSinceEpoch);
   unsigned long ulTS = diff.total_milliseconds();
   WRITE_UINT64(pTmp,ulTS);
+
+  WRITE_UINT16(pTmp+TIMESTAMPSIZE,iSize);
 
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
 
@@ -61,7 +63,7 @@ const BYTE* ExpandableCirBuffer::GetReadingPtr()
   // Sanity check
   if (Empty()) return NULL;
   BYTE* pT = (*m_DqCirBuf.front())[m_DqStartIdx.front()];
-  return (pT+TIMESTAMPSIZE);
+  return (pT+TIMESTAMPSIZE+PKTSIZE);
 }
 
 unsigned long ExpandableCirBuffer::GetTimeStamp()
@@ -76,6 +78,18 @@ unsigned long ExpandableCirBuffer::GetTimeStamp()
   return ulTS;
 }
 
+unsigned short ExpandableCirBuffer::GetPktSize()
+{
+  // Sanity check
+  if (Empty()) return 0;
+
+  unsigned short ulPS=0;
+
+  BYTE* pT = (*m_DqCirBuf.front())[m_DqStartIdx.front()];
+  memcpy((BYTE*)&ulPS,pT+TIMESTAMPSIZE,PKTSIZE);
+  return ulPS;
+}
+
 bool ExpandableCirBuffer::GetReadingPtrTStamp(BYTE* & pArg, unsigned long * ulTS)
 {
   // Sanity check
@@ -87,7 +101,7 @@ bool ExpandableCirBuffer::GetReadingPtrTStamp(BYTE* & pArg, unsigned long * ulTS
   }
   BYTE* pT = (*m_DqCirBuf.front())[m_DqStartIdx.front()];
   memcpy((BYTE*)ulTS,pT,TIMESTAMPSIZE);
-  pArg = (BYTE*)((BYTE*)pT+TIMESTAMPSIZE);
+  pArg = (BYTE*)((BYTE*)pT+TIMESTAMPSIZE+PKTSIZE);
   return true;
 }
 
@@ -106,7 +120,7 @@ void ExpandableCirBuffer::PopFrontNoLock()
   m_DqStartIdx.front() = (m_DqStartIdx.front()+1)%m_BlockSize;
   if (!EmptyNoLock() && m_DqStartIdx.front() == m_DqEndIdx.front())
   {
-    m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+TIMESTAMPSIZE);
+    m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+TIMESTAMPSIZE+PKTSIZE);
     m_DqCirBuf.pop_front();
     m_DqStartIdx.pop_front();
     m_DqEndIdx.pop_front();
@@ -125,7 +139,7 @@ void ExpandableCirBuffer::Purge()
     deque<vector<BYTE*> *>::iterator itE = m_DqCirBuf.end()-1;
 
     for (it = m_DqCirBuf.begin(); it != itE; ++it)
-      m_MemMgr->ReturnVectorBlock(*it,m_BlockSize,m_RowSize+TIMESTAMPSIZE);
+      m_MemMgr->ReturnVectorBlock(*it,m_BlockSize,m_RowSize+TIMESTAMPSIZE+PKTSIZE);
 
     m_DqCirBuf.erase(m_DqCirBuf.begin(),m_DqCirBuf.end()-1);
     m_DqStartIdx.erase(m_DqStartIdx.begin(),m_DqStartIdx.end()-1);
@@ -200,7 +214,7 @@ void ExpandableCirBuffer::Reset()
 void ExpandableCirBuffer::ResetNoLock()
 {
   while (!m_DqCirBuf.empty()) {
-    m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+TIMESTAMPSIZE);
+    m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+TIMESTAMPSIZE+PKTSIZE);
     m_DqCirBuf.pop_front();
   }
   m_DqStartIdx.clear();
