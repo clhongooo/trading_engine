@@ -100,13 +100,15 @@ void CtpMd::run()
   CreateFtdcMdApiPtr CreateFtdcMdApi = (CreateFtdcMdApiPtr)dlsym(m_p_ctp_lib_handle,"_ZN15CThostFtdcMdApi15CreateFtdcMdApiEPKcbb");
 
   m_pCThostFtdcMdApi = CreateFtdcMdApi("",true,true);
+  m_Logger->Write(StdStreamLogger::INFO,"Called CreateFtdcMdApi");
   m_pCThostFtdcMdApi->RegisterSpi((CThostFtdcMdSpi*) this);
+  m_Logger->Write(StdStreamLogger::INFO,"Called RegisterSpi()");
   m_pCThostFtdcMdApi->RegisterFront((char*)m_connection_string.c_str());
+  m_Logger->Write(StdStreamLogger::INFO,"Called RegisterFront()");
   m_pCThostFtdcMdApi->Init();
-  if (m_pCThostFtdcMdApi!=NULL)
-  {
-    m_pCThostFtdcMdApi->Join();
-  }
+  m_Logger->Write(StdStreamLogger::INFO,"Called Init()");
+  if (m_pCThostFtdcMdApi!=NULL) m_pCThostFtdcMdApi->Join();
+  m_Logger->Write(StdStreamLogger::INFO,"After Join()");
 }
 
 //--------------------------------------------------
@@ -121,13 +123,14 @@ void CtpMd::OnFrontConnected()
   strcpy(req.UserID, m_user_id);
   strcpy(req.Password, m_password);
   int iResult = m_pCThostFtdcMdApi->ReqUserLogin(&req, ++m_iRequestID);
+  m_Logger->Write(StdStreamLogger::INFO,"Called ReqUserLogin()");
   m_Logger->Write(StdStreamLogger::NOTICE,"User Login is %s",(iResult == 0) ? "OK" : "Fail");
   SubscribeSymbols(m_subscribedSymbols);
 }
 
 void CtpMd::OnRspError(CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
-  if (pRspInfo && (pRspInfo->ErrorID != 0) && )
+  if (pRspInfo && (pRspInfo->ErrorID != 0))
     m_Logger->Write(StdStreamLogger::ERROR,"ErrorID=%d, ErrorMsg=%s",pRspInfo->ErrorID,pRspInfo->ErrorMsg);
 }
 
@@ -222,10 +225,10 @@ void CtpMd::notify_marketfeed(const ATU_MDI_marketfeed_struct &s)
 
 void CtpMd::release_CThostFtdcMdApi()
 {
-  if (m_pCThostFtdcMdApi != NULL)
-  {
-    m_pCThostFtdcMdApi->RegisterSpi(NULL);
-    m_pCThostFtdcMdApi->Release();
-    m_pCThostFtdcMdApi = NULL;
-  }
+  if (m_pCThostFtdcMdApi == NULL) return;
+  m_pCThostFtdcMdApi->RegisterSpi(NULL);
+  m_Logger->Write(StdStreamLogger::INFO,"Called RegisterSpi(NULL)");
+  m_pCThostFtdcMdApi->Release();
+  m_Logger->Write(StdStreamLogger::INFO,"Called Release()");
+  m_pCThostFtdcMdApi = NULL;
 }
