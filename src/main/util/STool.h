@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <map>
 #include <deque>
+#include <vector>
 #include <sstream>
 #include <fstream>
 #include <boost/algorithm/string.hpp>
