@@ -11,7 +11,7 @@
  *  JSON_LIBRARY must be declared if libjson is compiled as a static or dynamic 
  *  library.  This exposes a C-style interface, but none of the inner workings of libjson
  */
-#define JSON_LIBRARY
+// #define JSON_LIBRARY
 
 
 /*
@@ -35,7 +35,7 @@
  *  JSON_ISO_STRICT turns off all code that uses non-standard C++.  This removes all
  *  references to long long and long double as well as a few others
  */
-//#define JSON_ISO_STRICT
+#define JSON_ISO_STRICT
 
 
 /*

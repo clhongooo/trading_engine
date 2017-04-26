@@ -8,10 +8,12 @@ foreach (_headerFile ${proj_HEADERS})
 endforeach()
 list(REMOVE_DUPLICATES proj_INC)
 
-include_directories(. ${PANTHEIOS_INC} ${proj_INC} ../logger ../util)
+include_directories(. ${PANTHEIOS_INC} ${proj_INC} ../logger ../util ../libjson)
 link_directories(/usr/local/pantheios/lib)
 
 file(GLOB_RECURSE proj_SOURCES "*.cpp")
 
-add_library (${PROJECT_NAME} STATIC ${proj_SOURCES})
+file(GLOB_RECURSE json_SOURCES "../libjson/Objects_static/*.o")
+
+add_library (${PROJECT_NAME} STATIC ${proj_SOURCES} ${json_SOURCES})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} logger util pthread pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)
