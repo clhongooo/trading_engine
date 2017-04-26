@@ -11,7 +11,6 @@ RealTimeProcessor* RealTimeProcessorFactory::GetRealTimeProcessor(SystemConfig::
 }
 
 RealTimeProcessor::RealTimeProcessor(const unsigned short id) :
-  m_CannedProcessedDataFile(NULL),
   m_bRecordProcessedData(false),
   m_bOutputJson(false),
   m_bRunRealTimeProcessor(false),
@@ -33,27 +32,17 @@ RealTimeProcessor::RealTimeProcessor(const unsigned short id) :
 
   if ((*(m_SysCfg->GetRealTimeProcessorJson()))[m_ChannelID] == 1) m_bOutputJson = true;
 
+  //--------------------------------------------------
+  ostringstream oo;
+  oo << SystemConfig::Instance()->GetCannedProcessedDataFilePath() << "_" << m_ChannelID;
 
-  if (m_bRecordProcessedData)
-  {
-    ostringstream oo;
-    oo << SystemConfig::Instance()->GetCannedProcessedDataFilePath() << "_" << m_ChannelID;
-    m_CannedProcessedDataFile = fopen(oo.str().c_str(), m_SysCfg->GetCannedProcessedDataFopenFlag().c_str());
-  }
+  m_BinaryRecorder.SetIfWriteATUMDIStruct(m_bRecordProcessedData);
+  if (m_bRecordProcessedData && !m_BinaryRecorder.SetOutFilePathAndOpen(oo.str().c_str(), m_SysCfg->GetCannedProcessedDataFopenFlag().c_str()))
+    m_Logger->Write(Logger::ERROR,"RealTimeProcessor: ChannelID:%u. The file %s could not be opened.", m_ChannelID, oo.str().c_str());
+  //--------------------------------------------------
 
   m_DataProcFunc.reset(DataProcFuncFactory::GetDataProcFunc(m_SysCfg->GetIdentity()));
 
   m_PrintRealTimeSeqNoAsInfo = m_SysCfg->CheckIfPrintRealTimeProcSeqNoAsInfo();
   m_PrintOrderBookAsInfo     = m_SysCfg->CheckIfPrintOrderBookAsInfo();
-
-}
-
-RealTimeProcessor::~RealTimeProcessor()
-{
-  if (m_CannedProcessedDataFile)
-  {
-    fclose(m_CannedProcessedDataFile);
-    delete m_CannedProcessedDataFile;
-    m_CannedProcessedDataFile = NULL;
-  }
 }

@@ -84,16 +84,10 @@ void RealTimeProcessor_OMD::Run()
     else
       m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Seq No (adj): %u", m_ChannelID, uiAdjSeqNo);
 
-    if (m_bRecordProcessedData)
-    {
-      //--------------------------------------------------
-      // Record the processed data as "canned data"
-      // Writing in our own format, i.e. just the messages
-      //--------------------------------------------------
-
-      fwrite(pbMsg,1,uiMsgSize,m_CannedProcessedDataFile);
-      fflush(m_CannedProcessedDataFile);
-    }
+    //--------------------------------------------------
+    // Record canned data
+    //--------------------------------------------------
+    m_BinaryRecorder.WriteHKExUnixTime(pbMsg);
 
     //--------------------------------------------------
     // Printing results in log

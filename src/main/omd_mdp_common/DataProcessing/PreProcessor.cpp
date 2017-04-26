@@ -86,7 +86,3 @@ PreProcessor::PreProcessor(const McastIdentifier & mi) :
   m_PrintPreProcSeqNoAsInfo= m_SysCfg->CheckIfPrintPreProcSeqNoAsInfo();
 
 }
-
-PreProcessor::~PreProcessor()
-{
-}

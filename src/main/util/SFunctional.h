@@ -6,7 +6,13 @@
 #include <boost/thread/shared_mutex.hpp>
 
 //--------------------------------------------------
-// Functional programming?
+// Scala-like val var
+//--------------------------------------------------
+#define VAL const auto
+#define VAR       auto
+
+//--------------------------------------------------
+// Functional programming
 //--------------------------------------------------
   template <typename Collection, typename UnOp>
 void FForEach(const Collection & col, UnOp op)

@@ -19,6 +19,8 @@ void PreProcessor_MDP::Run()
     m_ThreadHealthMon->ReportThatIAmHealthy(ThreadHealthMonitor::PREPROCESSOR, m_ChannelID);
 
     //--------------------------------------------------
+    // Try get data from queue
+    //--------------------------------------------------
     unsigned long ulTStamp = 0;
     BYTE * pbPkt = NULL;
     if (!m_RawPktCirBuf->GetReadingPtrTStamp(pbPkt,&ulTStamp))
@@ -30,9 +32,8 @@ void PreProcessor_MDP::Run()
     //--------------------------------------------------
     // Output Packet Header info
     //--------------------------------------------------
-    MDP_Packet_Header * mph         = (MDP_Packet_Header*)(pbPkt);
-    size_t sizeof_MDP_Packet_Header = sizeof(MDP_Packet_Header);
-
+    MDP_Packet_Header          * mph  = (MDP_Packet_Header*)(pbPkt);
+    Modified_MDP_Packet_Header * mmph = (Modified_MDP_Packet_Header*)(pbPkt);
     m_Logger->Write(m_PrintPreProcSeqNoAsInfo ? Logger::INFO : Logger::DEBUG, "PreProcessor: ChannelID:%u. %s (%c): Packet Header: PktSeqNum:  %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), mph->PktSeqNum);
     m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Send Time:  %s", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(mph->SendingTime, SDateTime::NANOSEC).c_str());
 
@@ -49,8 +50,14 @@ void PreProcessor_MDP::Run()
     m_BinaryRecorder.WriteHKExUnixTime(pbPkt);
 
     //--------------------------------------------------
+    // We replace the original packet header timestamp with the packet length, so that RealTimeProcessor knows how long the packet is.
+    //--------------------------------------------------
+    const size_t uiPktSize = m_RawPktCirBuf->GetPktSize();
+    WRITE_UINT64(&(mmph->PktSize),uiPktSize);
+
+    //--------------------------------------------------
     // Because CME keeps the sequence number of packets rather than messages,
-    // So we defer our message parsing to RealTimeProcessor
+    // we defer our message parsing to RealTimeProcessor.
     //--------------------------------------------------
     m_MsgCirBuf->PushMsg(pbPkt,mph->PktSeqNum,ulTStamp);
     m_RawPktCirBuf->PopFront();

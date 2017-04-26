@@ -14,6 +14,7 @@
 #include "McastIdentifier.h"
 #include "BinaryTools.h"
 #include "OMD_Message_Headers.h"
+#include "MDP_Message_Headers.h"
 #include "OrderBook.h"
 #include "DataProcFunctions.h"
 #include <boost/shared_ptr.hpp>
@@ -30,7 +31,7 @@ using namespace boost;
 class PreProcessor {
   public:
     PreProcessor(const McastIdentifier &);
-    virtual ~PreProcessor();
+    virtual ~PreProcessor() {}
     virtual void Run() = 0;
   protected:
     boost::shared_ptr<DataProcFunctions> m_DataProcFunc;

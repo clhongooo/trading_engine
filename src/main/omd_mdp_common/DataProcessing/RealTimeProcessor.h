@@ -13,10 +13,12 @@
 #include "SystemConfig.h"
 #include "BinaryTools.h"
 #include "OMD_Message_Headers.h"
+#include "MDP_Message_Headers.h"
 #include "ExpandableCirBuffer4Msg.h"
 #include "OrderBook.h"
 #include "DataProcFunctions.h"
 #include "ThreadHealthMonitor.h"
+
 #include <boost/shared_ptr.hpp>
 #include <cstdio>
 #include <cstring>
@@ -28,12 +30,12 @@ class RealTimeProcessor {
   public:
     RealTimeProcessor(const unsigned short);
     virtual void Run() = 0;
-    virtual ~RealTimeProcessor();
+    virtual ~RealTimeProcessor() {}
   protected:
     boost::shared_ptr<DataProcFunctions>      m_DataProcFunc;
 
     //Output related
-    FILE *  m_CannedProcessedDataFile;
+    BinaryRecorder m_BinaryRecorder;
     bool    m_bRecordProcessedData;
     bool    m_bOutputJson;
     bool    m_bRunRealTimeProcessor;
