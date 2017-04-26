@@ -33,7 +33,7 @@ using namespace std;
 
 #pragma pack(1)
 typedef struct {
-  uint32_t MsgSeqNum;
+  uint32_t PktSeqNum;
   uint64_t SendingTime;
 } MDP_Packet_Header;
 #pragma pack(8)

@@ -33,24 +33,23 @@ class RealTimeProcessor {
     boost::shared_ptr<DataProcFunctions>      m_DataProcFunc;
 
     //Output related
-    FILE *                             m_CannedProcessedDataFile;
-    bool                               m_bRecordProcessedData;
-    bool                               m_bOutputJson;
-    bool                               m_bRunRealTimeProcessor;
-    bool                               m_PrintRealTimeSeqNoAsInfo;
-    bool                               m_PrintOrderBookAsInfo;
+    FILE *  m_CannedProcessedDataFile;
+    bool    m_bRecordProcessedData;
+    bool    m_bOutputJson;
+    bool    m_bRunRealTimeProcessor;
+    bool    m_PrintRealTimeSeqNoAsInfo;
+    bool    m_PrintOrderBookAsInfo;
 
     //Shared objects
-    ExpandableCirBuffer4Msg *          m_MsgCirBuf;
+    ExpandableCirBuffer4Msg *                 m_MsgCirBuf;
     boost::shared_ptr<SharedObjects>          m_ShrObj;
     boost::shared_ptr<SystemConfig>           m_SysCfg;
     boost::shared_ptr<Logger>                 m_Logger;
     boost::shared_ptr<ThreadHealthMonitor>    m_ThreadHealthMon;
 
     //Others
-    unsigned short                     m_ChannelID;
-    // unsigned short                     m_RealTimeProcSleepMillisec;
-    char                               m_JsonBuffer[JSON_BUFFER_SIZE];
+    unsigned short   m_ChannelID;
+    char             m_JsonBuffer[JSON_BUFFER_SIZE];
 };
 
 class RealTimeProcessor_OMD : public RealTimeProcessor {
