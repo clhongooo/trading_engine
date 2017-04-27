@@ -92,22 +92,22 @@ void RealTimeProcessor_MDP::Run()
 
       switch (mdpMsgHdr.templateId())
       {
-        case MDP_CHANNEL_RESET                       : OnChannelReset                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_HEARTBEAT                           : OnHeartBeat                        ();                                                           break;
-        case MDP_REFRESH_SECURITY_DEFINITION_FUTURE  : OnRefreshSecurityDefinitionFuture  (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_REFRESH_SECURITY_DEFINITION_SPREAD  : OnRefreshSecurityDefinitionSpread  (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_SECURITY_STATUS                     : OnSecurityStatus                   (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_REFRESH_BOOK                        : OnRefreshBook                      (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_REFRESH_DAILY_STATISTICS            : OnRefreshDailyStatistics           (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_REFRESH_LIMITS_BANDING              : OnRefreshLimitsBanding             (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_REFRESH_SESSION_STATISTICS          : OnRefreshSessionStatistics         (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_REFRESH_TRADE                       : OnRefreshTrade                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_REFRESH_VOLUME                      : OnRefreshVolume                    (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_SNAPSHOT_FULL_REFRESH               : OnSnapshotFullRefresh              (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_QUOTE_REQUEST                       : OnQuoteRequest                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_INSTRUMENT_DEFINITION_OPTION        : OnInstrumentDefinitionOption       (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        case MDP_REFRESH_TRADE_SUMMARY               : OnRefreshTradeSummary              (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
-        default                                      : m_Logger->Write(Logger::DEBUG,"Unprocessed message. templateId: %d", mdpMsgHdr.templateId());    break;
+        case MDP_HEARTBEAT                           : m_DataProcFunc->OnHeartBeat                        ();                                                           break;
+        case MDP_CHANNEL_RESET                       : m_DataProcFunc->OnChannelReset                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_REFRESH_SECURITY_DEFINITION_FUTURE  : m_DataProcFunc->OnRefreshSecurityDefinitionFuture  (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_REFRESH_SECURITY_DEFINITION_SPREAD  : m_DataProcFunc->OnRefreshSecurityDefinitionSpread  (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_SECURITY_STATUS                     : m_DataProcFunc->OnSecurityStatus                   (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_REFRESH_BOOK                        : m_DataProcFunc->OnRefreshBook                      (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_REFRESH_DAILY_STATISTICS            : m_DataProcFunc->OnRefreshDailyStatistics           (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_REFRESH_LIMITS_BANDING              : m_DataProcFunc->OnRefreshLimitsBanding             (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_REFRESH_SESSION_STATISTICS          : m_DataProcFunc->OnRefreshSessionStatistics         (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_REFRESH_TRADE                       : m_DataProcFunc->OnRefreshTrade                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_REFRESH_VOLUME                      : m_DataProcFunc->OnRefreshVolume                    (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_SNAPSHOT_FULL_REFRESH               : m_DataProcFunc->OnSnapshotFullRefresh              (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_QUOTE_REQUEST                       : m_DataProcFunc->OnQuoteRequest                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_INSTRUMENT_DEFINITION_OPTION        : m_DataProcFunc->OnInstrumentDefinitionOption       (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        case MDP_REFRESH_TRADE_SUMMARY               : m_DataProcFunc->OnRefreshTradeSummary              (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);                   break;
+        default                                      : m_Logger->Write(Logger::DEBUG,"Unprocessed message. templateId: %d", mdpMsgHdr.templateId());                    break;
       }
 
       //--------------------------------------------------

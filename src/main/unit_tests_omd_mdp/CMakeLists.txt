@@ -12,7 +12,7 @@ endforeach()
 list(REMOVE_DUPLICATES proj_INC)
 
 
-include_directories(${PANTHEIOS_INC} ${proj_INC} ../omd_mdp_common Testing ../logger ../util)
+include_directories(${PANTHEIOS_INC} ${proj_INC} ../omd_mdp_common Testing ../logger ../util ../libjson)
 link_directories(/usr/local/pantheios/lib)
 
 add_executable(${PROJECT_NAME} Main.cpp ${proj_SOURCES})

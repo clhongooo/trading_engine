@@ -73,4 +73,4 @@ class RealTimeProcessorFactory {
     static RealTimeProcessor* GetRealTimeProcessor(SystemConfig::Identity, const unsigned short);
 };
 
-#endif /* FULLFUNCTIONPROCESSOR_H_ */
+#endif

@@ -5,8 +5,9 @@
 //--------------------------------------------------
 DataProcFunctions* DataProcFuncFactory::GetDataProcFunc(SystemConfig::Identity id)
 {
-  if (id == SystemConfig::OMDC) return new DataProcFunctions_OMDC();
+  if      (id == SystemConfig::OMDC) return new DataProcFunctions_OMDC();
   else if (id == SystemConfig::OMDD) return new DataProcFunctions_OMDD();
+  else if (id == SystemConfig::MDP ) return new DataProcFunctions_MDP ();
 }
 
 DataProcFunctions::DataProcFunctions()
@@ -18,7 +19,7 @@ DataProcFunctions::DataProcFunctions()
 //--------------------------------------------------
 // omd_mdi
 //--------------------------------------------------
-void DataProcFunctions::ProcessMessageForTransmission(BYTE* pbMsg, unsigned short usMsgType)
+void DataProcFunctions_OMDC::ProcessMessageForTransmission(BYTE* pbMsg, unsigned short usMsgType)
 {
   switch (usMsgType)
   {
@@ -47,6 +48,14 @@ void DataProcFunctions::ProcessMessageForTransmission(BYTE* pbMsg, unsigned shor
         }
         break;
       }
+    default:  break;
+  }
+  return;
+}
+void DataProcFunctions_OMDD::ProcessMessageForTransmission(BYTE* pbMsg, unsigned short usMsgType)
+{
+  switch (usMsgType)
+  {
     case OMDD_TRADE:
       {
         OMDD_Trade * ost = (OMDD_Trade *) pbMsg;
@@ -63,7 +72,6 @@ void DataProcFunctions::ProcessMessageForTransmission(BYTE* pbMsg, unsigned shor
   }
   return;
 }
-
 
 //--------------------------------------------------
 // OMD-C
@@ -153,60 +161,54 @@ void DataProcFunctions_OMDC::ProcessOrderBookInstruction(const char *sCaller, bo
 }
 
 
-//--------------------------------------------------
-// FIXME
-//--------------------------------------------------
 void DataProcFunctions_OMDC::OutputJsonToLog(const char * sCaller, const unsigned short usChnlID, boost::shared_ptr<Logger> logger, const BYTE *pbMsg, unsigned short usMsgType, char caJsonBuffer[], unsigned long ulHKExSendTime)
 {
+  switch (usMsgType)
+  {
+    //--------------------------------------------------
+    // OMD
+    //--------------------------------------------------
+    case OMD_LOGON                               :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Logon                              *) pbMsg), string("Logon"                              ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMD_LOGON_RESPONSE                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Logon_Response                     *) pbMsg), string("Logon_Response"                     ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMD_REFRESH_COMPLETE                    :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Refresh_Complete                   *) pbMsg), string("Refresh_Complete"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMD_RETRANSMISSION_REQUEST              :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Retransmission_Request             *) pbMsg), string("Retransmission_Request"             ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMD_RETRANSMISSION_RESPONSE             :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Retransmission_Response            *) pbMsg), string("Retransmission_Response"            ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMD_SEQUENCE_RESET                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Sequence_Reset                     *) pbMsg), string("Sequence_Reset"                     ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+
+                                                    //--------------------------------------------------
+                                                    // OMD-C
+                                                    //--------------------------------------------------
+    case OMDC_MARKET_DEFINITION                  :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Market_Definition                 *) pbMsg), string("Market_Definition"                  ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_SECURITY_DEFINITION                :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Security_Definition               *) pbMsg), string("Security_Definition"                ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_LIQUIDITY_PROVIDER                 :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Liquidity_Provider                *) pbMsg), string("Liquidity_Provider"                 ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_CURRENCY_RATE                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Currency_Rate                     *) pbMsg), string("Currency_Rate"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_TRADING_SESSION_STATUS             :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Trading_Session_Status            *) pbMsg), string("Trading_Session_Status"             ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_SECURITY_STATUS                    :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Security_Status                   *) pbMsg), string("Security_Status"                    ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_NEWS                               :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_News                              *) pbMsg), string("News"                               ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_ADD_ORDER                          :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Add_Order                         *) pbMsg), string("Add_Order"                          ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_MODIFY_ORDER                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Modify_Order                      *) pbMsg), string("Modify_Order"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_DELETE_ORDER                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Delete_Order                      *) pbMsg), string("Delete_Order"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_ADD_ODD_LOT_ORDER                  :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Add_Odd_Lot_Order                 *) pbMsg), string("Add_Odd_Lot_Order"                  ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_DELETE_ODD_LOT_ORDER               :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Delete_Odd_Lot_Order              *) pbMsg), string("Delete_Odd_Lot_Order"               ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_NOMINAL_PRICE                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Nominal_Price                     *) pbMsg), string("Nominal_Price"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_INDICATIVE_EQUILIBRIUM_PRICE       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Indicative_Equilibrium_Price      *) pbMsg), string("Indicative_Equilibrium_Price"       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_YIELD                              :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Yield                             *) pbMsg), string("Yield"                              ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_TRADE                              :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Trade                             *) pbMsg), string("Trade"                              ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_TRADE_CANCEL                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Trade_Cancel                      *) pbMsg), string("Trade_Cancel"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_TRADE_TICKER                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Trade_Ticker                      *) pbMsg), string("Trade_Ticker"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_AGGREGATE_ORDER_BOOK_UPDATE        :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Aggregate_Order_Book_Update       *) pbMsg), string("Aggregate_Order_Book_Update"        ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_BROKER_QUEUE                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Broker_Queue                      *) pbMsg), string("Broker_Queue"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_STATISTICS                         :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Statistics                        *) pbMsg), string("Statistics"                         ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_MARKET_TURNOVER                    :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Market_Turnover                   *) pbMsg), string("Market_Turnover"                    ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_CLOSING_PRICE                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Closing_Price                     *) pbMsg), string("Closing_Price"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_INDEX_DEFINITION                   :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Index_Definition                  *) pbMsg), string("Index_Definition"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDC_INDEX_DATA                         :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Index_Data                        *) pbMsg), string("Index_Data"                         ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+
+    default                                      :  break;
+  }
+
+  return;
 }
-// void DataProcFunctions_OMDC::OutputJsonToLog(const char * sCaller, const unsigned short usChnlID, boost::shared_ptr<Logger> logger, const BYTE *pbMsg, unsigned short usMsgType, char caJsonBuffer[], unsigned long ulHKExSendTime)
-// {
-//   switch (usMsgType)
-//   {
-//     //--------------------------------------------------
-//     // OMD
-//     //--------------------------------------------------
-//     case OMD_LOGON                               :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Logon                              *) pbMsg), string("Logon"                              ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMD_LOGON_RESPONSE                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Logon_Response                     *) pbMsg), string("Logon_Response"                     ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMD_REFRESH_COMPLETE                    :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Refresh_Complete                   *) pbMsg), string("Refresh_Complete"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMD_RETRANSMISSION_REQUEST              :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Retransmission_Request             *) pbMsg), string("Retransmission_Request"             ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMD_RETRANSMISSION_RESPONSE             :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Retransmission_Response            *) pbMsg), string("Retransmission_Response"            ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMD_SEQUENCE_RESET                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Sequence_Reset                     *) pbMsg), string("Sequence_Reset"                     ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//
-//                                                     //--------------------------------------------------
-//                                                     // OMD-C
-//                                                     //--------------------------------------------------
-//     case OMDC_MARKET_DEFINITION                  :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Market_Definition                 *) pbMsg), string("Market_Definition"                  ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_SECURITY_DEFINITION                :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Security_Definition               *) pbMsg), string("Security_Definition"                ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_LIQUIDITY_PROVIDER                 :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Liquidity_Provider                *) pbMsg), string("Liquidity_Provider"                 ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_CURRENCY_RATE                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Currency_Rate                     *) pbMsg), string("Currency_Rate"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_TRADING_SESSION_STATUS             :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Trading_Session_Status            *) pbMsg), string("Trading_Session_Status"             ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_SECURITY_STATUS                    :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Security_Status                   *) pbMsg), string("Security_Status"                    ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_NEWS                               :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_News                              *) pbMsg), string("News"                               ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_ADD_ORDER                          :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Add_Order                         *) pbMsg), string("Add_Order"                          ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_MODIFY_ORDER                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Modify_Order                      *) pbMsg), string("Modify_Order"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_DELETE_ORDER                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Delete_Order                      *) pbMsg), string("Delete_Order"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_ADD_ODD_LOT_ORDER                  :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Add_Odd_Lot_Order                 *) pbMsg), string("Add_Odd_Lot_Order"                  ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_DELETE_ODD_LOT_ORDER               :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Delete_Odd_Lot_Order              *) pbMsg), string("Delete_Odd_Lot_Order"               ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_NOMINAL_PRICE                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Nominal_Price                     *) pbMsg), string("Nominal_Price"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_INDICATIVE_EQUILIBRIUM_PRICE       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Indicative_Equilibrium_Price      *) pbMsg), string("Indicative_Equilibrium_Price"       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_YIELD                              :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Yield                             *) pbMsg), string("Yield"                              ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_TRADE                              :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Trade                             *) pbMsg), string("Trade"                              ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_TRADE_CANCEL                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Trade_Cancel                      *) pbMsg), string("Trade_Cancel"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_TRADE_TICKER                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Trade_Ticker                      *) pbMsg), string("Trade_Ticker"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_AGGREGATE_ORDER_BOOK_UPDATE        :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Aggregate_Order_Book_Update       *) pbMsg), string("Aggregate_Order_Book_Update"        ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_BROKER_QUEUE                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Broker_Queue                      *) pbMsg), string("Broker_Queue"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_STATISTICS                         :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Statistics                        *) pbMsg), string("Statistics"                         ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_MARKET_TURNOVER                    :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Market_Turnover                   *) pbMsg), string("Market_Turnover"                    ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_CLOSING_PRICE                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Closing_Price                     *) pbMsg), string("Closing_Price"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_INDEX_DEFINITION                   :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Index_Definition                  *) pbMsg), string("Index_Definition"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDC_INDEX_DATA                         :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDC: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDC_Index_Data                        *) pbMsg), string("Index_Data"                         ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//
-//     default                                      :  break;
-//   }
-//
-//   return;
-// }
 
 
 //--------------------------------------------------
@@ -297,75 +299,64 @@ void DataProcFunctions_OMDD::ProcessOrderBookInstruction(const char *sCaller, bo
   return;
 }
 
-//--------------------------------------------------
-// FIXME
-//--------------------------------------------------
 void DataProcFunctions_OMDD::OutputJsonToLog(const char * sCaller, const unsigned short usChnlID, boost::shared_ptr<Logger> logger, const BYTE *pbMsg, unsigned short usMsgType, char caJsonBuffer[], unsigned long ulHKExSendTime)
 {
+  switch (usMsgType)
+  {
+
+    //--------------------------------------------------
+    // OMD
+    //--------------------------------------------------
+    case OMD_LOGON                               :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Logon                              *) pbMsg), string("Logon"                              ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMD_LOGON_RESPONSE                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Logon_Response                     *) pbMsg), string("Logon_Response"                     ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMD_REFRESH_COMPLETE                    :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Refresh_Complete                   *) pbMsg), string("Refresh_Complete"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMD_RETRANSMISSION_REQUEST              :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Retransmission_Request             *) pbMsg), string("Retransmission_Request"             ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMD_RETRANSMISSION_RESPONSE             :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Retransmission_Response            *) pbMsg), string("Retransmission_Response"            ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMD_SEQUENCE_RESET                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMD_Sequence_Reset                     *) pbMsg), string("Sequence_Reset"                     ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+
+                                                    //--------------------------------------------------
+                                                    // OMD-D
+                                                    //--------------------------------------------------
+    case OMDD_COMMODITY_DEFINITION               :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Commodity_Definition              *) pbMsg), string("Commodity_Definition"               ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_CLASS_DEFINITION                   :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Class_Definition                  *) pbMsg), string("Class_Definition"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_SERIES_DEFINITION_BASE             :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Series_Definition_Base            *) pbMsg), string("Series_Definition_Base"             ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_SERIES_DEFINITION_EXTENDED         :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Series_Definition_Extended        *) pbMsg), string("Series_Definition_Extended"         ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_COMBINATION_DEFINITION             :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Combination_Definition            *) pbMsg), string("Combination_Definition"             ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_MARKET_STATUS                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Market_Status                     *) pbMsg), string("Market_Status"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_SERIES_STATUS                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Series_Status                     *) pbMsg), string("Series_Status"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_COMMODITY_STATUS                   :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Commodity_Status                  *) pbMsg), string("Commodity_Status"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_ADD_ORDER                          :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Add_Order                         *) pbMsg), string("Add_Order"                          ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_MODIFY_ORDER                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Modify_Order                      *) pbMsg), string("Modify_Order"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_DELETE_ORDER                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Delete_Order                      *) pbMsg), string("Delete_Order"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_AGGREGATE_ORDER_BOOK_UPDATE        :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Aggregate_Order_Book_Update       *) pbMsg), string("Aggregate_Order_Book_Update"        ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_ORDER_BOOK_CLEAR                   :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Order_Book_Clear                  *) pbMsg), string("Order_Book_Clear"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_QUOTE_REQUEST                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Quote_Request                     *) pbMsg), string("Quote_Request"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_TRADE                              :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Trade                             *) pbMsg), string("Trade"                              ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_TRADE_AMENDMENT                    :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Trade_Amendment                   *) pbMsg), string("Trade_Amendment"                    ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_TRADE_STATISTICS                   :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Trade_Statistics                  *) pbMsg), string("Trade_Statistics"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_SERIES_STATISTICS                  :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Series_Statistics                 *) pbMsg), string("Series_Statistics"                  ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_CALCULATED_OPENING_PRICE           :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Calculated_Opening_Price          *) pbMsg), string("Calculated_Opening_Price"           ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_ESTIMATED_AVERAGE_SETTLEMENT_PRICE :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Estimated_Average_Settlement_Price*) pbMsg), string("Estimated_Average_Settlement_Price" ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_MARKET_ALERT                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Market_Alert                      *) pbMsg), string("Market_Alert"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_OPEN_INTEREST                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Open_Interest                     *) pbMsg), string("Open_Interest"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+    case OMDD_IMPLIED_VOLATILITY                 :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : SDateTime::fromUnixTimeToString(ulHKExSendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Implied_Volatility                *) pbMsg), string("Implied_Volatility"                 ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
+
+    default                                      :  break;
+  }
+
+  return;
 }
-// void DataProcFunctions_OMDD::OutputJsonToLog(const char * sCaller, const unsigned short usChnlID, boost::shared_ptr<Logger> logger, const BYTE *pbMsg, unsigned short usMsgType, char caJsonBuffer[], unsigned long ulHKExSendTime)
-// {
-//   switch (usMsgType)
-//   {
-//
-//     //--------------------------------------------------
-//     // OMD
-//     //--------------------------------------------------
-//     case OMD_LOGON                               :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Logon                              *) pbMsg), string("Logon"                              ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMD_LOGON_RESPONSE                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Logon_Response                     *) pbMsg), string("Logon_Response"                     ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMD_REFRESH_COMPLETE                    :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Refresh_Complete                   *) pbMsg), string("Refresh_Complete"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMD_RETRANSMISSION_REQUEST              :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Retransmission_Request             *) pbMsg), string("Retransmission_Request"             ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMD_RETRANSMISSION_RESPONSE             :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Retransmission_Response            *) pbMsg), string("Retransmission_Response"            ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMD_SEQUENCE_RESET                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMD_Sequence_Reset                     *) pbMsg), string("Sequence_Reset"                     ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//
-//                                                     //--------------------------------------------------
-//                                                     // OMD-D
-//                                                     //--------------------------------------------------
-//     case OMDD_COMMODITY_DEFINITION               :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Commodity_Definition              *) pbMsg), string("Commodity_Definition"               ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_CLASS_DEFINITION                   :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Class_Definition                  *) pbMsg), string("Class_Definition"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_SERIES_DEFINITION_BASE             :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Series_Definition_Base            *) pbMsg), string("Series_Definition_Base"             ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_SERIES_DEFINITION_EXTENDED         :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Series_Definition_Extended        *) pbMsg), string("Series_Definition_Extended"         ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_COMBINATION_DEFINITION             :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Combination_Definition            *) pbMsg), string("Combination_Definition"             ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_MARKET_STATUS                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Market_Status                     *) pbMsg), string("Market_Status"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_SERIES_STATUS                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Series_Status                     *) pbMsg), string("Series_Status"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_COMMODITY_STATUS                   :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Commodity_Status                  *) pbMsg), string("Commodity_Status"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_ADD_ORDER                          :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Add_Order                         *) pbMsg), string("Add_Order"                          ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_MODIFY_ORDER                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Modify_Order                      *) pbMsg), string("Modify_Order"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_DELETE_ORDER                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Delete_Order                      *) pbMsg), string("Delete_Order"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_AGGREGATE_ORDER_BOOK_UPDATE        :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Aggregate_Order_Book_Update       *) pbMsg), string("Aggregate_Order_Book_Update"        ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_ORDER_BOOK_CLEAR                   :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Order_Book_Clear                  *) pbMsg), string("Order_Book_Clear"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_QUOTE_REQUEST                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Quote_Request                     *) pbMsg), string("Quote_Request"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_TRADE                              :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Trade                             *) pbMsg), string("Trade"                              ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_TRADE_AMENDMENT                    :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Trade_Amendment                   *) pbMsg), string("Trade_Amendment"                    ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_TRADE_STATISTICS                   :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Trade_Statistics                  *) pbMsg), string("Trade_Statistics"                   ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_SERIES_STATISTICS                  :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Series_Statistics                 *) pbMsg), string("Series_Statistics"                  ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_CALCULATED_OPENING_PRICE           :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Calculated_Opening_Price          *) pbMsg), string("Calculated_Opening_Price"           ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_ESTIMATED_AVERAGE_SETTLEMENT_PRICE :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Estimated_Average_Settlement_Price*) pbMsg), string("Estimated_Average_Settlement_Price" ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_MARKET_ALERT                       :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Market_Alert                      *) pbMsg), string("Market_Alert"                       ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_OPEN_INTEREST                      :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Open_Interest                     *) pbMsg), string("Open_Interest"                      ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//     case OMDD_IMPLIED_VOLATILITY                 :  logger->Write(Logger::INFO, "HKEx Send Time: %s, DataProcFunctions_OMDD: %s, ChannelID:%u. %s", (ulHKExSendTime == 0 ? "Nil" : Util::fromUnixTimeToString(ulHKExSendTime, Util::NANOSEC, Util::GMT, Util::HKT, true).c_str()), sCaller, usChnlID, printStruct( *((OMDD_Implied_Volatility                *) pbMsg), string("Implied_Volatility"                 ) , caJsonBuffer , JSON_BUFFER_SIZE  ).c_str() );   break;
-//
-//     default                                      :  break;
-//   }
-//
-//   return;
-// }
 
 
 //--------------------------------------------------
 // FIXME copied from Kenny
 //--------------------------------------------------
-map<int,string> instmap;
-map<string,OrderBookKenny> obmap;
-
-
-void OnHeartBeat()
+void DataProcFunctions_MDP::OnHeartBeat()
 {
   return;
 }
 
-  void
-OnRefreshBook(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnRefreshBook(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDIncrementalRefreshBook32 msg;
 
@@ -378,13 +369,24 @@ OnRefreshBook(mktdata::MessageHeader& hdr, char *buf, int len)
 
     const int secid = ent.securityID();
 
+
+
+
+    // OMDC_Aggregate_Order_Book_Update *oaobu = (OMDC_Aggregate_Order_Book_Update*) pbMsg;
+    // m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. Discovery: OrderBookID [%u] is received through this channel.", m_ChannelID, oaobu->SecurityCode);
+    // m_ShrObj->AddOrderBookIDInChnl(m_ChannelID,oaobu->SecurityCode);
+
+
+
+
+
     string instid = instmap[secid];
 
     auto& ob = obmap[instid];
     snprintf(ob.instid, sizeof(ob.instid), "%s", instid.c_str());
 
     if (ent.mDEntryType() == MDEntryTypeBook::Bid || ent.mDEntryType() == MDEntryTypeBook::Offer) {
-      struct level *level = ent.mDEntryType() == MDEntryTypeBook::Bid ? ob.bid : ob.ask;
+      level *level = ent.mDEntryType() == MDEntryTypeBook::Bid ? ob.bid : ob.ask;
       const int nlevel = ent.mDPriceLevel() - 1;
 
       switch (ent.mDUpdateAction()) {
@@ -452,8 +454,7 @@ OnRefreshBook(mktdata::MessageHeader& hdr, char *buf, int len)
   }
 }
 
-  void
-OnInstrumentDefinitionOption(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnInstrumentDefinitionOption(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   //   MDInstrumentDefinitionOption41 msg;
   //
@@ -493,8 +494,7 @@ OnInstrumentDefinitionOption(mktdata::MessageHeader& hdr, char *buf, int len)
   // }
 }
 
-  void
-OnRefreshVolume(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnRefreshVolume(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDIncrementalRefreshVolume37 msg;
 
@@ -531,12 +531,8 @@ OnRefreshVolume(mktdata::MessageHeader& hdr, char *buf, int len)
 }
 
 
-  void
-OnRefreshTrade(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnRefreshTrade(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
-#ifndef __DEBUG_OUTPUT__
-  return;
-#endif
   MDIncrementalRefreshTrade36 msg;
 
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -569,8 +565,7 @@ OnRefreshTrade(mktdata::MessageHeader& hdr, char *buf, int len)
   }
 }
 
-  void
-OnRefreshTradeSummary(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnRefreshTradeSummary(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDIncrementalRefreshTradeSummary42 msg;
 
@@ -620,8 +615,7 @@ OnRefreshTradeSummary(mktdata::MessageHeader& hdr, char *buf, int len)
   }
 }
 
-  void
-OnRefreshDailyStatistics(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnRefreshDailyStatistics(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDIncrementalRefreshDailyStatistics33 msg;
 
@@ -715,8 +709,7 @@ OnRefreshDailyStatistics(mktdata::MessageHeader& hdr, char *buf, int len)
   }
 }
 
-  void
-OnRefreshSessionStatistics(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnRefreshSessionStatistics(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDIncrementalRefreshSessionStatistics35 msg;
 
@@ -754,8 +747,7 @@ OnRefreshSessionStatistics(mktdata::MessageHeader& hdr, char *buf, int len)
   }
 }
 
-  void
-OnRefreshLimitsBanding(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnRefreshLimitsBanding(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   return;
 
@@ -798,12 +790,8 @@ OnRefreshLimitsBanding(mktdata::MessageHeader& hdr, char *buf, int len)
 
 }
 
-  void
-OnRefreshSecurityDefinitionFuture(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnRefreshSecurityDefinitionFuture(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
-#ifndef __DEBUG_OUTPUT__
-  return;
-#endif
   MDInstrumentDefinitionFuture27 msg;
 
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -818,11 +806,11 @@ OnRefreshSecurityDefinitionFuture(mktdata::MessageHeader& hdr, char *buf, int le
     string security_group = msg.getSecurityGroupAsString();
     auto market_segment_id = msg.marketSegmentID();
     auto symbol = msg.symbol();
-    cout << "Instrument Definition : " \
-      << " event time:" << TransferTimestamp(event_time) \
-      << " event type:" << event_type \
-      << " security ID:" << security_id \
-      << " symbol:" << symbol \
+    cout << "Instrument Definition : "
+      << " event time:" << SDateTime::fromUnixTimeToString(event_time, SDateTime::MICROSEC)
+      << " event type:" << event_type
+      << " security ID:" << security_id
+      << " symbol:" << symbol
       << " security group:" << security_group 
       << " total number reports:" << tot_num_reports 
       << " market segment ID:" << market_segment_id << endl;
@@ -836,12 +824,8 @@ OnRefreshSecurityDefinitionFuture(mktdata::MessageHeader& hdr, char *buf, int le
   }
 }
 
-  void
-OnRefreshSecurityDefinitionSpread(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnRefreshSecurityDefinitionSpread(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
-#ifndef __DEBUG_OUTPUT__
-  return;
-#endif
   MDInstrumentDefinitionSpread29 msg;
 
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -857,7 +841,7 @@ OnRefreshSecurityDefinitionSpread(mktdata::MessageHeader& hdr, char *buf, int le
     auto symbol = msg.symbol();
 
     cout << "Instrument Definition : "
-      << " event time:" << TransferTimestamp(event_time)
+      << " event time:" << SDateTime::fromUnixTimeToString(event_time, SDateTime::MICROSEC)
       << " event type:" << event_type
       << " security ID:" << security_id
       << " symbol:" << symbol
@@ -866,12 +850,8 @@ OnRefreshSecurityDefinitionSpread(mktdata::MessageHeader& hdr, char *buf, int le
   }
 }
 
-  void
-OnQuoteRequest(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnQuoteRequest(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
-#ifndef __DEBUG_OUTPUT__
-  return;
-#endif
   QuoteRequest39 msg;
 
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -888,12 +868,8 @@ OnQuoteRequest(mktdata::MessageHeader& hdr, char *buf, int len)
   }
 }
 
-  void
-OnSecurityStatus(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnSecurityStatus(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
-#ifndef __DEBUG_OUTPUT__
-  return;
-#endif
   SecurityStatus30 msg;
 
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -967,12 +943,8 @@ OnSecurityStatus(mktdata::MessageHeader& hdr, char *buf, int len)
     << " SecurityTradingEvent:" << security_trading_event << endl;
 }
 
-  void
-OnChannelReset(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnChannelReset(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
-#ifndef __DEBUG_OUTPUT__
-  return;
-#endif
   ChannelReset4 msg;
 
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -989,12 +961,8 @@ OnChannelReset(mktdata::MessageHeader& hdr, char *buf, int len)
   // ResetBooks();
 }
 
-  void
-OnSnapshotFullRefresh(mktdata::MessageHeader& hdr, char *buf, int len)
+void DataProcFunctions_MDP::OnSnapshotFullRefresh(const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
-#ifndef __DEBUG_OUTPUT__
-  return;
-#endif
   SnapshotFullRefresh38 msg;
 
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -1057,16 +1025,4 @@ OnSnapshotFullRefresh(mktdata::MessageHeader& hdr, char *buf, int len)
   // ResetBooks();
 }
 
-string TransferTimestamp(uint64_t micro_sec) {
-  uint64_t seconds = micro_sec / 1000000000;
-  long int msec = (long int)seconds;
-  struct tm *timeinfo = localtime(&msec);
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  char str[32];
-  sprintf(str, "%d%02d%02d-%02d%02d", 1900 + timeinfo->tm_year,
-          1 + timeinfo->tm_mon, timeinfo->tm_mday, timeinfo->tm_hour,
-          timeinfo->tm_min);
-  return string(str);
-}
 
