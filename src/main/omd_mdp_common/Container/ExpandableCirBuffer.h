@@ -16,6 +16,7 @@
 #include <deque>
 #include <iostream>
 #include "BinaryTools.h"
+#include "SDateTime.h"
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>

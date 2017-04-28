@@ -38,11 +38,7 @@ BYTE * ExpandableCirBuffer::GetWritingPtr()
 void ExpandableCirBuffer::PushBack(const size_t iSize)
 {
   BYTE * pTmp = (BYTE*)(*m_DqCirBuf.back())[m_DqEndIdx.back()];
-  boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
-  boost::posix_time::time_duration diff = now - (*m_TimeSinceEpoch);
-  unsigned long ulTS = diff.total_milliseconds();
-  WRITE_UINT64(pTmp,ulTS);
-
+  WRITE_UINT64(pTmp,SDateTime::GetCurrentUnixTimeInMillisecGMT());
   WRITE_UINT16(pTmp+TIMESTAMPSIZE,iSize);
 
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);

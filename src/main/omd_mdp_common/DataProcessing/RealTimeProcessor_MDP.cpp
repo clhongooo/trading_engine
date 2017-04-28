@@ -62,6 +62,8 @@ void RealTimeProcessor_MDP::Run()
     m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. m_MsgCirBuf.Size()          %u", m_ChannelID, m_MsgCirBuf->Size());
     m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. m_MsgCirBuf.AllocatedSize() %u", m_ChannelID, m_MsgCirBuf->AllocatedSize());
     m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Pkt Seq No:                 %u", m_ChannelID, uiPktSeqNo);
+    m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Local Timestamp of Pkt: %s", m_ChannelID, SDateTime::fromUnixTimeToString(ulTS,SDateTime::MILLISEC).c_str());
+
 
     //--------------------------------------------------
     // Record canned data
@@ -69,14 +71,11 @@ void RealTimeProcessor_MDP::Run()
     m_BinaryRecorder.WriteHKExUnixTime(pbPkt);
 
     //--------------------------------------------------
-    size_t sizeof_Modified_MDP_Packet_Header = sizeof(Modified_MDP_Packet_Header);
     Modified_MDP_Packet_Header * mmph = (Modified_MDP_Packet_Header*)(pbPkt);
-
-    //--------------------------------------------------
     mktdata::MessageHeader mdpMsgHdr;
-    int iOffset = sizeof_Modified_MDP_Packet_Header;
+    int iOffset = sizeof(Modified_MDP_Packet_Header);
 
-    do
+    while (iOffset < mmph->PktSize)
     {
       int16_t iMsgSize = READ_INT16(&pbPkt[iOffset]);
       const size_t iWrap2 = iOffset + sizeof(int16_t);
@@ -84,11 +83,13 @@ void RealTimeProcessor_MDP::Run()
       const size_t iWrap4 = iOffset + iMsgSize;
 
       //--------------------------------------------------
-      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Msg size:        %d", m_ChannelID, iMsgSize);
-      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: iWrap2           %d", m_ChannelID, iWrap2);
-      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: iWrap3           %d", m_ChannelID, iWrap3);
-      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: iWrap4           %d", m_ChannelID, iWrap4);
-      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Local Timestamp: %u", m_ChannelID, ulTS);
+      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Msg size: %d", m_ChannelID, iMsgSize);
+      if (iMsgSize <= 0) break;
+
+      //--------------------------------------------------
+      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: iWrap2    %d", m_ChannelID, iWrap2);
+      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: iWrap3    %d", m_ChannelID, iWrap3);
+      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: iWrap4    %d", m_ChannelID, iWrap4);
 
       mdpMsgHdr.wrap((char*)pbPkt, iWrap2, MDP_VERSION, iWrap4);
 
@@ -131,7 +132,7 @@ void RealTimeProcessor_MDP::Run()
       }
 
       iOffset += iMsgSize;
-    } while (iOffset < mmph->PktSize);
+    }
 
     m_MsgCirBuf->PopFront();
   }
