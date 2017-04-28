@@ -18,7 +18,6 @@ BinaryRecorder::BinaryWriter::BinaryWriter(const boost::posix_time::ptime pt, co
 {
   m_File = f;
   if (!m_OutFile) m_OutFile = fopen(m_File.c_str(), mode.c_str());
-  if (!m_OutFile) throw std::exception();
 }
 
 BinaryRecorder::BinaryWriterDo::BinaryWriterDo(const boost::posix_time::ptime pt, const string & f, const string & mode, const bool w) :
