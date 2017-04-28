@@ -19,7 +19,7 @@ DataProcFunctions::DataProcFunctions()
 //--------------------------------------------------
 // omd_mdi
 //--------------------------------------------------
-void DataProcFunctions_OMDC::ProcessMessageForTransmission(BYTE* pbMsg, unsigned short usMsgType)
+void DataProcFunctions_OMDC::ProcessMessageForTransmission(const BYTE* pbMsg, unsigned short usMsgType)
 {
   switch (usMsgType)
   {
@@ -52,7 +52,7 @@ void DataProcFunctions_OMDC::ProcessMessageForTransmission(BYTE* pbMsg, unsigned
   }
   return;
 }
-void DataProcFunctions_OMDD::ProcessMessageForTransmission(BYTE* pbMsg, unsigned short usMsgType)
+void DataProcFunctions_OMDD::ProcessMessageForTransmission(const BYTE* pbMsg, unsigned short usMsgType)
 {
   switch (usMsgType)
   {

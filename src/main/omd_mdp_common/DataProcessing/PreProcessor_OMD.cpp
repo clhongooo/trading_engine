@@ -20,12 +20,13 @@ void PreProcessor_OMD::Run()
 
     //--------------------------------------------------
     unsigned long ulTStamp = 0;
-    BYTE * pbPkt = NULL;
-    if (!m_RawPktCirBuf->GetReadingPtrTStamp(pbPkt,&ulTStamp))
+    BYTE * pbPktMut = NULL;
+    if (!m_RawPktCirBuf->GetReadingPtrTStamp(pbPktMut,&ulTStamp))
     {
       m_RawPktCirBuf->WaitForData();
       continue;
     }
+    const BYTE * pbPkt = pbPktMut;
 
     //--------------------------------------------------
     // Output Packet Header info

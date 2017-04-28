@@ -19,10 +19,10 @@ void RealTimeProcessor_OMD::Run()
     m_ThreadHealthMon->ReportThatIAmHealthy(ThreadHealthMonitor::REALTIMEPROCESSOR, m_ChannelID);
 
     //--------------------------------------------------
-    BYTE *pbMsg = NULL;
+    BYTE *pbMsgMut = NULL;
     uint32_t uiAdjSeqNo = 0;
     uint64_t ulTS = 0;
-    StateOfNextSeqNo snsn = m_MsgCirBuf->GetMsgSeqNoTStamp(pbMsg, &uiAdjSeqNo, &ulTS);
+    StateOfNextSeqNo snsn = m_MsgCirBuf->GetMsgSeqNoTStamp(pbMsgMut, &uiAdjSeqNo, &ulTS);
     if (snsn == ALL_RETRIEVED)
     {
       m_MsgCirBuf->WaitForData();
@@ -40,6 +40,7 @@ void RealTimeProcessor_OMD::Run()
       }
       continue;
     }
+    const BYTE *pbMsg = pbMsgMut;
 
     //--------------------------------------------------
     // Must stop RealTimeProcessor if Refresh mode is activated, otherwise we'll 

@@ -33,7 +33,7 @@ class DataProcFunctions {
     virtual void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, char[]) {}
     virtual void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, unsigned short, char[], unsigned long) {}
     virtual void ProcessOrderBookInstruction(const char *,boost::shared_ptr<Logger>,const BYTE*,boost::shared_ptr<SharedObjects>,bool) {}
-    virtual void ProcessMessageForTransmission(BYTE*,unsigned short) {}
+    virtual void ProcessMessageForTransmission(const BYTE*,unsigned short) {}
 
     //--------------------------------------------------
     // MDP
@@ -66,7 +66,7 @@ class DataProcFunctions_OMDC : public DataProcFunctions {
     void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, char[]);
     void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, unsigned short, char[], unsigned long);
     void ProcessOrderBookInstruction(const char *,boost::shared_ptr<Logger>,const BYTE*,boost::shared_ptr<SharedObjects>,bool);
-    void ProcessMessageForTransmission(BYTE*,unsigned short);
+    void ProcessMessageForTransmission(const BYTE*,unsigned short);
 };
 
 class DataProcFunctions_OMDD : public DataProcFunctions {
@@ -76,7 +76,7 @@ class DataProcFunctions_OMDD : public DataProcFunctions {
     void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, char[]);
     void OutputJsonToLog(const char *, const unsigned short, boost::shared_ptr<Logger>, const BYTE*, unsigned short, char[], unsigned long);
     void ProcessOrderBookInstruction(const char *,boost::shared_ptr<Logger>,const BYTE*,boost::shared_ptr<SharedObjects>,bool);
-    void ProcessMessageForTransmission(BYTE*,unsigned short);
+    void ProcessMessageForTransmission(const BYTE*,unsigned short);
 };
 
 //--------------------------------------------------

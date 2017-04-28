@@ -22,12 +22,13 @@ void PreProcessor_MDP::Run()
     // Try get data from queue
     //--------------------------------------------------
     unsigned long ulTStamp = 0;
-    BYTE * pbPkt = NULL;
-    if (!m_RawPktCirBuf->GetReadingPtrTStamp(pbPkt,&ulTStamp))
+    BYTE * pbPktMut = NULL;
+    if (!m_RawPktCirBuf->GetReadingPtrTStamp(pbPktMut,&ulTStamp))
     {
       m_RawPktCirBuf->WaitForData();
       continue;
     }
+    const BYTE * pbPkt = pbPktMut;
 
     //--------------------------------------------------
     // Output Packet Header info
