@@ -7,6 +7,12 @@
 
 #include "OrderBookCache.h"
 
+
+OrderBookCache::OrderBookCache(const dma::Identity id) : m_Identity(id)
+{
+  return;
+}
+
 void OrderBookCache::ResetAllOrderBooks()
 {
   for (map<uint32_t, OrderBook*>::iterator it = m_OrderBook.begin(); it != m_OrderBook.end(); ++it)
@@ -28,7 +34,7 @@ void OrderBookCache::DeleteAllOrderBooks()
   return;
 }
 
-OrderBook* OrderBookCacheOMDC::GetOrderBook(uint32_t uiCode)
+OrderBook* OrderBookCache::GetOrderBook(uint32_t uiCode)
 {
   map<uint32_t,OrderBook*>::iterator it = m_OrderBook.find(uiCode);
   if (it != m_OrderBook.end())
@@ -37,24 +43,13 @@ OrderBook* OrderBookCacheOMDC::GetOrderBook(uint32_t uiCode)
   }
   else
   {
-    OrderBook* ob = new OrderBook();
+    OrderBook* ob = NULL;
+    
+    if      (m_Identity == dma::OMDC) ob = new OrderBook();
+    else if (m_Identity == dma::OMDD) ob = new OrderBookOMDDSP();
+    else if (m_Identity == dma::MDP ) ob = new OrderBook();
+    
     m_OrderBook[uiCode] = ob;
     return ob;
   }
 }
-
-OrderBook* OrderBookCacheOMDD::GetOrderBook(uint32_t uiCode)
-{
-  map<uint32_t,OrderBook*>::iterator it = m_OrderBook.find(uiCode);
-  if (it != m_OrderBook.end())
-  {
-    return it->second;
-  }
-  else
-  {
-    OrderBook* ob = new OrderBookOMDDSP();
-    m_OrderBook[uiCode] = ob;
-    return ob;
-  }
-}
-

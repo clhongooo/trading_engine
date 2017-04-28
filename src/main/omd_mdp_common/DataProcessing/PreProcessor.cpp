@@ -3,11 +3,11 @@
 //--------------------------------------------------
 // Factory method
 //--------------------------------------------------
-PreProcessor* PreProcessorFactory::GetPreProcessor(SystemConfig::Identity id, const McastIdentifier & m)
+PreProcessor* PreProcessorFactory::GetPreProcessor(dma::Identity id, const McastIdentifier & m)
 {
-  if      (id == SystemConfig::OMDC) return new PreProcessor_OMD(m);
-  else if (id == SystemConfig::OMDD) return new PreProcessor_OMD(m);
-  else if (id == SystemConfig::MDP ) return new PreProcessor_MDP(m);
+  if      (id == dma::OMDC) return new PreProcessor_OMD(m);
+  else if (id == dma::OMDD) return new PreProcessor_OMD(m);
+  else if (id == dma::MDP ) return new PreProcessor_MDP(m);
 }
 
 PreProcessor::PreProcessor(const McastIdentifier & mi) :

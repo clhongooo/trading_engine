@@ -10,6 +10,7 @@
 #include "Logger.h"
 #include "SharedObjects.h"
 #include "SystemConfig.h"
+#include "OMD_MDP_Constants.h"
 #include "SDateTime.h"
 #include "McastIdentifier.h"
 #include "BinaryTools.h"
@@ -86,7 +87,7 @@ class PreProcessor_MDP : public PreProcessor {
 
 class PreProcessorFactory {
   public:
-    static PreProcessor* GetPreProcessor(SystemConfig::Identity, const McastIdentifier &);
+    static PreProcessor* GetPreProcessor(dma::Identity, const McastIdentifier &);
 };
 
 #endif /* PREPROCESSOR_H_ */

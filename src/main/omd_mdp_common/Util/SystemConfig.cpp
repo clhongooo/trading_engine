@@ -13,7 +13,7 @@ boost::shared_ptr<SystemConfig> SystemConfig::Instance() {
 }
 
 SystemConfig::SystemConfig() :
-  m_Identity(SystemConfig::UNKNOWN),
+  m_Identity(dma::UNKNOWN),
   m_ConfigPath("Config.ini"),
   m_CannedMcastFilePath(""),
   m_CannedProcessedDataFilePath("wb+"),
@@ -89,7 +89,7 @@ const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRealTimePr
 const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRefreshProcessorJson()             const     {  return  m_pRefreshProcessorJson;        }
 const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRTSClientJson()                    const     {  return  m_pRTSClientJson;               }
 
-const  SystemConfig::Identity SystemConfig::GetIdentity()                           const  {  return  m_Identity;                                      }
+const  dma::Identity SystemConfig::GetIdentity()                                    const  {  return  m_Identity;                                      }
 
 const  unsigned  long  SystemConfig::GetTriggerRetransmissionSeqNoGap()             const  {  return  m_TriggerRetransmissionSeqNoGap;                 }
 const  unsigned  long  SystemConfig::GetTriggerRetransmissionTimeGapMillisec()      const  {  return  m_TriggerRetransmissionTimeGapMillisec;          }
@@ -143,9 +143,9 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   else if (sLogLevel == "DEBUG")     { m_Logger->SetLogLevel(Logger::DEBUG);     }
 
   string sIdentity = pt.get<std::string>("SystemSettings.Identity");
-  if      (sIdentity == "OMDC") m_Identity = SystemConfig::OMDC;
-  else if (sIdentity == "OMDD") m_Identity = SystemConfig::OMDD;
-  else if (sIdentity == "MDP" ) m_Identity = SystemConfig::MDP;
+  if      (sIdentity == "OMDC") m_Identity = dma::OMDC;
+  else if (sIdentity == "OMDD") m_Identity = dma::OMDD;
+  else if (sIdentity == "MDP" ) m_Identity = dma::MDP;
 
   m_CannedMcastFilePath                               = pt.get<std::string>   ("SystemSettings.CannedMcastFilePath");
   m_CannedMcastFopenFlag                              = pt.get<std::string>   ("SystemSettings.CannedMcastFopenFlag");
@@ -395,8 +395,8 @@ void SystemConfig::ReadConfigOptional(const string & sConfigPath)
 
   if (oIdentity)  {
     string sIdentity = oIdentity.get();
-    if      (sIdentity == "OMDC") m_Identity = SystemConfig::OMDC;
-    else if (sIdentity == "OMDD") m_Identity = SystemConfig::OMDD;
+    if      (sIdentity == "OMDC") m_Identity = dma::OMDC;
+    else if (sIdentity == "OMDD") m_Identity = dma::OMDD;
   }
 
   if  (oDataComplInspectorSleepMillisec              )  {  m_DataComplInspectorSleepMillisec           =  oDataComplInspectorSleepMillisec     .           get();  }

@@ -11,6 +11,7 @@
 #include "Logger.h"
 #include "SharedObjects.h"
 #include "SystemConfig.h"
+#include "OMD_MDP_Constants.h"
 #include "BinaryTools.h"
 #include "OMD_Message_Headers.h"
 #include "ExpandableCirBuffer4Msg.h"
@@ -77,7 +78,7 @@ class RefreshProcessor_MDP : public RefreshProcessor {
 
 class RefreshProcessorFactory {
   public:
-    static RefreshProcessor* GetRefreshProcessor(SystemConfig::Identity, const unsigned short);
+    static RefreshProcessor* GetRefreshProcessor(dma::Identity, const unsigned short);
 };
 
 #endif /* REFRESHPROCESSOR_H_ */

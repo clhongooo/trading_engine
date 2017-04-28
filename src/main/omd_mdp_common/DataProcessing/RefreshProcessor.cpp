@@ -10,11 +10,11 @@
 //--------------------------------------------------
 // Factory method
 //--------------------------------------------------
-RefreshProcessor* RefreshProcessorFactory::GetRefreshProcessor(SystemConfig::Identity id, const unsigned short us)
+RefreshProcessor* RefreshProcessorFactory::GetRefreshProcessor(dma::Identity id, const unsigned short us)
 {
-  if      (id == SystemConfig::OMDC) return new RefreshProcessor_OMD(us);
-  else if (id == SystemConfig::OMDD) return new RefreshProcessor_OMD(us);
-  else if (id == SystemConfig::MDP ) return new RefreshProcessor_MDP(us);
+  if      (id == dma::OMDC) return new RefreshProcessor_OMD(us);
+  else if (id == dma::OMDD) return new RefreshProcessor_OMD(us);
+  else if (id == dma::MDP ) return new RefreshProcessor_MDP(us);
 }
 
 RefreshProcessor::RefreshProcessor(const unsigned short id) :

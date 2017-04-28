@@ -3,11 +3,11 @@
 //--------------------------------------------------
 // Factory method
 //--------------------------------------------------
-DataProcFunctions* DataProcFuncFactory::GetDataProcFunc(SystemConfig::Identity id)
+DataProcFunctions* DataProcFuncFactory::GetDataProcFunc(dma::Identity id)
 {
-  if      (id == SystemConfig::OMDC) return new DataProcFunctions_OMDC();
-  else if (id == SystemConfig::OMDD) return new DataProcFunctions_OMDD();
-  else if (id == SystemConfig::MDP ) return new DataProcFunctions_MDP ();
+  if      (id == dma::OMDC) return new DataProcFunctions_OMDC();
+  else if (id == dma::OMDD) return new DataProcFunctions_OMDD();
+  else if (id == dma::MDP ) return new DataProcFunctions_MDP ();
 }
 
 DataProcFunctions::DataProcFunctions()

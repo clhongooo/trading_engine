@@ -30,7 +30,6 @@ class SharedObjects;
 class SystemConfig : boost::noncopyable
 {
   public:
-    enum Identity { UNKNOWN, OMDC, OMDD, MDP };
     static boost::shared_ptr<SystemConfig> Instance();
     void SetConfigPath(const string &);
     ~SystemConfig(){};
@@ -38,7 +37,7 @@ class SystemConfig : boost::noncopyable
     void ReadConfig(const string &);
     void ReadConfigOptional(const string &);
 
-    const Identity                                    GetIdentity()                                      const;
+    const dma::Identity                               GetIdentity()                                      const;
     const boost::shared_ptr<vector<McastIdentifier> > GetMcastIdentifiers()                              const;
     const boost::shared_ptr<vector<unsigned short> >  GetActiveMcastChnl()                               const;
     const boost::shared_ptr<vector<unsigned short> >  GetPreProcessorRTCannedChnl()                      const;
@@ -104,7 +103,7 @@ class SystemConfig : boost::noncopyable
     //--------------------------------------------------
     // Config.ini fields
     //--------------------------------------------------
-    Identity                                       m_Identity;
+    dma::Identity                                  m_Identity;
     string                                         m_CannedMcastFilePath;
     string                                         m_CannedProcessedDataFilePath;
     string                                         m_CannedMcastFopenFlag;

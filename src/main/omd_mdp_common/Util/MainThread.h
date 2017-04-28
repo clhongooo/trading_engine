@@ -17,6 +17,7 @@
 #include "DataCompletenessInspector.h"
 #include "DataProcController.h"
 #include "SystemConfig.h"
+#include "OMD_MDP_Constants.h"
 #include "Terminal.h"
 #include "RTSClient.h"
 #include "ThreadHealthMonitor.h"

@@ -70,7 +70,7 @@ class RealTimeProcessor_MDP : public RealTimeProcessor {
 
 class RealTimeProcessorFactory {
   public:
-    static RealTimeProcessor* GetRealTimeProcessor(SystemConfig::Identity, const unsigned short);
+    static RealTimeProcessor* GetRealTimeProcessor(dma::Identity, const unsigned short);
 };
 
 #endif

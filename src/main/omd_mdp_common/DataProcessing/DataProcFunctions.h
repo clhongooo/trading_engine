@@ -127,7 +127,7 @@ class DataProcFuncFactory {
   public:
     DataProcFuncFactory();
     virtual ~DataProcFuncFactory();
-    static DataProcFunctions* GetDataProcFunc(SystemConfig::Identity);
+    static DataProcFunctions* GetDataProcFunc(dma::Identity);
 };
 
 #endif

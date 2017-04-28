@@ -3,11 +3,11 @@
 //--------------------------------------------------
 // Factory method
 //--------------------------------------------------
-RealTimeProcessor* RealTimeProcessorFactory::GetRealTimeProcessor(SystemConfig::Identity id, const unsigned short us)
+RealTimeProcessor* RealTimeProcessorFactory::GetRealTimeProcessor(dma::Identity id, const unsigned short us)
 {
-  if      (id == SystemConfig::OMDC) return new RealTimeProcessor_OMD(us);
-  else if (id == SystemConfig::OMDD) return new RealTimeProcessor_OMD(us);
-  else if (id == SystemConfig::MDP ) return new RealTimeProcessor_MDP(us);
+  if      (id == dma::OMDC) return new RealTimeProcessor_OMD(us);
+  else if (id == dma::OMDD) return new RealTimeProcessor_OMD(us);
+  else if (id == dma::MDP ) return new RealTimeProcessor_MDP(us);
 }
 
 RealTimeProcessor::RealTimeProcessor(const unsigned short id) :

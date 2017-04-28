@@ -257,14 +257,7 @@ void SharedObjects::InitializeSharedObjects(bool bFirstUse)
   //--------------------------------------------------
   // Order Books
   //--------------------------------------------------
-  if (m_SysCfg->GetIdentity() == SystemConfig::OMDC)
-  {
-    m_OrderBookCache.reset(new OrderBookCacheOMDC());
-  }
-  else if (m_SysCfg->GetIdentity() == SystemConfig::OMDD)
-  {
-    m_OrderBookCache.reset(new OrderBookCacheOMDD());
-  }
+  m_OrderBookCache.reset(new OrderBookCache(m_SysCfg->GetIdentity()));
 
   //--------------------------------------------------
   // For unit testing
