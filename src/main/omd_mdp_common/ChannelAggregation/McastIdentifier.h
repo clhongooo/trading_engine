@@ -22,12 +22,12 @@ class McastIdentifier {
     enum EChannel {A, B};
 
     McastIdentifier(
-        const unsigned short,
-        const string &, const unsigned short,
-        EMcastType, EChannel);
+      const unsigned short,
+      const string &, const unsigned short,
+      EMcastType, EChannel);
     McastIdentifier(
-        const unsigned short,
-        EMcastType, EChannel);
+      const unsigned short,
+      EMcastType, EChannel);
     virtual ~McastIdentifier();
 
     const unsigned short    Channel_ID()     const;
@@ -46,7 +46,6 @@ class McastIdentifier {
     unsigned short  m_Port;
     EMcastType      m_McastType;
     EChannel        m_Channel;
-    // static const unsigned short MAX_HASH = 500;
-    static const unsigned short MAX_HASH = 2000;
+    static const unsigned short MAX_HASH = 4000;
 };
 #endif /* MCASTCONFIG_H_ */
