@@ -36,7 +36,7 @@ RealTimeProcessor::RealTimeProcessor(const unsigned short id) :
   ostringstream oo;
   oo << SystemConfig::Instance()->GetCannedProcessedDataFilePath() << "_" << m_ChannelID;
 
-  m_BinaryRecorder.SetIfWriteATUMDIStruct(m_bRecordProcessedData);
+  if (m_bRecordProcessedData) m_BinaryRecorder.EnableWriter();
   if (m_bRecordProcessedData && !m_BinaryRecorder.SetOutFilePathAndOpen(oo.str().c_str(), m_SysCfg->GetCannedProcessedDataFopenFlag().c_str()))
     m_Logger->Write(Logger::ERROR,"RealTimeProcessor: ChannelID:%u. The file %s could not be opened.", m_ChannelID, oo.str().c_str());
   //--------------------------------------------------

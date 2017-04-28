@@ -60,7 +60,7 @@ void CtpMd::setWriteDataToFile(const string & wdtf)
   boost::algorithm::to_lower(wdtf2);
   if (wdtf2 == "true" || wdtf2 == "t" || wdtf2 == "yes" || wdtf2 == "y") m_WriteDataToFile = true;
   else                                                                   m_WriteDataToFile = false;
-  m_BinaryRecorder.SetIfWriteATUMDIStruct(m_WriteDataToFile);
+  if (m_WriteDataToFile) m_BinaryRecorder.EnableWriter();
 }
 void CtpMd::SetFlushOnEveryWrite(const bool b)
 {

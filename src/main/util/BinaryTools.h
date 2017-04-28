@@ -48,17 +48,16 @@ typedef      uint8_t                               BYTE;
 class BinaryRecorder
 {
   public:
-
     static const unsigned int BUFFER_SIZE = 1500;
     BinaryRecorder();
-    ~BinaryRecorder();
+    ~BinaryRecorder() {}
     //--------------------------------------------------
-    bool SetOutFilePathAndOpen(const string &, const string &);
-    void SetFlushOnEveryWrite(const bool);
+    // Will be delegated to BinaryWriter
     //--------------------------------------------------
     void WriteHKExSim(const char *);
     void WriteHKExRelTime(const char *);
     void WriteHKExUnixTime(const char *);
+    void WriteATUMDIStruct(const ATU_MDI_marketfeed_struct &);
     void WriteHKExSim(const BYTE *b) {WriteHKExSim((const char *)b);}
     void WriteHKExRelTime(const BYTE *b) {WriteHKExRelTime((const char *)b);}
     void WriteHKExUnixTime(const BYTE *b) {WriteHKExUnixTime((const char *)b);}
@@ -66,21 +65,47 @@ class BinaryRecorder
     //--------------------------------------------------
     // to allow late function binding
     //--------------------------------------------------
-    typedef boost::function < void(const ATU_MDI_marketfeed_struct &) > WriteDataToFile_CallBackFunc;
-    void SetIfWriteATUMDIStruct(const bool);
-    inline void WriteATUMDIStruct(const ATU_MDI_marketfeed_struct & mfs) { (*m_WriteDataToFile_CallBackFunc)(mfs); }
+    void EnableWriter();
+    bool SetOutFilePathAndOpen(const string &, const string &);
+    void SetFlushOnEveryWrite(const bool);
     //--------------------------------------------------
 
   protected:
+    class BinaryWriter {
+      public:
+        BinaryWriter(const boost::posix_time::ptime, const string &, const string &, const bool);
+        virtual ~BinaryWriter();
+        void WriteHKExSim(const char *) {}
+        void WriteHKExRelTime(const char *) {}
+        void WriteHKExUnixTime(const char *) {}
+        void WriteATUMDIStruct(const ATU_MDI_marketfeed_struct &) {}
+      protected:
+        boost::posix_time::ptime m_BinRecStartTime;
+        string m_File;
+        string m_FileMode;
+        bool   m_FlushOnEveryWrite;
+        FILE * m_OutFile;
+        char   m_TmpCharArray[BUFFER_SIZE];
+    };
+    class BinaryWriterDo : public BinaryWriter {
+      public:
+        BinaryWriterDo(const boost::posix_time::ptime, const string &, const string &, const bool);
+        void WriteHKExSim(const char *);
+        void WriteHKExRelTime(const char *);
+        void WriteHKExUnixTime(const char *);
+        void WriteATUMDIStruct(const ATU_MDI_marketfeed_struct &);
+    };
+    class BinaryWriterNotDo : public BinaryWriter {
+      public:
+        BinaryWriterNotDo(const boost::posix_time::ptime, const string &, const string &, const bool);
+    };
+
     boost::posix_time::ptime m_BinRecStartTime;
     string m_File;
-    FILE * m_OutFile;
-    char   m_TmpCharArray[BUFFER_SIZE];
+    string m_FileMode;
     bool   m_FlushOnEveryWrite;
     //--------------------------------------------------
-    inline void _WriteATUMDIStruct(const ATU_MDI_marketfeed_struct &);
-    inline void _DoNotWriteATUMDIStruct(const ATU_MDI_marketfeed_struct &) {}
-    WriteDataToFile_CallBackFunc * m_WriteDataToFile_CallBackFunc;
+    boost::shared_ptr<BinaryWriter> m_BinaryWriter;
 };
 
 #endif
