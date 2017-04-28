@@ -6,6 +6,7 @@
 #ifndef BINARYTOOLS_H_
 #define BINARYTOOLS_H_
 
+#include <stdexcept>
 #include <boost/cstdint.hpp>
 #include "ATU_Abstract_MDI.h"
 #include "SDateTime.h"

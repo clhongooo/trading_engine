@@ -82,14 +82,18 @@ void RealTimeProcessor_MDP::Run()
       const size_t iWrap2 = iOffset + sizeof(int16_t);
       const size_t iWrap3 = iMsgSize - sizeof(int16_t);
       const size_t iWrap4 = iOffset + iMsgSize;
+
+      //--------------------------------------------------
+      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Msg size:        %d", m_ChannelID, iMsgSize);
+      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: iWrap2           %d", m_ChannelID, iWrap2);
+      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: iWrap3           %d", m_ChannelID, iWrap3);
+      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: iWrap4           %d", m_ChannelID, iWrap4);
+      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Local Timestamp: %u", m_ChannelID, ulTS);
+
       mdpMsgHdr.wrap((char*)pbPkt, iWrap2, MDP_VERSION, iWrap4);
 
       //--------------------------------------------------
-      // Output Message Header info 
-      //--------------------------------------------------
-      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Msg size:        %d", m_ChannelID, iMsgSize);
       m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Msg type:        %u", m_ChannelID, mdpMsgHdr.templateId());
-      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Local Timestamp: %u", m_ChannelID, ulTS);
 
       switch (mdpMsgHdr.templateId())
       {
