@@ -334,16 +334,18 @@ bool STool::IsValidPriceOrVol(const double d)
   return true;
 }
 
-string STool::ToUpperCase(string & s)
+string STool::ToUpperCase(const string & s)
 {
-  std::transform(s.begin(), s.end(), s.begin(), ::toupper);
-  return s;
+  string sTmp(s);
+  std::transform(sTmp.begin(), sTmp.end(), sTmp.begin(), ::toupper);
+  return sTmp;
 }
 
-string STool::ToLowerCase(string & s)
+string STool::ToLowerCase(const string & s)
 {
-  std::transform(s.begin(), s.end(), s.begin(), ::tolower);
-  return s;
+  string sTmp(s);
+  std::transform(sTmp.begin(), sTmp.end(), sTmp.begin(), ::tolower);
+  return sTmp;
 }
 
 bool STool::IsNumber(const string & s)

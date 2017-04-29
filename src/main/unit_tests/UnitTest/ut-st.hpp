@@ -1,6 +1,6 @@
 #include "UTest.h"
 #include <boost/shared_ptr.hpp>
-#include "Util/STool.h"
+#include "STool.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -193,16 +193,8 @@ int TestST()
   // ut.Assert(!STool::IsSymContFut("ESM5"),__FILE__,__FUNCTION__,__LINE__);
   // ut.Assert(!STool::IsSymContFut("HHIF5"),__FILE__,__FUNCTION__,__LINE__);
 
-  {
-    string s("haha");
-    ut.Assert(STool::ToUpperCase(s) == "HAHA",__FILE__,__FUNCTION__,__LINE__);
-    ut.Assert(s == "HAHA",__FILE__,__FUNCTION__,__LINE__);
-  }
-  {
-    string s("HEHE");
-    ut.Assert(STool::ToLowerCase(s) == "hehe",__FILE__,__FUNCTION__,__LINE__);
-    ut.Assert(s == "hehe",__FILE__,__FUNCTION__,__LINE__);
-  }
+  ut.Assert(STool::ToUpperCase("haha") == "HAHA",__FILE__,__FUNCTION__,__LINE__);
+  ut.Assert(STool::ToLowerCase("HEHE") == "hehe",__FILE__,__FUNCTION__,__LINE__);
 
   {
     string s("Notice,that,unlike,member,find_first_of,,whenever,more,than,one,character,is,being,searched,for,,it,is,not,enough,that,just,one,of,these,characters,match,,but,the,entire,sequence,must,match");

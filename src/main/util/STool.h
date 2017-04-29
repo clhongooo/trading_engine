@@ -53,8 +53,8 @@ class STool
     static string TrimLeft(const string &s, const string sTrim);
     static string Trim(const string &s);
     static string ConstructStr(const string *s, int iSize, const string &sDelim);
-    static string ToUpperCase(string & s);
-    static string ToLowerCase(string & s);
+    static string ToUpperCase(const string & s);
+    static string ToLowerCase(const string & s);
     static bool IsNaN(double value);
     template<typename T1,typename T2>
       static bool ContainsKey(map<T1,T2> m,T1 k)
