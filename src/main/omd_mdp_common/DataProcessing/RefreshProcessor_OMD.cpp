@@ -117,14 +117,14 @@ void RefreshProcessor_OMD::Run()
     if (bR && m_MsgCirBuf_RF->Size() > m_RFMsgCirBufProtection)
     {
       m_Logger->Write(Logger::WARNING,"RefreshProcessor: ChannelID:%u. [PROTECTION] Detected abnormally long message circular buffer with size %u. Try to purge all old messages before the latest OMD_REFRESH_COMPLETE for protection.",
-          m_ChannelID, m_MsgCirBuf_RF->Size());
+                      m_ChannelID, m_MsgCirBuf_RF->Size());
 
       //--------------------------------------------------
       // Just get latest
       //--------------------------------------------------
       m_MsgCirBuf_RF->GetLatestSeqNo(uiLatestAdjSeqNo);
       m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] [Chkpt 1] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u",
-          m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
+                      m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
       uint32_t uiSeqNoToPurgeB4 = uiLatestAdjSeqNo;
 
       while (uiSeqNoToPurgeB4 > uiLatestAdjSeqNo - m_RFMsgCirBufProtection)
@@ -151,17 +151,17 @@ void RefreshProcessor_OMD::Run()
       m_MsgCirBuf_RF->GetLatestSeqNo(uiLatestAdjSeqNo);
 
       m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] [Chkpt 2] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u",
-          m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
+                      m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
 
       if (!bFoundRFCompl)
       {
         m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] There is no OMD_REFRESH_COMPLETE in the last %u messages. Purge old messages at and before %u.",
-            m_ChannelID, m_RFMsgCirBufProtection, uiSeqNoToPurgeB4);
+                        m_ChannelID, m_RFMsgCirBufProtection, uiSeqNoToPurgeB4);
       }
       else
       {
         m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] Found OMD_REFRESH_COMPLETE at %u. Purge old messages at and before it.",
-            m_ChannelID, uiSeqNoToPurgeB4);
+                        m_ChannelID, uiSeqNoToPurgeB4);
       }
 
       m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiSeqNoToPurgeB4);
@@ -265,14 +265,14 @@ void RefreshProcessor_OMD::Run()
           if (iNoOfTimesChecked == 0)
           {
             m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Give 2nd chance. Wait 2 more seconds.",
-                m_ChannelID, uiSmltMissingAdjSeqNo);
+                            m_ChannelID, uiSmltMissingAdjSeqNo);
             boost::this_thread::sleep(boost::posix_time::seconds(2));
             iNoOfTimesChecked++;
           }
           else if (iNoOfTimesChecked > 0)
           {
             m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Must wait for the next batch of refresh snapshot.",
-                m_ChannelID, uiSmltMissingAdjSeqNo);
+                            m_ChannelID, uiSmltMissingAdjSeqNo);
             bProcessThisRefreshBatch = false;
             break;
           }
@@ -281,67 +281,6 @@ void RefreshProcessor_OMD::Run()
           break;
       }
 
-      if (bProcessThisRefreshBatch)
-      {
-        uint32_t uiRTMsgCirBufStartAdjSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
-
-        if (uiRefComplUnadjLastSeqNo == 0)
-        {
-          m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated. Last Seq No in the OMD_REFRESH_COMPLETE message is 0.", m_ChannelID);
-          bProcessThisRefreshBatch = true;
-        }
-        else
-        {
-          if (bProcessThisRefreshBatch && uiRTMsgCirBufStartAdjSeqNo > uiRefComplAdjLastSeqNo)
-          {
-            bProcessThisRefreshBatch = false; // default is false
-            m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated. However, RT circular buffer Start Seq No (adj): %u, RF OMD_REFRESH_COMPLETE field LastSeqNum: (raw) %u (adj) %u. Must wait for the next round of refresh snapshot.",
-                m_ChannelID, uiRTMsgCirBufStartAdjSeqNo, uiRefComplUnadjLastSeqNo, uiRefComplAdjLastSeqNo);
-
-            //--------------------------------------------------
-            // Calculating the velocity of Refresh Complete coverage
-            // And warn if it is estimated to take absurdly long to finish the refresh
-            //--------------------------------------------------
-            m_RTSeqNo2 = m_RTSeqNo1;
-            m_RTSeqNo1 = uiRefComplUnadjLastSeqNo;
-            if (m_RTSeqNo1 > 0 && m_RTSeqNo2 > 0)
-            {
-              long lSeqNoCoveragePerRefCompl = m_RTSeqNo1 - m_RTSeqNo2;
-              if (lSeqNoCoveragePerRefCompl > 0)
-              {
-                long lNoOfTimesReqToCatchUp = (long)((double)(uiRTMsgCirBufStartAdjSeqNo - uiRefComplAdjLastSeqNo) / (double)lSeqNoCoveragePerRefCompl);
-                if (lNoOfTimesReqToCatchUp > 3)
-                {
-                  m_Logger->Write(Logger::WARNING,"RefreshProcessor: ChannelID:%u. Num of Seq No covered per OMD_REFRESH_COMPLETE: %d. Estimated to take %d rounds of OMD_REFRESH_COMPLETE before a Refresh can be done.",
-                      m_ChannelID, lSeqNoCoveragePerRefCompl, lNoOfTimesReqToCatchUp);
-                  bProcessThisRefreshBatch = true;
-                  m_MaintainRefreshActn = true;
-                }
-                else
-                {
-                  //--------------------------------------------------
-                  // Just 3 rounds, can wait
-                  //--------------------------------------------------
-                  bProcessThisRefreshBatch = false;
-                  m_MaintainRefreshActn = false;
-                }
-              }
-            }
-          }
-        }
-
-        //--------------------------------------------------
-        // Wait for RT to catch up in case RF is too fast
-        // Shouldn't happen in real life?
-        //--------------------------------------------------
-        while (bProcessThisRefreshBatch && uiRefComplAdjLastSeqNo > uiRTMsgCirBufStartAdjSeqNo + m_MsgCirBuf_RT->Size())
-        {
-          boost::this_thread::sleep(boost::posix_time::milliseconds(m_RefreshProcSleepMillisec));
-        }
-
-      }
-
-
       if (!bProcessThisRefreshBatch)
       {
         boost::this_thread::sleep(boost::posix_time::milliseconds(m_RefreshProcSleepMillisec));
@@ -349,6 +288,64 @@ void RefreshProcessor_OMD::Run()
         m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
         continue;
       }
+
+      uint32_t uiRTMsgCirBufStartAdjSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
+
+      if (uiRefComplUnadjLastSeqNo == 0)
+      {
+        m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated. Last Seq No in the OMD_REFRESH_COMPLETE message is 0.", m_ChannelID);
+        bProcessThisRefreshBatch = true;
+      }
+      else
+      {
+        if (bProcessThisRefreshBatch && uiRTMsgCirBufStartAdjSeqNo > uiRefComplAdjLastSeqNo)
+        {
+          bProcessThisRefreshBatch = false; // default is false
+          m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated. However, RT circular buffer Start Seq No (adj): %u, RF OMD_REFRESH_COMPLETE field LastSeqNum: (raw) %u (adj) %u. Must wait for the next round of refresh snapshot.",
+                          m_ChannelID, uiRTMsgCirBufStartAdjSeqNo, uiRefComplUnadjLastSeqNo, uiRefComplAdjLastSeqNo);
+
+          //--------------------------------------------------
+          // Calculating the velocity of Refresh Complete coverage
+          // And warn if it is estimated to take absurdly long to finish the refresh
+          //--------------------------------------------------
+          m_RTSeqNo2 = m_RTSeqNo1;
+          m_RTSeqNo1 = uiRefComplUnadjLastSeqNo;
+          if (m_RTSeqNo1 > 0 && m_RTSeqNo2 > 0)
+          {
+            long lSeqNoCoveragePerRefCompl = m_RTSeqNo1 - m_RTSeqNo2;
+            if (lSeqNoCoveragePerRefCompl > 0)
+            {
+              long lNoOfTimesReqToCatchUp = (long)((double)(uiRTMsgCirBufStartAdjSeqNo - uiRefComplAdjLastSeqNo) / (double)lSeqNoCoveragePerRefCompl);
+              if (lNoOfTimesReqToCatchUp > 3)
+              {
+                m_Logger->Write(Logger::WARNING,"RefreshProcessor: ChannelID:%u. Num of Seq No covered per OMD_REFRESH_COMPLETE: %d. Estimated to take %d rounds of OMD_REFRESH_COMPLETE before a Refresh can be done.",
+                                m_ChannelID, lSeqNoCoveragePerRefCompl, lNoOfTimesReqToCatchUp);
+                bProcessThisRefreshBatch = true;
+                m_MaintainRefreshActn = true;
+              }
+              else
+              {
+                //--------------------------------------------------
+                // Just 3 rounds, can wait
+                //--------------------------------------------------
+                bProcessThisRefreshBatch = false;
+                m_MaintainRefreshActn = false;
+              }
+            }
+          }
+        }
+      }
+
+      //--------------------------------------------------
+      // Wait for RT to catch up in case RF is too fast
+      // Shouldn't happen in real life?
+      //--------------------------------------------------
+      while (bProcessThisRefreshBatch && uiRefComplAdjLastSeqNo > uiRTMsgCirBufStartAdjSeqNo + m_MsgCirBuf_RT->Size())
+      {
+        boost::this_thread::sleep(boost::posix_time::milliseconds(m_RefreshProcSleepMillisec));
+      }
+
+
 
       //--------------------------------------------------
       // Otherwise need to process msg...
@@ -435,12 +432,12 @@ void RefreshProcessor_OMD::Run()
           if (m_MsgCirBuf_RF->GetSmallestMissingSeqNo(uiSmltMissingAdjSeqNo))
           {
             m_Logger->Write(Logger::ERROR,"RefreshProcessor: ChannelID:%u. Missing seq no detected but that's impossible. Please check. Current missing Seq No (adj): %u. SmallestMissingSeqNo (adj): %u. OMD_REFRESH_COMPLETE Seq No (adj): %u. Last Seq No in OMD_REFRESH_COMPLETE message: %u (adj) or %u (raw).",
-                m_ChannelID, uiSeqNo2, uiSmltMissingAdjSeqNo, uiAdjSeqNoOfRefCompl, uiRefComplAdjLastSeqNo, uiRefComplUnadjLastSeqNo);
+                            m_ChannelID, uiSeqNo2, uiSmltMissingAdjSeqNo, uiAdjSeqNoOfRefCompl, uiRefComplAdjLastSeqNo, uiRefComplUnadjLastSeqNo);
           }
           else
           {
             m_Logger->Write(Logger::ERROR,"RefreshProcessor: ChannelID:%u. Missing seq no detected but that's impossible. Please check. Current no missing Seq No in circular buffer. OMD_REFRESH_COMPLETE Seq No (adj): %u. Last Seq No in OMD_REFRESH_COMPLETE message: %u (adj) or %u (raw).",
-                m_ChannelID, uiAdjSeqNoOfRefCompl, uiRefComplAdjLastSeqNo, uiRefComplUnadjLastSeqNo);
+                            m_ChannelID, uiAdjSeqNoOfRefCompl, uiRefComplAdjLastSeqNo, uiRefComplUnadjLastSeqNo);
           }
         }
 
@@ -461,7 +458,7 @@ void RefreshProcessor_OMD::Run()
         if (uiRTStartSeqNo + uiRTSize < uiRefComplAdjLastSeqNo)
         {
           m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Now we are preparing to purge RT circular buffer. The Last Seq No in OMD_REFRESH_COMPLETE is (raw) %u (adj) %u, but RT circular buffer starts with Seq No (adj) %u and it has Size %u, which may or may not be a problem...",
-              m_ChannelID, uiRefComplUnadjLastSeqNo, uiRefComplAdjLastSeqNo, uiRTStartSeqNo, uiRTSize);
+                          m_ChannelID, uiRefComplUnadjLastSeqNo, uiRefComplAdjLastSeqNo, uiRTStartSeqNo, uiRTSize);
         }
 
         //--------------------------------------------------
@@ -506,17 +503,17 @@ void RefreshProcessor_OMD::Run()
 
         if (uiRTSize == 0)
           m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Refresh completed. RT circular buffer: Start Seq No: %u (adj), Size %u. (i.e. last seq no that contains data is %u). Seq No before %u (adj) have been purged.",
-              m_ChannelID, uiRTStartSeqNo, uiRTSize, uiRTStartSeqNo-1, uiRefComplAdjLastSeqNo);
+                          m_ChannelID, uiRTStartSeqNo, uiRTSize, uiRTStartSeqNo-1, uiRefComplAdjLastSeqNo);
         else
           m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Refresh completed. RT circular buffer: Start Seq No: %u (adj), Size %u. Seq No before %u (adj) have been purged.",
-              m_ChannelID, uiRTStartSeqNo, uiRTSize, uiRefComplAdjLastSeqNo);
+                          m_ChannelID, uiRTStartSeqNo, uiRTSize, uiRefComplAdjLastSeqNo);
 
         if (uiRFSize == 0)
           m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Refresh completed. RF circular buffer: Start Seq No: %u (adj), Size %u. (i.e. last seq no that contains data is %u). Seq No before %u (adj) have been purged.",
-              m_ChannelID, uiRFStartSeqNo, uiRFSize, uiRFStartSeqNo-1, uiAdjSeqNoOfRefCompl);
+                          m_ChannelID, uiRFStartSeqNo, uiRFSize, uiRFStartSeqNo-1, uiAdjSeqNoOfRefCompl);
         else
           m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Refresh completed. RF circular buffer: Start Seq No: %u (adj), Size %u. Seq No before %u (adj) have been purged.",
-              m_ChannelID, uiRFStartSeqNo, uiRFSize, uiAdjSeqNoOfRefCompl);
+                          m_ChannelID, uiRFStartSeqNo, uiRFSize, uiAdjSeqNoOfRefCompl);
 
       }
 
