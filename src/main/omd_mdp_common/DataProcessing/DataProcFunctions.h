@@ -14,6 +14,7 @@
 #include "MDP_Message_Headers.h"
 #include "Logger.h"
 #include "SystemConfig.h"
+#include "SFunctional.h"
 #include "SDateTime.h"
 #include "DataTransmission.h"
 
@@ -38,25 +39,29 @@ class DataProcFunctions {
     //--------------------------------------------------
     // MDP
     //--------------------------------------------------
-    virtual void OnHeartBeat                      ()                                                  {}
-    virtual void OnRefreshBook                    (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnInstrumentDefinitionOption     (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnRefreshVolume                  (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnRefreshTrade                   (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnRefreshTradeSummary            (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnRefreshDailyStatistics         (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnRefreshSessionStatistics       (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnRefreshLimitsBanding           (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnRefreshSecurityDefinitionFuture(const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnRefreshSecurityDefinitionSpread(const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnQuoteRequest                   (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnSecurityStatus                 (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnChannelReset                   (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void OnSnapshotFullRefresh            (const mktdata::MessageHeader &, char *, const int) {}
+    virtual vector<uint32_t> Get_LastMsgSeqNumProcessed(const BYTE *) {}
+
+    virtual void  HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType) {}
+    virtual void  OnHeartBeat                      ()                                                  {}
+    virtual void  OnRefreshBook                    (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnInstrumentDefinitionOption     (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshVolume                  (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshTrade                   (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshTradeSummary            (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshDailyStatistics         (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshSessionStatistics       (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshLimitsBanding           (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshSecurityDefinitionFuture(const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshSecurityDefinitionSpread(const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnQuoteRequest                   (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnSecurityStatus                 (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnChannelReset                   (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnSnapshotFullRefresh            (const mktdata::MessageHeader &, char *, const int) {}
 
   protected:
     boost::shared_ptr<SystemConfig>      m_SysCfg;
     boost::shared_ptr<DataTransmission>  m_DataTrans;
+    boost::shared_ptr<Logger>            m_Logger;
 };
 
 class DataProcFunctions_OMDC : public DataProcFunctions {
@@ -98,6 +103,9 @@ class DataProcFunctions_MDP : public DataProcFunctions {
       char instid[16];
     } OrderBookKenny;
 
+    vector<uint32_t> Get_LastMsgSeqNumProcessed(const BYTE *);
+
+    void HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType);
     void OnHeartBeat                      ();
     void OnRefreshBook                    (const mktdata::MessageHeader &, char *, const int);
     void OnInstrumentDefinitionOption     (const mktdata::MessageHeader &, char *, const int);

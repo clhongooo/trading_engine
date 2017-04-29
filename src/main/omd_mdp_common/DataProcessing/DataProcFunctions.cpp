@@ -14,6 +14,7 @@ DataProcFunctions::DataProcFunctions()
 {
   m_SysCfg    = SystemConfig::Instance();
   m_DataTrans = DataTransmission::Instance();
+  m_Logger    = Logger::Instance();
 }
 
 //--------------------------------------------------
@@ -351,6 +352,92 @@ void DataProcFunctions_OMDD::OutputJsonToLog(const char * sCaller, const unsigne
 //--------------------------------------------------
 // FIXME copied from Kenny
 //--------------------------------------------------
+void DataProcFunctions_MDP::HandleMDPRaw(const BYTE *pbPkt, const unsigned short channelID, const McastIdentifier::EMcastType mt)
+{
+  VAL sMcastType = string((mt == McastIdentifier::REALTIME) ? "RT":"RF");
+
+  Modified_MDP_Packet_Header * mmph = (Modified_MDP_Packet_Header*)(pbPkt);
+  mktdata::MessageHeader mdpMsgHdr;
+  int iOffset = sizeof(Modified_MDP_Packet_Header);
+
+  while (iOffset < mmph->PktSize)
+  {
+    int16_t iMsgSize = READ_INT16(&pbPkt[iOffset]);
+    const size_t iWrap2 = iOffset + sizeof(int16_t);
+    const size_t iWrap3 = iMsgSize - sizeof(int16_t);
+    const size_t iWrap4 = iOffset + iMsgSize;
+
+    //--------------------------------------------------
+    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: Msg size: %d", channelID, sMcastType.c_str(), iMsgSize);
+    if (iMsgSize <= 0) break;
+
+    //--------------------------------------------------
+    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap2    %d", channelID, sMcastType.c_str(), iWrap2);
+    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap3    %d", channelID, sMcastType.c_str(), iWrap3);
+    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap4    %d", channelID, sMcastType.c_str(), iWrap4);
+
+    mdpMsgHdr.wrap((char*)pbPkt, iWrap2, MDP_VERSION, iWrap4);
+
+    //--------------------------------------------------
+    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: Msg type: %u", channelID, sMcastType.c_str(), mdpMsgHdr.templateId());
+
+    switch (mdpMsgHdr.templateId())
+    {
+      case MDP_HEARTBEAT                          : OnHeartBeat                        ();                                          break;
+      case MDP_CHANNEL_RESET                      : OnChannelReset                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_SECURITY_DEFINITION_FUTURE : OnRefreshSecurityDefinitionFuture  (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_SECURITY_DEFINITION_SPREAD : OnRefreshSecurityDefinitionSpread  (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_SECURITY_STATUS                    : OnSecurityStatus                   (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_BOOK                       : OnRefreshBook                      (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_DAILY_STATISTICS           : OnRefreshDailyStatistics           (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_LIMITS_BANDING             : OnRefreshLimitsBanding             (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_SESSION_STATISTICS         : OnRefreshSessionStatistics         (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_TRADE                      : OnRefreshTrade                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_VOLUME                     : OnRefreshVolume                    (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_SNAPSHOT_FULL_REFRESH              : OnSnapshotFullRefresh              (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_QUOTE_REQUEST                      : OnQuoteRequest                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_INSTRUMENT_DEFINITION_OPTION       : OnInstrumentDefinitionOption       (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_TRADE_SUMMARY              : OnRefreshTradeSummary              (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      default                                     : m_Logger->Write(Logger::DEBUG,"Unprocessed message. templateId: %d", mdpMsgHdr.templateId());   break;
+    }
+
+    //--------------------------------------------------
+    // Process message for omd_mdi
+    //--------------------------------------------------
+    ProcessMessageForTransmission(pbPkt, mdpMsgHdr.templateId());
+    //--------------------------------------------------
+
+    iOffset += iMsgSize;
+  }
+  return;
+}
+
+vector<uint32_t> DataProcFunctions_MDP::Get_LastMsgSeqNumProcessed(const BYTE *pbPkt)
+{
+  Modified_MDP_Packet_Header * mmph = (Modified_MDP_Packet_Header*)(pbPkt);
+  mktdata::MessageHeader mdpMsgHdr;
+  int iOffset = sizeof(Modified_MDP_Packet_Header);
+
+  vector<uint32_t> vRtn;
+  while (iOffset < mmph->PktSize)
+  {
+    int16_t iMsgSize = READ_INT16(&pbPkt[iOffset]);
+    const size_t iWrap2 = iOffset + sizeof(int16_t);
+    const size_t iWrap3 = iMsgSize - sizeof(int16_t);
+    const size_t iWrap4 = iOffset + iMsgSize;
+    if (iMsgSize <= 0) break;
+    mdpMsgHdr.wrap((char*)pbPkt, iWrap2, MDP_VERSION, iWrap4);
+    if (mdpMsgHdr.templateId() == MDP_SNAPSHOT_FULL_REFRESH)
+    {
+      SnapshotFullRefresh38 msg;
+      msg.wrapForDecode((char*)pbPkt+iWrap2, mdpMsgHdr.encodedLength(), mdpMsgHdr.blockLength(), MDP_VERSION, iWrap3);
+      vRtn.push_back(msg.lastMsgSeqNumProcessed());
+    }
+    iOffset += iMsgSize;
+  }
+  return vRtn;
+}
+
 void DataProcFunctions_MDP::OnHeartBeat()
 {
   return;
@@ -370,6 +457,8 @@ void DataProcFunctions_MDP::OnRefreshBook(const mktdata::MessageHeader& hdr, cha
     const int secid = ent.securityID();
 
 
+
+    // ProcessOrderBookInstruction(__FILE__,m_Logger,pbPkt,m_ShrObj,m_PrintOrderBookAsInfo);
 
 
     // OMDC_Aggregate_Order_Book_Update *oaobu = (OMDC_Aggregate_Order_Book_Update*) pbMsg;
@@ -1024,5 +1113,3 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const mktdata::MessageHeader& 
   }
   // ResetBooks();
 }
-
-
