@@ -16,6 +16,7 @@
 
 #include "McastIdentifier.h"
 #include "Logger.h"
+#include "STool.h"
 #include "BinaryTools.h"
 #include "SharedObjects.h"
 #include <vector>
@@ -38,6 +39,7 @@ class SystemConfig : boost::noncopyable
     void ReadConfigOptional(const string &);
 
     const dma::Identity                               GetIdentity()                                      const;
+    const dma::ProcessingMode                         GetProcessingMode()                                const;
     const boost::shared_ptr<vector<McastIdentifier> > GetMcastIdentifiers()                              const;
     const boost::shared_ptr<vector<unsigned short> >  GetActiveMcastChnl()                               const;
     const boost::shared_ptr<vector<unsigned short> >  GetPreProcessorRTCannedChnl()                      const;
@@ -104,6 +106,7 @@ class SystemConfig : boost::noncopyable
     // Config.ini fields
     //--------------------------------------------------
     dma::Identity                                  m_Identity;
+    dma::ProcessingMode                            m_ProcessingMode;
     string                                         m_CannedMcastFilePath;
     string                                         m_CannedProcessedDataFilePath;
     string                                         m_CannedMcastFopenFlag;

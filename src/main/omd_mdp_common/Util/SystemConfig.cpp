@@ -14,6 +14,7 @@ boost::shared_ptr<SystemConfig> SystemConfig::Instance() {
 
 SystemConfig::SystemConfig() :
   m_Identity(dma::UNKNOWN),
+  m_ProcessingMode(dma::PM_NORMAL),
   m_ConfigPath("Config.ini"),
   m_CannedMcastFilePath(""),
   m_CannedProcessedDataFilePath("wb+"),
@@ -90,6 +91,7 @@ const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRefreshPro
 const  boost::shared_ptr<vector<unsigned  short>  >  SystemConfig::GetRTSClientJson()                    const     {  return  m_pRTSClientJson;               }
 
 const  dma::Identity SystemConfig::GetIdentity()                                    const  {  return  m_Identity;                                      }
+const  dma::ProcessingMode SystemConfig::GetProcessingMode()                        const  {  return  m_ProcessingMode;                                }
 
 const  unsigned  long  SystemConfig::GetTriggerRetransmissionSeqNoGap()             const  {  return  m_TriggerRetransmissionSeqNoGap;                 }
 const  unsigned  long  SystemConfig::GetTriggerRetransmissionTimeGapMillisec()      const  {  return  m_TriggerRetransmissionTimeGapMillisec;          }
@@ -146,6 +148,9 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   if      (sIdentity == "OMDC") m_Identity = dma::OMDC;
   else if (sIdentity == "OMDD") m_Identity = dma::OMDD;
   else if (sIdentity == "MDP" ) m_Identity = dma::MDP;
+
+  string sProcessingMode = STool::ToLowerCase(pt.get<std::string>("SystemSettings.ProcessingMode"));
+  if (sProcessingMode == "fast") m_ProcessingMode = dma::PM_FAST;
 
   m_CannedMcastFilePath                               = pt.get<std::string>   ("SystemSettings.CannedMcastFilePath");
   m_CannedMcastFopenFlag                              = pt.get<std::string>   ("SystemSettings.CannedMcastFopenFlag");
@@ -362,6 +367,7 @@ void SystemConfig::ReadConfigOptional(const string & sConfigPath)
 
 
   boost::optional<std::string>     oIdentity                                               =  pt.get_optional<std::string>     ("SystemSettings.Identity");
+  boost::optional<std::string>     oProcessingMode                                         =  pt.get_optional<std::string>     ("SystemSettings.ProcessingMode");
   boost::optional<bool>            oPrintRealTimeProcSeqNoAsInfo                           =  pt.get_optional<bool>            ("SystemSettings.PrintRealTimeProcSeqNoAsInfo");
   boost::optional<bool>            oPrintRefreshProcSeqNoAsInfo                            =  pt.get_optional<bool>            ("SystemSettings.PrintRefreshProcSeqNoAsInfo");
   boost::optional<bool>            oPrintOrderBookAsInfo                                   =  pt.get_optional<bool>            ("SystemSettings.PrintOrderBookAsInfo");
@@ -398,6 +404,13 @@ void SystemConfig::ReadConfigOptional(const string & sConfigPath)
     if      (sIdentity == "OMDC") m_Identity = dma::OMDC;
     else if (sIdentity == "OMDD") m_Identity = dma::OMDD;
   }
+
+  if (oProcessingMode)  {
+    string sProcessingMode = STool::ToLowerCase(oProcessingMode.get());
+    if (sProcessingMode == "fast") m_ProcessingMode = dma::PM_FAST;
+    else m_ProcessingMode = dma::PM_NORMAL;
+  }
+
 
   if  (oDataComplInspectorSleepMillisec              )  {  m_DataComplInspectorSleepMillisec           =  oDataComplInspectorSleepMillisec     .           get();  }
   if  (oRefreshProcSleepMillisec                     )  {  m_RefreshProcSleepMillisec                  =  oRefreshProcSleepMillisec            .           get();  }
@@ -476,14 +489,10 @@ void SystemConfig::ReadConfigOptional(const string & sConfigPath)
       unsigned short usRF_Port_A = pt.get<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_A");
       unsigned short usRF_Port_B = pt.get<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_B");
 
-      m_pMcastIdentifiers->push_back(McastIdentifier(
-            *it, sRT_IP_A, usRT_Port_A, McastIdentifier::REALTIME, McastIdentifier::A));
-      m_pMcastIdentifiers->push_back(McastIdentifier(
-            *it, sRT_IP_B, usRT_Port_B, McastIdentifier::REALTIME, McastIdentifier::B));
-      m_pMcastIdentifiers->push_back(McastIdentifier(
-            *it, sRF_IP_A, usRF_Port_A, McastIdentifier::REFRESH, McastIdentifier::A));
-      m_pMcastIdentifiers->push_back(McastIdentifier(
-            *it, sRF_IP_B, usRF_Port_B, McastIdentifier::REFRESH, McastIdentifier::B));
+      m_pMcastIdentifiers->push_back(McastIdentifier(*it, sRT_IP_A, usRT_Port_A, McastIdentifier::REALTIME, McastIdentifier::A));
+      m_pMcastIdentifiers->push_back(McastIdentifier(*it, sRT_IP_B, usRT_Port_B, McastIdentifier::REALTIME, McastIdentifier::B));
+      m_pMcastIdentifiers->push_back(McastIdentifier(*it, sRF_IP_A, usRF_Port_A, McastIdentifier::REFRESH,  McastIdentifier::A));
+      m_pMcastIdentifiers->push_back(McastIdentifier(*it, sRF_IP_B, usRF_Port_B, McastIdentifier::REFRESH,  McastIdentifier::B));
 
     }
   }

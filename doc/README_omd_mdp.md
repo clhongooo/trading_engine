@@ -19,6 +19,11 @@
 -   Real Time Channel Processor
 -   Refresh Channel Processor
 
+# System Implementations
+-  OMDC
+-  OMDD
+-  MDP  (Normal mode and Fast mode for algo trading)
+
 # Program Flow
 
 For each channel, there are 2 multicast streams for real-time and 2 for refresh altogether 4 streams,
