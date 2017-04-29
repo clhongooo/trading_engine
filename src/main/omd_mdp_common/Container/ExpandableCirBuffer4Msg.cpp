@@ -2,11 +2,11 @@
 
 
 ExpandableCirBuffer4Msg::ExpandableCirBuffer4Msg(
-    const unsigned short channelid,
-    const unsigned int blocksize,
-    const unsigned int rowsize,
-    boost::shared_ptr<CentralMemMgr> cmm,
-    const unsigned long max1timealloc) :
+  const unsigned short channelid,
+  const unsigned int blocksize,
+  const unsigned int rowsize,
+  boost::shared_ptr<CentralMemMgr> cmm,
+  const unsigned long max1timealloc) :
   m_ChannelID(channelid),
   m_StartSeqNo(0),
   m_BlockSize(blocksize),
@@ -172,6 +172,10 @@ void ExpandableCirBuffer4Msg::ExpandCapacity()
   m_DqEndIdx.push_back(0);
 }
 
+void ExpandableCirBuffer4Msg::PushMsg(const char* pTArg, const uint32_t iSeqNo, uint64_t uiTStamp)
+{
+  PushMsg((const BYTE*) pTArg, iSeqNo, uiTStamp);
+}
 void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, uint64_t uiTStamp)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
