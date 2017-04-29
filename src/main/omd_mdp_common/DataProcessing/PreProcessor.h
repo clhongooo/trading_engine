@@ -21,6 +21,7 @@
 #include <boost/shared_ptr.hpp>
 #include <cstdio>
 #include <cstring>
+#include <vector>
 #include <set>
 #include "ThreadHealthMonitor.h"
 #include "MDP_Message_Headers.h"
@@ -61,6 +62,7 @@ class PreProcessor {
     // uint32_t                   m_LastUnadjSeqNo;
     char                       m_JsonBuffer[JSON_BUFFER_SIZE];
     char                       m_NameBuffer[256];
+    vector<char>               m_MDP_Refresh_Complete;
     boost::posix_time::ptime   m_ProgramStartTime;
     // uint64_t                   m_PrevPktHdrTime;
     unsigned long              m_MaxOneTimeAlloc;

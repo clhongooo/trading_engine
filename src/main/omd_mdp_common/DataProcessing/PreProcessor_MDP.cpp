@@ -9,7 +9,7 @@ void PreProcessor_MDP::Run()
     //--------------------------------------------------
     if (m_ShrObj->ThreadShouldExit())
     {
-      m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. Stopping thread.", m_ChannelID);
+      m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID: %u. Stopping thread.", m_ChannelID);
       return;
     }
 
@@ -35,8 +35,8 @@ void PreProcessor_MDP::Run()
     //--------------------------------------------------
     MDP_Packet_Header          * mph  = (MDP_Packet_Header*)(pbPkt);
     Modified_MDP_Packet_Header * mmph = (Modified_MDP_Packet_Header*)(pbPkt);
-    m_Logger->Write(m_PrintPreProcSeqNoAsInfo ? Logger::INFO : Logger::DEBUG, "PreProcessor: ChannelID:%u. %s (%c): Packet Header: PktSeqNum:  %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), mph->PktSeqNum);
-    m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Send Time:  %s", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(mph->SendingTime, SDateTime::NANOSEC).c_str());
+    m_Logger->Write(m_PrintPreProcSeqNoAsInfo ? Logger::INFO : Logger::DEBUG, "PreProcessor: ChannelID: %u. %s(%c): Packet Header: PktSeqNum:  %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), mph->PktSeqNum);
+    m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID: %u. %s(%c): Packet Header: Send Time:  %s", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(mph->SendingTime, SDateTime::NANOSEC).c_str());
 
     //--------------------------------------------------
     // Output other Debug info
@@ -57,10 +57,21 @@ void PreProcessor_MDP::Run()
     WRITE_UINT64(&(mmph->PktSize),uiPktSize);
 
     //--------------------------------------------------
+    // Manually insert an MDP_REFRESH_COMPLETE message into the queue because unlike OMD, CME just cycles the packet sequence number.
+    //--------------------------------------------------
+    if (mph->PktSeqNum == 1 && m_McastIdentifier.McastType() == McastIdentifier::REFRESH)
+    {
+      m_MsgCirBuf->GetLatestSeqNo(m_LocalLastAdjSeqNo);
+      m_LocalLastAdjSeqNo++;
+      m_MsgCirBuf->PushMsg(&m_MDP_Refresh_Complete[0],m_LocalLastAdjSeqNo,ulTStamp);
+      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : Manually inserted MDP_REFRESH_COMPLETE.", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port());
+    }
+
+    //--------------------------------------------------
     // Because CME keeps the sequence number of packets rather than messages,
     // we defer our message parsing to RealTimeProcessor.
     //--------------------------------------------------
-    m_MsgCirBuf->PushMsg(pbPkt,mph->PktSeqNum,ulTStamp);
+    m_MsgCirBuf->PushMsg(pbPkt,m_LocalLastAdjSeqNo+mph->PktSeqNum,ulTStamp);
     m_RawPktCirBuf->PopFront();
     m_MsgCirBuf->NotifyConsumer();
   }
