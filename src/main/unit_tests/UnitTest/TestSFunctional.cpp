@@ -11,6 +11,16 @@ void TestSFunctional::RunTest()
 {
 
   {
+    vector<int> vTmp;
+    vTmp.push_back(36);
+    vTmp.push_back(3);
+    vTmp.push_back(9);
+    vector<string> vOut = FMap(vTmp, std::function<string(const int&)>([](const int& i) { return boost::lexical_cast<string>(i+9); }));
+    CPPUNIT_ASSERT(vOut[0]=="45");
+    CPPUNIT_ASSERT(vOut[1]=="12");
+    CPPUNIT_ASSERT(vOut[2]=="18");
+  }
+  {
     SMap<string,string> sm;
     sm.AddOrUpdate("hello0","world0");
     sm.AddOrUpdate("hello1","world1");

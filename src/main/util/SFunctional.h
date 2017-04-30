@@ -4,6 +4,9 @@
 #include "PCH.h"
 #include <boost/thread.hpp>
 #include <boost/thread/shared_mutex.hpp>
+#include <functional>
+#include <algorithm>
+#include <iterator>
 
 //--------------------------------------------------
 // Scala-like val var
@@ -26,18 +29,26 @@ void FReverse(Collection & col)
   std::reverse(col.begin(),col.end());
 }
 
-//   template <typename CollectionIn, typename CollectionOut, typename InType, typename UnOp>
-// void FMap(CollectionIn colIn, CollectionOut colOut, UnOp op)
-// {
-//   // //--------------------------------------------------
-//   // // CAUTION: UNTESTED
-//   // //--------------------------------------------------
-//   // std::transform(colIn.begin(),colIn.end(),back_inserter(colOut),op);
-//   colOut.clear();
-//   FForEach(colIn, [&](const InType i) {
-//     colOut.push_back(op(i));
-//   });
-// }
+//--------------------------------------------------
+// Example
+// vector<string> vOut = FMap(vTmp, std::function<string(const int&)>([](const int& i) { return boost::lexical_cast<string>(i+9); }));
+// Note: set doesn't work here
+//--------------------------------------------------
+template <typename InType,
+         template <typename U, typename alloc = allocator<U>>
+         class InContainer,
+         template <typename V, typename alloc = allocator<V>>
+         class OutContainer = InContainer,
+  typename OutType = InType>
+OutContainer<OutType> FMap(const InContainer<InType>& input,
+                           std::function<OutType(const InType&)> func)
+{
+  OutContainer<OutType> output;
+  output.resize(input.size());
+  transform(input.begin(), input.end(), output.begin(), func);
+  return output;
+}
+
 
   template <typename Collection, typename Predicate>
 Collection FFilterNot(const Collection & col,Predicate predicate)
