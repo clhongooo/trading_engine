@@ -1,5 +1,7 @@
 # Packet Structure
 [CME MDP Message Structure](http://www.cmegroup.com/confluence/display/EPICSANDBOX/MDP+3.0+-+Packet+and+Message+Headers)
+[Real-Logic implementation of SBE](https://github.com/real-logic/simple-binary-encoding)
+[Real-Logic C++ guide](https://github.com/real-logic/simple-binary-encoding/wiki/Cpp-User-Guide)
 
 ## HKEx OMD
 
