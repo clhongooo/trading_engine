@@ -1,7 +1,14 @@
+
+# CME MDP Intro
+[CME MDP](http://www.cmegroup.com/confluence/display/EPICSANDBOX/CME+Market+Data)
+[CME vs FAST](http://ftw.edu.wwx.tw/Home/kgq/gmds-wen-zhang-suo-yin/gmds/cmemdp30deguihuayujianzhi)
+
+
 # Packet Structure
 [CME MDP Message Structure](http://www.cmegroup.com/confluence/display/EPICSANDBOX/MDP+3.0+-+Packet+and+Message+Headers)
 [Real-Logic implementation of SBE](https://github.com/real-logic/simple-binary-encoding)
 [Real-Logic C++ guide](https://github.com/real-logic/simple-binary-encoding/wiki/Cpp-User-Guide)
+
 
 ## HKEx OMD
 
@@ -12,6 +19,10 @@
 | Filler   | char(1) |                                                    |
 | SeqNum   | uint32  | Sequence number of the first message in the packet |
 | SendTime | uint64  | UTC Unix Timestamp in nanoseconds.                 |
+
+## CME Messages
+
+[Market Data Snapshot Full Refresh](http://www.cmegroup.com/confluence/display/EPICSANDBOX/MDP+3.0+-+Market+Data+Snapshot+Full+Refresh)
 
 # Major System Components
 -   Multicast Receiver
