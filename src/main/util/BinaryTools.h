@@ -68,7 +68,6 @@ class BinaryRecorder
     bool EnableWriter();
     void SetOutFilePath(const string &, const string &);
     void SetFlushOnEveryWrite(const bool);
-    bool IsOutFileReady() const;
     //--------------------------------------------------
 
   protected:
@@ -80,6 +79,7 @@ class BinaryRecorder
         void WriteHKExRelTime(const char *) {}
         void WriteHKExUnixTime(const char *) {}
         void WriteATUMDIStruct(const ATU_MDI_marketfeed_struct &) {}
+        bool IsOutFileReady() const;
       protected:
         boost::posix_time::ptime m_BinRecStartTime;
         string m_File;
