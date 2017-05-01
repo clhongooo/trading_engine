@@ -52,6 +52,7 @@ class OrderBook {
     virtual bool Add(BASide,int32_t,uint8_t,uint32_t,uint64_t);
     virtual bool Change(BASide,int32_t,uint8_t,uint32_t,uint64_t);
     virtual bool Delete(BASide,int32_t,uint8_t,uint32_t,uint64_t);
+    virtual bool DeleteTopLevels(BASide,uint8_t);
     virtual string DumpJson(const uint32_t,BASide) const;
     virtual string Dump(BASide) const;
     virtual void Dump(BASide,int[_MAXPRICELEVEL][3]) const;

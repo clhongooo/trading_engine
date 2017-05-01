@@ -32,7 +32,6 @@
 #include "UnitTest/TestProbMassFunc.h"
 #include "UnitTest/TestMACD.h"
 #include "UnitTest/TestRsi.h"
-#include "UnitTest/TestOrderBook.h"
 #include "UnitTest/TestLinearSysSolver.h"
 #include "UnitTest/TestLeastSqRegression.h"
 #include "UnitTest/TestTrdTickAna.h"
@@ -101,7 +100,6 @@ int main ( int argc, const char* argv[] )
   // utTestRunner.addTest(TestProbDistrnFunc::suite());
   // utTestRunner.addTest(TestProbMassFunc::suite());
   // utTestRunner.addTest(TestMACD::suite());
-  // utTestRunner.addTest(TestOrderBook::suite());
   // utTestRunner.addTest(TestRsi::suite());
   // utTestRunner.addTest(TestLinearSysSolver::suite());
   // utTestRunner.addTest(TestLeastSqRegression::suite());

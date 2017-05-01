@@ -40,14 +40,14 @@ int16_t OrderBook::LocatePriceLev(BASide Side, int32_t Price) const
 
   if (dMidPx == Price) return (iNumOfPriceLev/2+1);
   else if ((Side == BID && dMidPx > Price) ||
-      (Side == ASK && dMidPx < Price)) // Search tail part
+           (Side == ASK && dMidPx < Price)) // Search tail part
   {
     int i = Bounded(iMidIdx+1);
     while (i != queEnd)
     {
       if (Que[i].Price == Price) return (i+(i<iMidIdx?_CIRARRSIZE:0)-iMidIdx+iNumOfPriceLev/2+1); // Found
       else if ((Side == BID && Que[i].Price < Price) ||
-          (Side == ASK && Que[i].Price > Price)) return -(i+(i<iMidIdx?_CIRARRSIZE:0)-iMidIdx+iNumOfPriceLev/2+1); // Can't be found
+               (Side == ASK && Que[i].Price > Price)) return -(i+(i<iMidIdx?_CIRARRSIZE:0)-iMidIdx+iNumOfPriceLev/2+1); // Can't be found
       i=Bounded(i+1);
     }
     return -(iNumOfPriceLev+1); // Can't be found
@@ -60,7 +60,7 @@ int16_t OrderBook::LocatePriceLev(BASide Side, int32_t Price) const
     {
       if (Que[i].Price == Price) return (i+(i<queStart?_CIRARRSIZE:0)-queStart+1); // Found
       else if ((Side == BID && Que[i].Price < Price) ||
-          (Side == ASK && Que[i].Price > Price)) return -(i+(i<queStart?_CIRARRSIZE:0)-queStart+1); // Can't be found
+               (Side == ASK && Que[i].Price > Price)) return -(i+(i<queStart?_CIRARRSIZE:0)-queStart+1); // Can't be found
       i=Bounded(i+1);
     }
     return -(iNumOfPriceLev/2+1); // Can't be found
@@ -144,11 +144,11 @@ const int16_t & OrderBook::GetQueEndConst(BASide Side) const
   if (Side == BID) return _BIDQend; else return _ASKQend;
 }
 bool OrderBook::Delete(
-    BASide Side,
-    int32_t Price,
-    uint8_t PriceLev,
-    uint32_t NumOfOrd,
-    uint64_t AggQty)
+  BASide Side,
+  int32_t Price,
+  uint8_t PriceLev,
+  uint32_t NumOfOrd,
+  uint64_t AggQty)
 {
   // ------------------------------------------------------------
   // Integrity check
@@ -205,12 +205,12 @@ bool OrderBook::Delete(
     iDelLoc = Bounded(queStart+iSearchedPxLev-1);
     // Recursive f() to avoid code repetition
     return Delete(
-        Side,
-        Price,
-        iSearchedPxLev,
-        Que[iDelLoc].NumOfOrd,
-        Que[iDelLoc].AggQty
-        );
+      Side,
+      Price,
+      iSearchedPxLev,
+      Que[iDelLoc].NumOfOrd,
+      Que[iDelLoc].AggQty
+      );
   }
   else // Price not found, report error
   {
@@ -218,12 +218,32 @@ bool OrderBook::Delete(
   }
 
 }
+bool OrderBook::DeleteTopLevels(
+  BASide Side,
+  uint8_t NoOfPriceLevToDel)
+{
+  const int16_t iNumOfPriceLev = NumOfPriceLev(Side);
+  // ------------------------------------------------------------
+  // Integrity check
+  // ------------------------------------------------------------
+  if ((NoOfPriceLevToDel <= 0) ||
+      (NoOfPriceLevToDel > _MAXTICKLEVEL) ||
+      (NoOfPriceLevToDel > iNumOfPriceLev))
+  {
+    return false;
+  }
+
+  OBElement* Que = GetQue(Side);
+  int16_t & queStart = GetQueStart(Side); // Getting as reference
+  queStart = Bounded(queStart+NoOfPriceLevToDel);
+  return true;
+}
 bool OrderBook::Change(
-    BASide Side,
-    int32_t Price,
-    uint8_t PriceLev,
-    uint32_t NumOfOrd,
-    uint64_t AggQty)
+  BASide Side,
+  int32_t Price,
+  uint8_t PriceLev,
+  uint32_t NumOfOrd,
+  uint64_t AggQty)
 {
   // ------------------------------------------------------------
   // Integrity checks
@@ -270,11 +290,11 @@ bool OrderBook::Change(
   if (iNumOfPriceLev == 0)
   {
     return Add(
-        Side,
-        Price,
-        1,
-        NumOfOrd,
-        AggQty);
+      Side,
+      Price,
+      1,
+      NumOfOrd,
+      AggQty);
   }
 
   // ------------------------------------------------------------
@@ -291,20 +311,20 @@ bool OrderBook::Change(
   else // No such Price found, can Add() it safely
   {
     return Add(
-        Side,
-        Price,
-        -iSearchedPxLev,
-        NumOfOrd,
-        AggQty);
+      Side,
+      Price,
+      -iSearchedPxLev,
+      NumOfOrd,
+      AggQty);
   }
 
 }
 bool OrderBook::Add(
-    BASide Side,
-    int32_t Price,
-    uint8_t PriceLev,
-    uint32_t NumOfOrd,
-    uint64_t AggQty)
+  BASide Side,
+  int32_t Price,
+  uint8_t PriceLev,
+  uint32_t NumOfOrd,
+  uint64_t AggQty)
 {
   // ------------------------------------------------------------
   // Integrity checks
@@ -341,7 +361,7 @@ bool OrderBook::Add(
   // Adding at the Tail of non-empty queue
   // Skip checking Price Level - lenient approach right away
   else if ((Side == BID && Que[Bounded(queEnd-1)].Price > Price) ||
-      (Side == ASK && Que[Bounded(queEnd-1)].Price < Price))
+           (Side == ASK && Que[Bounded(queEnd-1)].Price < Price))
   {
     Que[queEnd].AggQty = AggQty;
     Que[queEnd].NumOfOrd = NumOfOrd;
@@ -352,7 +372,7 @@ bool OrderBook::Add(
   // Adding at the Head of non-empty queue
   // Skip checking Price Level - lenient approach right away
   else if ((Side == BID && Que[queStart].Price < Price) ||
-      (Side == ASK && Que[queStart].Price > Price))
+           (Side == ASK && Que[queStart].Price > Price))
   {
     queStart = Bounded(queStart-1);
     Que[queStart].AggQty = AggQty;
@@ -391,11 +411,11 @@ bool OrderBook::Add(
     else if (iSearchedPxLev <= iNumOfPriceLev)
     {
       return Change(
-          Side,
-          Price,
-          iSearchedPxLev,
-          NumOfOrd,
-          AggQty);
+        Side,
+        Price,
+        iSearchedPxLev,
+        NumOfOrd,
+        AggQty);
     }
   }
 
@@ -560,11 +580,11 @@ void OrderBookOMDDSP::Reset(BASide Side)
 }
 
 bool OrderBookOMDDSP::Add(
-    BASide Side,
-    int32_t Price,
-    uint8_t PriceLev,
-    uint32_t NumOfOrd,
-    uint64_t AggQty)
+  BASide Side,
+  int32_t Price,
+  uint8_t PriceLev,
+  uint32_t NumOfOrd,
+  uint64_t AggQty)
 {
   //--------------------------------------------------
   // Aggregated 11th level
@@ -611,11 +631,11 @@ bool OrderBookOMDDSP::Add(
 }
 
 bool OrderBookOMDDSP::Change(
-    BASide Side,
-    int32_t Price,
-    uint8_t PriceLev,
-    uint32_t NumOfOrd,
-    uint64_t AggQty)
+  BASide Side,
+  int32_t Price,
+  uint8_t PriceLev,
+  uint32_t NumOfOrd,
+  uint64_t AggQty)
 {
   //--------------------------------------------------
   // Aggregated 11th level
@@ -662,11 +682,11 @@ bool OrderBookOMDDSP::Change(
 }
 
 bool OrderBookOMDDSP::Delete(
-    BASide Side,
-    int32_t Price,
-    uint8_t PriceLev,
-    uint32_t NumOfOrd,
-    uint64_t AggQty)
+  BASide Side,
+  int32_t Price,
+  uint8_t PriceLev,
+  uint32_t NumOfOrd,
+  uint64_t AggQty)
 {
   //--------------------------------------------------
   // Aggregated 11th level

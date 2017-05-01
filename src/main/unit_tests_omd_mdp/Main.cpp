@@ -46,63 +46,63 @@ using namespace boost;
 int main(int argc, const char* argv[])
 {
 
-  //--------------------------------------------------
-  // Test Circular Buffers
-  //--------------------------------------------------
-  {
-    UTest ut;
-    boost::shared_ptr<CentralMemMgr> cmm = CentralMemMgr::Instance();
-    extern const unsigned int MSGSIZE;
-
-    //--------------------------------------------------
-    // Test ExpandableCirBuffer
-    //--------------------------------------------------
-    ecbPkt = new ExpandableCirBuffer(91,3,sizeof(uint32_t)*2,cmm);
-    TestExpandableCirBuffer(ut);
-    delete ecbPkt;
-
-    ecbPkt = new ExpandableCirBuffer(91,65536,sizeof(uint32_t)*2,cmm);
-    TestExpandableCirBuffer(ut);
-    delete ecbPkt;
-    //--------------------------------------------------
-
-    //--------------------------------------------------
-    // Test ExpandableCirBuffer4Msg
-    //--------------------------------------------------
-    ecbMsg  = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
-    ecbMsg2 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
-    ecbMsg3 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
-    ecbMsg4 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,4096);
-    ecbMsg5 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
-    TestExpandableCirBuffer4Msg(ut);
-    TestExpandableCirBuffer4Msg2(ut);
-    TestExpandableCirBuffer4Msg3(ut);
-    TestExpandableCirBuffer4Msg4(ut);
-    TestExpandableCirBuffer4Msg5(ut);
-    delete ecbMsg;
-    delete ecbMsg2;
-    delete ecbMsg3;
-    delete ecbMsg4;
-    delete ecbMsg5;
-
-    ecbMsg  = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
-    ecbMsg2 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
-    ecbMsg3 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
-    ecbMsg4 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,4096);
-    ecbMsg5 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
-    TestExpandableCirBuffer4Msg(ut);
-    TestExpandableCirBuffer4Msg2(ut);
-    TestExpandableCirBuffer4Msg3(ut);
-    TestExpandableCirBuffer4Msg4(ut);
-    TestExpandableCirBuffer4Msg5(ut);
-    delete ecbMsg;
-    delete ecbMsg2;
-    delete ecbMsg3;
-    delete ecbMsg4;
-    delete ecbMsg5;
-
-    ut.PrintResult();
-  }
+  // //--------------------------------------------------
+  // // Test Circular Buffers
+  // //--------------------------------------------------
+  // {
+  //   UTest ut;
+  //   boost::shared_ptr<CentralMemMgr> cmm = CentralMemMgr::Instance();
+  //   extern const unsigned int MSGSIZE;
+  //
+  //   //--------------------------------------------------
+  //   // Test ExpandableCirBuffer
+  //   //--------------------------------------------------
+  //   ecbPkt = new ExpandableCirBuffer(91,3,sizeof(uint32_t)*2,cmm);
+  //   TestExpandableCirBuffer(ut);
+  //   delete ecbPkt;
+  //
+  //   ecbPkt = new ExpandableCirBuffer(91,65536,sizeof(uint32_t)*2,cmm);
+  //   TestExpandableCirBuffer(ut);
+  //   delete ecbPkt;
+  //   //--------------------------------------------------
+  //
+  //   //--------------------------------------------------
+  //   // Test ExpandableCirBuffer4Msg
+  //   //--------------------------------------------------
+  //   ecbMsg  = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
+  //   ecbMsg2 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
+  //   ecbMsg3 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
+  //   ecbMsg4 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,4096);
+  //   ecbMsg5 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
+  //   TestExpandableCirBuffer4Msg(ut);
+  //   TestExpandableCirBuffer4Msg2(ut);
+  //   TestExpandableCirBuffer4Msg3(ut);
+  //   TestExpandableCirBuffer4Msg4(ut);
+  //   TestExpandableCirBuffer4Msg5(ut);
+  //   delete ecbMsg;
+  //   delete ecbMsg2;
+  //   delete ecbMsg3;
+  //   delete ecbMsg4;
+  //   delete ecbMsg5;
+  //
+  //   ecbMsg  = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
+  //   ecbMsg2 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
+  //   ecbMsg3 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
+  //   ecbMsg4 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,4096);
+  //   ecbMsg5 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
+  //   TestExpandableCirBuffer4Msg(ut);
+  //   TestExpandableCirBuffer4Msg2(ut);
+  //   TestExpandableCirBuffer4Msg3(ut);
+  //   TestExpandableCirBuffer4Msg4(ut);
+  //   TestExpandableCirBuffer4Msg5(ut);
+  //   delete ecbMsg;
+  //   delete ecbMsg2;
+  //   delete ecbMsg3;
+  //   delete ecbMsg4;
+  //   delete ecbMsg5;
+  //
+  //   ut.PrintResult();
+  // }
 
 
   // //--------------------------------------------------
@@ -118,26 +118,26 @@ int main(int argc, const char* argv[])
   // //--------------------------------------------------
   // // Test canned data
   // //--------------------------------------------------
-  //
-  // CppUnit::TextUi::TestRunner utTestRunner;
-  //
-  // boost::shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
-  // boost::thread rtsCltThd(&RTSClient::Run, rtsClt.get());
-  //
-  // // utTestRunner.addTest(TestSharedObjects::suite());
-  // // utTestRunner.addTest(TestTriggeringRTSClient::suite());
-  // // utTestRunner.addTest(TestOrderBook::suite());
-  // // utTestRunner.addTest(TestOrderBookOMDDSP::suite());
-  // // utTestRunner.addTest(TestRTSResponse::suite());
-  // // utTestRunner.addTest(TestTriggeringRTSClient::suite());
-  // // utTestRunner.addTest(TestRealTime::suite());
-  // // utTestRunner.addTest(TestSwitchRTSSvr::suite());
-  // // utTestRunner.addTest(TestMsgHandling::suite());
-  // // utTestRunner.addTest(TestRefresh::suite());
-  // // utTestRunner.addTest(TestSeqReset::suite());
-  //
-  // //utTestRunner.addTest(TestSysConfig::suite());
-  // utTestRunner.run();
+
+  CppUnit::TextUi::TestRunner utTestRunner;
+
+  boost::shared_ptr<RTSClient> rtsClt = RTSClient::Instance();
+  boost::thread rtsCltThd(&RTSClient::Run, rtsClt.get());
+
+  // utTestRunner.addTest(TestSharedObjects::suite());
+  // utTestRunner.addTest(TestTriggeringRTSClient::suite());
+  utTestRunner.addTest(TestOrderBook::suite());
+  // utTestRunner.addTest(TestOrderBookOMDDSP::suite());
+  // utTestRunner.addTest(TestRTSResponse::suite());
+  // utTestRunner.addTest(TestTriggeringRTSClient::suite());
+  // utTestRunner.addTest(TestRealTime::suite());
+  // utTestRunner.addTest(TestSwitchRTSSvr::suite());
+  // utTestRunner.addTest(TestMsgHandling::suite());
+  // utTestRunner.addTest(TestRefresh::suite());
+  // utTestRunner.addTest(TestSeqReset::suite());
+
+  //utTestRunner.addTest(TestSysConfig::suite());
+  utTestRunner.run();
 
   return 0;
 }
