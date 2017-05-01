@@ -19,6 +19,11 @@ void StdStreamLogger::SetLogLevel(LogLevel lev)
   m_LogLevel = lev;
 }
 
+StdStreamLogger::LogLevel StdStreamLogger::GetLogLevel() const
+{
+  return m_LogLevel;
+}
+
 void StdStreamLogger::Write(const LogLevel loglev, const char *fmt, ...)
 {
   if (loglev > m_LogLevel) return;

@@ -62,14 +62,16 @@ class Logger {
     ~Logger();
 
     void SetLogLevel(LogLevel);
+    LogLevel GetLogLevel() const;
     void SetPath(const char*);
     void Write(const LogLevel, const char *, ...);
 
   private:
-    Logger(){};
+    Logger() : m_LogLevel(EMERGENCY) {};
     Logger(Logger const&){};
     Logger& operator=(Logger const&){};
     static boost::weak_ptr<Logger> m_pInstance;
+    LogLevel m_LogLevel;
 };
 
 #endif

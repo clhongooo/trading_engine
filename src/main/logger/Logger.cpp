@@ -83,6 +83,12 @@ void Logger::SetLogLevel(LogLevel lev)
       s_severityCeiling = pantheios::debug;
       break;
   }
+  m_LogLevel = lev;
+}
+
+Logger::LogLevel Logger::GetLogLevel() const
+{
+  return m_LogLevel;
 }
 
 void Logger::Write(const LogLevel lev, const char *fmt, ...)
