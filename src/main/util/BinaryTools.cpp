@@ -25,6 +25,11 @@ BinaryRecorder::BinaryWriterDo::BinaryWriterDo(const boost::posix_time::ptime pt
   BinaryRecorder::BinaryWriterNotDo::BinaryWriterNotDo(const boost::posix_time::ptime pt, const string & f, const string & mode, const bool w) :
     BinaryRecorder::BinaryWriter(pt, f, mode, w) {}
 
+bool BinaryRecorder::IsOutFileReady() const
+{
+  return m_OutFile;
+}
+
 BinaryRecorder::BinaryWriter::~BinaryWriter()
 {
   if (m_OutFile)
@@ -35,7 +40,7 @@ BinaryRecorder::BinaryWriter::~BinaryWriter()
     m_OutFile = NULL;
   }
 }
-bool BinaryRecorder::SetOutFilePathAndOpen(const string & f, const string & mode)
+void BinaryRecorder::SetOutFilePath(const string & f, const string & mode)
 {
   m_File = f;
   m_FileMode = mode;
@@ -46,9 +51,10 @@ void BinaryRecorder::SetFlushOnEveryWrite(const bool b)
   m_FlushOnEveryWrite = b;
 }
 
-void BinaryRecorder::EnableWriter()
+bool BinaryRecorder::EnableWriter()
 {
   m_BinaryWriter.reset(new BinaryRecorder::BinaryWriterDo(m_BinRecStartTime, m_File, m_FileMode, m_FlushOnEveryWrite));
+  return IsOutFileReady();
 }
 
 void BinaryRecorder::BinaryWriterDo::WriteHKExSim(const char * buffer)

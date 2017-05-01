@@ -65,9 +65,10 @@ class BinaryRecorder
     //--------------------------------------------------
     // to allow late function binding
     //--------------------------------------------------
-    void EnableWriter();
-    bool SetOutFilePathAndOpen(const string &, const string &);
+    bool EnableWriter();
+    void SetOutFilePath(const string &, const string &);
     void SetFlushOnEveryWrite(const bool);
+    bool IsOutFileReady() const;
     //--------------------------------------------------
 
   protected:

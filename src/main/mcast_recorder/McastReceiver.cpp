@@ -12,13 +12,14 @@ McastReceiver::McastReceiver(
   boost::posix_time::ptime progstarttime,
   const char * sDataFolder,
   const short _Mode)
-  : m_Socket(io_service),
+: m_Socket(io_service),
   m_Name(sName),
   m_ProgramStartTime(progstarttime),
   m_Mode(_Mode)
 {
   string sFile = string(sDataFolder) + "/fmt" + boost::lexical_cast<string>(m_Mode) + "_" + m_Name + "_" + to_iso_string(m_ProgramStartTime).substr(0,15);
-  if (!m_BinaryRecorder.SetOutFilePathAndOpen(sFile, "wb+"))
+  m_BinaryRecorder.SetOutFilePath(sFile, "wb+");
+  if (!m_BinaryRecorder.EnableWriter())
   {
     cerr << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ") " << "Cannot open file: " << sFile << endl << flush;
     exit(1);

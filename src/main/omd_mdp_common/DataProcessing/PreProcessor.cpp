@@ -74,9 +74,12 @@ PreProcessor::PreProcessor(const McastIdentifier & mi) :
     to_iso_string(m_ProgramStartTime).substr(0,15);
   //m_McastIdentifier.IP() << "_" << (unsigned short)(m_McastIdentifier.Port());
 
-  if (m_bRecordMcast) m_BinaryRecorder.EnableWriter();
-  if (m_bRecordMcast && !m_BinaryRecorder.SetOutFilePathAndOpen(oo.str().c_str(), m_SysCfg->GetCannedMcastFopenFlag().c_str()))
-    m_Logger->Write(Logger::ERROR,"PreProcessor: ChannelID:%u. The file %s could not be opened.", m_ChannelID, oo.str().c_str());
+  if (m_bRecordMcast) 
+  {
+    m_BinaryRecorder.SetOutFilePath(oo.str().c_str(), m_SysCfg->GetCannedMcastFopenFlag().c_str());
+    if (!m_BinaryRecorder.EnableWriter())
+      m_Logger->Write(Logger::ERROR,"PreProcessor: ChannelID:%u. The file %s could not be opened.", m_ChannelID, oo.str().c_str());
+  }
 
   m_DataProcFunc.reset(DataProcFuncFactory::GetDataProcFunc(m_SysCfg->GetIdentity()));
 

@@ -52,7 +52,7 @@ void CtpMd::ReadConfig(const string & sConfigPath)
 void CtpMd::setDataFolder(const string & df)
 {
   m_DataFolder = df;
-  m_BinaryRecorder.SetOutFilePathAndOpen(m_DataFolder+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS()+".csv","w+");
+  m_BinaryRecorder.SetOutFilePath(m_DataFolder+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS()+".csv","w+");
 }
 void CtpMd::setWriteDataToFile(const string & wdtf)
 {
@@ -60,7 +60,11 @@ void CtpMd::setWriteDataToFile(const string & wdtf)
   boost::algorithm::to_lower(wdtf2);
   if (wdtf2 == "true" || wdtf2 == "t" || wdtf2 == "yes" || wdtf2 == "y") m_WriteDataToFile = true;
   else                                                                   m_WriteDataToFile = false;
-  if (m_WriteDataToFile) m_BinaryRecorder.EnableWriter();
+  if (m_WriteDataToFile && !m_BinaryRecorder.EnableWriter())
+  {
+    m_Logger->Write(StdStreamLogger::ERROR,"File cannot be opened. Exiting.");
+    exit(1);
+  }
 }
 void CtpMd::SetFlushOnEveryWrite(const bool b)
 {
