@@ -384,20 +384,20 @@ void DataProcFunctions_MDP::HandleMDPRaw(const BYTE *pbPkt, const unsigned short
     switch (mdpMsgHdr.templateId())
     {
       case MDP_HEARTBEAT                          : OnHeartBeat                        ();                                          break;
-      case MDP_CHANNEL_RESET                      : OnChannelReset                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_SECURITY_DEFINITION_FUTURE : OnRefreshSecurityDefinitionFuture  (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_SECURITY_DEFINITION_SPREAD : OnRefreshSecurityDefinitionSpread  (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_SECURITY_STATUS                    : OnSecurityStatus                   (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_BOOK                       : OnRefreshBook                      (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_DAILY_STATISTICS           : OnRefreshDailyStatistics           (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_LIMITS_BANDING             : OnRefreshLimitsBanding             (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_SESSION_STATISTICS         : OnRefreshSessionStatistics         (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_TRADE                      : OnRefreshTrade                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_VOLUME                     : OnRefreshVolume                    (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_SNAPSHOT_FULL_REFRESH              : OnSnapshotFullRefresh              (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_QUOTE_REQUEST                      : OnQuoteRequest                     (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_INSTRUMENT_DEFINITION_OPTION       : OnInstrumentDefinitionOption       (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_TRADE_SUMMARY              : OnRefreshTradeSummary              (mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_CHANNEL_RESET                      : OnChannelReset                     (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_SECURITY_DEFINITION_FUTURE : OnRefreshSecurityDefinitionFuture  (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_SECURITY_DEFINITION_SPREAD : OnRefreshSecurityDefinitionSpread  (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_SECURITY_STATUS                    : OnSecurityStatus                   (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_BOOK                       : OnRefreshBook                      (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_DAILY_STATISTICS           : OnRefreshDailyStatistics           (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_LIMITS_BANDING             : OnRefreshLimitsBanding             (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_SESSION_STATISTICS         : OnRefreshSessionStatistics         (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_TRADE                      : OnRefreshTrade                     (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_VOLUME                     : OnRefreshVolume                    (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_SNAPSHOT_FULL_REFRESH              : OnSnapshotFullRefresh              (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_QUOTE_REQUEST                      : OnQuoteRequest                     (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_INSTRUMENT_DEFINITION_OPTION       : OnInstrumentDefinitionOption       (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
+      case MDP_REFRESH_TRADE_SUMMARY              : OnRefreshTradeSummary              (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
       default                                     : m_Logger->Write(Logger::DEBUG,"Unprocessed message. templateId: %d", mdpMsgHdr.templateId());   break;
     }
 
@@ -443,673 +443,491 @@ void DataProcFunctions_MDP::OnHeartBeat()
   return;
 }
 
-void DataProcFunctions_MDP::OnRefreshBook(const mktdata::MessageHeader& hdr, char *buf, const int len)
-{
-  MDIncrementalRefreshBook32 msg;
 
-  msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
-  auto& ent = msg.noMDEntries();
-
-  while (ent.hasNext()) {
-    ent.next();
-
-    const int secid = ent.securityID();
-
-
-
-    // ProcessOrderBookInstruction(__FILE__,m_Logger,pbPkt,m_ShrObj,m_PrintOrderBookAsInfo);
-
-
-    // OMDC_Aggregate_Order_Book_Update *oaobu = (OMDC_Aggregate_Order_Book_Update*) pbMsg;
-    // m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. Discovery: OrderBookID [%u] is received through this channel.", m_ChannelID, oaobu->SecurityCode);
-    // m_ShrObj->AddOrderBookIDInChnl(m_ChannelID,oaobu->SecurityCode);
-
-
-
-
-
-    string instid = instmap[secid];
-
-    auto& ob = obmap[instid];
-    snprintf(ob.instid, sizeof(ob.instid), "%s", instid.c_str());
-
-    if (ent.mDEntryType() == MDEntryTypeBook::Bid || ent.mDEntryType() == MDEntryTypeBook::Offer) {
-      level *level = ent.mDEntryType() == MDEntryTypeBook::Bid ? ob.bid : ob.ask;
-      const int nlevel = ent.mDPriceLevel() - 1;
-
-      switch (ent.mDUpdateAction()) {
-        case MDUpdateAction::New:
-          for (int i = 9; i > nlevel; --i)
-            // for (int i = 4; i > nlevel; --i)
-            level[i] = level[i - 1];
-          // fall through
-        case MDUpdateAction::Change:
-          // if (ent.mDUpdateAction() == MDUpdateAction::Change) {
-          // 	printf("Change order: level-%d price-%ld size-%d\n", nlevel,
-          // 			 ent.mDEntryPx().mantissa(), ent.mDEntrySize());
-          // }
-          // if (ent.mDUpdateAction() == MDUpdateAction::Change &&
-          // 		level[nlevel].price != ent.mDEntryPx().mantissa()) {
-          // 	printf("Warning: Change level-%d prices[%ld-%ld] not matched\n",
-          // 				 nlevel + 1, level[nlevel].price, ent.mDEntryPx().mantissa());
-          // }
-          level[nlevel].price = ent.mDEntryPx().mantissa();
-          level[nlevel].size = ent.mDEntrySize();
-          level[nlevel].norder = ent.numberOfOrders();
-
-          ob.secid = secid;
-          ob.seqno = ent.rptSeq();
-          ob.transact_time = msg.transactTime();
-
-          // if (ob.bid[0].price < ob.ask[0].price)
-          //   OnRefreshBook(&ob);
-
-          break;
-        case MDUpdateAction::Delete: {
-                                       // printf("Delete order: level-%d price-%ld size-%d\n", nlevel,
-                                       // 			 ent.mDEntryPx().mantissa(), ent.mDEntrySize());
-                                       for (int i = nlevel; i < 9; ++i)
-                                         // for (int i = nlevel; i < 4; ++i)
-                                         level[i] = level[i + 1];
-
-                                       break;
-                                     }
-        case MDUpdateAction::DeleteThru:
-                                     // printf("Delete thru: delete all book on one side\n");
-                                     for (int i = 0; i < 10; i++)
-                                       level[i].price = level[i].size = level[i].norder = 0;
-                                     // OnRefreshBook(&ob);
-                                     break;
-        case MDUpdateAction::DeleteFrom:
-                                     // printf("Delete from: delete top %d levels of book on one side\n",
-                                     // 			 nlevel + 1);
-                                     for (int i = 0; i < nlevel + 1; i++)
-                                       level[i].price = level[i].size = level[i].norder = 0;
-                                     // OnRefreshBook(&ob);
-                                     break;
-
-        default:
-                                     printf(",unknown");
-                                     break;
-      }
-    } else if (ent.mDEntryType() == MDEntryTypeBook::ImpliedBid || ent.mDEntryType() == MDEntryTypeBook::ImpliedOffer) {
-      ob.secid = secid;
-      ob.seqno = ent.rptSeq();
-      ob.transact_time = msg.transactTime();
-
-      // OnRefreshBook(&ob);
-    }
-  }
-}
-
-void DataProcFunctions_MDP::OnInstrumentDefinitionOption(const mktdata::MessageHeader& hdr, char *buf, const int len)
-{
-  //   MDInstrumentDefinitionOption41 msg;
-  //
-  //   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-  //
-  //   auto& ent = msg.noMDEntries();
-  //
-  //   while (ent.hasNext()) {
-  //   ent.next();
-  //
-  //   const int secid = ent.securityID();
-  //
-  //   int rpt_seq = ent.rptSeq();
-  //   int md_entry_size = ent.mDEntrySize();
-  //   int md_update_action = ent.mDUpdateAction();
-  //   string md_entry_type = ent.mDEntryType();
-  //
-  //   cout << "RefreshVolume: SecurityID:" << secid
-  //     << " RptSeq:" << rpt_seq
-  //     << " EntrySize:" << md_entry_size
-  //     << " UpdateAction:" << md_update_action
-  //     << " EntryType:" << md_entry_type << endl;
-  //   //if (instmap.find(secid) == instmap.end())
-  //   //	continue;
-  //   string instid = instmap[secid];
-  //   // if (subscribe.find(instid) == subscribe.end())
-  //   //	continue;
-  //
-  //   auto& ob = obmap[instid];
-  //   snprintf(ob.instid, sizeof(ob.instid), "%s", instid.c_str());
-  //
-  //   ob.secid = secid;
-  //   ob.seqno = ent.rptSeq();
-  //   ob.transact_time = msg.transactTime();
-  //
-  //   OnRefreshBook(&ob);
-  // }
-}
-
-void DataProcFunctions_MDP::OnRefreshVolume(const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshVolume(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDIncrementalRefreshVolume37 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
   auto& ent = msg.noMDEntries();
 
-  while (ent.hasNext()) {
-    ent.next();
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (ent.hasNext())
+    {
+      ent.next();
 
-    const int secid = ent.securityID();
+      oo.clear();
+      oo
+        << "MDIncrementalRefreshVolume37: SecurityID: " << ent.securityID()
+        << " RptSeq: " << ent.rptSeq()
+        << " EntrySize: " << ent.mDEntrySize()
+        << " UpdateAction: " << ent.mDUpdateAction()
+        << " EntryType: " << ent.mDEntryType();
 
-    int rpt_seq = ent.rptSeq();
-    int md_entry_size = ent.mDEntrySize();
-    int md_update_action = ent.mDUpdateAction();
-    string md_entry_type = ent.mDEntryType();
-
-    cout << "RefreshVolume: SecurityID:" << secid
-      << " RptSeq:" << rpt_seq
-      << " EntrySize:" << md_entry_size
-      << " UpdateAction:" << md_update_action
-      << " EntryType:" << md_entry_type << endl;
-    string instid = instmap[secid];
-
-    auto& ob = obmap[instid];
-    snprintf(ob.instid, sizeof(ob.instid), "%s", instid.c_str());
-
-    ob.secid = secid;
-    ob.seqno = ent.rptSeq();
-    ob.transact_time = msg.transactTime();
-
-    // OnRefreshBook(&ob);
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
   }
 }
 
+void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+{
+  MDIncrementalRefreshBook32 msg;
+  msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
+  auto& ent = msg.noMDEntries();
 
-void DataProcFunctions_MDP::OnRefreshTrade(const mktdata::MessageHeader& hdr, char *buf, const int len)
+  while (ent.hasNext())
+  {
+    ent.next();
+
+    if (m_Logger->NeedToPrint(Logger::DEBUG))
+    {
+      ostringstream oo;
+      oo
+        << "MDIncrementalRefreshBook32: SecurityID: " << ent.securityID()
+        << " RptSeq: " << ent.rptSeq()
+        << " EntrySize: " << ent.mDEntrySize()
+        << " UpdateAction: " << ent.mDUpdateAction()
+        << " EntryType: " << ent.mDEntryType()
+        << " transactTime: " << msg.transactTime();
+
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
+
+    if (ent.mDEntryType() == MDEntryTypeBook::Bid || ent.mDEntryType() == MDEntryTypeBook::Offer ||
+        ent.mDEntryType() == MDEntryTypeBook::ImpliedBid || ent.mDEntryType() == MDEntryTypeBook::ImpliedOffer)
+    {
+
+      if (m_Logger->NeedToPrint(Logger::DEBUG))
+      {
+        ostringstream oo;
+        oo
+          << "MDIncrementalRefreshBook32: SecurityID: " << ent.securityID()
+          << " mDEntryType: " << ent.mDEntryType()
+          << " mDPriceLevel: " << ent.mDPriceLevel()
+          << " mDUpdateAction: " << ent.mDUpdateAction()
+          << " mDEntryPx.mantissa: " << ent.mDEntryPx().mantissa()
+          << " mDEntrySize: " << ent.mDEntrySize()
+          << " numberOfOrders: " << ent.numberOfOrders()
+          << " rptSeq: " << ent.rptSeq();
+        m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      }
+
+      OrderBook* ob = SharedObjects::Instance()->GetOrderBookCache()->GetOrderBook(ent.securityID());
+      OrderBook::BASide side = (((ent.mDEntryType() == MDEntryTypeBook::Bid) || (ent.mDEntryType() == MDEntryTypeBook::ImpliedBid)) ? OrderBook::BID : OrderBook::ASK);
+      switch (ent.mDUpdateAction())
+      {
+        case MDUpdateAction::New:
+          ob->Add(side,ent.mDEntryPx().mantissa(),ent.mDPriceLevel(),ent.numberOfOrders(),ent.mDEntrySize());
+          break;
+        case MDUpdateAction::Change:
+          ob->Change(side,ent.mDEntryPx().mantissa(),ent.mDPriceLevel(),ent.numberOfOrders(),ent.mDEntrySize());
+          break;
+        case MDUpdateAction::Delete:
+          ob->Delete(side,ent.mDEntryPx().mantissa(),ent.mDPriceLevel(),ent.numberOfOrders(),ent.mDEntrySize());
+          break;
+        case MDUpdateAction::DeleteThru:
+          ob->Reset(side);
+          break;
+        case MDUpdateAction::DeleteFrom:
+          ob->DeleteTopLevels(side,ent.mDPriceLevel());
+          break;
+        default:
+          break;
+      }
+
+    }
+  }
+}
+
+void DataProcFunctions_MDP::OnInstrumentDefinitionOption(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+{
+  MDInstrumentDefinitionOption41 msg;
+}
+
+
+void DataProcFunctions_MDP::OnRefreshTrade(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDIncrementalRefreshTrade36 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
   auto& ent = msg.noMDEntries();
 
-  while (ent.hasNext()) {
-    ent.next();
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (ent.hasNext())
+    {
+      ent.next();
 
-    const int secid = ent.securityID();
-
-    int rpt_seq = ent.rptSeq();
-    int64_t md_entry_px = ent.mDEntryPx().mantissa();
-    int md_entry_size = ent.mDEntrySize();
-    int no_orders = ent.numberOfOrders();
-    int aggressor_side = ent.aggressorSide();
-    int trade_id = ent.tradeID();
-    string md_entry_type = ent.mDEntryType();
-    int md_update_action = ent.mDUpdateAction();
-    // int md_trade_entry_id = ent.mDTradeEntryID();
-    cout << "TradeSummary: SecurityID:" << secid
-      << " RptSeq:" << rpt_seq
-      << " Price:" << md_entry_px
-      << " EntrySize:" << md_entry_size
-      << " OrderNo:" << no_orders
-      << " AggressorSide:" << aggressor_side
-      << " TradeID:" << trade_id
-      << " UpdateAction:" << md_update_action
-      << " EntryType:" << md_entry_type << endl;
+      oo.clear();
+      oo
+        << "TradeSummary: SecurityID: " << ent.securityID()
+        << " RptSeq: " << ent.rptSeq()
+        << " Price: " << ent.mDEntryPx().mantissa()
+        << " EntrySize: " << ent.mDEntrySize()
+        << " OrderNo: " << ent.numberOfOrders()
+        << " AggressorSide: " << ent.aggressorSide()
+        << " TradeID: " << ent.tradeID()
+        << " UpdateAction: " << ent.mDUpdateAction()
+        << " EntryType: " << ent.mDEntryType();
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
   }
 }
 
-void DataProcFunctions_MDP::OnRefreshTradeSummary(const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDIncrementalRefreshTradeSummary42 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
 
-  auto& ent = msg.noMDEntries();
   auto& order_id_ent = msg.noOrderIDEntries();
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (order_id_ent.hasNext())
+    {
+      order_id_ent.next();
 
-  while(order_id_ent.hasNext()) {
-    order_id_ent.next();
-    int order_id = order_id_ent.orderID();
-    int last_qty = order_id_ent.lastQty();
-    cout << "NoOrderIDEntries: OrderID:" << order_id 
-      << "	Qty:" << last_qty << endl;
+      oo.clear();
+      oo << "NoOrderIDEntries: OrderID: " << order_id_ent.orderID()
+        << " Qty: " << order_id_ent.lastQty();
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
   }
 
-  while (ent.hasNext()) {
-    ent.next();
+  auto& ent = msg.noMDEntries();
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (ent.hasNext())
+    {
+      ent.next();
 
-    const int secid = ent.securityID();
-
-    int rpt_seq = ent.rptSeq();
-    int64_t md_entry_px = ent.mDEntryPx().mantissa();
-    int md_entry_size = ent.mDEntrySize();
-    int no_orders = ent.numberOfOrders();
-    int aggressor_side = ent.aggressorSide();
-    string md_entry_type = ent.mDEntryType();
-    // int md_trade_entry_id = ent.mDTradeEntryID();
-    cout << "TradeSummary: SecurityID:" << secid
-      << " RptSeq:" << rpt_seq
-      << " Price:" << md_entry_px
-      << " EntrySize:" << md_entry_size
-      << " OrderNo:" << no_orders
-      << " AggressorSide:" << aggressor_side
-      << " EntryType:" << md_entry_type << endl;
-    // << " TradeEntryID:" << md_trade_entry_id << endl;
-    string instid = instmap[secid];
-
-    auto& ob = obmap[instid];
-    snprintf(ob.instid, sizeof(ob.instid), "%s", instid.c_str());
-
-    ob.secid = secid;
-    ob.seqno = ent.rptSeq();
-    ob.transact_time = msg.transactTime();
-
-    // OnRefreshBook(&ob);
+      oo.clear();
+      oo << "TradeSummary: SecurityID: " << ent.securityID()
+        << " RptSeq: " << ent.rptSeq()
+        << " Price: " << ent.mDEntryPx().mantissa()
+        << " EntrySize: " << ent.mDEntrySize()
+        << " OrderNo: " << ent.numberOfOrders()
+        << " AggressorSide: " << ent.aggressorSide()
+        << " EntryType: " << ent.mDEntryType();
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
   }
 }
 
-void DataProcFunctions_MDP::OnRefreshDailyStatistics(const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshDailyStatistics(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDIncrementalRefreshDailyStatistics33 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
   auto& ent = msg.noMDEntries();
 
-  while (ent.hasNext()) {
-    ent.next();
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (ent.hasNext())
+    {
+      ent.next();
 
-    const int secid = ent.securityID();
+      oo.clear();
+      oo << "Session Statistics: SecurityID: " << ent.securityID()
+        << " RptSeq: " << ent.rptSeq()
+        << " EntryPx: " << ent.mDEntryPx().mantissa()
+        << " EntryType: " << ent.mDEntryType()
+        << " TradingDate: " << ent.tradingReferenceDate();
 
-    string instid = instmap[secid];
-
-    auto& ob = obmap[instid];
-    snprintf(ob.instid, sizeof(ob.instid), "%s", instid.c_str());
-
-    ob.secid = secid;
-    ob.seqno = ent.rptSeq();
-    ob.transact_time = msg.transactTime();
-
-    int64_t md_entry_px = ent.mDEntryPx().mantissa();
-    int rpt_seq = ent.rptSeq();
-    auto md_entry_type = ent.mDEntryType();
-    // int md_entry_size = ent.mDEntrySize();
-    auto trading_date = ent.tradingReferenceDate();
-    auto settl_price_type = ent.settlPriceType();
-
-    switch(md_entry_type) {
-      case MDEntryTypeDailyStatistics::ClearedVolume: {
-                                                        printf("Cleared Volume:\n");
-                                                      }
-                                                      break;
-      case MDEntryTypeDailyStatistics::SettlementPrice: {
-                                                          printf("Settlement Price:\n");
-                                                          if (settl_price_type.finalfinal()) 
-                                                            cout << "finalfinal " << endl;
-                                                          if (settl_price_type.actual()) 
-                                                            cout << "actual " << endl;
-                                                          if (settl_price_type.rounded()) 
-                                                            cout << "rounded " << endl;
-                                                          if (settl_price_type.intraday()) 
-                                                            cout << "intraday " << endl;
-                                                          if (settl_price_type.reservedBits()) 
-                                                            cout << "reservedBits" << endl;
-                                                          if (settl_price_type.nullValue()) 
-                                                            cout << "nullValue" << endl;
-                                                        }
-                                                        break;
-      case MDEntryTypeDailyStatistics::OpenInterest: {
-                                                       printf("Open Interest:\n");
-                                                     }
-                                                     break;
-      case MDEntryTypeDailyStatistics::FixingPrice: {
-                                                      printf("Fixing Price:\n");
-                                                    }
-                                                    break;
-      case MDEntryTypeStatistics::OpenPrice: {
-                                               printf("Open Price:\n");
-                                             }
-                                             break;
-      case MDEntryTypeStatistics::HighTrade: {
-                                               printf("High Trade:\n");
-                                             }
-                                             break;
-      case MDEntryTypeStatistics::LowTrade: {
-                                              printf("Low Trade:\n");
-                                            }
-                                            break;
-      case MDEntryTypeStatistics::HighestBid: {
-                                                printf("Highest Bid:\n");
-                                              }
-                                              break;
-      case MDEntryTypeStatistics::LowestOffer: {
-                                                 printf("Lowest Offer:\n");
-                                               }
-                                               break;
-      default:
-                                               break;
+      switch(ent.mDEntryType())
+      {
+        case MDEntryTypeDailyStatistics::ClearedVolume:   { oo << "Cleared Volume: "; break;  }
+        case MDEntryTypeDailyStatistics::SettlementPrice: {
+                                                            oo << "Settlement Price: ";
+                                                            if (ent.settlPriceType().finalfinal())   cout << "finalfinal ";
+                                                            if (ent.settlPriceType().actual())       cout << "actual ";
+                                                            if (ent.settlPriceType().rounded())      cout << "rounded ";
+                                                            if (ent.settlPriceType().intraday())     cout << "intraday ";
+                                                            if (ent.settlPriceType().reservedBits()) cout << "reservedBits ";
+                                                            if (ent.settlPriceType().nullValue())    cout << "nullValue ";
+                                                            break;
+                                                          }
+        case MDEntryTypeDailyStatistics::OpenInterest:    { oo << "Open Interest: "; break;   }
+        case MDEntryTypeDailyStatistics::FixingPrice:     { oo << "Fixing Price: ";  break;   }
+        case MDEntryTypeStatistics::OpenPrice:            { oo << "Open Price: ";    break;   }
+        case MDEntryTypeStatistics::HighTrade:            { oo << "High Trade: ";    break;   }
+        case MDEntryTypeStatistics::LowTrade:             { oo << "Low Trade: ";     break;   }
+        case MDEntryTypeStatistics::HighestBid:           { oo << "Highest Bid: ";   break;   }
+        case MDEntryTypeStatistics::LowestOffer:          { oo << "Lowest Offer: ";  break;   }
+        default: break;
+      }
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
     }
-    cout << "Session Statistics: SecurityID:" << secid
-      << " RptSeq:" << rpt_seq
-      << " EntryPx:" << md_entry_px
-      // << " EntrySize:" << md_entry_size
-      << " EntryType:" << md_entry_type
-      << " TradingDate:" << trading_date << endl;
-
-    // auto md_entry_type = ent.mDEntryType();
-
-    // OnRefreshBook(&ob);
   }
 }
 
-void DataProcFunctions_MDP::OnRefreshSessionStatistics(const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshSessionStatistics(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDIncrementalRefreshSessionStatistics35 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
   auto& ent = msg.noMDEntries();
 
-  while (ent.hasNext()) {
-    ent.next();
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (ent.hasNext())
+    {
+      ent.next();
 
-    const int secid = ent.securityID();
+      oo.clear();
+      oo << "Session Statistics: SecurityID: " << ent.securityID()
+        << " RptSeq: " << ent.rptSeq()
+        << " EntryPx: " << ent.mDEntryPx().mantissa()
+        << " EntryType: " << ent.mDEntryType()
+        << " OpenCloseSettlFlag: " << ent.openCloseSettlFlag()
+        << " UpdateAction: " << ent.mDUpdateAction();
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
 
-    string instid = instmap[secid];
-
-    int64_t md_entry_px = ent.mDEntryPx().mantissa();
-    int rpt_seq = ent.rptSeq();
-    int open_close_settl_flag = ent.openCloseSettlFlag();
-    int md_update_action = ent.mDUpdateAction();
-    auto md_entry_type = ent.mDEntryType();
-    cout << "Session Statistics: SecurityID:" << secid
-      << " RptSeq:" << rpt_seq
-      << " EntryPx:" << md_entry_px
-      << " EntryType:" << md_entry_type
-      << " OpenCloseSettlFlag:" << open_close_settl_flag << endl;
-
-
-    auto& ob = obmap[instid];
-    snprintf(ob.instid, sizeof(ob.instid), "%s", instid.c_str());
-
-    ob.secid = secid;
-    ob.seqno = ent.rptSeq();
-    ob.transact_time = msg.transactTime();
-
-    // OnRefreshBook(&ob);
   }
 }
 
-void DataProcFunctions_MDP::OnRefreshLimitsBanding(const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshLimitsBanding(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
-  return;
-
   MDIncrementalRefreshLimitsBanding34 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
   auto& ent = msg.noMDEntries();
 
-  while (ent.hasNext()) {
-    ent.next();
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (ent.hasNext())
+    {
+      ent.next();
 
-    const int secid = ent.securityID();
-
-    string instid = instmap[secid];
-
-    auto& ob = obmap[instid];
-    snprintf(ob.instid, sizeof(ob.instid), "%s", instid.c_str());
-
-    ob.secid = secid;
-    ob.seqno = ent.rptSeq();
-    ob.transact_time = msg.transactTime();
-
-    int64_t high_limit = ent.highLimitPrice().mantissa();
-    int64_t low_limit = ent.lowLimitPrice().mantissa();
-    int64_t max_price_variation = ent.maxPriceVariation().mantissa();
-    int rpt_seq = ent.rptSeq();
-    int md_update_action = ent.mDUpdateAction();
-    string md_entry_type = ent.mDEntryType();
-    cout << "Limits Banding: SecurityID:" << secid
-      << " RptSeq:" << rpt_seq
-      << " HighLimit:" << high_limit
-      << " LowLimit:" << low_limit
-      << " MaxPriceVariation:" << max_price_variation
-      << " UpdateAction:" << md_update_action
-      << " EntryType:" << md_entry_type << endl;
-
-    // OnRefreshBook(&ob);
+      oo.clear();
+      oo << "Limits Banding: SecurityID: " << ent.securityID()
+        << " RptSeq: " << ent.rptSeq()
+        << " HighLimit: " << ent.highLimitPrice().mantissa()
+        << " LowLimit: " << ent.lowLimitPrice().mantissa()
+        << " MaxPriceVariation: " << ent.maxPriceVariation().mantissa()
+        << " UpdateAction: " << ent.mDUpdateAction()
+        << " EntryType: " << ent.mDEntryType();
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
   }
 
 }
 
-void DataProcFunctions_MDP::OnRefreshSecurityDefinitionFuture(const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshSecurityDefinitionFuture(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDInstrumentDefinitionFuture27 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
   auto& ent = msg.noEvents();
-  auto security_id = msg.securityID();
-  int tot_num_reports = msg.totNumReports();
-  while(ent.hasNext()) {
-    ent.next();
-    const auto event_time = ent.eventTime();
-    auto event_type = ent.eventType();
-    string security_group = msg.getSecurityGroupAsString();
-    auto market_segment_id = msg.marketSegmentID();
-    auto symbol = msg.symbol();
-    cout << "Instrument Definition : "
-      << " event time:" << SDateTime::fromUnixTimeToString(event_time, SDateTime::MICROSEC)
-      << " event type:" << event_type
-      << " security ID:" << security_id
-      << " symbol:" << symbol
-      << " security group:" << security_group 
-      << " total number reports:" << tot_num_reports 
-      << " market segment ID:" << market_segment_id << endl;
+
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (ent.hasNext())
+    {
+      ent.next();
+
+      oo.clear();
+      oo << "Instrument Definition : "
+        << " event time: " << SDateTime::fromUnixTimeToString(ent.eventTime(), SDateTime::MICROSEC)
+        << " event type: " << ent.eventType()
+        << " security ID: " << msg.securityID()
+        << " symbol: " << msg.symbol()
+        << " security group: " << msg.getSecurityGroupAsString()
+        << " total number reports: " << msg.totNumReports()
+        << " market segment ID: " << msg.marketSegmentID();
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
   }
 
   auto& feed_types = msg.noMDFeedTypes();
-  while(feed_types.hasNext()) {
-    feed_types.next();
-    int market_depth = feed_types.marketDepth();
-    cout << "NoMDFeedTypes : market depth - " << market_depth << endl;
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (feed_types.hasNext())
+    {
+      feed_types.next();
+      oo.clear();
+      oo << "NoMDFeedTypes : market depth - " << feed_types.marketDepth();
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
   }
 }
 
-void DataProcFunctions_MDP::OnRefreshSecurityDefinitionSpread(const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshSecurityDefinitionSpread(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   MDInstrumentDefinitionSpread29 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
-  auto security_id = msg.securityID();
   auto& ent = msg.noEvents();
-  while(ent.hasNext()) {
-    ent.next();
-    const auto event_time = ent.eventTime();
-    auto event_type = ent.eventType();
-    string security_group = msg.getSecurityGroupAsString();
-    auto market_segment_id = msg.marketSegmentID();
-    auto symbol = msg.symbol();
 
-    cout << "Instrument Definition : "
-      << " event time:" << SDateTime::fromUnixTimeToString(event_time, SDateTime::MICROSEC)
-      << " event type:" << event_type
-      << " security ID:" << security_id
-      << " symbol:" << symbol
-      << " security group:" << security_group
-      << " market segment ID:" << market_segment_id << endl;
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (ent.hasNext())
+    {
+      ent.next();
+
+      oo.clear();
+      oo << "Instrument Definition : "
+        << " event time: " << SDateTime::fromUnixTimeToString(ent.eventTime(), SDateTime::MICROSEC)
+        << " event type: " << ent.eventType()
+        << " security ID: " << msg.securityID()
+        << " symbol: " << msg.symbol()
+        << " security group: " << msg.getSecurityGroupAsString()
+        << " market segment ID: " << msg.marketSegmentID();
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
   }
 }
 
-void DataProcFunctions_MDP::OnQuoteRequest(const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnQuoteRequest(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   QuoteRequest39 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
   auto& sym = msg.noRelatedSym();
-  while(sym.hasNext()) {
-    sym.next();
-    string symbol = sym.symbol();
-    int security_id = sym.securityID();
-    int order_qty = sym.orderQty();
-    cout << "Quote Request : " \
-      << " symbol:" << symbol << " securityID:" << security_id \
-      << " OrderQty:" << order_qty << endl;
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (sym.hasNext())
+    {
+      sym.next();
+
+      oo.clear();
+      oo << "Quote Request: "
+        << " symbol: " << sym.symbol()
+        << " securityID: " << sym.securityID()
+        << " OrderQty: " << sym.orderQty();
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
   }
 }
 
-void DataProcFunctions_MDP::OnSecurityStatus(const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnSecurityStatus(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   SecurityStatus30 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
   auto security_status = msg.securityTradingStatus();
 
-  switch(security_status) {
-    case SecurityTradingStatus::TradingHalt: {
-                                               cout << "Status: Trading Halt:" << security_status << endl;
-                                             }
-                                             break;
-    case SecurityTradingStatus::Close: {
-                                         cout << "Status: Close:" << security_status << endl;
-                                       }
-                                       break;
-    case SecurityTradingStatus::NewPriceIndication: {
-                                                      cout << "Status: New Price Indication:" << security_status << endl;
-                                                    }
-                                                    break;
-    case SecurityTradingStatus::ReadyToTrade: {
-                                                cout << "Status: Ready To Trade:" << security_status << endl;
-                                              }
-                                              break;
-    case SecurityTradingStatus::NotAvailableForTrading: {
-                                                          cout << "Status: Not Available For Trading:" << security_status << endl;
-                                                        }
-                                                        break;
-    case SecurityTradingStatus::UnknownorInvalid: {
-                                                    cout << "Status: Unknown or Invalid:" << security_status << endl;
-                                                  }
-                                                  break;
-    case SecurityTradingStatus::PreOpen: {
-                                           cout << "Status: Pre-Open:" << security_status << endl;
-                                         }
-                                         break;
-    case SecurityTradingStatus::PreCross: {
-                                            cout << "Status: Pre-Cross:" << security_status << endl;
-                                          }
-                                          break;
-    case SecurityTradingStatus::Cross: {
-                                         cout << "Status: Cross:" << security_status << endl;
-                                       }
-                                       break;
-    case SecurityTradingStatus::PostClose: {
-                                             cout << "Status: Post-Close:" << security_status << endl;
-                                           }
-                                           break;
-    case SecurityTradingStatus::NoChange: {
-                                            cout << "Status: No Change:" << security_status << endl;
-                                          }
-    case SecurityTradingStatus::NULL_VALUE: {
-                                              cout << "Status: NULL VALUE:" << security_status << endl;
-                                            }
-                                            break;
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    switch(security_status) {
+      case SecurityTradingStatus::TradingHalt:            { oo << "Status: Trading Halt: ";              break; }
+      case SecurityTradingStatus::Close:                  { oo << "Status: Close: ";                     break; }
+      case SecurityTradingStatus::NewPriceIndication:     { oo << "Status: New Price Indication: ";      break; }
+      case SecurityTradingStatus::ReadyToTrade:           { oo << "Status: Ready To Trade: ";            break; }
+      case SecurityTradingStatus::NotAvailableForTrading: { oo << "Status: Not Available For Trading: "; break; }
+      case SecurityTradingStatus::UnknownorInvalid:       { oo << "Status: Unknown or Invalid: ";        break; }
+      case SecurityTradingStatus::PreOpen:                { oo << "Status: Pre-Open: ";                  break; }
+      case SecurityTradingStatus::PreCross:               { oo << "Status: Pre-Cross: ";                 break; }
+      case SecurityTradingStatus::Cross:                  { oo << "Status: Cross: ";                     break; }
+      case SecurityTradingStatus::PostClose:              { oo << "Status: Post-Close: ";                break; }
+      case SecurityTradingStatus::NoChange:               { oo << "Status: No Change: ";                 break; }
+      case SecurityTradingStatus::NULL_VALUE:             { oo << "Status: NULL VALUE: ";                break; }
+    }
+    oo << security_status;
+    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+
+    oo.clear();
+    oo << "SecurityStatus: SecurityID: " << msg.securityID()
+      << " SecurityGroup: " << msg.securityGroup()
+      << " Asset: " << msg.asset()
+      << " TradeDate: " << msg.tradeDate()
+      << " SecurityTradingStatus: " << security_status
+      << " HaltReason: " << msg.haltReason()
+      << " SecurityTradingEvent: " << msg.securityTradingEvent();
+    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
   }
 
-  string security_group = msg.securityGroup();
-  string asset = msg.asset();
-  int secid = msg.securityID();
-  // int security_trading_status = msg.securityTradingStatus();
-  auto trade_date = msg.tradeDate();
-  int halt_reason = msg.haltReason();
-  int security_trading_event = msg.securityTradingEvent();
 
-  cout << "SecurityStatus: SecurityID:" << secid
-    << " SecurityGroup:" << security_group
-    << " Asset:" << asset
-    << " TradeDate:" << trade_date
-    << " SecurityTradingStatus:" << security_status
-    << " HaltReason:" << halt_reason
-    << " SecurityTradingEvent:" << security_trading_event << endl;
 }
 
-void DataProcFunctions_MDP::OnChannelReset(const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnChannelReset(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   ChannelReset4 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
   auto& ent = msg.noMDEntries();
 
-  while(ent.hasNext()) {
-    ent.next();
-    int md_update_action = ent.mDUpdateAction();
-    string md_entry_type = ent.mDEntryType();
-    cout << "Channel Reset: MDUpdateAction:" << md_update_action
-      << " MDEntryType:" << md_entry_type << endl;
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    while (ent.hasNext())
+    {
+      ent.next();
+      oo.clear();
+      oo
+        << "Channel Reset: MDUpdateAction: " << ent.mDUpdateAction()
+        << " MDEntryType: " << ent.mDEntryType();
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+    }
   }
-  // ResetBooks();
+
+  //--------------------------------------------------
+  // Reset Order Books of this particular channel
+  //--------------------------------------------------
+  SharedObjects::Instance()->ResetOrderBooksInChnl(channelID);
+
+  set<unsigned long> * pset = SharedObjects::Instance()->GetOrderBookIDInChnl(channelID);
+  vector<unsigned long> vOBID(pset->size());
+  std::copy(pset->begin(), pset->end(), vOBID.begin());
+
+  vector<string> vsOBID = FMap(vOBID, std::function<string(const unsigned long&)>([](const unsigned long& i) { return boost::lexical_cast<string>(i); }));
+  const string sOBIDs = boost::algorithm::join(vsOBID, ",");
+  m_Logger->Write(Logger::INFO,"DataProcFunctions_MDP: ChannelID:%u. Resetting OrderBooks upon reception of MDP_CHANNEL_RESET: %s",
+                  channelID, sOBIDs.c_str());
+
 }
 
-void DataProcFunctions_MDP::OnSnapshotFullRefresh(const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
 {
   SnapshotFullRefresh38 msg;
-
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
-
   auto& ent = msg.noMDEntries();
 
-  int last_seq_no = msg.lastMsgSeqNumProcessed();
-  int tot_num_reports = msg.totNumReports();
-  int secid = msg.securityID();
-  int rpt_seq = msg.rptSeq();
-  auto trade_date = msg.tradeDate();
-  int security_trading_status = msg.mDSecurityTradingStatus();
-  int64_t high_limit = msg.highLimitPrice().mantissa();
-  int64_t low_limit = msg.lowLimitPrice().mantissa();
-  int64_t max_price_variation = msg.maxPriceVariation().mantissa();
+  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  {
+    ostringstream oo;
+    oo
+      << "SnapshotFullRefresh: SecurityID: " << msg.securityID()
+      << " TotNumReport: " << msg.totNumReports()
+      << " LastMsgSeqNumProcessed: " << msg.lastMsgSeqNumProcessed()
+      << " RptSeq: " << msg.rptSeq()
+      << " TradeDate: " << msg.tradeDate()
+      << " SecurityTradingStatus: " << msg.mDSecurityTradingStatus()
+      << " HighLimit: " << msg.highLimitPrice().mantissa()
+      << " LowLimit: " << msg.lowLimitPrice().mantissa()
+      << " MaxPriceVariation: " << msg.maxPriceVariation().mantissa();
+    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
 
-  cout << "SnapshotFullRefresh: SecurityID:" << secid
-    << " TotNumReport:" << tot_num_reports
-    << " LastMsgSeqNumProcessed:" << last_seq_no
-    << " RptSeq:" << rpt_seq
-    << " TradeDate:" << trade_date
-    << " SecurityTradingStatus:" << security_trading_status
-    << " HighLimit:" << high_limit
-    << " LowLimit:" << low_limit
-    << " MaxPriceVariation:" << max_price_variation << endl;
-  while(ent.hasNext()) {
-    ent.next();
-    int64_t md_entry_px = ent.mDEntryPx().mantissa();
-    int md_entry_size = ent.mDEntrySize();
-    int no_orders = ent.numberOfOrders();
-    int md_price_level = ent.mDPriceLevel();
-    auto trading_date = ent.tradingReferenceDate();
-    int open_close_settl_flag = ent.openCloseSettlFlag();
-    auto settl_price_type = ent.settlPriceType();
-    char md_entry_type = ent.mDEntryType();
+    while (ent.hasNext())
+    {
+      ent.next();
 
-    cout << "noMDEntries: SecurityID:" << secid
-      << " Price:" << md_entry_px
-      << " EntrySize:" << md_entry_size
-      << " OrderNo:" << no_orders
-      << " MDPriceLevel:" << md_price_level
-      << " tradingReferenceDate:" << trading_date
-      << " OpenCloseSettlFlag:" << open_close_settl_flag
-      << " EntryType:" << md_entry_type << endl;
-    printf("Settlement Price Type: ");
-    if (settl_price_type.finalfinal()) 
-      cout << "finalfinal ";
-    if (settl_price_type.actual()) 
-      cout << "actual ";
-    if (settl_price_type.rounded()) 
-      cout << "rounded ";
-    if (settl_price_type.intraday()) 
-      cout << "intraday ";
-    if (settl_price_type.reservedBits()) 
-      cout << "reservedBits ";
-    if (settl_price_type.nullValue()) 
-      cout << "nullValue ";
-    cout << endl;		
+      oo.clear();
+      oo
+        << "noMDEntries: SecurityID: " << msg.securityID()
+        << " Price: " << ent.mDEntryPx().mantissa()
+        << " EntrySize: " << ent.mDEntrySize()
+        << " OrderNo: " << ent.numberOfOrders()
+        << " MDPriceLevel: " << ent.mDPriceLevel()
+        << " tradingReferenceDate: " << ent.tradingReferenceDate()
+        << " OpenCloseSettlFlag: " << ent.openCloseSettlFlag()
+        << " EntryType: " << ent.mDEntryType();
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+
+      oo.clear();
+      oo << "Settlement Price Type: ";
+      if (ent.settlPriceType().finalfinal())   oo << "finalfinal ";
+      if (ent.settlPriceType().actual())       oo << "actual ";
+      if (ent.settlPriceType().rounded())      oo << "rounded ";
+      if (ent.settlPriceType().intraday())     oo << "intraday ";
+      if (ent.settlPriceType().reservedBits()) oo << "reservedBits ";
+      if (ent.settlPriceType().nullValue())    oo << "nullValue ";
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+
+    }
   }
-  // ResetBooks();
+
 }

@@ -43,20 +43,20 @@ class DataProcFunctions {
 
     virtual void  HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType) {}
     virtual void  OnHeartBeat                      ()                                                  {}
-    virtual void  OnRefreshBook                    (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnInstrumentDefinitionOption     (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnRefreshVolume                  (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnRefreshTrade                   (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnRefreshTradeSummary            (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnRefreshDailyStatistics         (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnRefreshSessionStatistics       (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnRefreshLimitsBanding           (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnRefreshSecurityDefinitionFuture(const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnRefreshSecurityDefinitionSpread(const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnQuoteRequest                   (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnSecurityStatus                 (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnChannelReset                   (const mktdata::MessageHeader &, char *, const int) {}
-    virtual void  OnSnapshotFullRefresh            (const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshVolume                  (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshTrade                   (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshTradeSummary            (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshDailyStatistics         (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshSessionStatistics       (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshLimitsBanding           (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshSecurityDefinitionFuture(const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnRefreshSecurityDefinitionSpread(const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnQuoteRequest                   (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnSecurityStatus                 (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnChannelReset                   (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
+    virtual void  OnSnapshotFullRefresh            (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
 
   protected:
     boost::shared_ptr<SystemConfig>      m_SysCfg;
@@ -107,20 +107,20 @@ class DataProcFunctions_MDP : public DataProcFunctions {
 
     void HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType);
     void OnHeartBeat                      ();
-    void OnRefreshBook                    (const mktdata::MessageHeader &, char *, const int);
-    void OnInstrumentDefinitionOption     (const mktdata::MessageHeader &, char *, const int);
-    void OnRefreshVolume                  (const mktdata::MessageHeader &, char *, const int);
-    void OnRefreshTrade                   (const mktdata::MessageHeader &, char *, const int);
-    void OnRefreshTradeSummary            (const mktdata::MessageHeader &, char *, const int);
-    void OnRefreshDailyStatistics         (const mktdata::MessageHeader &, char *, const int);
-    void OnRefreshSessionStatistics       (const mktdata::MessageHeader &, char *, const int);
-    void OnRefreshLimitsBanding           (const mktdata::MessageHeader &, char *, const int);
-    void OnRefreshSecurityDefinitionFuture(const mktdata::MessageHeader &, char *, const int);
-    void OnRefreshSecurityDefinitionSpread(const mktdata::MessageHeader &, char *, const int);
-    void OnQuoteRequest                   (const mktdata::MessageHeader &, char *, const int);
-    void OnSecurityStatus                 (const mktdata::MessageHeader &, char *, const int);
-    void OnChannelReset                   (const mktdata::MessageHeader &, char *, const int);
-    void OnSnapshotFullRefresh            (const mktdata::MessageHeader &, char *, const int);
+    void OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnRefreshVolume                  (const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnRefreshTrade                   (const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnRefreshTradeSummary            (const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnRefreshDailyStatistics         (const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnRefreshSessionStatistics       (const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnRefreshLimitsBanding           (const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnRefreshSecurityDefinitionFuture(const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnRefreshSecurityDefinitionSpread(const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnQuoteRequest                   (const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnSecurityStatus                 (const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnChannelReset                   (const unsigned short, const mktdata::MessageHeader &, char *, const int);
+    void OnSnapshotFullRefresh            (const unsigned short, const mktdata::MessageHeader &, char *, const int);
 
   private:
 
