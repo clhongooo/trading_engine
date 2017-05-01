@@ -58,6 +58,7 @@ class SharedObjects
     boost::shared_ptr<OrderBookCache> GetOrderBookCache();
     void AddOrderBookIDInChnl(unsigned short, unsigned long);
     set<unsigned long> * GetOrderBookIDInChnl(unsigned short);
+    void ResetOrderBooksInChnl(unsigned short);
 
     // //--------------------------------------------------
     // // Spread Table
@@ -111,6 +112,12 @@ class SharedObjects
     //boost::shared_mutex m_SysStateMutex; // for less overhead
     bool ThreadShouldExit();
     void SetSystemState(ESysState);
+
+    //--------------------------------------------------
+    // Instrument Mapping
+    //--------------------------------------------------
+    string GetSymbolFromInstrumentID(const unsigned long);
+    void AddInstrumentIDToSymbolMapping(const unsigned long, const string &);
 
     //--------------------------------------------------
     void SetProgramStartTime();
@@ -179,11 +186,18 @@ class SharedObjects
     // map<unsigned long,unsigned short>      m_SpreadTable; // OrderBookID
     // boost::shared_mutex                    m_SpreadTableMutex;
 
+    //--------------------------------------------------
+    // Instrument Mapping
+    // OMD-D : OrderBookID - Symbol
+    // CME   : InstrumentID - Symbol
+    //--------------------------------------------------
+    map<unsigned long, string>             m_InstrumentMap;
+    boost::shared_mutex                    m_InstrumentMapMutex;
 
     //--------------------------------------------------
     // Program start time
     //--------------------------------------------------
-    boost::posix_time::ptime                       m_ProgramStartTime;
+    boost::posix_time::ptime               m_ProgramStartTime;
 };
 
 #endif

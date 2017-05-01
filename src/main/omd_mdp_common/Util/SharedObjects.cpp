@@ -600,6 +600,15 @@ set<unsigned long>* SharedObjects::GetOrderBookIDInChnl(unsigned short channelid
   return m_OrderBookIDInEachChnl[channelid];
 }
 
+void SharedObjects::ResetOrderBooksInChnl(unsigned short channelid)
+{
+  set<unsigned long> * pset = m_OrderBookIDInEachChnl[channelid];
+  for (set<unsigned long>::iterator its = pset->begin(); its != pset->end(); ++its)
+    m_OrderBookCache->GetOrderBook(*its)->Reset();
+  return;
+}
+
+
 // //--------------------------------------------------
 // // Spread Table
 // //--------------------------------------------------
@@ -633,3 +642,17 @@ boost::posix_time::ptime SharedObjects::GetProgramStartTime() const
   return m_ProgramStartTime;
 }
 
+string SystemConfig::GetSymbolFromInstrumentID(const unsigned long instrumentID)
+{
+  boost::shared_lock<boost::shared_mutex> lock(m_InstrumentMapMutex);
+
+  map<unsigned long, string>::iterator it = m_InstrumentMap.find(instrumentID);
+  if (it == m_InstrumentMap.end()) return "";
+  else                             return it->second;
+}
+
+void SharedObjects::AddInstrumentIDToSymbolMapping(const unsigned long instrumentID, const string & symbol)
+{
+  boost::unique_lock<boost::shared_mutex> lock(m_InstrumentMapMutex);
+  m_InstrumentMap[instrumentID] = symbol;
+}
