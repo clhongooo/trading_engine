@@ -20,6 +20,8 @@
 #include "ThreadHealthMonitor.h"
 #include "SFunctional.h"
 #include <boost/shared_ptr.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/join.hpp>
 #include <cstdio>
 #include <cstring>
 

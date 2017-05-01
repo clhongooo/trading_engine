@@ -355,12 +355,16 @@ void RefreshProcessor_OMD::Run()
       //--------------------------------------------------
       // Reset Order Books of this particular channel
       //--------------------------------------------------
-      set<unsigned long> * pset = m_ShrObj->GetOrderBookIDInChnl(m_ChannelID);
-      set<unsigned long>::iterator its;
-      for (its = pset->begin(); its != pset->end(); ++its)
       {
-        m_ShrObj->GetOrderBookCache()->GetOrderBook(*its)->Reset();
-        m_Logger->Write(Logger::INFO,"PreProcessor: ChannelID:%u. Resetting OrderBook %u upon reception of OMD_SEQUENCE_RESET.", m_ChannelID, *its);
+        m_ShrObj->ResetOrderBooksInChnl(m_ChannelID);
+        set<unsigned long> * pset = m_ShrObj->GetOrderBookIDInChnl(m_ChannelID);
+        vector<unsigned long> vOBID(pset->size());
+        std::copy(pset->begin(), pset->end(), vOBID.begin());
+
+        vector<string> vsOBID = FMap(vOBID, std::function<string(const unsigned long&)>([](const unsigned long& i) { return boost::lexical_cast<string>(i); }));
+        const string sOBIDs = boost::algorithm::join(vsOBID, ",");
+        m_Logger->Write(Logger::INFO,"PreProcessor: ChannelID:%u. Resetting OrderBooks upon reception of OMD_SEQUENCE_RESET: %s",
+                        m_ChannelID, sOBIDs.c_str());
       }
 
       //--------------------------------------------------
