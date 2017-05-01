@@ -642,7 +642,7 @@ boost::posix_time::ptime SharedObjects::GetProgramStartTime() const
   return m_ProgramStartTime;
 }
 
-string SystemConfig::GetSymbolFromInstrumentID(const unsigned long instrumentID)
+string SharedObjects::GetSymbolFromInstrumentID(const unsigned long instrumentID)
 {
   boost::shared_lock<boost::shared_mutex> lock(m_InstrumentMapMutex);
 

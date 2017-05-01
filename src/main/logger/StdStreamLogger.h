@@ -20,6 +20,7 @@ class StdStreamLogger {
 
     void SetLogLevel(LogLevel);
     LogLevel GetLogLevel() const;
+    bool NeedToPrint(const LogLevel) const;
     void Write(const LogLevel, const char *, ...);
 
     static LogLevel m_LogLevel;

@@ -36,3 +36,10 @@ void StdStreamLogger::Write(const LogLevel loglev, const char *fmt, ...)
 
   fprintf(stdout, "\n");
 }
+
+bool StdStreamLogger::NeedToPrint(const LogLevel lev) const
+{
+  if (lev <= m_LogLevel) return true;
+  else return false;
+}
+

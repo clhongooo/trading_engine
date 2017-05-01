@@ -144,3 +144,9 @@ void Logger::Write(const LogLevel lev, const char *fmt, ...)
 
   va_end (args);
 }
+
+bool Logger::NeedToPrint(const LogLevel lev) const
+{
+  if (lev <= m_LogLevel) return true;
+  else return false;
+}

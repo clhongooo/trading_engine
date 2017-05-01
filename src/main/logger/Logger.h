@@ -56,13 +56,14 @@ PANTHEIOS_CALL(int) pantheios_fe_isSeverityLogged(void*,int severity,int);
 
 class Logger {
   public:
-    enum LogLevel {EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG};
+    enum LogLevel {EMERGENCY=0, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG};
 
     static boost::shared_ptr<Logger> Instance();
     ~Logger();
 
     void SetLogLevel(LogLevel);
     LogLevel GetLogLevel() const;
+    bool NeedToPrint(const LogLevel) const;
     void SetPath(const char*);
     void Write(const LogLevel, const char *, ...);
 
