@@ -124,7 +124,7 @@ void RefreshProcessor_MDP::Run()
     if (mmph->PktSeqNum != MDP_REFRESH_COMPLETE || mmph->PktSize != MDP_REFRESH_COMPLETE)
     {
       m_LastCheckedAdjSeqNo++;
-      m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Not MDP_REFRESH_COMPLETE", m_ChannelID);
+      m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Not MDP_REFRESH_COMPLETE. m_LastCheckedAdjSeqNo: %u m_MsgCirBuf_RF->Size(): %u", m_ChannelID, m_LastCheckedAdjSeqNo, m_MsgCirBuf_RF->Size());
       continue;
     }
 

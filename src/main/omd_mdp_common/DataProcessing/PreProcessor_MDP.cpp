@@ -64,7 +64,7 @@ void PreProcessor_MDP::Run()
       m_MsgCirBuf->GetLatestSeqNo(m_LocalLastAdjSeqNo);
       m_LocalLastAdjSeqNo++;
       m_MsgCirBuf->PushMsg(&m_MDP_Refresh_Complete[0],m_LocalLastAdjSeqNo,ulTStamp);
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : Manually inserted MDP_REFRESH_COMPLETE.", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port());
+      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_LocalLastAdjSeqNo);
     }
 
     //--------------------------------------------------
