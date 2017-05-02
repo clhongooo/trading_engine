@@ -181,7 +181,7 @@ void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, 
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
 
   unsigned short usMsgSize = READ_UINT16(pTArg);
-  if (usMsgSize > MAX_OMD_PACKET_SIZE) return; // ignore erroneous msg
+  // if (usMsgSize > MAX_OMD_PACKET_SIZE) return; // ignore erroneous msg
 
   //--------------------------------------------------
   // Just ignore old data
