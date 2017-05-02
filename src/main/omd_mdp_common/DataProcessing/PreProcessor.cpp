@@ -16,8 +16,6 @@ PreProcessor::PreProcessor(const McastIdentifier & mi) :
   m_PrintPreProcSeqNoAsInfo(false),
   m_McastIdentifier(mi),
   m_ChannelID(0),
-  // m_LastUnadjSeqNo(0),
-  // m_PrevPktHdrTime(0),
   m_MaxOneTimeAlloc(0),
   m_TrashSeqNoGapLargerThan(0),
   m_LocalLastAdjSeqNo(0)

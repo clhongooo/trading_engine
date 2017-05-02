@@ -10,6 +10,15 @@ void RefreshProcessor_MDP::Run()
     m_ThreadHealthMon->ReportThatIAmHealthy(ThreadHealthMonitor::REFRESHPROCESSOR, m_ChannelID);
 
     //--------------------------------------------------
+    // System shutdown
+    //--------------------------------------------------
+    if (m_ShrObj->ThreadShouldExit())
+    {
+      m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Stopping.", m_ChannelID);
+      return;
+    }
+
+    //--------------------------------------------------
     // Init / Self-correction
     //--------------------------------------------------
     // FIXME what's this
@@ -22,18 +31,6 @@ void RefreshProcessor_MDP::Run()
     if      (m_LastCheckedAdjSeqNo == 0                       ) m_LastCheckedAdjSeqNo = uiRFStartSeqNo;
     else if (m_LastCheckedAdjSeqNo < uiRFStartSeqNo           ) m_LastCheckedAdjSeqNo = uiRFStartSeqNo;
     else if (m_LastCheckedAdjSeqNo > uiRFStartSeqNo + ulRFSize) m_LastCheckedAdjSeqNo = uiRFStartSeqNo; // the cir buffer must have been reset...
-
-    m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. m_LastCheckedAdjSeqNo: %u uiRFStartSeqNo: %u ulRFSize: %u",
-                    m_ChannelID, m_LastCheckedAdjSeqNo, uiRFStartSeqNo, ulRFSize);
-
-    //--------------------------------------------------
-    // System shutdown
-    //--------------------------------------------------
-    if (m_ShrObj->ThreadShouldExit())
-    {
-      m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Stopping.", m_ChannelID);
-      return;
-    }
 
     //--------------------------------------------------
     // Get latest seq no
@@ -68,7 +65,6 @@ void RefreshProcessor_MDP::Run()
     if (m_MsgCirBuf_RF->Empty() || !bR || (bR && uiLatestAdjSeqNo < m_LastCheckedAdjSeqNo))
     {
       boost::this_thread::sleep(boost::posix_time::milliseconds(m_RefreshProcSleepMillisec));
-      m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. uiLatestAdjSeqNo: %u m_LastCheckedAdjSeqNo: %u.", m_ChannelID, uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
       continue;
     }
 
@@ -87,22 +83,12 @@ void RefreshProcessor_MDP::Run()
     {
       // Way too old m_LastCheckedAdjSeqNo
       m_LastCheckedAdjSeqNo = m_MsgCirBuf_RF->GetStartSeqNo();
+      m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. DAMN", m_ChannelID);
       continue;
     }
     else if (!bRChkDirFlgTS && m_LastCheckedAdjSeqNo > uiLatestAdjSeqNo)
     {
       m_LastCheckedAdjSeqNo = uiLatestAdjSeqNo;
-      continue;
-    }
-    else if (bRChkDirFlgTS && !bDirtyFlag && uiLatestAdjSeqNo > m_LastCheckedAdjSeqNo + 20)
-    {
-      // Cir buffer entry still not filled. But we may already be lagging behind. So skip.
-      m_LastCheckedAdjSeqNo++;
-      continue;
-    }
-    else if (bRChkDirFlgTS && !bDirtyFlag && uiLatestAdjSeqNo <= m_LastCheckedAdjSeqNo + 20)
-    {
-      // Cir buffer entry still not filled. Can wait.
       continue;
     }
 
@@ -123,6 +109,8 @@ void RefreshProcessor_MDP::Run()
     const Modified_MDP_Packet_Header * mmph = (Modified_MDP_Packet_Header *) pbPkt;
     if (mmph->PktSeqNum != MDP_REFRESH_COMPLETE || mmph->PktSize != MDP_REFRESH_COMPLETE)
     {
+      m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Not MDP_REFRESH_COMPLETE. m_LastCheckedAdjSeqNo: %u uiRFStartSeqNo: %u ulRFSize: %u uiLatestAdjSeqNo: %u mmph->PktSeqNum: %u mmph->PktSize: %u",
+                      m_ChannelID, m_LastCheckedAdjSeqNo, uiRFStartSeqNo, ulRFSize, uiLatestAdjSeqNo, mmph->PktSeqNum, mmph->PktSize);
       m_LastCheckedAdjSeqNo++;
       m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Not MDP_REFRESH_COMPLETE. m_LastCheckedAdjSeqNo: %u m_MsgCirBuf_RF->Size(): %u", m_ChannelID, m_LastCheckedAdjSeqNo, m_MsgCirBuf_RF->Size());
       continue;
@@ -131,73 +119,72 @@ void RefreshProcessor_MDP::Run()
     //--------------------------------------------------
     // If MDP_REFRESH_COMPLETE
     //--------------------------------------------------
-    m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. MDP_REFRESH_COMPLETE", m_ChannelID);
     VAL & uiAdjSeqNoOfRefCompl = m_LastCheckedAdjSeqNo; // just for easy reading
+    m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Received MDP_REFRESH_COMPLETE", m_ChannelID);
+    m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
 
-    bool bProcessThisRefreshBatch = true;
-
-    if (!m_ShrObj->CheckRefreshActivatnStatus(m_ChannelID))
-    {
-      m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. MDP_REFRESH_COMPLETE received. Will purge this refresh batch since refresh mode is not activated.", m_ChannelID);
-      bProcessThisRefreshBatch = false;
-    }
-
-    short iNoOfTimesChecked = 0;
-    for (;;)
-    {
-      uint32_t uiSmltMissingAdjSeqNo = 0;
-      if (bProcessThisRefreshBatch &&
-          (m_MsgCirBuf_RF->GetSmallestMissingSeqNo(uiSmltMissingAdjSeqNo) && uiSmltMissingAdjSeqNo < uiAdjSeqNoOfRefCompl))
-      {
-        if (iNoOfTimesChecked == 0)
-        {
-          m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. MDP_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Give 2nd chance. Wait 2 more seconds.",
-                          m_ChannelID, uiSmltMissingAdjSeqNo);
-          boost::this_thread::sleep(boost::posix_time::seconds(2));
-          iNoOfTimesChecked++;
-        }
-        else if (iNoOfTimesChecked > 0)
-        {
-          m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. MDP_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Must wait for the next batch of refresh snapshot.",
-                          m_ChannelID, uiSmltMissingAdjSeqNo);
-          bProcessThisRefreshBatch = false;
-          break;
-        }
-      }
-      else
-        break;
-    }
-
-    {
-      //--------------------------------------------------
-      // Check if we have enough RT packets to continue the snapshots
-      //--------------------------------------------------
-      const uint32_t rfStartSeqNo =  m_MsgCirBuf_RF->GetStartSeqNo();
-      uint32_t rfLatestSeqNo; m_MsgCirBuf_RF->GetLatestSeqNo(rfLatestSeqNo);
-
-      vector<uint32_t> vSeqNo;
-      vSeqNo.push_back(rfStartSeqNo);
-      vSeqNo.push_back(rfLatestSeqNo);
-
-      mktdata::MessageHeader mdpMsgHdr;
-      FForEach(vSeqNo,[&](const uint32_t iSeqNo) {
-        const BYTE* pbPktTmp = m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(iSeqNo);
-        vector<uint32_t> vLastMsgSeqNum = m_DataProcFunc->Get_LastMsgSeqNumProcessed(pbPktTmp);
-        FForEach(vLastMsgSeqNum,[&](const uint32_t iLastSeqNo) { m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. LastMsgSeqNumProcessed: %u", m_ChannelID, iLastSeqNo); });
-      });
-
-
-      VAL uiRTMsgCirBufStartSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
-    }
-
-    if (!bProcessThisRefreshBatch)
-    {
-      boost::this_thread::sleep(boost::posix_time::milliseconds(m_RefreshProcSleepMillisec));
-      m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
-      continue;
-    }
-
-
+    // bool bProcessThisRefreshBatch = true;
+    //
+    // if (!m_ShrObj->CheckRefreshActivatnStatus(m_ChannelID))
+    // {
+    //   m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. MDP_REFRESH_COMPLETE received. Will purge this refresh batch since refresh mode is not activated.", m_ChannelID);
+    //   bProcessThisRefreshBatch = false;
+    // }
+    //
+    // short iNoOfTimesChecked = 0;
+    // for (;;)
+    // {
+    //   uint32_t uiSmltMissingAdjSeqNo = 0;
+    //   if (bProcessThisRefreshBatch &&
+    //       (m_MsgCirBuf_RF->GetSmallestMissingSeqNo(uiSmltMissingAdjSeqNo) && uiSmltMissingAdjSeqNo < uiAdjSeqNoOfRefCompl))
+    //   {
+    //     if (iNoOfTimesChecked == 0)
+    //     {
+    //       m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. MDP_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Give 2nd chance. Wait 2 more seconds.",
+    //                       m_ChannelID, uiSmltMissingAdjSeqNo);
+    //       boost::this_thread::sleep(boost::posix_time::seconds(2));
+    //       iNoOfTimesChecked++;
+    //     }
+    //     else if (iNoOfTimesChecked > 0)
+    //     {
+    //       m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. MDP_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Must wait for the next batch of refresh snapshot.",
+    //                       m_ChannelID, uiSmltMissingAdjSeqNo);
+    //       bProcessThisRefreshBatch = false;
+    //       break;
+    //     }
+    //   }
+    //   else
+    //     break;
+    // }
+    //
+    // {
+    //   //--------------------------------------------------
+    //   // Check if we have enough RT packets to continue the snapshots
+    //   //--------------------------------------------------
+    //   const uint32_t rfStartSeqNo =  m_MsgCirBuf_RF->GetStartSeqNo();
+    //   uint32_t rfLatestSeqNo; m_MsgCirBuf_RF->GetLatestSeqNo(rfLatestSeqNo);
+    //
+    //   vector<uint32_t> vSeqNo;
+    //   vSeqNo.push_back(rfStartSeqNo);
+    //   vSeqNo.push_back(rfLatestSeqNo);
+    //
+    //   mktdata::MessageHeader mdpMsgHdr;
+    //   FForEach(vSeqNo,[&](const uint32_t iSeqNo) {
+    //     const BYTE* pbPktTmp = m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(iSeqNo);
+    //     vector<uint32_t> vLastMsgSeqNum = m_DataProcFunc->Get_LastMsgSeqNumProcessed(pbPktTmp);
+    //     FForEach(vLastMsgSeqNum,[&](const uint32_t iLastSeqNo) { m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. LastMsgSeqNumProcessed: %u", m_ChannelID, iLastSeqNo); });
+    //   });
+    //
+    //
+    //   VAL uiRTMsgCirBufStartSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
+    // }
+    //
+    // if (!bProcessThisRefreshBatch)
+    // {
+    //   boost::this_thread::sleep(boost::posix_time::milliseconds(m_RefreshProcSleepMillisec));
+    //   m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
+    //   continue;
+    // }
 
     m_LastCheckedAdjSeqNo++;
 
