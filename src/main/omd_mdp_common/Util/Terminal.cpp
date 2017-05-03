@@ -156,7 +156,7 @@ void TerminalSession::handle_read(const boost::system::error_code& error, size_t
           ExpandableCirBuffer4Msg* m_MsgCirBuf_RT = m_ShrObj->GetMsgCirBufPtr(McastIdentifier::REALTIME, usChannelID);
           uint32_t uiSeqNo;
           if (!m_MsgCirBuf_RT->GetLatestSeqNo(uiSeqNo)) uiSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
-          m_MsgCirBuf_RT->PushMsg((BYTE *)byteDummyMsg, ++uiSeqNo, 1);
+          m_MsgCirBuf_RT->PushMsg((BYTE *)byteDummyMsg, ++uiSeqNo, 1,READ_UINT16((BYTE*)byteDummyMsg));
         }
       }
       return;

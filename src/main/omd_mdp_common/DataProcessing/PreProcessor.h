@@ -62,7 +62,6 @@ class PreProcessor {
     // uint32_t                   m_LastUnadjSeqNo;
     char                       m_JsonBuffer[JSON_BUFFER_SIZE];
     char                       m_NameBuffer[256];
-    vector<char>               m_MDP_Refresh_Complete;
     boost::posix_time::ptime   m_ProgramStartTime;
     // uint64_t                   m_PrevPktHdrTime;
     unsigned long              m_MaxOneTimeAlloc;
@@ -82,9 +81,11 @@ class PreProcessor_OMD : public PreProcessor {
 
 class PreProcessor_MDP : public PreProcessor {
   public:
-    PreProcessor_MDP(const McastIdentifier & m) : PreProcessor(m) {}
+    PreProcessor_MDP(const McastIdentifier &);
     virtual ~PreProcessor_MDP() {}
     void Run();
+  private:
+    vector<char> m_MDP_Refresh_Complete;
 };
 
 class PreProcessorFactory {

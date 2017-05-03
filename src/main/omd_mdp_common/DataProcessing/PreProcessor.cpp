@@ -86,14 +86,4 @@ PreProcessor::PreProcessor(const McastIdentifier & mi) :
   //--------------------------------------------------
   m_PrintPreProcSeqNoAsInfo= m_SysCfg->CheckIfPrintPreProcSeqNoAsInfo();
 
-  //--------------------------------------------------
-  // set MDP_REFRESH_COMPLETE
-  //--------------------------------------------------
-  m_MDP_Refresh_Complete.reserve(sizeof(Modified_MDP_Packet_Header));
-  m_MDP_Refresh_Complete.insert(m_MDP_Refresh_Complete.begin(), sizeof(Modified_MDP_Packet_Header), '\0');
-  Modified_MDP_Packet_Header mmph;
-  mmph.PktSeqNum = MDP_REFRESH_COMPLETE;
-  mmph.PktSize   = MDP_REFRESH_COMPLETE;
-  memcpy(&m_MDP_Refresh_Complete[0],&mmph,sizeof(Modified_MDP_Packet_Header));
-
 }

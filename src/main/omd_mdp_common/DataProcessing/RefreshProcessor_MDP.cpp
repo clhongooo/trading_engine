@@ -91,6 +91,11 @@ void RefreshProcessor_MDP::Run()
       m_LastCheckedAdjSeqNo = uiLatestAdjSeqNo;
       continue;
     }
+    else if (bRChkDirFlgTS && !bDirtyFlag)
+    {
+      m_LastCheckedAdjSeqNo++;
+      continue;
+    }
 
     //--------------------------------------------------
     // Look at the packet pointed of PktSeqNum m_LastCheckedAdjSeqNo
@@ -112,7 +117,6 @@ void RefreshProcessor_MDP::Run()
       m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Not MDP_REFRESH_COMPLETE. m_LastCheckedAdjSeqNo: %u uiRFStartSeqNo: %u ulRFSize: %u uiLatestAdjSeqNo: %u mmph->PktSeqNum: %u mmph->PktSize: %u",
                       m_ChannelID, m_LastCheckedAdjSeqNo, uiRFStartSeqNo, ulRFSize, uiLatestAdjSeqNo, mmph->PktSeqNum, mmph->PktSize);
       m_LastCheckedAdjSeqNo++;
-      m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Not MDP_REFRESH_COMPLETE. m_LastCheckedAdjSeqNo: %u m_MsgCirBuf_RF->Size(): %u", m_ChannelID, m_LastCheckedAdjSeqNo, m_MsgCirBuf_RF->Size());
       continue;
     }
 
@@ -121,6 +125,7 @@ void RefreshProcessor_MDP::Run()
     //--------------------------------------------------
     VAL & uiAdjSeqNoOfRefCompl = m_LastCheckedAdjSeqNo; // just for easy reading
     m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Received MDP_REFRESH_COMPLETE", m_ChannelID);
+    m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. m_MsgCirBuf_RF->Size() %u uiAdjSeqNoOfRefCompl: %u", m_ChannelID, m_MsgCirBuf_RF->Size(),  uiAdjSeqNoOfRefCompl);
     m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
 
     // bool bProcessThisRefreshBatch = true;

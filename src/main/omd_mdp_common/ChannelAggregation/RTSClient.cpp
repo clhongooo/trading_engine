@@ -904,7 +904,7 @@ void RTSClient::Run()
               m_DataProcFunc->ProcessMessageForTransmission(pbMsg, READ_UINT16(pbMsg+2));
               //--------------------------------------------------
 
-              m_MsgCirBuf->PushMsg(pbMsg,uiUnadjSeqNo+uiLatestRTOffset,ulSendTime); // Not the current local server time, but the time in the packet header
+              m_MsgCirBuf->PushMsg(pbMsg,uiUnadjSeqNo+uiLatestRTOffset,ulSendTime,READ_UINT16((BYTE*)pbMsg)); // Not the current local server time, but the time in the packet header
               uiUnadjSeqNo++;
               m_BufBeginIdx += READ_UINT16(pbMsg);
 

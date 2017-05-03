@@ -93,9 +93,9 @@ void TestTriggeringRTSClient::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
-    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 11
+    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no gap here, gap size == 11
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector *dci = new DataCompletenessInspector(uiChannelID,true); //deliberately use heap rather than stack, so that undead threads won't crash
@@ -147,9 +147,9 @@ void TestTriggeringRTSClient::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
-    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 11
+    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no gap here, gap size == 11
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector *dci = new DataCompletenessInspector(uiChannelID,true); //deliberately use heap rather than stack, so that undead threads won't crash
@@ -200,9 +200,9 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
-    pMsgCirBuf->PushMsg(pbMsg,25,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 4, but that's smaller than our setting
+    pMsgCirBuf->PushMsg(pbMsg,25,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no gap here, gap size == 4, but that's smaller than our setting
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
 
@@ -254,9 +254,9 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // in i-th millisec
 
-    pMsgCirBuf->PushMsg(pbMsg,24,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
+    pMsgCirBuf->PushMsg(pbMsg,24,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
 
     boost::this_thread::sleep(boost::posix_time::seconds(9)); // time gap larger than threshold
 
@@ -308,9 +308,9 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // in i-th millisec
 
-    pMsgCirBuf->PushMsg(pbMsg,24,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
+    pMsgCirBuf->PushMsg(pbMsg,24,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
 
@@ -362,9 +362,9 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // in i-th millisec
 
-    pMsgCirBuf->PushMsg(pbMsg,21,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+    pMsgCirBuf->PushMsg(pbMsg,21,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
     DataCompletenessInspector *dci = new DataCompletenessInspector(uiChannelID,true); //deliberately use heap rather than stack, so that undead threads won't crash
     boost::thread dciThd(&DataCompletenessInspector::Run,dci);
@@ -415,9 +415,9 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // in i-th millisec
 
-    pMsgCirBuf->PushMsg(pbMsg,99,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no. gap here, seq no gap is larger than trigger threshold.
+    pMsgCirBuf->PushMsg(pbMsg,99,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no. gap here, seq no gap is larger than trigger threshold.
 
     boost::this_thread::sleep(boost::posix_time::seconds(3)); // time gap larger than threshold
 
@@ -470,8 +470,8 @@ void TestTriggeringRTSClient::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
-    pMsgCirBuf->PushMsg(pbMsg,999,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no. gap here
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // in i-th millisec
+    pMsgCirBuf->PushMsg(pbMsg,999,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no. gap here
 
     DataCompletenessInspector *dci = new DataCompletenessInspector(uiChannelID,true); //deliberately use heap rather than stack, so that undead threads won't crash
     boost::thread dciThd(&DataCompletenessInspector::Run,dci);
@@ -526,9 +526,9 @@ void TestTriggeringRTSClient::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
-    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 11
+    pMsgCirBuf->PushMsg(pbMsg,35,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no gap here, gap size == 11
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector *dci = new DataCompletenessInspector(uiChannelID,false); //deliberately use heap rather than stack, so that undead threads won't crash

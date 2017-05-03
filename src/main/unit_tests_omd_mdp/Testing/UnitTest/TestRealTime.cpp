@@ -50,7 +50,7 @@ void TestRealTime::RunTest()
     oss->SecurityCode = 9394;
     oss->SecurityTradingStatus = 0;
 
-    for (uint32_t i = 1; i < 1001; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+    for (uint32_t i = 1; i < 1001; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
     boost::this_thread::sleep(boost::posix_time::seconds(2));
     CPPUNIT_ASSERT(pMsgCirBuf->GetStartSeqNo() == 1);

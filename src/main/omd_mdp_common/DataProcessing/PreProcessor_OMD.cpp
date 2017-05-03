@@ -325,7 +325,7 @@ void PreProcessor_OMD::Run()
 
         if (!DealingWithSeqNoGaps(m_LocalLastBaseSeqNo)) continue;
 
-        m_MsgCirBuf->PushMsg(pbMsg,m_LocalLastBaseSeqNo,ulTStamp); //should use our local time rather than the time in the OMD packet header
+        m_MsgCirBuf->PushMsg(pbMsg,m_LocalLastBaseSeqNo,ulTStamp,READ_UINT16((BYTE*)pbMsg)); //should use our local time rather than the time in the OMD packet header
 
         //--------------------------------------------------
         // Now purge everything in m_MsgCirBuf before the seq reset, otherwise any (obsolete) missing seq no before the reset will prevent RealTimeProcessor from doing things
@@ -347,7 +347,7 @@ void PreProcessor_OMD::Run()
                           uiArtificialRFAdjSeqNo);
 
           m_ShrObj->AddRFChnlSeqNoOffset(m_ChannelID, uiArtificialRFAdjSeqNo);
-          m_MsgCirBuf_RF->PushMsg(pbMsg,uiArtificialRFAdjSeqNo,ulTStamp);
+          m_MsgCirBuf_RF->PushMsg(pbMsg,uiArtificialRFAdjSeqNo,ulTStamp,READ_UINT16((BYTE*)pbMsg));
           m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiArtificialRFAdjSeqNo);
           m_ShrObj->AddRFSeqResetAlreadyHandled(m_ChannelID, ulRelTime);
         }
@@ -368,7 +368,7 @@ void PreProcessor_OMD::Run()
         uint32_t uiAdjSeqNo = iUnadjSeqNo + m_LocalLastBaseSeqNo;
         if (!DealingWithSeqNoGaps(uiAdjSeqNo)) continue;
 
-        m_MsgCirBuf->PushMsg(pbMsg,uiAdjSeqNo,ulTStamp);
+        m_MsgCirBuf->PushMsg(pbMsg,uiAdjSeqNo,ulTStamp,READ_UINT16((BYTE*)pbMsg));
         // m_LastUnadjSeqNo = iUnadjSeqNo;
       }
 

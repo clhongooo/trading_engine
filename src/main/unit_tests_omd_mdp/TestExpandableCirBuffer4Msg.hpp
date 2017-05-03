@@ -44,7 +44,7 @@ void TestExpandableCirBuf4MsgProducer(UTest ut)
       //specially arranged to write to ctrlExptMsg first because at our consumer side, we are relying on the existence of ctrlExptMsg
       ctrlExptMsg.push(iRand);
       WRITE_UINT32(baTestMsg+2,iRand);
-      ecbMsg->PushMsg((BYTE*)baTestMsg,iSeqNoP++,8888);
+      ecbMsg->PushMsg((BYTE*)baTestMsg,iSeqNoP++,8888,READ_UINT16((BYTE*)baTestMsg));
     }
     boost::this_thread::sleep(boost::posix_time::milliseconds(30));
   }
@@ -95,7 +95,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
 
     seqno = 999;
     tstamp = 8888;
-    ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp);
+    ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp,READ_UINT16((BYTE*)baTestMsg));
     ut.AssertF(ecbMsg->Empty(),             __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(ecbMsg->Size() == 999,        __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(ecbMsg->GetStartSeqNo() == 1, __FILE__, __FUNCTION__, __LINE__);
@@ -176,7 +176,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
     uint32_t seqno = 1000+i;
     uint64_t tstamp = 888+i;
     WRITE_UINT32(baTestMsg+2,i); // +2 to skip msg size
-    ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp);
+    ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp,READ_UINT16((BYTE*)baTestMsg));
     ut.Assert(ecbMsg->Size() == i+1, __FILE__, __FUNCTION__, __LINE__);
     ut.AssertF(ecbMsg->Empty(), __FILE__, __FUNCTION__, __LINE__);
 
@@ -267,7 +267,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
     uint32_t seqno = 1467;
     uint64_t tstamp = 998;
     WRITE_UINT32(baTestMsg+2,9394);
-    ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp);
+    ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp,READ_UINT16((BYTE*)baTestMsg));
     ut.Assert(ecbMsg->Size() == 1, __FILE__, __FUNCTION__, __LINE__);
     ut.AssertF(ecbMsg->Empty(), __FILE__, __FUNCTION__, __LINE__);
 
@@ -302,7 +302,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
     seqno = 1480;
     tstamp = 999;
     WRITE_UINT32(baTestMsg+2,9395);
-    ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp);
+    ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp,READ_UINT16((BYTE*)baTestMsg));
     ut.Assert(ecbMsg->Size() == 14, __FILE__, __FUNCTION__, __LINE__);
     ut.AssertF(ecbMsg->Empty(), __FILE__, __FUNCTION__, __LINE__);
 
@@ -361,7 +361,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
     seqno = 1475;
     tstamp = 1000;
     WRITE_UINT32(baTestMsg+2,9396);
-    ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp);
+    ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp,READ_UINT16((BYTE*)baTestMsg));
     ut.Assert(ecbMsg->Size() == 14, __FILE__, __FUNCTION__, __LINE__);
     ut.AssertF(ecbMsg->Empty(), __FILE__, __FUNCTION__, __LINE__);
 
@@ -409,7 +409,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
       seqno = 1468;
       tstamp = 1000;
       WRITE_UINT32(baTestMsg+2,9399);
-      ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp);
+      ecbMsg->PushMsg((BYTE*)baTestMsg,seqno,tstamp,READ_UINT16((BYTE*)baTestMsg));
       ut.Assert(ecbMsg->Size() == 14, __FILE__, __FUNCTION__, __LINE__);
       ut.AssertF(ecbMsg->Empty(), __FILE__, __FUNCTION__, __LINE__);
 
@@ -752,8 +752,8 @@ void TestExpandableCirBuffer4Msg2(UTest & ut)
   ut.Assert(ecbMsg2->GetAllMissingSeqNo() == ""               , __FILE__, __FUNCTION__, __LINE__);
 
   uint32_t i = 1;
-  for (i = 1; i < 11; ++i) ecbMsg2->PushMsg(pbMsg,i,8888+i);
-  ecbMsg2->PushMsg(pbMsg,21,8888+31); // Introduce gap here 
+  for (i = 1; i < 11; ++i) ecbMsg2->PushMsg(pbMsg,i,8888+i,READ_UINT16((BYTE*)pbMsg));
+  ecbMsg2->PushMsg(pbMsg,21,8888+31,READ_UINT16((BYTE*)pbMsg)); // Introduce gap here 
 
   uint32_t seqno;
   ut.Assert(ecbMsg2->GetSmallestMissingSeqNo(seqno), __FILE__, __FUNCTION__, __LINE__);
@@ -763,10 +763,10 @@ void TestExpandableCirBuffer4Msg2(UTest & ut)
 
   ut.Assert(ecbMsg2->GetAllMissingSeqNo() == "11-20"          , __FILE__, __FUNCTION__, __LINE__);
 
-  ecbMsg2->PushMsg(pbMsg,31,8888+31); // Introduce gap here 
+  ecbMsg2->PushMsg(pbMsg,31,8888+31,READ_UINT16((BYTE*)pbMsg)); // Introduce gap here 
   ut.Assert(ecbMsg2->GetAllMissingSeqNo() == "11-20,22-30"    , __FILE__, __FUNCTION__, __LINE__);
 
-  ecbMsg2->PushMsg(pbMsg,33,8888+31); // Introduce gap here 
+  ecbMsg2->PushMsg(pbMsg,33,8888+31,READ_UINT16((BYTE*)pbMsg)); // Introduce gap here 
   ut.Assert(ecbMsg2->GetAllMissingSeqNo() == "11-20,22-30,32" , __FILE__, __FUNCTION__, __LINE__);
 
 
@@ -782,8 +782,8 @@ void TestExpandableCirBuffer4Msg3(UTest & ut)
 
   for (unsigned int j = 10; j < 4000; j+=19) // make sure it's smaller than 409600, which is the max 1 time allocation set in Main.cpp
   {
-    ecbMsg3->PushMsg(pbMsg,1,8888);
-    ecbMsg3->PushMsg(pbMsg,j,8889);
+    ecbMsg3->PushMsg(pbMsg,1,8888,READ_UINT16((BYTE*)pbMsg));
+    ecbMsg3->PushMsg(pbMsg,j,8889,READ_UINT16((BYTE*)pbMsg));
 
     ut.Assert(ecbMsg3->Size() == j,                               __FILE__, __FUNCTION__, __LINE__);
     ut.AssertF(ecbMsg3->Empty(),                                  __FILE__, __FUNCTION__, __LINE__);
@@ -816,7 +816,7 @@ void TestExpandableCirBuffer4Msg3(UTest & ut)
     ut.Assert(ecbMsg3->Empty(),                                   __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(ecbMsg3->GetStartSeqNo() == j+1,                    __FILE__, __FUNCTION__, __LINE__);
 
-    ecbMsg3->PushMsg(pbMsg,j+100,9000);
+    ecbMsg3->PushMsg(pbMsg,j+100,9000,READ_UINT16((BYTE*)pbMsg));
     ecbMsg3->GetSmallestMissingSeqNo(uiSmlSeqNo);
     ut.Assert(uiSmlSeqNo == j+1,                                  __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(ecbMsg3->Size() == 100,                             __FILE__, __FUNCTION__, __LINE__);
@@ -833,10 +833,10 @@ void TestExpandableCirBuffer4Msg3(UTest & ut)
   uint32_t uiSmlMissSeqNo;
   ecbMsg3->Reset();
 
-  ecbMsg3->PushMsg(pbMsg,1,8888);
+  ecbMsg3->PushMsg(pbMsg,1,8888,READ_UINT16((BYTE*)pbMsg));
   unsigned long ulLargeNo = 900000;
   unsigned long ulMaxAlloc = 409600;
-  ecbMsg3->PushMsg(pbMsg,ulLargeNo,8888);
+  ecbMsg3->PushMsg(pbMsg,ulLargeNo,8888,READ_UINT16((BYTE*)pbMsg));
 
   ecbMsg3->GetLatestSeqNo(uiLatestSeqNo);
 
@@ -845,7 +845,7 @@ void TestExpandableCirBuffer4Msg3(UTest & ut)
 
   for (unsigned int i = 1; i < 51; ++i)
   {
-    ecbMsg3->PushMsg(pbMsg,ulLargeNo+i,8888);
+    ecbMsg3->PushMsg(pbMsg,ulLargeNo+i,8888,READ_UINT16((BYTE*)pbMsg));
 
     ut.Assert(ecbMsg3->GetStartSeqNo() == ulLargeNo-ulMaxAlloc+1, __FILE__, __FUNCTION__, __LINE__); //max 1 time alloc
     ut.Assert(ecbMsg3->Size() == ulMaxAlloc+i,                    __FILE__, __FUNCTION__, __LINE__);
@@ -900,8 +900,8 @@ void TestExpandableCirBuffer4Msg4(UTest & ut)
   //--------------------------------------------------
   // Starting from scratch
   //--------------------------------------------------
-  ecbMsg4->PushMsg(pbMsg,4,8999);
-  ecbMsg4->PushMsg(pbMsg,4100,9000);
+  ecbMsg4->PushMsg(pbMsg,4,8999,READ_UINT16((BYTE*)pbMsg));
+  ecbMsg4->PushMsg(pbMsg,4100,9000,READ_UINT16((BYTE*)pbMsg));
 
   uint32_t seqno;
 
@@ -923,7 +923,7 @@ void TestExpandableCirBuffer4Msg4(UTest & ut)
   // // Non-Empty
   // //--------------------------------------------------
   // // No purge
-  // ecbMsg4->PushMsg(pbMsg,4100+4096-1500,9009);
+  // ecbMsg4->PushMsg(pbMsg,4100+4096-1500,9009,READ_UINT16((BYTE*)pbMsg));
   // ut.Assert(ecbMsg4->Size() == 4096+4096-1500, __FILE__, __FUNCTION__, __LINE__);
   // ut.AssertF(ecbMsg4->Empty(), __FILE__, __FUNCTION__, __LINE__);
   // ut.Assert(ecbMsg4->GetLatestSeqNo(seqno), __FILE__, __FUNCTION__, __LINE__);
@@ -935,7 +935,7 @@ void TestExpandableCirBuffer4Msg4(UTest & ut)
   // ut.Assert(seqno == 5, __FILE__, __FUNCTION__, __LINE__);
   //
   // // Purge
-  // ecbMsg4->PushMsg(pbMsg,4100+4096-1500+4096+100,9010);
+  // ecbMsg4->PushMsg(pbMsg,4100+4096-1500+4096+100,9010,READ_UINT16((BYTE*)pbMsg));
   // ut.Assert(ecbMsg4->Size() == 4096, __FILE__, __FUNCTION__, __LINE__);
   // ut.AssertF(ecbMsg4->Empty(), __FILE__, __FUNCTION__, __LINE__);
   // ut.Assert(ecbMsg4->GetLatestSeqNo(seqno), __FILE__, __FUNCTION__, __LINE__);
@@ -963,7 +963,7 @@ void TestExpandableCirBuffer4Msg5(UTest & ut)
     BYTE pbMsg[100];
     WRITE_UINT16(&pbMsg[0],i);
 
-    ecbMsg5->PushMsg(pbMsg,i,i);
+    ecbMsg5->PushMsg(pbMsg,i,i,READ_UINT16((BYTE*)pbMsg));
 
     for (unsigned int j = 1; j < i; ++j)
     {

@@ -49,9 +49,9 @@ void TestRefresh::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
-    pMsgCirBuf->PushMsg(pbMsg,1021,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 1000
+    pMsgCirBuf->PushMsg(pbMsg,1021,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no gap here, gap size == 1000
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap less than threshold
     DataCompletenessInspector dci(uiChannelID,true);
@@ -87,9 +87,9 @@ void TestRefresh::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
-    pMsgCirBuf->PushMsg(pbMsg,421,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 4, but that's smaller than our setting
+    pMsgCirBuf->PushMsg(pbMsg,421,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no gap here, gap size == 4, but that's smaller than our setting
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap less than threshold
     DataCompletenessInspector dci(uiChannelID,true);
@@ -125,9 +125,9 @@ void TestRefresh::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // in i-th millisec
 
-    pMsgCirBuf->PushMsg(pbMsg,24,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
+    pMsgCirBuf->PushMsg(pbMsg,24,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
     boost::this_thread::sleep(boost::posix_time::seconds(6)); // Introduce time gap here, time gap larger than threshold
 
     DataCompletenessInspector dci(uiChannelID,true);
@@ -163,8 +163,8 @@ void TestRefresh::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
-    pMsgCirBuf->PushMsg(pbMsg,24,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // in i-th millisec
+    pMsgCirBuf->PushMsg(pbMsg,24,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no. gap here, but the seq no gap is smaller than trigger threshold.
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector dci(uiChannelID,true);
@@ -201,9 +201,9 @@ void TestRefresh::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // in i-th millisec
 
-    pMsgCirBuf->PushMsg(pbMsg,21,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // no seq num gap
+    pMsgCirBuf->PushMsg(pbMsg,21,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // no seq num gap
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap smaller than threshold
     DataCompletenessInspector dci(uiChannelID,true);
@@ -240,9 +240,9 @@ void TestRefresh::RunTest()
     oss->SecurityTradingStatus = 0;
 
     uint32_t i = 1;
-    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // in i-th millisec
+    for (i = 1; i < 21; ++i) pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // in i-th millisec
 
-    pMsgCirBuf->PushMsg(pbMsg,2020,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no. gap here, seq no gap is larger than trigger threshold.
+    pMsgCirBuf->PushMsg(pbMsg,2020,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no. gap here, seq no gap is larger than trigger threshold.
 
     boost::this_thread::sleep(boost::posix_time::seconds(6)); // time gap larger than threshold
     DataCompletenessInspector dci(uiChannelID,true);
@@ -279,9 +279,9 @@ void TestRefresh::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
-    pMsgCirBuf->PushMsg(pbMsg,1021,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 1000
+    pMsgCirBuf->PushMsg(pbMsg,1021,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no gap here, gap size == 1000
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap less than threshold
     DataCompletenessInspector dci(uiChannelID,true);
@@ -317,9 +317,9 @@ void TestRefresh::RunTest()
 
     uint32_t i = 1;
     for (i = 1; i < 21; ++i)
-      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      pMsgCirBuf->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
-    pMsgCirBuf->PushMsg(pbMsg,1021,SDateTime::GetCurrentUnixTimeInMillisecGMT()); // Introduce seq no gap here, gap size == 1000
+    pMsgCirBuf->PushMsg(pbMsg,1021,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg)); // Introduce seq no gap here, gap size == 1000
 
     boost::this_thread::sleep(boost::posix_time::seconds(1)); // time gap less than threshold
     DataCompletenessInspector dci(uiChannelID,true);
@@ -367,8 +367,8 @@ void TestRefresh::RunTest()
     oss->SecurityCode = 9394;
     oss->SecurityTradingStatus = 0;
 
-    for (uint32_t i = 1; i < 21; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
-    for (uint32_t i = 1; i < 51; ++i) pMsgCirBuf_RT->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+    for (uint32_t i = 1; i < 21; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
+    for (uint32_t i = 1; i < 51; ++i) pMsgCirBuf_RT->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
     boost::this_thread::sleep(boost::posix_time::seconds(1));
     CPPUNIT_ASSERT(pMsgCirBuf_RF->GetStartSeqNo() == 1);
@@ -392,7 +392,7 @@ void TestRefresh::RunTest()
       orc->MsgType = OMD_REFRESH_COMPLETE;
       orc->LastSeqNum = 10;
 
-      pMsgCirBuf_RF->PushMsg(pbMsg,21,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      pMsgCirBuf_RF->PushMsg(pbMsg,21,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
       boost::this_thread::sleep(boost::posix_time::seconds(1));
       CPPUNIT_ASSERT(pMsgCirBuf_RF->GetStartSeqNo() == 22);
@@ -417,14 +417,14 @@ void TestRefresh::RunTest()
       oss->SecurityCode = 9394;
       oss->SecurityTradingStatus = 0;
 
-      for (uint32_t i = 22; i < 31; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      for (uint32_t i = 22; i < 31; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
       OMD_Refresh_Complete* orc = (OMD_Refresh_Complete*)&pbMsg[0];
       orc->MsgSize = sizeof(OMD_Refresh_Complete);
       orc->MsgType = OMD_REFRESH_COMPLETE;
       orc->LastSeqNum = 15;
 
-      pMsgCirBuf_RF->PushMsg(pbMsg,31,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      pMsgCirBuf_RF->PushMsg(pbMsg,31,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
       boost::this_thread::sleep(boost::posix_time::seconds(1));
       CPPUNIT_ASSERT(pMsgCirBuf_RF->GetStartSeqNo() == 32);
@@ -450,15 +450,15 @@ void TestRefresh::RunTest()
       oss->SecurityCode = 9394;
       oss->SecurityTradingStatus = 0;
 
-      for (uint32_t i = 32; i < 35; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
-      for (uint32_t i = 36; i < 91; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      for (uint32_t i = 32; i < 35; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
+      for (uint32_t i = 36; i < 91; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
       OMD_Refresh_Complete* orc = (OMD_Refresh_Complete*)&pbMsg[0];
       orc->MsgSize = sizeof(OMD_Refresh_Complete);
       orc->MsgType = OMD_REFRESH_COMPLETE;
       orc->LastSeqNum = 20;
 
-      pMsgCirBuf_RF->PushMsg(pbMsg,91,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      pMsgCirBuf_RF->PushMsg(pbMsg,91,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
       boost::this_thread::sleep(boost::posix_time::seconds(3)); //since there's a grace waiting period of 2 seconds for the missing msg
       CPPUNIT_ASSERT(pMsgCirBuf_RF->GetStartSeqNo() == 92);
@@ -483,14 +483,14 @@ void TestRefresh::RunTest()
       oss->SecurityCode = 9394;
       oss->SecurityTradingStatus = 0;
 
-      for (uint32_t i = 92; i < 101; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      for (uint32_t i = 92; i < 101; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
       OMD_Refresh_Complete* orc = (OMD_Refresh_Complete*)&pbMsg[0];
       orc->MsgSize = sizeof(OMD_Refresh_Complete);
       orc->MsgType = OMD_REFRESH_COMPLETE;
       orc->LastSeqNum = 5;
 
-      pMsgCirBuf_RF->PushMsg(pbMsg,101,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      pMsgCirBuf_RF->PushMsg(pbMsg,101,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
       boost::this_thread::sleep(boost::posix_time::seconds(1));
       CPPUNIT_ASSERT(pMsgCirBuf_RF->GetStartSeqNo() == 102);
@@ -515,14 +515,14 @@ void TestRefresh::RunTest()
       oss->SecurityCode = 9394;
       oss->SecurityTradingStatus = 0;
 
-      for (uint32_t i = 102; i < 152; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      for (uint32_t i = 102; i < 152; ++i) pMsgCirBuf_RF->PushMsg(pbMsg,i,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
       OMD_Refresh_Complete* orc = (OMD_Refresh_Complete*)&pbMsg[0];
       orc->MsgSize = sizeof(OMD_Refresh_Complete);
       orc->MsgType = OMD_REFRESH_COMPLETE;
       orc->LastSeqNum = 30;
 
-      pMsgCirBuf_RF->PushMsg(pbMsg,152,SDateTime::GetCurrentUnixTimeInMillisecGMT());
+      pMsgCirBuf_RF->PushMsg(pbMsg,152,SDateTime::GetCurrentUnixTimeInMillisecGMT(),READ_UINT16((BYTE*)pbMsg));
 
       boost::this_thread::sleep(boost::posix_time::seconds(1));
       CPPUNIT_ASSERT(pMsgCirBuf_RF->GetStartSeqNo() == 153);

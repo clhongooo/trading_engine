@@ -12,6 +12,9 @@ CONFIG=../conf/cme_mdp/Config_MDP_nrcert.ini
 if [[ $1 == "d" ]]
 then
     gdb --args $BIN $CONFIG
+elif [[ $1 == "v" ]]
+then
+    valgrind -v --tool=memcheck $BIN $CONFIG
 else
     $BIN $CONFIG
 fi

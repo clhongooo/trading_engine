@@ -172,15 +172,14 @@ void ExpandableCirBuffer4Msg::ExpandCapacity()
   m_DqEndIdx.push_back(0);
 }
 
-void ExpandableCirBuffer4Msg::PushMsg(const char* pTArg, const uint32_t iSeqNo, uint64_t uiTStamp)
+void ExpandableCirBuffer4Msg::PushMsg(const char* pTArg, const uint32_t iSeqNo, uint64_t uiTStamp, const unsigned short usMsgSize)
 {
-  PushMsg((const BYTE*) pTArg, iSeqNo, uiTStamp);
+  PushMsg((const BYTE*) pTArg, iSeqNo, uiTStamp, usMsgSize);
 }
-void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, uint64_t uiTStamp)
+void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, uint64_t uiTStamp, const unsigned short usMsgSize)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
 
-  unsigned short usMsgSize = READ_UINT16(pTArg);
   // if (usMsgSize > MAX_OMD_PACKET_SIZE) return; // ignore erroneous msg
 
   //--------------------------------------------------

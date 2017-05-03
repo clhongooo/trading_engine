@@ -47,7 +47,7 @@ using namespace mktdata;
 #define  MDP_QUOTE_REQUEST                       39
 #define  MDP_INSTRUMENT_DEFINITION_OPTION        41
 #define  MDP_REFRESH_TRADE_SUMMARY               42
-#define  MDP_REFRESH_COMPLETE                    87925 // magic num
+#define  MDP_REFRESH_COMPLETE                    4294967000 // magic num
 
 #pragma pack(1)
 typedef struct {
