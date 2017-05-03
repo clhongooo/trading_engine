@@ -112,7 +112,7 @@ void RefreshProcessor_MDP::Run()
     // If not MDP_REFRESH_COMPLETE, keep saving to queue first
     //--------------------------------------------------
     const Modified_MDP_Packet_Header * mmph = (Modified_MDP_Packet_Header *) pbPkt;
-    if (mmph->PktSeqNum != MDP_REFRESH_COMPLETE || mmph->PktSize != MDP_REFRESH_COMPLETE)
+    if (mmph->PktSeqNum != MDP_REFRESH_COMPLETE)
     {
       m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Not MDP_REFRESH_COMPLETE. m_LastCheckedAdjSeqNo: %u uiRFStartSeqNo: %u ulRFSize: %u uiLatestAdjSeqNo: %u mmph->PktSeqNum: %u mmph->PktSize: %u",
                       m_ChannelID, m_LastCheckedAdjSeqNo, uiRFStartSeqNo, ulRFSize, uiLatestAdjSeqNo, mmph->PktSeqNum, mmph->PktSize);

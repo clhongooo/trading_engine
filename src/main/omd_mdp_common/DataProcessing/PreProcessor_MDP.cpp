@@ -75,10 +75,12 @@ void PreProcessor_MDP::Run()
     if (mph->PktSeqNum == 1 && m_McastIdentifier.McastType() == McastIdentifier::REFRESH)
     {
       m_MsgCirBuf->GetLatestSeqNo(m_LocalLastAdjSeqNo);
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size before %u", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_LocalLastAdjSeqNo, m_MsgCirBuf->Size());
+      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size before %u",
+                      m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_LocalLastAdjSeqNo, m_MsgCirBuf->Size());
       m_LocalLastAdjSeqNo++;
       m_MsgCirBuf->PushMsg(&m_MDP_Refresh_Complete[0],m_LocalLastAdjSeqNo,ulTStamp,sizeof(Modified_MDP_Packet_Header));
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size after %u", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_LocalLastAdjSeqNo, m_MsgCirBuf->Size());
+      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size after %u",
+                      m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_LocalLastAdjSeqNo, m_MsgCirBuf->Size());
     }
 
     //--------------------------------------------------
