@@ -65,6 +65,8 @@ void CtpMd::setWriteDataToFile(const string & wdtf)
     m_Logger->Write(StdStreamLogger::ERROR,"File cannot be opened. Exiting.");
     exit(1);
   }
+  if (m_WriteDataToFile) m_Logger->Write(StdStreamLogger::INFO,"Write data to file = true");
+  else                   m_Logger->Write(StdStreamLogger::INFO,"Write data to file = false");
 }
 void CtpMd::SetFlushOnEveryWrite(const bool b)
 {

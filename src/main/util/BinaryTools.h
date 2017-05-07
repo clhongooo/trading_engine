@@ -75,10 +75,10 @@ class BinaryRecorder
       public:
         BinaryWriter(const boost::posix_time::ptime, const string &, const string &, const bool);
         virtual ~BinaryWriter();
-        void WriteHKExSim(const char *) {}
-        void WriteHKExRelTime(const char *) {}
-        void WriteHKExUnixTime(const char *) {}
-        void WriteATUMDIStruct(const ATU_MDI_marketfeed_struct &) {}
+        virtual void WriteHKExSim(const char *) {}
+        virtual void WriteHKExRelTime(const char *) {}
+        virtual void WriteHKExUnixTime(const char *) {}
+        virtual void WriteATUMDIStruct(const ATU_MDI_marketfeed_struct &) {}
         bool IsOutFileReady() const;
       protected:
         boost::posix_time::ptime m_BinRecStartTime;

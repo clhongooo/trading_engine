@@ -982,7 +982,7 @@ void TestExpandableCirBuffer4Msg6(UTest & ut)
   WRITE_UINT16(&pbMsg[0],100);
 
   for (unsigned int j = 1; j < 4096; j++)
-    ecbMsg6->PushMsg(pbMsg,j,j);
+    ecbMsg6->PushMsg(pbMsg,j,j,READ_UINT16((BYTE*)pbMsg));
 
   ecbMsg6->PurgeMsgB4SeqNoInclusive(-1000);
   ecbMsg6->PurgeMsgB4SeqNoInclusive(-1);
