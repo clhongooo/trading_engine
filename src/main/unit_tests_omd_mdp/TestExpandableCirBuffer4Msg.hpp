@@ -26,6 +26,7 @@ ExpandableCirBuffer4Msg *ecbMsg2;
 ExpandableCirBuffer4Msg *ecbMsg3;
 ExpandableCirBuffer4Msg *ecbMsg4;
 ExpandableCirBuffer4Msg *ecbMsg5;
+ExpandableCirBuffer4Msg *ecbMsg6;
 boost::lockfree::queue<unsigned int> ctrlExptMsg(65536);
 const unsigned int iIterationsMsg=20;
 const unsigned int MSGSIZE = 100;
@@ -974,4 +975,22 @@ void TestExpandableCirBuffer4Msg5(UTest & ut)
 
   return;
 }
+
+void TestExpandableCirBuffer4Msg6(UTest & ut)
+{
+  BYTE pbMsg[100];
+  WRITE_UINT16(&pbMsg[0],100);
+
+  for (unsigned int j = 1; j < 4096; j++)
+    ecbMsg6->PushMsg(pbMsg,j,j);
+
+  ecbMsg6->PurgeMsgB4SeqNoInclusive(-1000);
+  ecbMsg6->PurgeMsgB4SeqNoInclusive(-1);
+  ecbMsg6->PurgeMsgB4SeqNoInclusive(0);
+  ecbMsg6->PurgeMsgB4SeqNoInclusive(100);
+  ecbMsg6->PurgeMsgB4SeqNoInclusive(100000);
+  ecbMsg6->PurgeMsgB4SeqNoInclusive(500000);
+  return;
+}
+
 #endif

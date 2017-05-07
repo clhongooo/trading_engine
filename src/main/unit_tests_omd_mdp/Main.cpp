@@ -74,32 +74,38 @@ int main(int argc, const char* argv[])
     ecbMsg3 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
     ecbMsg4 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,4096);
     ecbMsg5 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
+    ecbMsg6 = new ExpandableCirBuffer4Msg(91,3,MSGSIZE,cmm,409600);
     TestExpandableCirBuffer4Msg(ut);
     TestExpandableCirBuffer4Msg2(ut);
     TestExpandableCirBuffer4Msg3(ut);
     TestExpandableCirBuffer4Msg4(ut);
     TestExpandableCirBuffer4Msg5(ut);
+    TestExpandableCirBuffer4Msg6(ut);
     delete ecbMsg;
     delete ecbMsg2;
     delete ecbMsg3;
     delete ecbMsg4;
     delete ecbMsg5;
+    delete ecbMsg6;
 
     ecbMsg  = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
     ecbMsg2 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
     ecbMsg3 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
     ecbMsg4 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,4096);
     ecbMsg5 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
+    ecbMsg6 = new ExpandableCirBuffer4Msg(91,65536,MSGSIZE,cmm,409600);
     TestExpandableCirBuffer4Msg(ut);
     TestExpandableCirBuffer4Msg2(ut);
     TestExpandableCirBuffer4Msg3(ut);
     TestExpandableCirBuffer4Msg4(ut);
     TestExpandableCirBuffer4Msg5(ut);
+    TestExpandableCirBuffer4Msg6(ut);
     delete ecbMsg;
     delete ecbMsg2;
     delete ecbMsg3;
     delete ecbMsg4;
     delete ecbMsg5;
+    delete ecbMsg6;
 
     ut.PrintResult();
   }
