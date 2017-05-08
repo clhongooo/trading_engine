@@ -4,6 +4,8 @@
 #include "PCH.h"
 #include <boost/thread.hpp>
 #include <boost/thread/shared_mutex.hpp>
+#include <boost/range/algorithm_ext/push_back.hpp>
+#include <boost/range/irange.hpp>
 #include <functional>
 #include <algorithm>
 #include <iterator>
@@ -405,5 +407,11 @@ class Tuple4 {
       return "(" + boost::lexical_cast<string>(m_a) + "," + boost::lexical_cast<string>(m_b) + "," + boost::lexical_cast<string>(m_c) + "," + boost::lexical_cast<string>(m_d) + ")";
     }
 };
+
+void FRange(vector<int> vRtn, const int iStart, const int iEnd)
+{
+  vRtn.clear();
+  boost::push_back(vRtn, boost::irange(iStart,iEnd));
+}
 
 #endif /* UTIL_SFUNCTIONAL_H_ */
