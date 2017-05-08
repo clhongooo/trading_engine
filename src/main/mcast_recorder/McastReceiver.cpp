@@ -19,6 +19,7 @@ McastReceiver::McastReceiver(
 {
   string sFile = string(sDataFolder) + "/fmt" + boost::lexical_cast<string>(m_Mode) + "_" + m_Name + "_" + to_iso_string(m_ProgramStartTime).substr(0,15);
   m_BinaryRecorder.SetOutFilePath(sFile, "wb+");
+  m_BinaryRecorder.SetFlushOnEveryWrite(false);
   if (!m_BinaryRecorder.EnableWriter())
   {
     cerr << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ") " << "Cannot open file: " << sFile << endl << flush;
