@@ -408,7 +408,8 @@ class Tuple4 {
     }
 };
 
-void FRange(vector<int> vRtn, const int iStart, const int iEnd)
+  template <typename A>
+void FRange(vector<A> & vRtn, const int iStart, const int iEnd)
 {
   vRtn.clear();
   boost::push_back(vRtn, boost::irange(iStart,iEnd));

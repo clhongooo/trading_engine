@@ -291,6 +291,12 @@ void TestSFunctional::RunTest()
     CPPUNIT_ASSERT(FSum(v) == 50*101);
   }
 
+  {
+    vector<int> vRange;
+    FRange(vRange,100,1000);
+    for (int i = 100; i < 1000; ++i) CPPUNIT_ASSERT(vRange[i-100] == i);
+  }
+
   return;
 }
 
