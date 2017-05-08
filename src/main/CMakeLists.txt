@@ -60,20 +60,20 @@ find_library(ZeroMQ_LIBRARY
 ##################################################
 
 
-#add_subdirectory(atu_tcp_library)
-#add_subdirectory(strategy_engine_common)
-#add_subdirectory(strategy_engine)
-#add_subdirectory(cme_ilink)
-#add_subdirectory(cme_mdp_kenny)
-#add_subdirectory(mcast_recorder)
-#add_subdirectory(ctp_md)
+add_subdirectory(atu_tcp_library)
+add_subdirectory(strategy_engine_common)
+add_subdirectory(strategy_engine)
+add_subdirectory(cme_ilink)
+add_subdirectory(cme_mdp_kenny)
+add_subdirectory(mcast_recorder)
+add_subdirectory(ctp_md)
 add_subdirectory(logger)
 add_subdirectory(util)
 add_subdirectory(omd_mdp_common)
-#add_subdirectory(unit_tests_omd_mdp)
+add_subdirectory(unit_tests_omd_mdp)
 add_subdirectory(omd_mdp)
-#add_subdirectory(bin_mdi_reader)
-#add_subdirectory(unit_tests)
+add_subdirectory(bin_mdi_reader)
+add_subdirectory(unit_tests)
 
 
 include_directories(${PANTHEIOS_INC}
