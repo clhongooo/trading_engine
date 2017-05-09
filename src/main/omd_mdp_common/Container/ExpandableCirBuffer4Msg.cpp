@@ -89,6 +89,14 @@ BYTE* ExpandableCirBuffer4Msg::GetMsgPtrOfSeqNo(const uint32_t iSeqNo)
   else    return NULL;
 }
 
+uint16_t ExpandableCirBuffer4Msg::GetMsgSizeOfSeqNo(const uint32_t iSeqNo)
+{
+  boost::shared_lock<boost::shared_mutex> lock(m_SharedMutex);
+  BYTE* bT = GetPtrOfSeqNoNoLock(iSeqNo);
+  if (bT) return READ_UINT16(bT+DIRTYFLAGSIZE+TIMESTAMPSIZE);
+  else    return 0;
+}
+
 //--------------------------------------------------
 // Return: if there is missing sequence no 
 // Return: (arg) the smallest missing seq no

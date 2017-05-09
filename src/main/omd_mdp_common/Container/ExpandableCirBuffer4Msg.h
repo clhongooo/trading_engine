@@ -59,6 +59,7 @@ class ExpandableCirBuffer4Msg
     void      Reset();
     uint32_t  GetStartSeqNo();
     BYTE*     GetMsgPtrOfSeqNo(const uint32_t);
+    uint16_t  GetMsgSizeOfSeqNo(const uint32_t);
     string    GetAllMissingSeqNo();
     void      WaitForData();
     void      NotifyConsumer();
