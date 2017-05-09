@@ -91,16 +91,12 @@ void RefreshProcessor_MDP::Run()
       m_LastCheckedAdjSeqNo = uiLatestAdjSeqNo;
       continue;
     }
-    else if (bRChkDirFlgTS && !bDirtyFlag)
-    {
-      m_LastCheckedAdjSeqNo++;
-      continue;
-    }
 
     //--------------------------------------------------
     // Look at the packet pointed of PktSeqNum m_LastCheckedAdjSeqNo
     //--------------------------------------------------
     const BYTE *pbPkt = m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(m_LastCheckedAdjSeqNo);
+    const uint16_t usMsgSize = m_MsgCirBuf_RF->GetMsgSizeOfSeqNo(m_LastCheckedAdjSeqNo);
     if (!pbPkt)
     {
       m_Logger->Write(Logger::ERROR,"RefreshProcessor: ChannelID:%u. Inconsistent internal state in circular buffer. Please debug.", m_ChannelID);
@@ -111,11 +107,11 @@ void RefreshProcessor_MDP::Run()
     //--------------------------------------------------
     // If not MDP_REFRESH_COMPLETE, keep saving to queue first
     //--------------------------------------------------
-    const Modified_MDP_Packet_Header * mmph = (Modified_MDP_Packet_Header *) pbPkt;
-    if (mmph->PktSeqNum != MDP_REFRESH_COMPLETE)
+    const MDP_Packet_Header * mph = (MDP_Packet_Header *) pbPkt;
+    if (mph->PktSeqNum != MDP_REFRESH_COMPLETE)
     {
-      m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Not MDP_REFRESH_COMPLETE. m_LastCheckedAdjSeqNo: %u uiRFStartSeqNo: %u ulRFSize: %u uiLatestAdjSeqNo: %u mmph->PktSeqNum: %u mmph->PktSize: %u",
-                      m_ChannelID, m_LastCheckedAdjSeqNo, uiRFStartSeqNo, ulRFSize, uiLatestAdjSeqNo, mmph->PktSeqNum, mmph->PktSize);
+      m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Not MDP_REFRESH_COMPLETE. m_LastCheckedAdjSeqNo: %u uiRFStartSeqNo: %u ulRFSize: %u uiLatestAdjSeqNo: %u usMsgSize: %u mph->PktSeqNum: %u mph->SendingTime: %s",
+                      m_ChannelID, m_LastCheckedAdjSeqNo, uiRFStartSeqNo, ulRFSize, uiLatestAdjSeqNo, usMsgSize, mph->PktSeqNum, SDateTime::fromUnixTimeToString(mph->SendingTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::GMT).c_str());
       m_LastCheckedAdjSeqNo++;
       continue;
     }
@@ -124,66 +120,61 @@ void RefreshProcessor_MDP::Run()
     // If MDP_REFRESH_COMPLETE
     //--------------------------------------------------
     VAL & uiAdjSeqNoOfRefCompl = m_LastCheckedAdjSeqNo; // just for easy reading
-    m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Received MDP_REFRESH_COMPLETE", m_ChannelID);
-    m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. m_MsgCirBuf_RF->Size() %u uiAdjSeqNoOfRefCompl: %u", m_ChannelID, m_MsgCirBuf_RF->Size(),  uiAdjSeqNoOfRefCompl);
-    m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
+    m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Received MDP_REFRESH_COMPLETE. m_MsgCirBuf_RF->Size(): %u uiAdjSeqNoOfRefCompl: %u", m_ChannelID, m_MsgCirBuf_RF->Size(),  uiAdjSeqNoOfRefCompl);
 
-    // bool bProcessThisRefreshBatch = true;
-    //
+    //--------------------------------------------------
+    // Just to make sure packets before MDP_REFRESH_COMPLETE has all arrived.
+    //--------------------------------------------------
+    boost::this_thread::sleep(boost::posix_time::seconds(1));
+
     // if (!m_ShrObj->CheckRefreshActivatnStatus(m_ChannelID))
     // {
     //   m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. MDP_REFRESH_COMPLETE received. Will purge this refresh batch since refresh mode is not activated.", m_ChannelID);
-    //   bProcessThisRefreshBatch = false;
-    // }
     //
-    // short iNoOfTimesChecked = 0;
-    // for (;;)
-    // {
-    //   uint32_t uiSmltMissingAdjSeqNo = 0;
-    //   if (bProcessThisRefreshBatch &&
-    //       (m_MsgCirBuf_RF->GetSmallestMissingSeqNo(uiSmltMissingAdjSeqNo) && uiSmltMissingAdjSeqNo < uiAdjSeqNoOfRefCompl))
-    //   {
-    //     if (iNoOfTimesChecked == 0)
-    //     {
-    //       m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. MDP_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Give 2nd chance. Wait 2 more seconds.",
-    //                       m_ChannelID, uiSmltMissingAdjSeqNo);
-    //       boost::this_thread::sleep(boost::posix_time::seconds(2));
-    //       iNoOfTimesChecked++;
-    //     }
-    //     else if (iNoOfTimesChecked > 0)
-    //     {
-    //       m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. MDP_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Must wait for the next batch of refresh snapshot.",
-    //                       m_ChannelID, uiSmltMissingAdjSeqNo);
-    //       bProcessThisRefreshBatch = false;
-    //       break;
-    //     }
-    //   }
-    //   else
-    //     break;
+    //   boost::this_thread::sleep(boost::posix_time::milliseconds(m_RefreshProcSleepMillisec));
+    //   m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
+    //   continue;
     // }
-    //
+
+    //--------------------------------------------------
+    // Handle all messages for now
+    //--------------------------------------------------
+    const uint32_t uiRfStartSeqNo =  m_MsgCirBuf_RF->GetStartSeqNo();
+    uint32_t rfLatestSeqNo; m_MsgCirBuf_RF->GetLatestSeqNo(rfLatestSeqNo); const uint32_t & uiRfLatestSeqNo = rfLatestSeqNo;
+
+    vector<uint32_t> vSeqNo; FRange(vSeqNo,uiRfStartSeqNo,uiRfLatestSeqNo);
+    for (vector<uint32_t>::iterator it = vSeqNo.begin(); it != vSeqNo.end(); ++it)
+    {
+      const uint32_t & iSeqNo = *it;
+      const uint16_t usMsgSizeTmp = m_MsgCirBuf_RF->GetMsgSizeOfSeqNo(iSeqNo);
+      const BYTE* pbPktTmp = m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(iSeqNo);
+      m_DataProcFunc->HandleMDPRaw(pbPktTmp, m_ChannelID, McastIdentifier::REFRESH, usMsgSizeTmp);
+    }
+
+    m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
+
     // {
     //   //--------------------------------------------------
     //   // Check if we have enough RT packets to continue the snapshots
     //   //--------------------------------------------------
-    //   const uint32_t rfStartSeqNo =  m_MsgCirBuf_RF->GetStartSeqNo();
-    //   uint32_t rfLatestSeqNo; m_MsgCirBuf_RF->GetLatestSeqNo(rfLatestSeqNo);
+    //   const uint32_t uiRfStartSeqNo =  m_MsgCirBuf_RF->GetStartSeqNo();
+    //   uint32_t rfLatestSeqNo; m_MsgCirBuf_RF->GetLatestSeqNo(rfLatestSeqNo); const uint32_t & uiRfLatestSeqNo = rfLatestSeqNo;
     //
-    //   vector<uint32_t> vSeqNo;
-    //   vSeqNo.push_back(rfStartSeqNo);
-    //   vSeqNo.push_back(rfLatestSeqNo);
+    //   // vector<uint32_t> vSeqNo(uiRfStartSeqNo,uiRfLatestSeqNo);
+    //   vector<uint32_t> vSeqNo; FRange(vSeqNo,uiRfStartSeqNo,uiRfLatestSeqNo);
     //
     //   mktdata::MessageHeader mdpMsgHdr;
-    //   FForEach(vSeqNo,[&](const uint32_t iSeqNo) {
+    //   for (vector<uint32_t>::iterator it = vSeqNo.begin(); it != vSeqNo.end(); ++it)
+    //   {
+    //     const uint32_t & iSeqNo = *it;
     //     const BYTE* pbPktTmp = m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(iSeqNo);
     //     vector<uint32_t> vLastMsgSeqNum = m_DataProcFunc->Get_LastMsgSeqNumProcessed(pbPktTmp);
-    //     FForEach(vLastMsgSeqNum,[&](const uint32_t iLastSeqNo) { m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. LastMsgSeqNumProcessed: %u", m_ChannelID, iLastSeqNo); });
-    //   });
+    //     FForEach(vLastMsgSeqNum,[&](const uint32_t iLastSeqNo) { m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. LastMsgSeqNumProcessed: %u", m_ChannelID, iLastSeqNo); });
+    //   };
     //
-    //
-    //   VAL uiRTMsgCirBufStartSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
+    //   const uint32_t uiRTMsgCirBufStartSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
     // }
-    //
+
     // if (!bProcessThisRefreshBatch)
     // {
     //   boost::this_thread::sleep(boost::posix_time::milliseconds(m_RefreshProcSleepMillisec));

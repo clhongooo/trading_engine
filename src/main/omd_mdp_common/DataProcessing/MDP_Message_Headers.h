@@ -55,11 +55,6 @@ typedef struct {
   uint64_t SendingTime;
 } MDP_Packet_Header;
 
-typedef struct {
-  uint32_t PktSeqNum;
-  uint64_t PktSize;
-} Modified_MDP_Packet_Header;
-
 #pragma pack(8)
 
 #endif

@@ -39,9 +39,9 @@ class DataProcFunctions {
     //--------------------------------------------------
     // MDP
     //--------------------------------------------------
-    virtual vector<uint32_t> Get_LastMsgSeqNumProcessed(const BYTE *) {}
+    virtual vector<uint32_t> Get_LastMsgSeqNumProcessed(const unsigned short, const BYTE *, const uint16_t) {}
 
-    virtual void  HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType) {}
+    virtual void  HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType, const uint16_t) {}
     virtual void  OnHeartBeat                      ()                                                  {}
     virtual void  OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
     virtual void  OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int) {}
@@ -103,9 +103,9 @@ class DataProcFunctions_MDP : public DataProcFunctions {
       char instid[16];
     } OrderBookKenny;
 
-    vector<uint32_t> Get_LastMsgSeqNumProcessed(const BYTE *);
+    vector<uint32_t> Get_LastMsgSeqNumProcessed(const unsigned short, const BYTE *, const uint16_t);
 
-    void HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType);
+    void HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType, const uint16_t);
     void OnHeartBeat                      ();
     void OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int);
     void OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int);

@@ -352,15 +352,14 @@ void DataProcFunctions_OMDD::OutputJsonToLog(const char * sCaller, const unsigne
 //--------------------------------------------------
 // FIXME copied from Kenny
 //--------------------------------------------------
-void DataProcFunctions_MDP::HandleMDPRaw(const BYTE *pbPkt, const unsigned short channelID, const McastIdentifier::EMcastType mt)
+void DataProcFunctions_MDP::HandleMDPRaw(const BYTE *pbPkt, const unsigned short channelID, const McastIdentifier::EMcastType mt, const uint16_t usMsgSize)
 {
   VAL sMcastType = string((mt == McastIdentifier::REALTIME) ? "RT":"RF");
 
-  Modified_MDP_Packet_Header * mmph = (Modified_MDP_Packet_Header*)(pbPkt);
   mktdata::MessageHeader mdpMsgHdr;
-  int iOffset = sizeof(Modified_MDP_Packet_Header);
+  int iOffset = sizeof(MDP_Packet_Header);
 
-  while (iOffset < mmph->PktSize)
+  while (iOffset < usMsgSize)
   {
     int16_t iMsgSize = READ_INT16(&pbPkt[iOffset]);
     const size_t iWrap2 = iOffset + sizeof(int16_t);
@@ -412,14 +411,13 @@ void DataProcFunctions_MDP::HandleMDPRaw(const BYTE *pbPkt, const unsigned short
   return;
 }
 
-vector<uint32_t> DataProcFunctions_MDP::Get_LastMsgSeqNumProcessed(const BYTE *pbPkt)
+vector<uint32_t> DataProcFunctions_MDP::Get_LastMsgSeqNumProcessed(const unsigned short channelID, const BYTE *pbPkt, const uint16_t usMsgSize)
 {
-  Modified_MDP_Packet_Header * mmph = (Modified_MDP_Packet_Header*)(pbPkt);
   mktdata::MessageHeader mdpMsgHdr;
-  int iOffset = sizeof(Modified_MDP_Packet_Header);
+  int iOffset = sizeof(MDP_Packet_Header);
 
   vector<uint32_t> vRtn;
-  while (iOffset < mmph->PktSize)
+  while (iOffset < usMsgSize)
   {
     int16_t iMsgSize = READ_INT16(&pbPkt[iOffset]);
     const size_t iWrap2 = iOffset + sizeof(int16_t);
@@ -427,11 +425,13 @@ vector<uint32_t> DataProcFunctions_MDP::Get_LastMsgSeqNumProcessed(const BYTE *p
     const size_t iWrap4 = iOffset + iMsgSize;
     if (iMsgSize <= 0) break;
     mdpMsgHdr.wrap((char*)pbPkt, iWrap2, MDP_VERSION, iWrap4);
+    m_Logger->Write(Logger::DEBUG,"templateId: %d", mdpMsgHdr.templateId());
     if (mdpMsgHdr.templateId() == MDP_SNAPSHOT_FULL_REFRESH)
     {
       SnapshotFullRefresh38 msg;
       msg.wrapForDecode((char*)pbPkt+iWrap2, mdpMsgHdr.encodedLength(), mdpMsgHdr.blockLength(), MDP_VERSION, iWrap3);
       vRtn.push_back(msg.lastMsgSeqNumProcessed());
+      // OnSnapshotFullRefresh(channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);
     }
     iOffset += iMsgSize;
   }
@@ -504,7 +504,7 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
         oo
           << "MDIncrementalRefreshBook32: SecurityID: " << ent.securityID()
           << " mDEntryType: " << ent.mDEntryType()
-          << " mDPriceLevel: " << ent.mDPriceLevel()
+          << " mDPriceLevel: " << (short)(ent.mDPriceLevel())
           << " mDUpdateAction: " << ent.mDUpdateAction()
           << " mDEntryPx.mantissa: " << ent.mDEntryPx().mantissa()
           << " mDEntrySize: " << ent.mDEntrySize()
@@ -518,19 +518,19 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
       switch (ent.mDUpdateAction())
       {
         case MDUpdateAction::New:
-          ob->Add(side,ent.mDEntryPx().mantissa(),ent.mDPriceLevel(),ent.numberOfOrders(),ent.mDEntrySize());
+          ob->Add(side,ent.mDEntryPx().mantissa(),(short)(ent.mDPriceLevel()),ent.numberOfOrders(),ent.mDEntrySize());
           break;
         case MDUpdateAction::Change:
-          ob->Change(side,ent.mDEntryPx().mantissa(),ent.mDPriceLevel(),ent.numberOfOrders(),ent.mDEntrySize());
+          ob->Change(side,ent.mDEntryPx().mantissa(),(short)(ent.mDPriceLevel()),ent.numberOfOrders(),ent.mDEntrySize());
           break;
         case MDUpdateAction::Delete:
-          ob->Delete(side,ent.mDEntryPx().mantissa(),ent.mDPriceLevel(),ent.numberOfOrders(),ent.mDEntrySize());
+          ob->Delete(side,ent.mDEntryPx().mantissa(),(short)(ent.mDPriceLevel()),ent.numberOfOrders(),ent.mDEntrySize());
           break;
         case MDUpdateAction::DeleteThru:
           ob->Reset(side);
           break;
         case MDUpdateAction::DeleteFrom:
-          ob->DeleteTopLevels(side,ent.mDPriceLevel());
+          ob->DeleteTopLevels(side,(short)(ent.mDPriceLevel()));
           break;
         default:
           break;
@@ -911,7 +911,7 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
         << " Price: " << ent.mDEntryPx().mantissa()
         << " EntrySize: " << ent.mDEntrySize()
         << " OrderNo: " << ent.numberOfOrders()
-        << " MDPriceLevel: " << ent.mDPriceLevel()
+        << " MDPriceLevel: " << (short)(ent.mDPriceLevel())
         << " tradingReferenceDate: " << ent.tradingReferenceDate()
         << " OpenCloseSettlFlag: " << ent.openCloseSettlFlag()
         << " EntryType: " << ent.mDEntryType();

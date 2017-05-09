@@ -5,12 +5,11 @@ PreProcessor_MDP::PreProcessor_MDP(const McastIdentifier & m) : PreProcessor(m)
   //--------------------------------------------------
   // set MDP_REFRESH_COMPLETE
   //--------------------------------------------------
-  m_MDP_Refresh_Complete.reserve(sizeof(Modified_MDP_Packet_Header));
-  m_MDP_Refresh_Complete.insert(m_MDP_Refresh_Complete.begin(), sizeof(Modified_MDP_Packet_Header), '\0');
-  Modified_MDP_Packet_Header mmph;
-  mmph.PktSeqNum = MDP_REFRESH_COMPLETE;
-  mmph.PktSize   = 0;
-  memcpy(&m_MDP_Refresh_Complete[0],&mmph,sizeof(Modified_MDP_Packet_Header));
+  m_MDP_Refresh_Complete.reserve(sizeof(MDP_Packet_Header));
+  m_MDP_Refresh_Complete.insert(m_MDP_Refresh_Complete.begin(), sizeof(MDP_Packet_Header), '\0');
+  MDP_Packet_Header mph;
+  mph.PktSeqNum = mph.SendingTime = MDP_REFRESH_COMPLETE;
+  memcpy(&m_MDP_Refresh_Complete[0],&mph,sizeof(MDP_Packet_Header));
 }
 
 void PreProcessor_MDP::Run()
@@ -77,9 +76,7 @@ void PreProcessor_MDP::Run()
     //--------------------------------------------------
     // We replace the original packet header timestamp with the packet length, so that RealTimeProcessor knows how long the packet is.
     //--------------------------------------------------
-    Modified_MDP_Packet_Header * mmph = (Modified_MDP_Packet_Header*)(pbPkt);
     const size_t uiPktSize = m_RawPktCirBuf->GetPktSize();
-    WRITE_UINT64(&(mmph->PktSize),uiPktSize);
 
     //--------------------------------------------------
     // Manually insert an MDP_REFRESH_COMPLETE message into the queue because unlike OMD, CME just cycles the packet sequence number.
@@ -87,11 +84,11 @@ void PreProcessor_MDP::Run()
     if (mph->PktSeqNum == 1 && m_McastIdentifier.McastType() == McastIdentifier::REFRESH)
     {
       m_MsgCirBuf->GetLatestSeqNo(m_LocalLastAdjSeqNo);
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size before %u",
+      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size before %u",
                       m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_LocalLastAdjSeqNo, m_MsgCirBuf->Size());
       m_LocalLastAdjSeqNo++;
-      m_MsgCirBuf->PushMsg(&m_MDP_Refresh_Complete[0],m_LocalLastAdjSeqNo,ulTStamp,sizeof(Modified_MDP_Packet_Header));
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size after %u",
+      m_MsgCirBuf->PushMsg(&m_MDP_Refresh_Complete[0],m_LocalLastAdjSeqNo,ulTStamp,sizeof(MDP_Packet_Header));
+      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size after %u",
                       m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_LocalLastAdjSeqNo, m_MsgCirBuf->Size());
     }
 
@@ -99,7 +96,8 @@ void PreProcessor_MDP::Run()
     // Because CME keeps the sequence number of packets rather than messages,
     // we defer our message parsing to RealTimeProcessor.
     //--------------------------------------------------
-    m_MsgCirBuf->PushMsg(pbPkt,m_LocalLastAdjSeqNo+mph->PktSeqNum,ulTStamp,mmph->PktSize);
+    m_MsgCirBuf->PushMsg(pbPkt,m_LocalLastAdjSeqNo+mph->PktSeqNum,ulTStamp,uiPktSize);
+    m_Logger->Write(Logger::INFO,"PreProcessor: %s : %u uiPktSize: %u",m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(),uiPktSize);
     m_RawPktCirBuf->PopFront();
     m_MsgCirBuf->NotifyConsumer();
   }
