@@ -40,9 +40,10 @@ void RealTimeProcessor_MDP::Run()
     // Try get data from queue
     //--------------------------------------------------
     BYTE *pbPktMut = NULL;
+    uint16_t usMsgSize = 0;
     uint32_t uiPktSeqNo = 0;
     uint64_t ulTS = 0;
-    StateOfNextSeqNo snsn = m_MsgCirBuf->GetMsgSeqNoTStamp(pbPktMut, &uiPktSeqNo, &ulTS);
+    StateOfNextSeqNo snsn = m_MsgCirBuf->GetMsgSeqNoTStamp(pbPktMut, &uiPktSeqNo, &ulTS, &usMsgSize);
     if (snsn == ALL_RETRIEVED)
     {
       m_MsgCirBuf->WaitForData();

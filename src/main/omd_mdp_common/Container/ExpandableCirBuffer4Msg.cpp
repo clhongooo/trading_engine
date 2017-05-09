@@ -85,7 +85,7 @@ BYTE* ExpandableCirBuffer4Msg::GetMsgPtrOfSeqNo(const uint32_t iSeqNo)
 
   BYTE* bT = GetPtrOfSeqNoNoLock(iSeqNo);
 
-  if (bT) return bT+DIRTYFLAGSIZE+TIMESTAMPSIZE;
+  if (bT) return bT+DIRTYFLAGSIZE+TIMESTAMPSIZE+MSGPKTSIZE;
   else    return NULL;
 }
 
@@ -167,16 +167,16 @@ string ExpandableCirBuffer4Msg::GetAllMissingSeqNo()
 
 void ExpandableCirBuffer4Msg::ExpandCapacity()
 {
-  m_DqCirBuf.push_back(m_MemMgr->AcquireVectorBlock(m_BlockSize,m_RowSize+DIRTYFLAGSIZE+TIMESTAMPSIZE));
+  m_DqCirBuf.push_back(m_MemMgr->AcquireVectorBlock(m_BlockSize,m_RowSize+DIRTYFLAGSIZE+TIMESTAMPSIZE+MSGPKTSIZE));
   m_DqStartIdx.push_back(0);
   m_DqEndIdx.push_back(0);
 }
 
-void ExpandableCirBuffer4Msg::PushMsg(const char* pTArg, const uint32_t iSeqNo, uint64_t uiTStamp, const unsigned short usMsgSize)
+void ExpandableCirBuffer4Msg::PushMsg(const char* pTArg, const uint32_t iSeqNo, uint64_t uiTStamp, const uint16_t usMsgSize)
 {
   PushMsg((const BYTE*) pTArg, iSeqNo, uiTStamp, usMsgSize);
 }
-void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, uint64_t uiTStamp, const unsigned short usMsgSize)
+void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, uint64_t uiTStamp, const uint16_t usMsgSize)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
 
@@ -203,6 +203,8 @@ void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, 
       pT += DIRTYFLAGSIZE;
       WRITE_UINT64(pT,uiTStamp);
       pT += TIMESTAMPSIZE;
+      WRITE_UINT16(pT,usMsgSize);
+      pT += MSGPKTSIZE;
       memcpy(pT, (BYTE*)pTArg, usMsgSize);
       //--------------------------------------------------
       // Remove from set of empty seq no
@@ -362,6 +364,8 @@ void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, 
   pTmp += DIRTYFLAGSIZE;
   WRITE_UINT64(pTmp,uiTStamp);
   pTmp += TIMESTAMPSIZE;
+  WRITE_UINT16(pTmp,usMsgSize);
+  pTmp += MSGPKTSIZE;
   memcpy(pTmp, (BYTE*)pTArg, usMsgSize);
 
   unsigned int uiIdx = (m_DqEndIdx.back()+1)%m_BlockSize;
@@ -385,7 +389,7 @@ void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, 
   return;
 }
 
-StateOfNextSeqNo ExpandableCirBuffer4Msg::GetMsgSeqNoTStamp(BYTE* & pArg, uint32_t* uiSeqNo, uint64_t* ulTS)
+StateOfNextSeqNo ExpandableCirBuffer4Msg::GetMsgSeqNoTStamp(BYTE* & pArg, uint32_t* uiSeqNo, uint64_t* ulTS, uint16_t* usMsgSize)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
 
@@ -408,6 +412,8 @@ StateOfNextSeqNo ExpandableCirBuffer4Msg::GetMsgSeqNoTStamp(BYTE* & pArg, uint32
   pT2 += DIRTYFLAGSIZE;
   *ulTS = READ_UINT64(pT2);
   pT2 += TIMESTAMPSIZE;
+  *usMsgSize = READ_UINT16(pT2);
+  pT2 += MSGPKTSIZE;
   pArg = (pT2);
   return SEQNO_AVAILABLE;
 }
@@ -451,7 +457,7 @@ void ExpandableCirBuffer4Msg::PopFrontNoLock()
   m_DqStartIdx.front() = (m_DqStartIdx.front()+1)%m_BlockSize;
   if (m_DqStartIdx.front() == m_DqEndIdx.front())
   {
-    m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+DIRTYFLAGSIZE+TIMESTAMPSIZE);
+    m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+DIRTYFLAGSIZE+TIMESTAMPSIZE+MSGPKTSIZE);
     m_DqCirBuf.pop_front();
     m_DqStartIdx.pop_front();
     m_DqEndIdx.pop_front();
@@ -491,7 +497,7 @@ void ExpandableCirBuffer4Msg::PurgeMsgB4SeqNoInclusiveNoLock(uint32_t uiSeqNo)
       //--------------------------------------------------
       m_StartSeqNo += iNoOfItemsInFirstBlk;
 
-      m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+DIRTYFLAGSIZE+TIMESTAMPSIZE);
+      m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+DIRTYFLAGSIZE+TIMESTAMPSIZE+MSGPKTSIZE);
       m_DqCirBuf.pop_front();
       m_DqStartIdx.pop_front();
       m_DqEndIdx.pop_front();
@@ -503,7 +509,7 @@ void ExpandableCirBuffer4Msg::PurgeMsgB4SeqNoInclusiveNoLock(uint32_t uiSeqNo)
       {
         m_StartSeqNo += (m_BlockSize-1);
 
-        m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+DIRTYFLAGSIZE+TIMESTAMPSIZE);
+        m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+DIRTYFLAGSIZE+TIMESTAMPSIZE+MSGPKTSIZE);
         m_DqCirBuf.pop_front();
         m_DqStartIdx.pop_front();
         m_DqEndIdx.pop_front();
@@ -598,7 +604,7 @@ void ExpandableCirBuffer4Msg::Reset()
 void ExpandableCirBuffer4Msg::ResetNoLock()
 {
   while (!m_DqCirBuf.empty()) {
-    m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+DIRTYFLAGSIZE+TIMESTAMPSIZE);
+    m_MemMgr->ReturnVectorBlock(m_DqCirBuf.front(),m_BlockSize,m_RowSize+DIRTYFLAGSIZE+TIMESTAMPSIZE+MSGPKTSIZE);
     m_DqCirBuf.pop_front();
   }
   m_DqStartIdx.clear();

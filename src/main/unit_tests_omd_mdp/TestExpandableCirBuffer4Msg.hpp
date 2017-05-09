@@ -68,6 +68,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
   // testing init states 
   //--------------------------------------------------
   {
+    uint16_t msgsz;
     uint32_t seqno;
     uint64_t tstamp;
     BYTE *pMsg;
@@ -84,7 +85,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
     ut.Assert(ecbMsg->GetMsgPtrOfSeqNo(2) == NULL,                   __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(ecbMsg->GetMsgPtrOfSeqNo(3) == NULL,                   __FILE__, __FUNCTION__, __LINE__);
 
-    ecbMsg->GetMsgSeqNoTStamp(pMsg,&seqno,&tstamp);
+    ecbMsg->GetMsgSeqNoTStamp(pMsg,&seqno,&tstamp,&msgsz);
     ut.Assert(ecbMsg->Empty(),              __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(ecbMsg->Size() == 0,          __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(ecbMsg->GetStartSeqNo() == 0, __FILE__, __FUNCTION__, __LINE__);
@@ -130,7 +131,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
     for (unsigned int i = 0; i < 998; ++i)
     {
       BYTE * pr;
-      ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+      ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
       ut.Assert(seqno   == 1+i,   __FILE__, __FUNCTION__, __LINE__);
       ut.Assert(tstamp  == 8888,  __FILE__, __FUNCTION__, __LINE__);
 
@@ -141,7 +142,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
     }
 
     BYTE * pr;
-    ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+    ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
     ut.Assert(seqno                   == 999,   __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(tstamp                  == 8888,  __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(pr[2]                   == 'T',   __FILE__, __FUNCTION__, __LINE__);
@@ -221,9 +222,10 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
   for (unsigned int i = 0; i < 467; ++i)
   {
     BYTE * pr;
+    uint16_t msgsz;
     uint32_t seqno;
     uint64_t tstamp;
-    StateOfNextSeqNo snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+    StateOfNextSeqNo snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
     ut.Assert(snsn == SEQNO_AVAILABLE, __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(READ_UINT32(pr+2) == i, __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(seqno == 1000+i, __FILE__, __FUNCTION__, __LINE__);
@@ -265,6 +267,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
   //--------------------------------------------------
   {
     ut.Assert(ecbMsg->Size() == 0, __FILE__, __FUNCTION__, __LINE__);
+    uint16_t msgsz;
     uint32_t seqno = 1467;
     uint64_t tstamp = 998;
     WRITE_UINT32(baTestMsg+2,9394);
@@ -438,7 +441,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
 
     {
       bool bDirFlag = false;
-      snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+      snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
       ut.Assert(snsn == SEQNO_AVAILABLE, __FILE__, __FUNCTION__, __LINE__);
       ut.Assert(READ_UINT32(pr+2) == 9394, __FILE__, __FUNCTION__, __LINE__);
       ut.Assert(seqno == 1467, __FILE__, __FUNCTION__, __LINE__);
@@ -476,7 +479,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
 
     {
       bool bDirFlag = false;
-      snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+      snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
       ut.Assert(snsn == SEQNO_AVAILABLE, __FILE__, __FUNCTION__, __LINE__);
       ut.Assert(READ_UINT32(pr+2) == 9399, __FILE__, __FUNCTION__, __LINE__);
       ut.Assert(seqno == 1468, __FILE__, __FUNCTION__, __LINE__);
@@ -495,7 +498,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
     for (unsigned int i = 0; i < 6; ++i)
     {
       bool bDirFlag = false;
-      snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+      snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
       ut.Assert(snsn == SEQNO_MISSING, __FILE__, __FUNCTION__, __LINE__);
       ut.Assert(ecbMsg->CheckDirtyFlagTStamp(1469+i,bDirFlag,tstamp),  __FILE__, __FUNCTION__, __LINE__);
       ut.AssertF(bDirFlag,  __FILE__, __FUNCTION__, __LINE__);
@@ -509,7 +512,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
 
     {
       bool bDirFlag = false;
-      snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+      snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
       ut.Assert(snsn == SEQNO_AVAILABLE, __FILE__, __FUNCTION__, __LINE__);
       ut.Assert(READ_UINT32(pr+2) == 9396, __FILE__, __FUNCTION__, __LINE__);
       ut.Assert(seqno == 1475, __FILE__, __FUNCTION__, __LINE__);
@@ -529,7 +532,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
     for (unsigned int i = 0; i < 4; ++i)
     {
       bool bDirFlag = false;
-      snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+      snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
       ut.Assert(snsn == SEQNO_MISSING, __FILE__, __FUNCTION__, __LINE__);
       ut.Assert(ecbMsg->CheckDirtyFlagTStamp(1476+i,bDirFlag,tstamp),  __FILE__, __FUNCTION__, __LINE__);
       ut.AssertF(bDirFlag,  __FILE__, __FUNCTION__, __LINE__);
@@ -540,7 +543,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
       ut.AssertF(ecbMsg->GetMsgPtrOfSeqNo(1476+i) ==  NULL, __FILE__, __FUNCTION__, __LINE__);
       ecbMsg->PopFront();
     }
-    snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+    snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
     ut.Assert(snsn == SEQNO_AVAILABLE, __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(READ_UINT32(pr+2) == 9395, __FILE__, __FUNCTION__, __LINE__);
     ut.Assert(seqno == 1480, __FILE__, __FUNCTION__, __LINE__);
@@ -606,9 +609,10 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
     for (unsigned int j = 0; j < iRandj; ++j)
     {
       BYTE * pr = NULL;
+      uint16_t msgsz;
       uint32_t seqno;
       uint64_t tstamp;
-      StateOfNextSeqNo snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+      StateOfNextSeqNo snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
 
       if (snsn == SEQNO_MISSING || snsn == ALL_RETRIEVED)
       {
@@ -627,7 +631,7 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
           ut.Assert(seqno == 1799, __FILE__, __FUNCTION__, __LINE__);
         }
 
-        snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+        snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
       }
       else if (snsn == SEQNO_AVAILABLE)
       {
@@ -680,9 +684,10 @@ void TestExpandableCirBuffer4Msg(UTest & ut)
   while (!ctrlExptMsg.empty() && ecbMsg->Size() > 0)
   {
     BYTE * pr;
+    uint16_t msgsz;
     uint32_t seqno;
     uint64_t tstamp;
-    StateOfNextSeqNo snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp);
+    StateOfNextSeqNo snsn = ecbMsg->GetMsgSeqNoTStamp(pr,&seqno,&tstamp,&msgsz);
 
     if (snsn == SEQNO_AVAILABLE)
     {

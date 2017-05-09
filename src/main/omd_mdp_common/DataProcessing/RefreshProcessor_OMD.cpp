@@ -374,10 +374,11 @@ void RefreshProcessor_OMD::Run()
       for (;;)
       {
         BYTE* pbMsg2 = NULL;
+        uint16_t usMsgSize = 0;
         uint32_t uiSeqNo2 = 0;
         uint64_t ulTS2 = 0;
 
-        StateOfNextSeqNo snsn = m_MsgCirBuf_RF->GetMsgSeqNoTStamp(pbMsg2, &uiSeqNo2, &ulTS2);
+        StateOfNextSeqNo snsn = m_MsgCirBuf_RF->GetMsgSeqNoTStamp(pbMsg2, &uiSeqNo2, &ulTS2, &usMsgSize);
         if (snsn == SEQNO_AVAILABLE)
         {
           uint16_t uiMsgSize2 = READ_UINT16(pbMsg2);
@@ -477,10 +478,11 @@ void RefreshProcessor_OMD::Run()
           strcat(sSrcDescriptionInJson, " (Possible Duplicate)");
 
           BYTE* pbMsg2 = NULL;
+          uint16_t usMsgSize = 0;
           uint32_t uiSeqNo2 = 0;
           uint64_t ulTS2 = 0;
 
-          StateOfNextSeqNo snsn = m_MsgCirBuf_RT->GetMsgSeqNoTStamp(pbMsg2, &uiSeqNo2, &ulTS2);
+          StateOfNextSeqNo snsn = m_MsgCirBuf_RT->GetMsgSeqNoTStamp(pbMsg2, &uiSeqNo2, &ulTS2, &usMsgSize);
           while (!m_MsgCirBuf_RT->Empty() && uiSeqNo2 <= uiRefComplAdjLastSeqNo)
           {
             if (snsn == SEQNO_AVAILABLE)
@@ -495,7 +497,7 @@ void RefreshProcessor_OMD::Run()
               m_DataProcFunc->OutputJsonToLog(sSrcDescriptionInJson,m_ChannelID,m_Logger,pbMsg2,m_JsonBuffer);
             }
             m_MsgCirBuf_RT->PopFront();
-            snsn = m_MsgCirBuf_RT->GetMsgSeqNoTStamp(pbMsg2, &uiSeqNo2, &ulTS2);
+            snsn = m_MsgCirBuf_RT->GetMsgSeqNoTStamp(pbMsg2, &uiSeqNo2, &ulTS2, &usMsgSize);
           }
         }
 

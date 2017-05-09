@@ -8,6 +8,7 @@
 //               Note that the first DIRTYFLAGSIZE bytes of each row is used as the dirty flag,
 //               while the next TIMESTAMPSIZE bytes is used internally for time stamp,
 //               in the format of local time since epoch (1970/1/1) in millisec.
+//               In CME, the packet size is lost in the packet, so have an extra field MSGPKTSIZE for storaging message size.
 //
 //**************************************************
 
@@ -37,16 +38,17 @@ class ExpandableCirBuffer4Msg
   public:
     enum { DIRTYFLAGSIZE = 1 };
     enum { TIMESTAMPSIZE = 8 };
+    enum { MSGPKTSIZE    = 2 };
 
     ExpandableCirBuffer4Msg(const unsigned short,const unsigned int, const unsigned int, boost::shared_ptr<CentralMemMgr>, const unsigned long);
     ~ExpandableCirBuffer4Msg();
     unsigned int     AllocatedSize();
     unsigned int     Size();
-    StateOfNextSeqNo GetMsgSeqNoTStamp(BYTE* &,uint32_t*,uint64_t*);
+    StateOfNextSeqNo GetMsgSeqNoTStamp(BYTE* &,uint32_t*,uint64_t*,uint16_t*);
 
     bool      CheckDirtyFlagTStamp(const uint32_t,bool&,uint64_t&);
-    void      PushMsg(const char*,const uint32_t,const uint64_t,const unsigned short);
-    void      PushMsg(const BYTE*,const uint32_t,const uint64_t,const unsigned short);
+    void      PushMsg(const char*,const uint32_t,const uint64_t,const uint16_t);
+    void      PushMsg(const BYTE*,const uint32_t,const uint64_t,const uint16_t);
     void      PopFront();
     bool      Empty();
     void      PrintDebugInfo(const unsigned int);
