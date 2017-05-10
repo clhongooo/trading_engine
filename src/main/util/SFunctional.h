@@ -89,15 +89,17 @@ InitValType FFold(const Collection & col,InitValType init,BinOp op)
   return std::accumulate(col.begin(),col.end(),init,op);
 }
 
-
   template <typename Collection>
-double FSum(const Collection & col)
+const double FSum(const Collection & col)
 {
   // return std::accumulate(col.begin(),col.end(),0.0);
   double d = 0.0;
   for (typename Collection::const_iterator it = col.begin(); it != col.end(); ++it) d += (double)(*it);
   return d;
 }
+
+#define FMax(X) *max_element(std::begin(X), std::end(X))
+#define FMin(X) *min_element(std::begin(X), std::end(X))
 
 template <typename T>
 T GetOrElse_(boost::optional<T> o, T val) {

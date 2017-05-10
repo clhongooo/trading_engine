@@ -297,6 +297,13 @@ void TestSFunctional::RunTest()
     for (int i = 100; i < 1000; ++i) CPPUNIT_ASSERT(vRange[i-100] == i);
   }
 
+  {
+    vector<int> vRange;
+    FRange(vRange,100,1000);
+    CPPUNIT_ASSERT(FMax(vRange) == 999);
+    CPPUNIT_ASSERT(FMin(vRange) == 100);
+  }
+
   return;
 }
 
