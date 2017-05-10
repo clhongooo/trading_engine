@@ -460,10 +460,10 @@ void DataProcFunctions_MDP::OnRefreshVolume(const unsigned short channelID, cons
       oo.clear();
       oo
         << "MDIncrementalRefreshVolume37: SecurityID: " << ent.securityID()
-        << " RptSeq: " << ent.rptSeq()
-        << " EntrySize: " << ent.mDEntrySize()
-        << " UpdateAction: " << ent.mDUpdateAction()
-        << " EntryType: " << ent.mDEntryType();
+        << " RptSeq: " << (int)(ent.rptSeq())
+        << " EntrySize: " << (int)(ent.mDEntrySize())
+        << " UpdateAction: " << (int)(ent.mDUpdateAction())
+        << " EntryType: " << string(ent.mDEntryType());
 
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
     }
@@ -485,11 +485,11 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
       ostringstream oo;
       oo
         << "MDIncrementalRefreshBook32: SecurityID: " << ent.securityID()
-        << " RptSeq: " << ent.rptSeq()
-        << " EntrySize: " << ent.mDEntrySize()
-        << " UpdateAction: " << ent.mDUpdateAction()
-        << " EntryType: " << ent.mDEntryType()
-        << " transactTime: " << msg.transactTime();
+        << " RptSeq: " << (int)(ent.rptSeq())
+        << " EntrySize: " << (int)(ent.mDEntrySize())
+        << " UpdateAction: " << (int)(ent.mDUpdateAction())
+        << " EntryType: " << (char)(ent.mDEntryType())
+        << " transactTime: " << SDateTime::fromUnixTimeToString(msg.transactTime(), SDateTime::NANOSEC);
 
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
     }
@@ -503,13 +503,13 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
         ostringstream oo;
         oo
           << "MDIncrementalRefreshBook32: SecurityID: " << ent.securityID()
-          << " mDEntryType: " << ent.mDEntryType()
-          << " mDPriceLevel: " << (short)(ent.mDPriceLevel())
-          << " mDUpdateAction: " << ent.mDUpdateAction()
-          << " mDEntryPx.mantissa: " << (int)(ent.mDEntryPx().mantissa())
-          << " mDEntrySize: " << ent.mDEntrySize()
-          << " numberOfOrders: " << ent.numberOfOrders()
-          << " rptSeq: " << ent.rptSeq();
+          << " mDEntryType: " << (char)(ent.mDEntryType())
+          << " mDPriceLevel: " << (int)(ent.mDPriceLevel())
+          << " mDUpdateAction: " << (int)(ent.mDUpdateAction())
+          << " mDEntryPx.mantissa: " << (int64_t)(ent.mDEntryPx().mantissa())
+          << " mDEntrySize: " << (int)(ent.mDEntrySize())
+          << " numberOfOrders: " << (int)(ent.numberOfOrders())
+          << " rptSeq: " << (int)(ent.rptSeq());
         m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
       }
 
@@ -518,19 +518,19 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
       switch (ent.mDUpdateAction())
       {
         case MDUpdateAction::New:
-          ob->Add(side,(int)(ent.mDEntryPx().mantissa()),(short)(ent.mDPriceLevel()),ent.numberOfOrders(),ent.mDEntrySize());
+          ob->Add(side,(int64_t)(ent.mDEntryPx().mantissa()),(int)(ent.mDPriceLevel()),(int)(ent.numberOfOrders()),(int)(ent.mDEntrySize()));
           break;
         case MDUpdateAction::Change:
-          ob->Change(side,(int)(ent.mDEntryPx().mantissa()),(short)(ent.mDPriceLevel()),ent.numberOfOrders(),ent.mDEntrySize());
+          ob->Change(side,(int64_t)(ent.mDEntryPx().mantissa()),(int)(ent.mDPriceLevel()),(int)(ent.numberOfOrders()),(int)(ent.mDEntrySize()));
           break;
         case MDUpdateAction::Delete:
-          ob->Delete(side,(int)(ent.mDEntryPx().mantissa()),(short)(ent.mDPriceLevel()),ent.numberOfOrders(),ent.mDEntrySize());
+          ob->Delete(side,(int64_t)(ent.mDEntryPx().mantissa()),(int)(ent.mDPriceLevel()),(int)(ent.numberOfOrders()),(int)(ent.mDEntrySize()));
           break;
         case MDUpdateAction::DeleteThru:
           ob->Reset(side);
           break;
         case MDUpdateAction::DeleteFrom:
-          ob->DeleteTopLevels(side,(short)(ent.mDPriceLevel()));
+          ob->DeleteTopLevels(side,(int)(ent.mDPriceLevel()));
           break;
         default:
           break;
@@ -561,14 +561,14 @@ void DataProcFunctions_MDP::OnRefreshTrade(const unsigned short channelID, const
       ostringstream oo;
       oo
         << "TradeSummary: SecurityID: " << ent.securityID()
-        << " RptSeq: " << ent.rptSeq()
-        << " Price: " << (int)(ent.mDEntryPx().mantissa())
-        << " EntrySize: " << ent.mDEntrySize()
-        << " OrderNo: " << ent.numberOfOrders()
+        << " RptSeq: " << (int)(ent.rptSeq())
+        << " Price: " << (int64_t)(ent.mDEntryPx().mantissa())
+        << " EntrySize: " << (int)(ent.mDEntrySize())
+        << " OrderNo: " << (int)(ent.numberOfOrders())
         << " AggressorSide: " << ent.aggressorSide()
         << " TradeID: " << ent.tradeID()
-        << " UpdateAction: " << ent.mDUpdateAction()
-        << " EntryType: " << ent.mDEntryType();
+        << " UpdateAction: " << (int)(ent.mDUpdateAction())
+        << " EntryType: " << string(ent.mDEntryType());
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
     }
   }
@@ -602,12 +602,12 @@ void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID
 
       ostringstream oo;
       oo << "TradeSummary: SecurityID: " << ent.securityID()
-        << " RptSeq: " << ent.rptSeq()
-        << " Price: " << (int)(ent.mDEntryPx().mantissa())
-        << " EntrySize: " << ent.mDEntrySize()
-        << " OrderNo: " << ent.numberOfOrders()
+        << " RptSeq: " << (int)(ent.rptSeq())
+        << " Price: " << (int64_t)(ent.mDEntryPx().mantissa())
+        << " EntrySize: " << (int)(ent.mDEntrySize())
+        << " OrderNo: " << (int)(ent.numberOfOrders())
         << " AggressorSide: " << ent.aggressorSide()
-        << " EntryType: " << ent.mDEntryType();
+        << " EntryType: " << string(ent.mDEntryType());
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
     }
   }
@@ -627,9 +627,9 @@ void DataProcFunctions_MDP::OnRefreshDailyStatistics(const unsigned short channe
 
       ostringstream oo;
       oo << "Session Statistics: SecurityID: " << ent.securityID()
-        << " RptSeq: " << ent.rptSeq()
-        << " EntryPx: " << (int)(ent.mDEntryPx().mantissa())
-        << " EntryType: " << ent.mDEntryType()
+        << " RptSeq: " << (int)(ent.rptSeq())
+        << " EntryPx: " << (int64_t)(ent.mDEntryPx().mantissa())
+        << " EntryType: " << (char)(ent.mDEntryType())
         << " TradingDate: " << ent.tradingReferenceDate();
 
       switch(ent.mDEntryType())
@@ -673,11 +673,11 @@ void DataProcFunctions_MDP::OnRefreshSessionStatistics(const unsigned short chan
 
       ostringstream oo;
       oo << "Session Statistics: SecurityID: " << ent.securityID()
-        << " RptSeq: " << ent.rptSeq()
-        << " EntryPx: " << (int)(ent.mDEntryPx().mantissa())
-        << " EntryType: " << ent.mDEntryType()
-        << " OpenCloseSettlFlag: " << ent.openCloseSettlFlag()
-        << " UpdateAction: " << ent.mDUpdateAction();
+        << " RptSeq: " << (int)(ent.rptSeq())
+        << " EntryPx: " << (int64_t)(ent.mDEntryPx().mantissa())
+        << " EntryType: " << (char)(ent.mDEntryType())
+        << " OpenCloseSettlFlag: " << (int)(ent.openCloseSettlFlag())
+        << " UpdateAction: " << (int)(ent.mDUpdateAction());
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
     }
 
@@ -698,12 +698,12 @@ void DataProcFunctions_MDP::OnRefreshLimitsBanding(const unsigned short channelI
 
       ostringstream oo;
       oo << "Limits Banding: SecurityID: " << ent.securityID()
-        << " RptSeq: " << ent.rptSeq()
-        << " HighLimit: " << (int)(ent.highLimitPrice().mantissa())
-        << " LowLimit: " << (int)(ent.lowLimitPrice().mantissa())
-        << " MaxPriceVariation: " << (int)(ent.maxPriceVariation().mantissa())
-        << " UpdateAction: " << ent.mDUpdateAction()
-        << " EntryType: " << ent.mDEntryType();
+        << " RptSeq: " << (int)(ent.rptSeq())
+        << " HighLimit: " << (int64_t)(ent.highLimitPrice().mantissa())
+        << " LowLimit: " << (int64_t)(ent.lowLimitPrice().mantissa())
+        << " MaxPriceVariation: " << (int64_t)(ent.maxPriceVariation().mantissa())
+        << " UpdateAction: " << (int)(ent.mDUpdateAction())
+        << " EntryType: " << string(ent.mDEntryType());
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
     }
   }
@@ -851,8 +851,8 @@ void DataProcFunctions_MDP::OnChannelReset(const unsigned short channelID, const
       ent.next();
       ostringstream oo;
       oo
-        << "Channel Reset: MDUpdateAction: " << ent.mDUpdateAction()
-        << " MDEntryType: " << ent.mDEntryType();
+        << "Channel Reset: MDUpdateAction: " << (int)(ent.mDUpdateAction())
+        << " MDEntryType: " << string(ent.mDEntryType());
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
     }
   }
@@ -884,15 +884,15 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
     {
       ostringstream oo;
       oo
-        << "SnapshotFullRefresh: SecurityID: " << msg.securityID()
-        << " TotNumReport: " << msg.totNumReports()
-        << " LastMsgSeqNumProcessed: " << msg.lastMsgSeqNumProcessed()
-        << " RptSeq: " << msg.rptSeq()
+        << "SnapshotFullRefresh: SecurityID: " << (int)(msg.securityID())
+        << " TotNumReport: " << (int)(msg.totNumReports())
+        << " LastMsgSeqNumProcessed: " << (int)(msg.lastMsgSeqNumProcessed())
+        << " RptSeq: " << (int)(msg.rptSeq())
         << " TradeDate: " << msg.tradeDate()
-        << " SecurityTradingStatus: " << msg.mDSecurityTradingStatus()
-        << " HighLimit: " << (int)(msg.highLimitPrice().mantissa())
-        << " LowLimit: " << (int)(msg.lowLimitPrice().mantissa())
-        << " MaxPriceVariation: " << msg.maxPriceVariation().mantissa();
+        << " SecurityTradingStatus: " << (int)(msg.mDSecurityTradingStatus())
+        << " HighLimit: " << (int64_t)(msg.highLimitPrice().mantissa())
+        << " LowLimit: " << (int64_t)(msg.lowLimitPrice().mantissa())
+        << " MaxPriceVariation: " << (int64_t)(msg.maxPriceVariation().mantissa());
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
     }
 
@@ -900,31 +900,25 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
     {
       ent.next();
 
-      {
-        ostringstream oo;
-        oo
-          << "noMDEntries: SecurityID: " << msg.securityID()
-          << " Price: " << (int)(ent.mDEntryPx().mantissa())
-          << " EntrySize: " << ent.mDEntrySize()
-          << " OrderNo: " << ent.numberOfOrders()
-          << " MDPriceLevel: " << (short)(ent.mDPriceLevel())
-          << " tradingReferenceDate: " << ent.tradingReferenceDate()
-          << " OpenCloseSettlFlag: " << ent.openCloseSettlFlag()
-          << " EntryType: " << ent.mDEntryType();
-        m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
-      }
+      ostringstream oo;
+      oo
+        << "noMDEntries: SecurityID: " << (int)(msg.securityID())
+        << " Price: " << (int64_t)(ent.mDEntryPx().mantissa())
+        << " EntrySize: " << (int)(ent.mDEntrySize())
+        << " OrderNo: " << (int)(ent.numberOfOrders())
+        << " MDPriceLevel: " << (int)(ent.mDPriceLevel())
+        << " tradingReferenceDate: " << ent.tradingReferenceDate()
+        << " OpenCloseSettlFlag: " << (int)(ent.openCloseSettlFlag())
+        << " EntryType: " << (char)(ent.mDEntryType());
 
-      {
-        ostringstream oo;
-        oo << "Settlement Price Type: ";
-        if (ent.settlPriceType().finalfinal())   oo << "finalfinal ";
-        if (ent.settlPriceType().actual())       oo << "actual ";
-        if (ent.settlPriceType().rounded())      oo << "rounded ";
-        if (ent.settlPriceType().intraday())     oo << "intraday ";
-        if (ent.settlPriceType().reservedBits()) oo << "reservedBits ";
-        if (ent.settlPriceType().nullValue())    oo << "nullValue ";
-        m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
-      }
+      oo << " Settlement Price Type: ";
+      if (ent.settlPriceType().finalfinal())   oo << "finalfinal ";
+      if (ent.settlPriceType().actual())       oo << "actual ";
+      if (ent.settlPriceType().rounded())      oo << "rounded ";
+      if (ent.settlPriceType().intraday())     oo << "intraday ";
+      if (ent.settlPriceType().reservedBits()) oo << "reservedBits ";
+      if (ent.settlPriceType().nullValue())    oo << "null ";
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
 
     }
   }

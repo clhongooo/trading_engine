@@ -137,43 +137,40 @@ void RefreshProcessor_MDP::Run()
     // }
 
     //--------------------------------------------------
-    // Handle all messages for now
+    // Get sequence no range
     //--------------------------------------------------
-    const uint32_t uiRfStartSeqNo =  m_MsgCirBuf_RF->GetStartSeqNo();
+    const uint32_t uiRfStartSeqNo = m_MsgCirBuf_RF->GetStartSeqNo();
     uint32_t rfLatestSeqNo; m_MsgCirBuf_RF->GetLatestSeqNo(rfLatestSeqNo); const uint32_t & uiRfLatestSeqNo = rfLatestSeqNo;
+    vector<uint32_t> vSeqNoRange; FRange(vSeqNoRange,uiRfStartSeqNo,uiRfLatestSeqNo);
 
-    vector<uint32_t> vSeqNo; FRange(vSeqNo,uiRfStartSeqNo,uiRfLatestSeqNo);
-    for (vector<uint32_t>::iterator it = vSeqNo.begin(); it != vSeqNo.end(); ++it)
+    //--------------------------------------------------
+    // Check if we have enough RT packets to continue the snapshots
+    //--------------------------------------------------
+    mktdata::MessageHeader mdpMsgHdr;
+    for (vector<uint32_t>::iterator it = vSeqNoRange.begin(); it != vSeqNoRange.end(); ++it)
     {
       const uint32_t & iSeqNo = *it;
-      const uint16_t usMsgSizeTmp = m_MsgCirBuf_RF->GetMsgSizeOfSeqNo(iSeqNo);
-      const BYTE* pbPktTmp = m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(iSeqNo);
-      m_DataProcFunc->HandleMDPRaw(pbPktTmp, m_ChannelID, McastIdentifier::REFRESH, usMsgSizeTmp);
-    }
+      vector<uint32_t> vLastMsgSeqNum = m_DataProcFunc->Get_LastMsgSeqNumProcessed(m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(iSeqNo));
+      FForEach(vLastMsgSeqNum,[&](const uint32_t iLastSeqNo) { m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. LastMsgSeqNumProcessed: %u", m_ChannelID, iLastSeqNo); });
+    };
+    const uint32_t uiRTMsgCirBufStartSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
 
-    m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
-
+    // //--------------------------------------------------
+    // // Handle all messages for now
+    // //--------------------------------------------------
+    // for (vector<uint32_t>::iterator it = vSeqNoRange.begin(); it != vSeqNoRange.end(); ++it)
     // {
-    //   //--------------------------------------------------
-    //   // Check if we have enough RT packets to continue the snapshots
-    //   //--------------------------------------------------
-    //   const uint32_t uiRfStartSeqNo =  m_MsgCirBuf_RF->GetStartSeqNo();
-    //   uint32_t rfLatestSeqNo; m_MsgCirBuf_RF->GetLatestSeqNo(rfLatestSeqNo); const uint32_t & uiRfLatestSeqNo = rfLatestSeqNo;
-    //
-    //   // vector<uint32_t> vSeqNo(uiRfStartSeqNo,uiRfLatestSeqNo);
-    //   vector<uint32_t> vSeqNo; FRange(vSeqNo,uiRfStartSeqNo,uiRfLatestSeqNo);
-    //
-    //   mktdata::MessageHeader mdpMsgHdr;
-    //   for (vector<uint32_t>::iterator it = vSeqNo.begin(); it != vSeqNo.end(); ++it)
-    //   {
-    //     const uint32_t & iSeqNo = *it;
-    //     const BYTE* pbPktTmp = m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(iSeqNo);
-    //     vector<uint32_t> vLastMsgSeqNum = m_DataProcFunc->Get_LastMsgSeqNumProcessed(pbPktTmp);
-    //     FForEach(vLastMsgSeqNum,[&](const uint32_t iLastSeqNo) { m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. LastMsgSeqNumProcessed: %u", m_ChannelID, iLastSeqNo); });
-    //   };
-    //
-    //   const uint32_t uiRTMsgCirBufStartSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
+    //   const uint32_t & iSeqNo = *it;
+    //   const uint16_t usMsgSizeTmp = m_MsgCirBuf_RF->GetMsgSizeOfSeqNo(iSeqNo);
+    //   const BYTE* pbPktTmp = m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(iSeqNo);
+    //   m_DataProcFunc->HandleMDPRaw(pbPktTmp, m_ChannelID, McastIdentifier::REFRESH, usMsgSizeTmp);
     // }
+
+
+    //--------------------------------------------------
+    // Clean queue
+    //--------------------------------------------------
+    m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
 
     // if (!bProcessThisRefreshBatch)
     // {
