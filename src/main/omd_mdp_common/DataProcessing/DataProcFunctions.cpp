@@ -382,7 +382,7 @@ void DataProcFunctions_MDP::HandleMDPRaw(const BYTE *pbPkt, const unsigned short
 
     switch (mdpMsgHdr.templateId())
     {
-      case MDP_HEARTBEAT                          : OnHeartBeat                        ();                                                                     break;
+      case MDP_HEARTBEAT                          : OnHeartBeat                        (channelID, sMcastType);                                                break;
       case MDP_CHANNEL_RESET                      : OnChannelReset                     (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
       case MDP_REFRESH_SECURITY_DEFINITION_FUTURE : OnRefreshSecurityDefinitionFuture  (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
       case MDP_REFRESH_SECURITY_DEFINITION_SPREAD : OnRefreshSecurityDefinitionSpread  (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
@@ -436,8 +436,9 @@ vector<uint32_t> DataProcFunctions_MDP::Get_LastMsgSeqNumProcessed(const unsigne
   return vRtn;
 }
 
-void DataProcFunctions_MDP::OnHeartBeat()
+void DataProcFunctions_MDP::OnHeartBeat(const unsigned short channelID, const string & sMcastType)
 {
+  m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Heartbeat", channelID, sMcastType.c_str());
   return;
 }
 

@@ -17,6 +17,7 @@
 #include "SFunctional.h"
 #include "SDateTime.h"
 #include "DataTransmission.h"
+#include "Constants.h"
 
 #include <boost/shared_ptr.hpp>
 #include <vector>
@@ -41,8 +42,8 @@ class DataProcFunctions {
     //--------------------------------------------------
     virtual vector<uint32_t> Get_LastMsgSeqNumProcessed(const unsigned short, const BYTE *, const uint16_t) {}
 
-    virtual void  HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType, const uint16_t) {}
-    virtual void  OnHeartBeat                      ()                                                  {}
+    virtual void  HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType, const uint16_t)   {}
+    virtual void  OnHeartBeat                      (const unsigned short, const string &)                                                    {}
     virtual void  OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
     virtual void  OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
     virtual void  OnRefreshVolume                  (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
@@ -106,7 +107,7 @@ class DataProcFunctions_MDP : public DataProcFunctions {
     vector<uint32_t> Get_LastMsgSeqNumProcessed(const unsigned short, const BYTE *, const uint16_t);
 
     void HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType, const uint16_t);
-    void OnHeartBeat                      ();
+    void OnHeartBeat                      (const unsigned short, const string &);
     void OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
     void OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
     void OnRefreshVolume                  (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);

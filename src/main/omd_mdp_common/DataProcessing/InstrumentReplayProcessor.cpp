@@ -19,7 +19,7 @@ InstrumentReplayProcessor::InstrumentReplayProcessor(const unsigned short id) :
   m_SysCfg = SystemConfig::Instance();
   m_ShrObj = SharedObjects::Instance();
   m_ThreadHealthMon = ThreadHealthMonitor::Instance();
-  m_Logger->Write(Logger::NOTICE, "%s: ChannelID:%u,", __FILE__, m_ChannelID);
+  m_Logger->Write(Logger::NOTICE, "%s: ChannelID:%u,", __FILENAME__, m_ChannelID);
   m_MsgCirBuf_IR = m_ShrObj->GetMsgCirBufPtr(McastIdentifier::INSTRUMENTREPLAY, m_ChannelID);
   m_bRunInstrumentReplayProcessor = m_SysCfg->CheckIfRunInstrumentReplayProcessor();
 

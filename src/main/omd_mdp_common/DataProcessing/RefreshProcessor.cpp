@@ -41,7 +41,7 @@ RefreshProcessor::RefreshProcessor(const unsigned short id) :
   m_bRunRefreshProcessor         = m_SysCfg->CheckIfRunRefreshProcessor();
 
 
-  m_Logger->Write(Logger::NOTICE, "%s: ChannelID:%u.", __FILE__, m_ChannelID);
+  m_Logger->Write(Logger::NOTICE, "%s: ChannelID:%u.", __FILENAME__, m_ChannelID);
 
   if ((*(m_SysCfg->GetRefreshProcessorJson()))[m_ChannelID] == 1) m_bOutputJson = true;
 

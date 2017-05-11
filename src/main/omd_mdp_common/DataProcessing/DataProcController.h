@@ -16,6 +16,7 @@
 #include "RefreshProcessor.h"
 #include "InstrumentReplayProcessor.h"
 #include "Logger.h"
+#include "Constants.h"
 
 using namespace std;
 using namespace boost;

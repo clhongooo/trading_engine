@@ -19,6 +19,7 @@
 #include "DataProcFunctions.h"
 #include "ThreadHealthMonitor.h"
 #include "SFunctional.h"
+#include "Constants.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/join.hpp>

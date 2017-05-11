@@ -39,6 +39,8 @@
 #define ID_MTM                  "MTM"
 #define ID_PRICEFWDR            "PF"
 
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+
 enum EExchange {
   EX_HKFE=1,
   EX_HKSE,

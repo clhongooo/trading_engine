@@ -9,7 +9,7 @@ void InstrumentReplayProcessor_MDP::Run()
     //--------------------------------------------------
     if (m_ShrObj->ThreadShouldExit())
     {
-      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Stopping thread.", __FILE__, m_ChannelID);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Stopping thread.", __FILENAME__, m_ChannelID);
       return;
     }
 
@@ -23,12 +23,12 @@ void InstrumentReplayProcessor_MDP::Run()
     //--------------------------------------------------
     if (m_MsgCirBuf_IR->Size() > 10000)
     {
-      m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. Detected abnormally long message circular buffer with size %u. Please investigate. But I will try to purge.", __FILE__, m_ChannelID, m_MsgCirBuf_IR->Size());
+      m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. Detected abnormally long message circular buffer with size %u. Please investigate. But I will try to purge.", __FILENAME__, m_ChannelID, m_MsgCirBuf_IR->Size());
 
       uint32_t uiLargestMissingSeqNo = 0;
       if (m_MsgCirBuf_IR->GetLargestMissingSeqNo(uiLargestMissingSeqNo))
       {
-        m_Logger->Write(Logger::INFO,"%s: ChannelID:%u. There are missing messages in m_MsgCirBuf_IR. Largest missing seq no %u. Purge m_MsgCirBuf_IR up to that.", __FILE__, m_ChannelID, uiLargestMissingSeqNo);
+        m_Logger->Write(Logger::INFO,"%s: ChannelID:%u. There are missing messages in m_MsgCirBuf_IR. Largest missing seq no %u. Purge m_MsgCirBuf_IR up to that.", __FILENAME__, m_ChannelID, uiLargestMissingSeqNo);
         m_MsgCirBuf_IR->PurgeMsgB4SeqNoInclusive(uiLargestMissingSeqNo);
         continue;
       }
@@ -58,10 +58,10 @@ void InstrumentReplayProcessor_MDP::Run()
     //--------------------------------------------------
     // Output Debug info
     //--------------------------------------------------
-    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. m_MsgCirBuf_IR.Size()          %u",          __FILE__, m_ChannelID, m_MsgCirBuf_IR->Size());
-    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. m_MsgCirBuf_IR.AllocatedSize() %u",          __FILE__, m_ChannelID, m_MsgCirBuf_IR->AllocatedSize());
-    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Pkt Seq No:                    %u",          __FILE__, m_ChannelID, uiPktSeqNo);
-    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Local Timestamp of Pkt: %s", __FILE__, m_ChannelID, SDateTime::fromUnixTimeToString(ulTS,SDateTime::MILLISEC).c_str());
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. m_MsgCirBuf_IR.Size()          %u",          __FILENAME__, m_ChannelID, m_MsgCirBuf_IR->Size());
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. m_MsgCirBuf_IR.AllocatedSize() %u",          __FILENAME__, m_ChannelID, m_MsgCirBuf_IR->AllocatedSize());
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Pkt Seq No:                    %u",          __FILENAME__, m_ChannelID, uiPktSeqNo);
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Local Timestamp of Pkt: %s", __FILENAME__, m_ChannelID, SDateTime::fromUnixTimeToString(ulTS,SDateTime::MILLISEC).c_str());
 
     //--------------------------------------------------
     m_DataProcFunc->HandleMDPRaw(pbPkt, m_ChannelID, McastIdentifier::INSTRUMENTREPLAY, usMsgSize);

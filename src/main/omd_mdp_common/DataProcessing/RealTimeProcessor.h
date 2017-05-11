@@ -18,6 +18,7 @@
 #include "OrderBook.h"
 #include "DataProcFunctions.h"
 #include "ThreadHealthMonitor.h"
+#include "Constants.h"
 
 #include <boost/shared_ptr.hpp>
 #include <cstdio>

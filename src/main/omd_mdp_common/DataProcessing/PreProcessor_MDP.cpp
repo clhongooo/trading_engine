@@ -21,7 +21,7 @@ void PreProcessor_MDP::Run()
     //--------------------------------------------------
     if (m_ShrObj->ThreadShouldExit())
     {
-      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Stopping thread.", __FILE__, m_ChannelID);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Stopping thread.", __FILENAME__, m_ChannelID);
       return;
     }
 
@@ -50,16 +50,16 @@ void PreProcessor_MDP::Run()
     //--------------------------------------------------
     // Output other Debug info
     //--------------------------------------------------
-    m_Logger->Write(Logger::DEBUG,"%s: %s : %u ChannelID:%u. %s(%c): m_RawPktCirBuf.Size()          %u", __FILE__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), m_RawPktCirBuf->Size());
-    m_Logger->Write(Logger::DEBUG,"%s: %s : %u ChannelID:%u. %s(%c): m_RawPktCirBuf.AllocatedSize() %u", __FILE__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), m_RawPktCirBuf->AllocatedSize());
-    m_Logger->Write(Logger::DEBUG,"%s: %s : %u ChannelID:%u. %s(%c): m_RawPktCirBuf.GetPktSize()    %u", __FILE__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), m_RawPktCirBuf->GetPktSize());
+    m_Logger->Write(Logger::DEBUG,"%s: %s : %u ChannelID:%u. %s(%c): m_RawPktCirBuf.Size()          %u", __FILENAME__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), m_RawPktCirBuf->Size());
+    m_Logger->Write(Logger::DEBUG,"%s: %s : %u ChannelID:%u. %s(%c): m_RawPktCirBuf.AllocatedSize() %u", __FILENAME__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), m_RawPktCirBuf->AllocatedSize());
+    m_Logger->Write(Logger::DEBUG,"%s: %s : %u ChannelID:%u. %s(%c): m_RawPktCirBuf.GetPktSize()    %u", __FILENAME__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), m_RawPktCirBuf->GetPktSize());
 
     //--------------------------------------------------
     // Output Packet Header info
     //--------------------------------------------------
     MDP_Packet_Header * mph  = (MDP_Packet_Header*)(pbPkt);
     m_Logger->Write(m_PrintPreProcSeqNoAsInfo ? Logger::INFO : Logger::DEBUG, "%s: %s : %u ChannelID:%u. %s(%c): Packet Header: PktSeqNum:  %u",
-                    __FILE__,
+                    __FILENAME__,
                     m_McastIdentifier.IP().c_str(),
                     m_McastIdentifier.Port(),
                     m_ChannelID,
@@ -67,7 +67,7 @@ void PreProcessor_MDP::Run()
                     (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'),
                     mph->PktSeqNum);
     m_Logger->Write(Logger::DEBUG,"%s: %s : %u ChannelID:%u. %s(%c): Packet Header: Send Time:  %s",
-                    __FILE__,
+                    __FILENAME__,
                     m_McastIdentifier.IP().c_str(),
                     m_McastIdentifier.Port(),
                     m_ChannelID,
@@ -87,12 +87,12 @@ void PreProcessor_MDP::Run()
     {
       m_MsgCirBuf->GetLatestSeqNo(m_LocalLastAdjSeqNo);
       m_Logger->Write(Logger::DEBUG,"%s: %s : %u Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size before %u",
-                      __FILE__,
+                      __FILENAME__,
                       m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_LocalLastAdjSeqNo, m_MsgCirBuf->Size());
       m_LocalLastAdjSeqNo++;
       m_MsgCirBuf->PushMsg(&m_MDP_Refresh_Complete[0],m_LocalLastAdjSeqNo,ulTStamp,sizeof(MDP_Packet_Header));
       m_Logger->Write(Logger::DEBUG,"%s: %s : %u Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size after %u",
-                      __FILE__,
+                      __FILENAME__,
                       m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_LocalLastAdjSeqNo, m_MsgCirBuf->Size());
     }
 
@@ -101,7 +101,7 @@ void PreProcessor_MDP::Run()
     // we defer our message parsing to RealTimeProcessor.
     //--------------------------------------------------
     m_MsgCirBuf->PushMsg(pbPkt,m_LocalLastAdjSeqNo+mph->PktSeqNum,ulTStamp,uiPktSize);
-    m_Logger->Write(Logger::INFO,"%s: %s : %u uiPktSize: %u", __FILE__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(),uiPktSize);
+    m_Logger->Write(Logger::INFO,"%s: %s : %u uiPktSize: %u", __FILENAME__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(),uiPktSize);
     m_RawPktCirBuf->PopFront();
     m_MsgCirBuf->NotifyConsumer();
   }

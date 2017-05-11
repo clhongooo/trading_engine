@@ -26,6 +26,7 @@
 #include "ThreadHealthMonitor.h"
 #include "MDP_Message_Headers.h"
 #include "MessageHeader.h"
+#include "Constants.h"
 
 using namespace std;
 using namespace boost;
