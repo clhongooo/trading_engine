@@ -18,7 +18,7 @@ using namespace boost;
 class McastIdentifier {
 
   public:
-    enum EMcastType {REALTIME, REFRESH};
+    enum EMcastType {REALTIME, REFRESH, INSTRUMENTREPLAY};
     enum EChannel {A, B};
 
     McastIdentifier(
@@ -46,6 +46,5 @@ class McastIdentifier {
     unsigned short  m_Port;
     EMcastType      m_McastType;
     EChannel        m_Channel;
-    static const unsigned short MAX_HASH = 4000;
 };
 #endif /* MCASTCONFIG_H_ */

@@ -39,10 +39,11 @@ McastIdentifier::EChannel    McastIdentifier::Channel()    const { return m_Chan
 const string McastIdentifier::ToString() const
 {
   stringstream ss("");
-  if      (m_McastType == REALTIME) ss << "RT";
-  else if (m_McastType == REFRESH ) ss << "RF";
-  if      (m_Channel == A         ) ss << "_A_";
-  else if (m_Channel == B         ) ss << "_B_";
+  if      (m_McastType == REALTIME        ) ss << "RT";
+  else if (m_McastType == REFRESH         ) ss << "RF";
+  else if (m_McastType == INSTRUMENTREPLAY) ss << "IR";
+  if      (m_Channel == A                 ) ss << "_A_";
+  else if (m_Channel == B                 ) ss << "_B_";
   ss << m_Channel_ID;
   return ss.str();
 }
@@ -68,11 +69,14 @@ const string McastIdentifier::ToString() const
 // Index 1001..2000:  1..1000 channels for RT B
 // Index 2001..3000:  1..1000 channels for RF A
 // Index 3001..4000:  1..1000 channels for RF B
+// Index 4001..5000:  1..1000 channels for IR A
+// Index 5001..6000:  1..1000 channels for IR B
 //--------------------------------------------------
 unsigned short McastIdentifier::Hash_MC() const
 {
   unsigned short usRtn = 0;
-  if (m_McastType == REFRESH) usRtn += 2000;
+  if      (m_McastType == REFRESH         ) usRtn += 2000;
+  else if (m_McastType == INSTRUMENTREPLAY) usRtn += 4000;
   if (m_Channel == B) usRtn += 1000;
   usRtn += m_Channel_ID;
   return usRtn;
@@ -93,16 +97,18 @@ unsigned short McastIdentifier::Hash_MC() const
 // After line arbitration
 // Index    1..1000:  1..1000 channels for RT
 // Index 1001..2000:  1..1000 channels for RF
+// Index 2001..3000:  1..1000 channels for IR
 //--------------------------------------------------
 unsigned short McastIdentifier::Hash_Chnl() const
 {
   unsigned short usRtn = 0;
-  if (m_McastType == REFRESH) usRtn += 1000;
+  if      (m_McastType == REFRESH         ) usRtn += 1000;
+  else if (m_McastType == INSTRUMENTREPLAY) usRtn += 2000;
   usRtn += m_Channel_ID;
   return usRtn;
 }
 
 unsigned short McastIdentifier::GetMaxHash()
 {
-  return MAX_HASH;
+  return 10000;
 }
