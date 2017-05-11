@@ -240,28 +240,23 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   }
 
   for (vector<unsigned short>::iterator it = m_pActiveMcastChannels->begin();
-      it != m_pActiveMcastChannels->end();
-      ++it)
+       it != m_pActiveMcastChannels->end();
+       ++it)
   {
-    string sRT_IP_A = pt.get<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerIP_A");
-    string sRT_IP_B = pt.get<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerIP_B");
-    string sRF_IP_A = pt.get<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_A");
-    string sRF_IP_B = pt.get<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_B");
+    boost::optional<string> oRT_IP_A = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerIP_A");
+    boost::optional<string> oRT_IP_B = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerIP_B");
+    boost::optional<string> oRF_IP_A = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_A");
+    boost::optional<string> oRF_IP_B = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_B");
 
-    unsigned short usRT_Port_A = pt.get<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_A");
-    unsigned short usRT_Port_B = pt.get<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_B");
-    unsigned short usRF_Port_A = pt.get<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_A");
-    unsigned short usRF_Port_B = pt.get<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_B");
+    boost::optional<unsigned short> oRT_Port_A = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_A");
+    boost::optional<unsigned short> oRT_Port_B = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_B");
+    boost::optional<unsigned short> oRF_Port_A = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_A");
+    boost::optional<unsigned short> oRF_Port_B = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_B");
 
-    m_pMcastIdentifiers->push_back(McastIdentifier(
-          *it, sRT_IP_A, usRT_Port_A, McastIdentifier::REALTIME, McastIdentifier::A));
-    m_pMcastIdentifiers->push_back(McastIdentifier(
-          *it, sRT_IP_B, usRT_Port_B, McastIdentifier::REALTIME, McastIdentifier::B));
-    m_pMcastIdentifiers->push_back(McastIdentifier(
-          *it, sRF_IP_A, usRF_Port_A, McastIdentifier::REFRESH, McastIdentifier::A));
-    m_pMcastIdentifiers->push_back(McastIdentifier(
-          *it, sRF_IP_B, usRF_Port_B, McastIdentifier::REFRESH, McastIdentifier::B));
-
+    if (oRT_IP_A && oRT_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_A.get(), oRT_Port_A.get(), McastIdentifier::REALTIME, McastIdentifier::A));
+    if (oRT_IP_B && oRT_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_B.get(), oRT_Port_B.get(), McastIdentifier::REALTIME, McastIdentifier::B));
+    if (oRF_IP_A && oRF_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_A.get(), oRF_Port_A.get(), McastIdentifier::REFRESH , McastIdentifier::A));
+    if (oRF_IP_B && oRF_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_B.get(), oRF_Port_B.get(), McastIdentifier::REFRESH , McastIdentifier::B));
   }
 
   {
@@ -476,24 +471,23 @@ void SystemConfig::ReadConfigOptional(const string & sConfigPath)
     }
 
     for (vector<unsigned short>::iterator it = m_pActiveMcastChannels->begin();
-        it != m_pActiveMcastChannels->end();
-        ++it)
+         it != m_pActiveMcastChannels->end();
+         ++it)
     {
-      string sRT_IP_A = pt.get<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerIP_A");
-      string sRT_IP_B = pt.get<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerIP_B");
-      string sRF_IP_A = pt.get<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_A");
-      string sRF_IP_B = pt.get<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_B");
+      boost::optional<string> oRT_IP_A = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerIP_A");
+      boost::optional<string> oRT_IP_B = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerIP_B");
+      boost::optional<string> oRF_IP_A = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_A");
+      boost::optional<string> oRF_IP_B = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_B");
 
-      unsigned short usRT_Port_A = pt.get<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_A");
-      unsigned short usRT_Port_B = pt.get<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_B");
-      unsigned short usRF_Port_A = pt.get<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_A");
-      unsigned short usRF_Port_B = pt.get<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_B");
+      boost::optional<unsigned short> oRT_Port_A = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_A");
+      boost::optional<unsigned short> oRT_Port_B = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_B");
+      boost::optional<unsigned short> oRF_Port_A = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_A");
+      boost::optional<unsigned short> oRF_Port_B = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_B");
 
-      m_pMcastIdentifiers->push_back(McastIdentifier(*it, sRT_IP_A, usRT_Port_A, McastIdentifier::REALTIME, McastIdentifier::A));
-      m_pMcastIdentifiers->push_back(McastIdentifier(*it, sRT_IP_B, usRT_Port_B, McastIdentifier::REALTIME, McastIdentifier::B));
-      m_pMcastIdentifiers->push_back(McastIdentifier(*it, sRF_IP_A, usRF_Port_A, McastIdentifier::REFRESH,  McastIdentifier::A));
-      m_pMcastIdentifiers->push_back(McastIdentifier(*it, sRF_IP_B, usRF_Port_B, McastIdentifier::REFRESH,  McastIdentifier::B));
-
+      if (oRT_IP_A && oRT_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_A.get(), oRT_Port_A.get(), McastIdentifier::REALTIME, McastIdentifier::A));
+      if (oRT_IP_B && oRT_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_B.get(), oRT_Port_B.get(), McastIdentifier::REALTIME, McastIdentifier::B));
+      if (oRF_IP_A && oRF_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_A.get(), oRF_Port_A.get(), McastIdentifier::REFRESH , McastIdentifier::A));
+      if (oRF_IP_B && oRF_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_B.get(), oRF_Port_B.get(), McastIdentifier::REFRESH , McastIdentifier::B));
     }
   }
 
