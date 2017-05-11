@@ -29,7 +29,7 @@ using namespace boost;
 class ThreadHealthMonitor {
   public:
     enum { LEN = 4096 };
-    enum ThreadIdentity {REALTIMEPROCESSOR=1, REFRESHPROCESSOR=2, DATACOMPLETENESSINSPECTOR=3, RTSCLIENT=4, PREPROCESSOR=5};
+    enum ThreadIdentity {REALTIMEPROCESSOR=1, REFRESHPROCESSOR=2, DATACOMPLETENESSINSPECTOR=3, RTSCLIENT=4, PREPROCESSOR=5, INSTRUMENTREPLAYPROCESSOR=6};
     ThreadHealthMonitor();
     virtual ~ThreadHealthMonitor();
     void ReportThatIAmHealthy(ThreadIdentity, unsigned short);

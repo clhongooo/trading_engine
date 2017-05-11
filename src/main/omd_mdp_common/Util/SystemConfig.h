@@ -83,6 +83,7 @@ class SystemConfig : boost::noncopyable
 
     bool                                       CheckIfRunRealTimeProcessor()                  const;
     bool                                       CheckIfRunRefreshProcessor()                   const;
+    bool                                       CheckIfRunInstrumentReplayProcessor()          const;
     bool                                       CheckIfPrintPreProcSeqNoAsInfo()               const;
     bool                                       CheckIfPrintRealTimeProcSeqNoAsInfo()          const;
     bool                                       CheckIfPrintRefreshProcSeqNoAsInfo()           const;
@@ -116,6 +117,7 @@ class SystemConfig : boost::noncopyable
     unsigned long                                  m_RTSClientSleepMillisec;
     bool                                           m_RunRealTimeProcessor;
     bool                                           m_RunRefreshProcessor;
+    bool                                           m_RunInstrumentReplayProcessor;
     unsigned int                                   m_MemoryBlockSize;
     unsigned long                                  m_MaxOneTimeAlloc;
     unsigned long                                  m_TrashSeqNoGapLargerThan;

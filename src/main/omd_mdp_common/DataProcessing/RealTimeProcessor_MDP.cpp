@@ -19,6 +19,22 @@ void RealTimeProcessor_MDP::Run()
     m_ThreadHealthMon->ReportThatIAmHealthy(ThreadHealthMonitor::REALTIMEPROCESSOR, m_ChannelID);
 
     //--------------------------------------------------
+    // Warn when cir buffer is too long
+    //--------------------------------------------------
+    if (m_MsgCirBuf->Size() > 10000)
+    {
+      m_Logger->Write(Logger::WARNING,"RealTimeProcessor: ChannelID:%u. Detected abnormally long message circular buffer with size %u. Please investigate. But I will try to purge.", m_ChannelID, m_MsgCirBuf->Size());
+
+      uint32_t uiSmallestMissingSeqNo = 0;
+      if (m_MsgCirBuf->GetSmallestMissingSeqNo(uiSmallestMissingSeqNo))
+      {
+        m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. There are missing messages in m_MsgCirBuf. Smallest missing seq no %u. Purge m_MsgCirBuf up to that.", m_ChannelID, uiSmallestMissingSeqNo);
+        m_MsgCirBuf->PurgeMsgB4SeqNoInclusive(uiSmallestMissingSeqNo);
+        continue;
+      }
+    }
+
+    //--------------------------------------------------
     // Must stop RealTimeProcessor if Refresh mode is activated
     // Remember that we can trigger refresh manually from our command terminal
     //--------------------------------------------------
@@ -26,23 +42,6 @@ void RealTimeProcessor_MDP::Run()
     {
       boost::this_thread::sleep(boost::posix_time::seconds(1)); // force sleep 1 sleep
       m_Logger->Write(Logger::NOTICE,"RealTimeProcessor: ChannelID:%u. Refresh mode is on. RealTimeProcessor will halt processing until refresh is done.", m_ChannelID);
-
-      //--------------------------------------------------
-      // Warn when cir buffer is too long
-      //--------------------------------------------------
-      if (m_MsgCirBuf->Size() > 10000)
-      {
-        m_Logger->Write(Logger::WARNING,"RealTimeProcessor: ChannelID:%u. Detected abnormally long message circular buffer with size %u. Please investigate. But I will try to purge.", m_ChannelID, m_MsgCirBuf->Size());
-
-        uint32_t uiSmallestMissingSeqNo = 0;
-        if (m_MsgCirBuf->GetSmallestMissingSeqNo(uiSmallestMissingSeqNo))
-        {
-          m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. There are missing messages in m_MsgCirBuf. Smallest missing seq no %u. Purge m_MsgCirBuf up to that.", m_ChannelID, uiSmallestMissingSeqNo);
-          m_MsgCirBuf->PurgeMsgB4SeqNoInclusive(uiSmallestMissingSeqNo);
-          continue;
-        }
-      }
-
       continue;
     }
 

@@ -63,6 +63,7 @@ ThreadHealthMonitor::ThreadIdentity ThreadHealthMonitor::NumToEnum(unsigned shor
     case 3:  { return DATACOMPLETENESSINSPECTOR; break; }
     case 4:  { return RTSCLIENT;                 break; }
     case 5:  { return PREPROCESSOR;              break; }
+    case 6:  { return INSTRUMENTREPLAYPROCESSOR; break; }
     default: { return REALTIMEPROCESSOR;         break; }
   }
 }
@@ -75,6 +76,7 @@ void ThreadHealthMonitor::EnumToString(ThreadIdentity id, char * sTmp)
     case 3:  { strcpy(sTmp,"DataCompletenessInspector"); break; }
     case 4:  { strcpy(sTmp,"RTSClient");                 break; }
     case 5:  { strcpy(sTmp,"PreProcessor");              break; }
+    case 6:  { strcpy(sTmp,"InstrumentReplay");          break; }
     default: { strcpy(sTmp,"");                          break; }
   }
   return;

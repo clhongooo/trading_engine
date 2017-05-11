@@ -56,8 +56,19 @@ void DataProcController::StartDataProcessing()
     }
   }
 
+  if (m_SysCfg->CheckIfRunInstrumentReplayProcessor())
+  {
+    for (int i = 0; i < pvActiveMcastChnls->size(); ++i)
+    {
+      InstrumentReplayProcessor * p = InstrumentReplayProcessorFactory::GetInstrumentReplayProcessor(m_SysCfg->GetIdentity(), (*pvActiveMcastChnls)[i]);
+      m_InstrumentReplayProcessors.push_back(p);
+      m_BoostThreadGrp.add_thread(new boost::thread(&InstrumentReplayProcessor::Run,p));
+      m_Logger->Write(Logger::NOTICE, "DataProcController: Starting InstrumentReplayProcessor thread: ChannelID:%u.", (*pvActiveMcastChnls)[i]);
+    }
+  }
+
   //block here
-  if (m_SysCfg->CheckIfRunRealTimeProcessor() || m_SysCfg->CheckIfRunRefreshProcessor())
+  if (m_SysCfg->CheckIfRunRealTimeProcessor() || m_SysCfg->CheckIfRunRefreshProcessor() || m_SysCfg->CheckIfRunInstrumentReplayProcessor())
   {
     m_BoostThreadGrp.join_all();
   }

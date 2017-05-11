@@ -5,8 +5,8 @@
 //
 //**************************************************
 
-#ifndef FULLFUNCTIONPROCESSOR_H_
-#define FULLFUNCTIONPROCESSOR_H_
+#ifndef REALTIMEPROCESSOR_H_
+#define REALTIMEPROCESSOR_H_
 
 #include "Logger.h"
 #include "SharedObjects.h"

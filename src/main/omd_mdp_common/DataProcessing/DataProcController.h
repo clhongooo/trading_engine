@@ -14,6 +14,7 @@
 #include "PreProcessor.h"
 #include "RealTimeProcessor.h"
 #include "RefreshProcessor.h"
+#include "InstrumentReplayProcessor.h"
 #include "Logger.h"
 
 using namespace std;
@@ -31,9 +32,10 @@ class DataProcController {
     //--------------------------------------------------
     // Various Processores
     //--------------------------------------------------
-    ptr_vector<PreProcessor>           m_PreProcessors;
-    ptr_vector<RealTimeProcessor>      m_RealTimeProcessors;
-    ptr_vector<RefreshProcessor>       m_RefreshProcessors;
+    ptr_vector<PreProcessor>              m_PreProcessors;
+    ptr_vector<RealTimeProcessor>         m_RealTimeProcessors;
+    ptr_vector<RefreshProcessor>          m_RefreshProcessors;
+    ptr_vector<InstrumentReplayProcessor> m_InstrumentReplayProcessors;
 
     //------------------------------
     // System objects

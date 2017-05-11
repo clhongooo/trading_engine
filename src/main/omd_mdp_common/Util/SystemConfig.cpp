@@ -25,6 +25,7 @@ SystemConfig::SystemConfig() :
   m_RTSClientSleepMillisec(1000),
   m_RunRealTimeProcessor(true),
   m_RunRefreshProcessor(true),
+  m_RunInstrumentReplayProcessor(true),
   m_MemoryBlockSize(4096),
   m_MaxOneTimeAlloc(409600),
   m_TrashSeqNoGapLargerThan(819200),
@@ -120,6 +121,7 @@ const unsigned int                        SystemConfig::GetRFMsgCirBufProtection
 
 bool  SystemConfig::CheckIfRunRealTimeProcessor()                   const  {  return  m_RunRealTimeProcessor;                   }
 bool  SystemConfig::CheckIfRunRefreshProcessor()                    const  {  return  m_RunRefreshProcessor;                    }
+bool  SystemConfig::CheckIfRunInstrumentReplayProcessor()           const  {  return  m_RunInstrumentReplayProcessor;           }
 bool  SystemConfig::CheckIfPrintPreProcSeqNoAsInfo()                const  {  return  m_PrintPreProcSeqNoAsInfo;                }
 bool  SystemConfig::CheckIfPrintRealTimeProcSeqNoAsInfo()           const  {  return  m_PrintRealTimeProcSeqNoAsInfo;           }
 bool  SystemConfig::CheckIfPrintRefreshProcSeqNoAsInfo()            const  {  return  m_PrintRefreshProcSeqNoAsInfo;            }
@@ -173,6 +175,7 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
   m_RTS_Username                                      = pt.get<string>        ("Retransmission.Username");
   m_RunRealTimeProcessor                              = pt.get<bool>          ("RealTimeProcessor.RunRealTimeProcessor");
   m_RunRefreshProcessor                               = pt.get<bool>          ("RefreshProcessor.RunRefreshProcessor");
+  m_RunInstrumentReplayProcessor                      = pt.get<bool>          ("InstrumentReplayProcessor.RunInstrumentReplayProcessor");
   m_TriggerRefreshSeqNoGap                            = pt.get<unsigned long> ("RefreshProcessor.TriggerRefreshSeqNoGap");
   m_TriggerRefreshTimeGapMillisec                     = pt.get<unsigned long> ("RefreshProcessor.TriggerRefreshTimeGapMillisec");
   m_TriggerRetransmissionSeqNoGap                     = pt.get<unsigned long> ("Retransmission.TriggerRetransmissionSeqNoGap");
@@ -247,16 +250,22 @@ void SystemConfig::ReadConfig(const string & sConfigPath)
     boost::optional<string> oRT_IP_B = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerIP_B");
     boost::optional<string> oRF_IP_A = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_A");
     boost::optional<string> oRF_IP_B = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_B");
+    boost::optional<string> oIR_IP_A = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".InstrumentReplayServerIP_A");
+    boost::optional<string> oIR_IP_B = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".InstrumentReplayServerIP_B");
 
     boost::optional<unsigned short> oRT_Port_A = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_A");
     boost::optional<unsigned short> oRT_Port_B = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_B");
     boost::optional<unsigned short> oRF_Port_A = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_A");
     boost::optional<unsigned short> oRF_Port_B = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_B");
+    boost::optional<unsigned short> oIR_Port_A = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".InstrumentReplayServerPort_A");
+    boost::optional<unsigned short> oIR_Port_B = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".InstrumentReplayServerPort_B");
 
-    if (oRT_IP_A && oRT_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_A.get(), oRT_Port_A.get(), McastIdentifier::REALTIME, McastIdentifier::A));
-    if (oRT_IP_B && oRT_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_B.get(), oRT_Port_B.get(), McastIdentifier::REALTIME, McastIdentifier::B));
-    if (oRF_IP_A && oRF_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_A.get(), oRF_Port_A.get(), McastIdentifier::REFRESH , McastIdentifier::A));
-    if (oRF_IP_B && oRF_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_B.get(), oRF_Port_B.get(), McastIdentifier::REFRESH , McastIdentifier::B));
+    if (oRT_IP_A && oRT_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_A.get(), oRT_Port_A.get(), McastIdentifier::REALTIME        , McastIdentifier::A));
+    if (oRT_IP_B && oRT_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_B.get(), oRT_Port_B.get(), McastIdentifier::REALTIME        , McastIdentifier::B));
+    if (oRF_IP_A && oRF_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_A.get(), oRF_Port_A.get(), McastIdentifier::REFRESH         , McastIdentifier::A));
+    if (oRF_IP_B && oRF_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_B.get(), oRF_Port_B.get(), McastIdentifier::REFRESH         , McastIdentifier::B));
+    if (oIR_IP_A && oIR_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oIR_IP_A.get(), oIR_Port_A.get(), McastIdentifier::INSTRUMENTREPLAY, McastIdentifier::A));
+    if (oIR_IP_B && oIR_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oIR_IP_B.get(), oIR_Port_B.get(), McastIdentifier::INSTRUMENTREPLAY, McastIdentifier::B));
   }
 
   {
@@ -369,6 +378,7 @@ void SystemConfig::ReadConfigOptional(const string & sConfigPath)
   boost::optional<bool>            oPrintPreProcSeqNoAsInfo                                =  pt.get_optional<bool>            ("SystemSettings.PrintPreProcSeqNoAsInfo");
   boost::optional<bool>            oRunRealTimeProcessor                                   =  pt.get_optional<bool>            ("RealTimeProcessor.RunRealTimeProcessor");
   boost::optional<bool>            oRunRefreshProcessor                                    =  pt.get_optional<bool>            ("RefreshProcessor.RunRefreshProcessor");
+  boost::optional<bool>            oRunInstrumentReplayProcessor                           =  pt.get_optional<bool>            ("RefreshProcessor.RunInstrumentReplayProcessor");
   boost::optional<std::string>     oCannedMcastFilePath                                    =  pt.get_optional<std::string>     ("SystemSettings.CannedMcastFilePath");
   boost::optional<std::string>     oCannedMcastFopenFlag                                   =  pt.get_optional<std::string>     ("SystemSettings.CannedMcastFopenFlag");
   boost::optional<std::string>     oCannedProcessedDataFilePath                            =  pt.get_optional<std::string>     ("SystemSettings.CannedProcessedDataFilePath");
@@ -421,6 +431,7 @@ void SystemConfig::ReadConfigOptional(const string & sConfigPath)
   if  (oTriggerRefreshTimeGapMillisec                )  {  m_TriggerRefreshTimeGapMillisec             =  oTriggerRefreshTimeGapMillisec       .           get();  }
   if  (oRunRealTimeProcessor                         )  {  m_RunRealTimeProcessor                      =  oRunRealTimeProcessor                .           get();  }
   if  (oRunRefreshProcessor                          )  {  m_RunRefreshProcessor                       =  oRunRefreshProcessor                 .           get();  }
+  if  (oRunInstrumentReplayProcessor                 )  {  m_RunInstrumentReplayProcessor              =  oRunInstrumentReplayProcessor        .           get();  }
   if  (oCannedMcastFilePath                          )  {  m_CannedMcastFilePath                       =  oCannedMcastFilePath                 .           get();  }
   if  (oCannedProcessedDataFilePath                  )  {  m_CannedProcessedDataFilePath               =  oCannedProcessedDataFilePath         .           get();  }
   if  (oCannedMcastFopenFlag                         )  {  m_CannedMcastFopenFlag                      =  oCannedMcastFopenFlag                .           get();  }
@@ -478,16 +489,22 @@ void SystemConfig::ReadConfigOptional(const string & sConfigPath)
       boost::optional<string> oRT_IP_B = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerIP_B");
       boost::optional<string> oRF_IP_A = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_A");
       boost::optional<string> oRF_IP_B = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerIP_B");
+      boost::optional<string> oIR_IP_A = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".InstrumentReplayServerIP_A");
+      boost::optional<string> oIR_IP_B = pt.get_optional<std::string>("MulticastChannel_"+lexical_cast<string>(*it)+".InstrumentReplayServerIP_B");
 
       boost::optional<unsigned short> oRT_Port_A = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_A");
       boost::optional<unsigned short> oRT_Port_B = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RealtimeServerPort_B");
       boost::optional<unsigned short> oRF_Port_A = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_A");
       boost::optional<unsigned short> oRF_Port_B = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".RefreshServerPort_B");
+      boost::optional<unsigned short> oIR_Port_A = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".InstrumentReplayServerPort_A");
+      boost::optional<unsigned short> oIR_Port_B = pt.get_optional<unsigned short>("MulticastChannel_"+lexical_cast<string>(*it)+".InstrumentReplayServerPort_B");
 
-      if (oRT_IP_A && oRT_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_A.get(), oRT_Port_A.get(), McastIdentifier::REALTIME, McastIdentifier::A));
-      if (oRT_IP_B && oRT_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_B.get(), oRT_Port_B.get(), McastIdentifier::REALTIME, McastIdentifier::B));
-      if (oRF_IP_A && oRF_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_A.get(), oRF_Port_A.get(), McastIdentifier::REFRESH , McastIdentifier::A));
-      if (oRF_IP_B && oRF_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_B.get(), oRF_Port_B.get(), McastIdentifier::REFRESH , McastIdentifier::B));
+      if (oRT_IP_A && oRT_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_A.get(), oRT_Port_A.get(), McastIdentifier::REALTIME        , McastIdentifier::A));
+      if (oRT_IP_B && oRT_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRT_IP_B.get(), oRT_Port_B.get(), McastIdentifier::REALTIME        , McastIdentifier::B));
+      if (oRF_IP_A && oRF_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_A.get(), oRF_Port_A.get(), McastIdentifier::REFRESH         , McastIdentifier::A));
+      if (oRF_IP_B && oRF_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oRF_IP_B.get(), oRF_Port_B.get(), McastIdentifier::REFRESH         , McastIdentifier::B));
+      if (oIR_IP_A && oIR_Port_A) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oIR_IP_A.get(), oIR_Port_A.get(), McastIdentifier::INSTRUMENTREPLAY, McastIdentifier::A));
+      if (oIR_IP_B && oIR_Port_B) m_pMcastIdentifiers->push_back(McastIdentifier(*it, oIR_IP_B.get(), oIR_Port_B.get(), McastIdentifier::INSTRUMENTREPLAY, McastIdentifier::B));
     }
   }
 

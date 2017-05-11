@@ -105,8 +105,6 @@ void DataCompletenessInspector::Run()
 {
   if (!m_Logger) m_Logger = Logger::Instance();
 
-  m_Logger->Write(Logger::DEBUG, "DataCompletenessInspector: Run()");
-
   for (;;)
   {
     //--------------------------------------------------

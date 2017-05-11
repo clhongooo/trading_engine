@@ -722,7 +722,7 @@ void DataProcFunctions_MDP::OnRefreshSecurityDefinitionFuture(const unsigned sho
 
       ostringstream oo;
       oo << "MDInstrumentDefinitionFuture27: "
-        << " event time: " << SDateTime::fromUnixTimeToString(ent.eventTime(), SDateTime::MICROSEC)
+        << " event time: " << SDateTime::fromUnixTimeToString(ent.eventTime(), SDateTime::NANOSEC)
         << " event type: " << ent.eventType()
         << " security ID: " << msg.securityID()
         << " symbol: " << msg.symbol()
@@ -760,7 +760,7 @@ void DataProcFunctions_MDP::OnRefreshSecurityDefinitionSpread(const unsigned sho
 
       ostringstream oo;
       oo << "MDInstrumentDefinitionSpread29: "
-        << " event time: " << SDateTime::fromUnixTimeToString(ent.eventTime(), SDateTime::MICROSEC)
+        << " event time: " << SDateTime::fromUnixTimeToString(ent.eventTime(), SDateTime::NANOSEC)
         << " event type: " << ent.eventType()
         << " security ID: " << msg.securityID()
         << " symbol: " << msg.symbol()
