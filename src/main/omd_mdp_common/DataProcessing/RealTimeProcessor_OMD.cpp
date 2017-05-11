@@ -23,7 +23,7 @@ void RealTimeProcessor_OMD::Run()
     uint16_t usMsgSize = 0;
     uint32_t uiAdjSeqNo = 0;
     uint64_t ulTS = 0;
-    StateOfNextSeqNo snsn = m_MsgCirBuf->GetMsgSeqNoTStamp(pbMsgMut, &uiAdjSeqNo, &ulTS, &usMsgSize);
+    StateOfNextSeqNo snsn = m_MsgCirBuf->GetPtrMsgSeqNoTStamp(pbMsgMut, &uiAdjSeqNo, &ulTS, &usMsgSize);
     if (snsn == ALL_RETRIEVED)
     {
       m_MsgCirBuf->WaitForData();

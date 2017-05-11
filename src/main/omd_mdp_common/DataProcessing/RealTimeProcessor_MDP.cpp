@@ -31,7 +31,17 @@ void RealTimeProcessor_MDP::Run()
       // Warn when cir buffer is too long
       //--------------------------------------------------
       if (m_MsgCirBuf->Size() > 10000)
-        m_Logger->Write(Logger::WARNING,"RealTimeProcessor: ChannelID:%u. Detected abnormally long message circular buffer with size %u. Please investigate.", m_ChannelID, m_MsgCirBuf->Size());
+      {
+        m_Logger->Write(Logger::WARNING,"RealTimeProcessor: ChannelID:%u. Detected abnormally long message circular buffer with size %u. Please investigate. But I will try to purge.", m_ChannelID, m_MsgCirBuf->Size());
+
+        uint32_t uiSmallestMissingSeqNo = 0;
+        if (m_MsgCirBuf->GetSmallestMissingSeqNo(uiSmallestMissingSeqNo))
+        {
+          m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. There are missing messages in m_MsgCirBuf. Smallest missing seq no %u. Purge m_MsgCirBuf up to that.", m_ChannelID, uiSmallestMissingSeqNo);
+          m_MsgCirBuf->PurgeMsgB4SeqNoInclusive(uiSmallestMissingSeqNo);
+          continue;
+        }
+      }
 
       continue;
     }
@@ -43,7 +53,7 @@ void RealTimeProcessor_MDP::Run()
     uint16_t usMsgSize = 0;
     uint32_t uiPktSeqNo = 0;
     uint64_t ulTS = 0;
-    StateOfNextSeqNo snsn = m_MsgCirBuf->GetMsgSeqNoTStamp(pbPktMut, &uiPktSeqNo, &ulTS, &usMsgSize);
+    StateOfNextSeqNo snsn = m_MsgCirBuf->GetPtrMsgSeqNoTStamp(pbPktMut, &uiPktSeqNo, &ulTS, &usMsgSize);
     if (snsn == ALL_RETRIEVED)
     {
       m_MsgCirBuf->WaitForData();
@@ -64,7 +74,6 @@ void RealTimeProcessor_MDP::Run()
     m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. m_MsgCirBuf.AllocatedSize() %u", m_ChannelID, m_MsgCirBuf->AllocatedSize());
     m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Pkt Seq No:                 %u", m_ChannelID, uiPktSeqNo);
     m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Local Timestamp of Pkt: %s", m_ChannelID, SDateTime::fromUnixTimeToString(ulTS,SDateTime::MILLISEC).c_str());
-
 
     //--------------------------------------------------
     // Record canned data
