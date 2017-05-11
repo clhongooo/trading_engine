@@ -22,7 +22,7 @@ RealTimeProcessor::RealTimeProcessor(const unsigned short id) :
   m_SysCfg = SystemConfig::Instance();
   m_ShrObj = SharedObjects::Instance();
   m_ThreadHealthMon = ThreadHealthMonitor::Instance();
-  m_Logger->Write(Logger::NOTICE, "RealTimeProcessor: ChannelID:%u,", m_ChannelID);
+  m_Logger->Write(Logger::NOTICE, "%s: ChannelID:%u", __FILE__, m_ChannelID);
   m_MsgCirBuf = m_ShrObj->GetMsgCirBufPtr(McastIdentifier::REALTIME, m_ChannelID);
   m_bRunRealTimeProcessor = m_SysCfg->CheckIfRunRealTimeProcessor();
 
@@ -41,7 +41,7 @@ RealTimeProcessor::RealTimeProcessor(const unsigned short id) :
     m_BinaryRecorder.SetOutFilePath(oo.str().c_str(), m_SysCfg->GetCannedProcessedDataFopenFlag().c_str());
     if (!m_BinaryRecorder.EnableWriter())
     {
-      m_Logger->Write(Logger::ERROR,"RealTimeProcessor: ChannelID:%u. The file %s could not be opened.", m_ChannelID, oo.str().c_str());
+      m_Logger->Write(Logger::ERROR,"%s: ChannelID:%u. The file %s could not be opened.", __FILE__, m_ChannelID, oo.str().c_str());
       exit(1);
     }
   }

@@ -9,7 +9,7 @@ void PreProcessor_OMD::Run()
     //--------------------------------------------------
     if (m_ShrObj->ThreadShouldExit())
     {
-      m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. Stopping thread.", m_ChannelID);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Stopping thread.", __FILE__, m_ChannelID);
       return;
     }
 
@@ -35,22 +35,21 @@ void PreProcessor_OMD::Run()
     if (oph->PktSize > 0 && oph->PktSize <= MAX_OMD_PACKET_SIZE)
     {
 
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Packet size:   %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->PktSize);
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Msg Count:     %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->MsgCount);
-
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Base Seq No:   %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), m_LocalLastBaseSeqNo);
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Send Time:     %s", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(oph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str());
+      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s (%c): Packet Header: Packet size:   %u", __FILE__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->PktSize);
+      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s (%c): Packet Header: Msg Count:     %u", __FILE__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->MsgCount);
+      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s (%c): Packet Header: Base Seq No:   %u", __FILE__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), m_LocalLastBaseSeqNo);
+      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s (%c): Packet Header: Send Time:     %s", __FILE__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(oph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str());
 
       //--------------------------------------------------
       // Output other Debug info
       //--------------------------------------------------
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : m_RawPktCirBuf.Size()          %u", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_RawPktCirBuf->Size());
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : m_RawPktCirBuf.AllocatedSize() %u", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_RawPktCirBuf->AllocatedSize());
+      m_Logger->Write(Logger::DEBUG,"%s: %s : %u : m_RawPktCirBuf.Size()          %u", __FILE__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_RawPktCirBuf->Size());
+      m_Logger->Write(Logger::DEBUG,"%s: %s : %u : m_RawPktCirBuf.AllocatedSize() %u", __FILE__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_RawPktCirBuf->AllocatedSize());
 
       if (m_PrintPreProcSeqNoAsInfo)
-        m_Logger->Write(Logger::INFO ,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Actual Seq No: %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->SeqNum);
+        m_Logger->Write(Logger::INFO ,"%s: ChannelID:%u. %s (%c): Packet Header: Actual Seq No: %u", __FILE__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->SeqNum);
       else
-        m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s (%c): Packet Header: Actual Seq No: %u", m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->SeqNum);
+        m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s (%c): Packet Header: Actual Seq No: %u", __FILE__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->SeqNum);
 
     }
 
@@ -59,7 +58,8 @@ void PreProcessor_OMD::Run()
     //--------------------------------------------------
     else if (oph->PktSize > MAX_OMD_PACKET_SIZE)
     {
-      m_Logger->Write(Logger::WARNING,"PreProcessor: ChannelID:%u. %s (%c): Received erroneous packet size: Send Time: %s, PktSize = %u.",
+      m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. %s (%c): Received erroneous packet size: Send Time: %s, PktSize = %u.",
+                      __FILE__,
                       m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(oph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str(), oph->PktSize);
       m_RawPktCirBuf->PopFront();
       continue;
@@ -75,7 +75,8 @@ void PreProcessor_OMD::Run()
     // //--------------------------------------------------
     // if (oph->SendTime < m_PrevPktHdrTime - 86400000000000) // # of nano sec in 1 day
     // {
-    //   m_Logger->Write(Logger::WARNING,"PreProcessor: ChannelID:%u. %s (%c): Trashed packet with erroneous Send Time in packet header: %s.",
+    //   m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. %s (%c): Trashed packet with erroneous Send Time in packet header: %s.",
+    //       __FILE__,
     //       m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(oph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str());
     //   m_RawPktCirBuf->PopFront();
     //   continue;
@@ -96,7 +97,7 @@ void PreProcessor_OMD::Run()
     size_t iMsgCnt = READ_UINT8(&(oph->MsgCount));
     if (iMsgCnt == 0)
     {
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: %s : %u : This is a HEARTBEAT packet", m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port());
+      m_Logger->Write(Logger::DEBUG,"%s: %s : %u : This is a HEARTBEAT packet", __FILE__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port());
       m_RawPktCirBuf->PopFront();
       m_MsgCirBuf->NotifyConsumer();
       continue;
@@ -145,13 +146,13 @@ void PreProcessor_OMD::Run()
       iOffset += READ_UINT16(pbPkt+iOffset);
       uint32_t iUnadjSeqNo = iStartUnadjSeqNo+i;
 
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. %s : %u : Msg Seq No (unadj): %u", m_ChannelID, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), iUnadjSeqNo);
+      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s : %u : Msg Seq No (unadj): %u", __FILE__, m_ChannelID, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), iUnadjSeqNo);
 
       unsigned short usMsgSize = READ_UINT16(pbMsg);
       unsigned short usMsgType = READ_UINT16(pbMsg+2);
 
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: MsgType: %u", usMsgType);
-      m_Logger->Write(Logger::DEBUG,"PreProcessor: MsgSize: %u", usMsgSize);
+      m_Logger->Write(Logger::DEBUG,"%s: MsgType: %u", __FILE__, usMsgType);
+      m_Logger->Write(Logger::DEBUG,"%s: MsgSize: %u", __FILE__, usMsgSize);
 
       //--------------------------------------------------
       // Printing results in log
@@ -272,7 +273,8 @@ void PreProcessor_OMD::Run()
         }
         else
         {
-          m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. R%c (%c) OMD_SEQUENCE_RESET received. But we have already processed it in the other line. Skipping",
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. R%c (%c) OMD_SEQUENCE_RESET received. But we have already processed it in the other line. Skipping",
+                          __FILE__,
                           m_ChannelID,
                           (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? 'T' : 'F'),
                           (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A': 'B'));
@@ -284,7 +286,8 @@ void PreProcessor_OMD::Run()
           //--------------------------------------------------
           // RealTime channel
           //--------------------------------------------------
-          m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. RT (%c) OMD_SEQUENCE_RESET received. Seq No of OMD_REFRESH_COMPLETE(raw/unadj): %u, New Base Seq No (adj): %u. Start Seq No (adj, and before seq reset msg): %u.",
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. RT (%c) OMD_SEQUENCE_RESET received. Seq No of OMD_REFRESH_COMPLETE(raw/unadj): %u, New Base Seq No (adj): %u. Start Seq No (adj, and before seq reset msg): %u.",
+                          __FILE__,
                           m_ChannelID,
                           (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A': 'B'),
                           iUnadjSeqNo,
@@ -293,9 +296,9 @@ void PreProcessor_OMD::Run()
           m_ShrObj->AddRTChnlSeqNoOffset(m_ChannelID, m_LocalLastBaseSeqNo);
 
           // if (usMsgType == OMD_SEQUENCE_RESET)
-          m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. Refresh activated after receiving OMD_SEQUENCE_RESET.", m_ChannelID);
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Refresh activated after receiving OMD_SEQUENCE_RESET.", __FILE__, m_ChannelID);
           // else
-          //   m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. Refresh activated after detecting sequence number reset..", m_ChannelID);
+          //   m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Refresh activated after detecting sequence number reset..", __FILE__, m_ChannelID);
 
           m_ShrObj->ActivateRefresh(m_ChannelID);
 
@@ -307,7 +310,7 @@ void PreProcessor_OMD::Run()
           for (its = pset->begin(); its != pset->end(); ++its)
           {
             m_ShrObj->GetOrderBookCache()->GetOrderBook(*its)->Reset();
-            m_Logger->Write(Logger::INFO,"PreProcessor: ChannelID:%u. Resetting OrderBook %u upon reception of OMD_SEQUENCE_RESET.", m_ChannelID, *its);
+            m_Logger->Write(Logger::INFO,"%s: ChannelID:%u. Resetting OrderBook %u upon reception of OMD_SEQUENCE_RESET.", __FILE__, m_ChannelID, *its);
           }
         } // if (REALTIME)
         else
@@ -315,7 +318,8 @@ void PreProcessor_OMD::Run()
           //--------------------------------------------------
           // Refresh channel
           //--------------------------------------------------
-          m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. RF (%c) OMD_SEQUENCE_RESET received. Current Seq No (raw): %u, New Base Seq No: %u",
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. RF (%c) OMD_SEQUENCE_RESET received. Current Seq No (raw): %u, New Base Seq No: %u",
+                          __FILE__,
                           m_ChannelID,
                           (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A': 'B'),
                           iUnadjSeqNo,
@@ -342,7 +346,8 @@ void PreProcessor_OMD::Run()
           ExpandableCirBuffer4Msg * m_MsgCirBuf_RF = m_ShrObj->GetMsgCirBufPtr(McastIdentifier::REFRESH, m_McastIdentifier.Channel_ID());
           uint32_t uiArtificialRFAdjSeqNo = m_MsgCirBuf_RF->GetNextSeqNo();
 
-          m_Logger->Write(Logger::NOTICE,"PreProcessor: ChannelID:%u. Implicit Seq Reset on Refresh channel after getting OMD_SEQUENCE_RESET in RealTime channel. Artificial Seq No (adj) = New Base Seq No (adj): %u.",
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Implicit Seq Reset on Refresh channel after getting OMD_SEQUENCE_RESET in RealTime channel. Artificial Seq No (adj) = New Base Seq No (adj): %u.",
+                          __FILE__,
                           m_ChannelID,
                           uiArtificialRFAdjSeqNo);
 
@@ -361,7 +366,7 @@ void PreProcessor_OMD::Run()
         if (usMsgType == OMDC_AGGREGATE_ORDER_BOOK_UPDATE || usMsgType == OMDD_AGGREGATE_ORDER_BOOK_UPDATE)
         {
           OMDC_Aggregate_Order_Book_Update *oaobu = (OMDC_Aggregate_Order_Book_Update*) pbMsg;
-          m_Logger->Write(Logger::DEBUG,"PreProcessor: ChannelID:%u. Discovery: OrderBookID [%u] is received through this channel.", m_ChannelID, oaobu->SecurityCode);
+          m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Discovery: OrderBookID [%u] is received through this channel.", __FILE__, m_ChannelID, oaobu->SecurityCode);
           m_ShrObj->AddOrderBookIDInChnl(m_ChannelID,oaobu->SecurityCode);
         }
 

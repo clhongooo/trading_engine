@@ -9,7 +9,7 @@ void RealTimeProcessor_MDP::Run()
     //--------------------------------------------------
     if (m_ShrObj->ThreadShouldExit())
     {
-      m_Logger->Write(Logger::NOTICE,"RealTimeProcessor: ChannelID:%u. Stopping thread.", m_ChannelID);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Stopping thread.", __FILE__, m_ChannelID);
       return;
     }
 
@@ -23,12 +23,12 @@ void RealTimeProcessor_MDP::Run()
     //--------------------------------------------------
     if (m_MsgCirBuf->Size() > 10000)
     {
-      m_Logger->Write(Logger::WARNING,"RealTimeProcessor: ChannelID:%u. Detected abnormally long message circular buffer with size %u. Please investigate. But I will try to purge.", m_ChannelID, m_MsgCirBuf->Size());
+      m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. Detected abnormally long message circular buffer with size %u. Please investigate. But I will try to purge.", __FILE__, m_ChannelID, m_MsgCirBuf->Size());
 
       uint32_t uiSmallestMissingSeqNo = 0;
       if (m_MsgCirBuf->GetSmallestMissingSeqNo(uiSmallestMissingSeqNo))
       {
-        m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. There are missing messages in m_MsgCirBuf. Smallest missing seq no %u. Purge m_MsgCirBuf up to that.", m_ChannelID, uiSmallestMissingSeqNo);
+        m_Logger->Write(Logger::INFO,"%s: ChannelID:%u. There are missing messages in m_MsgCirBuf. Smallest missing seq no %u. Purge m_MsgCirBuf up to that.", __FILE__, m_ChannelID, uiSmallestMissingSeqNo);
         m_MsgCirBuf->PurgeMsgB4SeqNoInclusive(uiSmallestMissingSeqNo);
         continue;
       }
@@ -41,7 +41,7 @@ void RealTimeProcessor_MDP::Run()
     if (!m_ShrObj->CheckCapTestStatus() && m_ShrObj->CheckRefreshActivatnStatus(m_ChannelID))
     {
       boost::this_thread::sleep(boost::posix_time::seconds(1)); // force sleep 1 sleep
-      m_Logger->Write(Logger::NOTICE,"RealTimeProcessor: ChannelID:%u. Refresh mode is on. RealTimeProcessor will halt processing until refresh is done.", m_ChannelID);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Refresh mode is on. RealTimeProcessor will halt processing until refresh is done.", __FILE__, m_ChannelID);
       continue;
     }
 
@@ -69,10 +69,10 @@ void RealTimeProcessor_MDP::Run()
     //--------------------------------------------------
     // Output Debug info
     //--------------------------------------------------
-    m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. m_MsgCirBuf.Size()          %u", m_ChannelID, m_MsgCirBuf->Size());
-    m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. m_MsgCirBuf.AllocatedSize() %u", m_ChannelID, m_MsgCirBuf->AllocatedSize());
-    m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Pkt Seq No:                 %u", m_ChannelID, uiPktSeqNo);
-    m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Local Timestamp of Pkt: %s", m_ChannelID, SDateTime::fromUnixTimeToString(ulTS,SDateTime::MILLISEC).c_str());
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. m_MsgCirBuf.Size()          %u",             __FILE__, m_ChannelID, m_MsgCirBuf->Size());
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. m_MsgCirBuf.AllocatedSize() %u",             __FILE__, m_ChannelID, m_MsgCirBuf->AllocatedSize());
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Pkt Seq No:                 %u",             __FILE__, m_ChannelID, uiPktSeqNo);
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Local Timestamp of Pkt: %s", __FILE__, m_ChannelID, SDateTime::fromUnixTimeToString(ulTS,SDateTime::MILLISEC).c_str());
 
     //--------------------------------------------------
     // Record canned data

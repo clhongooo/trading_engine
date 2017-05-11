@@ -9,7 +9,7 @@ void RealTimeProcessor_OMD::Run()
     //--------------------------------------------------
     if (m_ShrObj->ThreadShouldExit())
     {
-      m_Logger->Write(Logger::NOTICE,"RealTimeProcessor: ChannelID:%u. Stopping thread.", m_ChannelID);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Stopping thread.", __FILE__, m_ChannelID);
       return;
     }
 
@@ -50,13 +50,13 @@ void RealTimeProcessor_OMD::Run()
     if (!m_ShrObj->CheckCapTestStatus() && m_ShrObj->CheckRefreshActivatnStatus(m_ChannelID))
     {
       boost::this_thread::sleep(boost::posix_time::seconds(1)); // force sleep 1 sleep
-      m_Logger->Write(Logger::NOTICE,"RealTimeProcessor: ChannelID:%u. Refresh mode is on. RealTimeProcessor will halt processing until refresh is done.", m_ChannelID);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Refresh mode is on. RealTimeProcessor will halt processing until refresh is done.", __FILE__, m_ChannelID);
 
       //--------------------------------------------------
       // Warn when cir buffer is too long
       //--------------------------------------------------
       if (m_MsgCirBuf->Size() > 10000)
-        m_Logger->Write(Logger::WARNING,"RealTimeProcessor: ChannelID:%u. Detected abnormally long message circular buffer with size %u. Please investigate.", m_ChannelID, m_MsgCirBuf->Size());
+        m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. Detected abnormally long message circular buffer with size %u. Please investigate.", __FILE__, m_ChannelID, m_MsgCirBuf->Size());
 
       continue;
     }
@@ -70,21 +70,21 @@ void RealTimeProcessor_OMD::Run()
     //--------------------------------------------------
     // Output Message Header info 
     //--------------------------------------------------
-    m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Msg size:    %u", m_ChannelID, uiMsgSize);
-    m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Msg type:    %u", m_ChannelID, usMsgType);
-    m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Seq No (adj):%u", m_ChannelID, uiAdjSeqNo);
-    m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Message Header: Send Time:   %u", m_ChannelID, ulTS);
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Msg size:    %u", __FILE__, m_ChannelID, uiMsgSize);
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Msg type:    %u", __FILE__, m_ChannelID, usMsgType);
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Seq No (adj):%u", __FILE__, m_ChannelID, uiAdjSeqNo);
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Send Time:   %u", __FILE__, m_ChannelID, ulTS);
 
     //--------------------------------------------------
     // Output other Debug info
     //--------------------------------------------------
-    m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: m_MsgCirBuf.Size()          %u", m_MsgCirBuf->Size());
-    m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: m_MsgCirBuf.AllocatedSize() %u", m_MsgCirBuf->AllocatedSize());
+    m_Logger->Write(Logger::DEBUG,"%s: m_MsgCirBuf.Size()          %u", __FILE__, m_MsgCirBuf->Size());
+    m_Logger->Write(Logger::DEBUG,"%s: m_MsgCirBuf.AllocatedSize() %u", __FILE__, m_MsgCirBuf->AllocatedSize());
 
     if (m_PrintRealTimeSeqNoAsInfo)
-      m_Logger->Write(Logger::INFO ,"RealTimeProcessor: ChannelID:%u. Seq No (adj): %u", m_ChannelID, uiAdjSeqNo);
+      m_Logger->Write(Logger::INFO ,"%s: ChannelID:%u. Seq No (adj): %u", __FILE__, m_ChannelID, uiAdjSeqNo);
     else
-      m_Logger->Write(Logger::DEBUG,"RealTimeProcessor: ChannelID:%u. Seq No (adj): %u", m_ChannelID, uiAdjSeqNo);
+      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Seq No (adj): %u", __FILE__, m_ChannelID, uiAdjSeqNo);
 
     //--------------------------------------------------
     // Record canned data

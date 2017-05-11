@@ -36,7 +36,7 @@ void RefreshProcessor_OMD::Run()
     //--------------------------------------------------
     if (m_ShrObj->ThreadShouldExit())
     {
-      m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Stopping.", m_ChannelID);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Stopping.", __FILE__, m_ChannelID);
       return;
     }
 
@@ -59,14 +59,14 @@ void RefreshProcessor_OMD::Run()
     // //--------------------------------------------------
     // if (bR && m_MsgCirBuf_RF->Size() > m_RFMsgCirBufProtection)
     // {
-    //   m_Logger->Write(Logger::WARNING,"RefreshProcessor: ChannelID:%u. [PROTECTION] Detected abnormally long message circular buffer with size %u. Try to purge old messages for protection.", m_ChannelID, m_MsgCirBuf_RF->Size());
+    //   m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. [PROTECTION] Detected abnormally long message circular buffer with size %u. Try to purge old messages for protection.", __FILE__, m_ChannelID, m_MsgCirBuf_RF->Size());
     //
     //   //--------------------------------------------------
     //   // Just get latest
     //   //--------------------------------------------------
     //   m_MsgCirBuf_RF->GetLatestSeqNo(uiLatestAdjSeqNo);
-    //   m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] [Chkpt 1] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u",
-    //       m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
+    //   m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. [PROTECTION] [Chkpt 1] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u",
+    //       __FILE__, m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
     //   uint32_t uiSeqNoToPurgeB4 = uiLatestAdjSeqNo - m_RFMsgCirBufProtection;
     //
     //   while (uiSeqNoToPurgeB4 < uiLatestAdjSeqNo)
@@ -92,22 +92,22 @@ void RefreshProcessor_OMD::Run()
     //   //--------------------------------------------------
     //   m_MsgCirBuf_RF->GetLatestSeqNo(uiLatestAdjSeqNo);
     //
-    //   m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] [Chkpt 2] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u",
-    //       m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
+    //   m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. [PROTECTION] [Chkpt 2] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u",
+    //       __FILE__, m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
     //
     //   if (!bFoundRFCompl)
     //   {
-    //     m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] There is no OMD_REFRESH_COMPLETE in the last %u messages. Do nothing now and wait for OMD_REFRESH_COMPLETE.", m_ChannelID, m_RFMsgCirBufProtection, uiSeqNoToPurgeB4);
+    //     m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. [PROTECTION] There is no OMD_REFRESH_COMPLETE in the last %u messages. Do nothing now and wait for OMD_REFRESH_COMPLETE.", __FILE__, m_ChannelID, m_RFMsgCirBufProtection, uiSeqNoToPurgeB4);
     //   }
     //   else
     //   {
-    //     m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] Found OMD_REFRESH_COMPLETE at %u. Purge old messages at and before it.",
-    //         m_ChannelID, uiSeqNoToPurgeB4);
+    //     m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. [PROTECTION] Found OMD_REFRESH_COMPLETE at %u. Purge old messages at and before it.",
+    //         __FILE__, m_ChannelID, uiSeqNoToPurgeB4);
     //     m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiSeqNoToPurgeB4);
     //     m_LastCheckedAdjSeqNo = uiSeqNoToPurgeB4+1;
     //   }
     //
-    //   m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] [Chkpt 3] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u", m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
+    //   m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. [PROTECTION] [Chkpt 3] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u", __FILE__, m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
     //   continue;
     // }
 
@@ -116,15 +116,15 @@ void RefreshProcessor_OMD::Run()
     //--------------------------------------------------
     if (bR && m_MsgCirBuf_RF->Size() > m_RFMsgCirBufProtection)
     {
-      m_Logger->Write(Logger::WARNING,"RefreshProcessor: ChannelID:%u. [PROTECTION] Detected abnormally long message circular buffer with size %u. Try to purge all old messages before the latest OMD_REFRESH_COMPLETE for protection.",
-                      m_ChannelID, m_MsgCirBuf_RF->Size());
+      m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. [PROTECTION] Detected abnormally long message circular buffer with size %u. Try to purge all old messages before the latest OMD_REFRESH_COMPLETE for protection.",
+                      __FILE__, m_ChannelID, m_MsgCirBuf_RF->Size());
 
       //--------------------------------------------------
       // Just get latest
       //--------------------------------------------------
       m_MsgCirBuf_RF->GetLatestSeqNo(uiLatestAdjSeqNo);
-      m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] [Chkpt 1] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u",
-                      m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. [PROTECTION] [Chkpt 1] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u",
+                      __FILE__, m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
       uint32_t uiSeqNoToPurgeB4 = uiLatestAdjSeqNo;
 
       while (uiSeqNoToPurgeB4 > uiLatestAdjSeqNo - m_RFMsgCirBufProtection)
@@ -150,24 +150,24 @@ void RefreshProcessor_OMD::Run()
       //--------------------------------------------------
       m_MsgCirBuf_RF->GetLatestSeqNo(uiLatestAdjSeqNo);
 
-      m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] [Chkpt 2] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u",
-                      m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. [PROTECTION] [Chkpt 2] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u",
+                      __FILE__, m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
 
       if (!bFoundRFCompl)
       {
-        m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] There is no OMD_REFRESH_COMPLETE in the last %u messages. Purge old messages at and before %u.",
-                        m_ChannelID, m_RFMsgCirBufProtection, uiSeqNoToPurgeB4);
+        m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. [PROTECTION] There is no OMD_REFRESH_COMPLETE in the last %u messages. Purge old messages at and before %u.",
+                        __FILE__, m_ChannelID, m_RFMsgCirBufProtection, uiSeqNoToPurgeB4);
       }
       else
       {
-        m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] Found OMD_REFRESH_COMPLETE at %u. Purge old messages at and before it.",
-                        m_ChannelID, uiSeqNoToPurgeB4);
+        m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. [PROTECTION] Found OMD_REFRESH_COMPLETE at %u. Purge old messages at and before it.",
+                        __FILE__, m_ChannelID, uiSeqNoToPurgeB4);
       }
 
       m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiSeqNoToPurgeB4);
       m_LastCheckedAdjSeqNo = uiSeqNoToPurgeB4+1;
 
-      m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. [PROTECTION] [Chkpt 3] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u", m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. [PROTECTION] [Chkpt 3] RF circular buffer size: %u. RF Start Seq No: %u. Latest Adj Seq No: %u. LastCheckedAdjSeqNo: %u", __FILE__, m_ChannelID, m_MsgCirBuf_RF->Size(), m_MsgCirBuf_RF->GetStartSeqNo(), uiLatestAdjSeqNo, m_LastCheckedAdjSeqNo);
       continue;
     }
 
@@ -219,7 +219,7 @@ void RefreshProcessor_OMD::Run()
     BYTE *pbMsg = m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(m_LastCheckedAdjSeqNo);
     if (!pbMsg)
     {
-      m_Logger->Write(Logger::ERROR,"RefreshProcessor: ChannelID:%u. Inconsistent internal state in circular buffer. Please debug.", m_ChannelID);
+      m_Logger->Write(Logger::ERROR,"%s: ChannelID:%u. Inconsistent internal state in circular buffer. Please debug.", __FILE__, m_ChannelID);
       m_LastCheckedAdjSeqNo++;
       continue;
     }
@@ -251,7 +251,7 @@ void RefreshProcessor_OMD::Run()
 
       if (!m_ShrObj->CheckRefreshActivatnStatus(m_ChannelID))
       {
-        m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Will purge this refresh batch since refresh mode is not activated.", m_ChannelID);
+        m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. OMD_REFRESH_COMPLETE received. Will purge this refresh batch since refresh mode is not activated.", __FILE__, m_ChannelID);
         bProcessThisRefreshBatch = false;
       }
 
@@ -264,15 +264,15 @@ void RefreshProcessor_OMD::Run()
         {
           if (iNoOfTimesChecked == 0)
           {
-            m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Give 2nd chance. Wait 2 more seconds.",
-                            m_ChannelID, uiSmltMissingAdjSeqNo);
+            m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Give 2nd chance. Wait 2 more seconds.",
+                            __FILE__, m_ChannelID, uiSmltMissingAdjSeqNo);
             boost::this_thread::sleep(boost::posix_time::seconds(2));
             iNoOfTimesChecked++;
           }
           else if (iNoOfTimesChecked > 0)
           {
-            m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Must wait for the next batch of refresh snapshot.",
-                            m_ChannelID, uiSmltMissingAdjSeqNo);
+            m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated, however, there are missing seq no in this refresh batch no (e.g. %u). Must wait for the next batch of refresh snapshot.",
+                            __FILE__, m_ChannelID, uiSmltMissingAdjSeqNo);
             bProcessThisRefreshBatch = false;
             break;
           }
@@ -293,7 +293,7 @@ void RefreshProcessor_OMD::Run()
 
       if (uiRefComplUnadjLastSeqNo == 0)
       {
-        m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated. Last Seq No in the OMD_REFRESH_COMPLETE message is 0.", m_ChannelID);
+        m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated. Last Seq No in the OMD_REFRESH_COMPLETE message is 0.", __FILE__, m_ChannelID);
         bProcessThisRefreshBatch = true;
       }
       else
@@ -301,8 +301,8 @@ void RefreshProcessor_OMD::Run()
         if (bProcessThisRefreshBatch && uiRTMsgCirBufStartAdjSeqNo > uiRefComplAdjLastSeqNo)
         {
           bProcessThisRefreshBatch = false; // default is false
-          m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated. However, RT circular buffer Start Seq No (adj): %u, RF OMD_REFRESH_COMPLETE field LastSeqNum: (raw) %u (adj) %u. Must wait for the next round of refresh snapshot.",
-                          m_ChannelID, uiRTMsgCirBufStartAdjSeqNo, uiRefComplUnadjLastSeqNo, uiRefComplAdjLastSeqNo);
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated. However, RT circular buffer Start Seq No (adj): %u, RF OMD_REFRESH_COMPLETE field LastSeqNum: (raw) %u (adj) %u. Must wait for the next round of refresh snapshot.",
+                          __FILE__, m_ChannelID, uiRTMsgCirBufStartAdjSeqNo, uiRefComplUnadjLastSeqNo, uiRefComplAdjLastSeqNo);
 
           //--------------------------------------------------
           // Calculating the velocity of Refresh Complete coverage
@@ -318,8 +318,8 @@ void RefreshProcessor_OMD::Run()
               long lNoOfTimesReqToCatchUp = (long)((double)(uiRTMsgCirBufStartAdjSeqNo - uiRefComplAdjLastSeqNo) / (double)lSeqNoCoveragePerRefCompl);
               if (lNoOfTimesReqToCatchUp > 3)
               {
-                m_Logger->Write(Logger::WARNING,"RefreshProcessor: ChannelID:%u. Num of Seq No covered per OMD_REFRESH_COMPLETE: %d. Estimated to take %d rounds of OMD_REFRESH_COMPLETE before a Refresh can be done.",
-                                m_ChannelID, lSeqNoCoveragePerRefCompl, lNoOfTimesReqToCatchUp);
+                m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. Num of Seq No covered per OMD_REFRESH_COMPLETE: %d. Estimated to take %d rounds of OMD_REFRESH_COMPLETE before a Refresh can be done.",
+                                __FILE__, m_ChannelID, lSeqNoCoveragePerRefCompl, lNoOfTimesReqToCatchUp);
                 bProcessThisRefreshBatch = true;
                 m_MaintainRefreshActn = true;
               }
@@ -350,7 +350,7 @@ void RefreshProcessor_OMD::Run()
       //--------------------------------------------------
       // Otherwise need to process msg...
       //--------------------------------------------------
-      m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated and so will process this batch.", m_ChannelID);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. OMD_REFRESH_COMPLETE received. Refresh mode is activated and so will process this batch.", __FILE__, m_ChannelID);
 
       //--------------------------------------------------
       // Reset Order Books of this particular channel
@@ -387,15 +387,15 @@ void RefreshProcessor_OMD::Run()
           //--------------------------------------------------
           // Output Message Header info
           //--------------------------------------------------
-          m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Message Header: Msg size:                 %u", m_ChannelID, uiMsgSize2);
-          m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Message Header: Msg type:                 %u", m_ChannelID, usMsgType2);
-          m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Message Header: Seq No:                   %u", m_ChannelID, uiSeqNo2);
-          m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Message Header: RT Latest Base Seq No:    %u", m_ChannelID, uiLatestRTBaseSeqNo);
+          m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Msg size:                 %u", __FILE__, m_ChannelID, uiMsgSize2);
+          m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Msg type:                 %u", __FILE__, m_ChannelID, usMsgType2);
+          m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Seq No:                   %u", __FILE__, m_ChannelID, uiSeqNo2);
+          m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: RT Latest Base Seq No:    %u", __FILE__, m_ChannelID, uiLatestRTBaseSeqNo);
 
           if (m_PrintRefreshProcSeqNoAsInfo)
-            m_Logger->Write(Logger::INFO ,"RefreshProcessor: ChannelID:%u. Actual Seq No: %u, Latest RT Base Seq No: %u", m_ChannelID, uiSeqNo2, uiLatestRTBaseSeqNo);
+            m_Logger->Write(Logger::INFO ,"%s: ChannelID:%u. Actual Seq No: %u, Latest RT Base Seq No: %u", __FILE__, m_ChannelID, uiSeqNo2, uiLatestRTBaseSeqNo);
           else
-            m_Logger->Write(Logger::DEBUG,"RefreshProcessor: ChannelID:%u. Actual Seq No: %u, Latest RT Base Seq No: %u", m_ChannelID, uiSeqNo2, uiLatestRTBaseSeqNo);
+            m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Actual Seq No: %u, Latest RT Base Seq No: %u", __FILE__, m_ChannelID, uiSeqNo2, uiLatestRTBaseSeqNo);
 
 
           //--------------------------------------------------
@@ -427,7 +427,7 @@ void RefreshProcessor_OMD::Run()
         }
         else if (snsn == ALL_RETRIEVED)
         {
-          m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Nothing to process in the RF circular buffer. Probably purged elsewhere. Need to wait for the next refresh batch.", m_ChannelID);
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Nothing to process in the RF circular buffer. Probably purged elsewhere. Need to wait for the next refresh batch.", __FILE__, m_ChannelID);
           bWaitForNextBatch = true;
           break;
         }
@@ -436,13 +436,13 @@ void RefreshProcessor_OMD::Run()
           uint32_t uiSmltMissingAdjSeqNo = 0;
           if (m_MsgCirBuf_RF->GetSmallestMissingSeqNo(uiSmltMissingAdjSeqNo))
           {
-            m_Logger->Write(Logger::ERROR,"RefreshProcessor: ChannelID:%u. Missing seq no detected but that's impossible. Please check. Current missing Seq No (adj): %u. SmallestMissingSeqNo (adj): %u. OMD_REFRESH_COMPLETE Seq No (adj): %u. Last Seq No in OMD_REFRESH_COMPLETE message: %u (adj) or %u (raw).",
-                            m_ChannelID, uiSeqNo2, uiSmltMissingAdjSeqNo, uiAdjSeqNoOfRefCompl, uiRefComplAdjLastSeqNo, uiRefComplUnadjLastSeqNo);
+            m_Logger->Write(Logger::ERROR,"%s: ChannelID:%u. Missing seq no detected but that's impossible. Please check. Current missing Seq No (adj): %u. SmallestMissingSeqNo (adj): %u. OMD_REFRESH_COMPLETE Seq No (adj): %u. Last Seq No in OMD_REFRESH_COMPLETE message: %u (adj) or %u (raw).",
+                            __FILE__, m_ChannelID, uiSeqNo2, uiSmltMissingAdjSeqNo, uiAdjSeqNoOfRefCompl, uiRefComplAdjLastSeqNo, uiRefComplUnadjLastSeqNo);
           }
           else
           {
-            m_Logger->Write(Logger::ERROR,"RefreshProcessor: ChannelID:%u. Missing seq no detected but that's impossible. Please check. Current no missing Seq No in circular buffer. OMD_REFRESH_COMPLETE Seq No (adj): %u. Last Seq No in OMD_REFRESH_COMPLETE message: %u (adj) or %u (raw).",
-                            m_ChannelID, uiAdjSeqNoOfRefCompl, uiRefComplAdjLastSeqNo, uiRefComplUnadjLastSeqNo);
+            m_Logger->Write(Logger::ERROR,"%s: ChannelID:%u. Missing seq no detected but that's impossible. Please check. Current no missing Seq No in circular buffer. OMD_REFRESH_COMPLETE Seq No (adj): %u. Last Seq No in OMD_REFRESH_COMPLETE message: %u (adj) or %u (raw).",
+                            __FILE__, m_ChannelID, uiAdjSeqNoOfRefCompl, uiRefComplAdjLastSeqNo, uiRefComplUnadjLastSeqNo);
           }
         }
 
@@ -462,8 +462,8 @@ void RefreshProcessor_OMD::Run()
         //--------------------------------------------------
         if (uiRTStartSeqNo + uiRTSize < uiRefComplAdjLastSeqNo)
         {
-          m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Now we are preparing to purge RT circular buffer. The Last Seq No in OMD_REFRESH_COMPLETE is (raw) %u (adj) %u, but RT circular buffer starts with Seq No (adj) %u and it has Size %u, which may or may not be a problem...",
-                          m_ChannelID, uiRefComplUnadjLastSeqNo, uiRefComplAdjLastSeqNo, uiRTStartSeqNo, uiRTSize);
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Now we are preparing to purge RT circular buffer. The Last Seq No in OMD_REFRESH_COMPLETE is (raw) %u (adj) %u, but RT circular buffer starts with Seq No (adj) %u and it has Size %u, which may or may not be a problem...",
+                          __FILE__, m_ChannelID, uiRefComplUnadjLastSeqNo, uiRefComplAdjLastSeqNo, uiRTStartSeqNo, uiRTSize);
         }
 
         //--------------------------------------------------
@@ -508,18 +508,18 @@ void RefreshProcessor_OMD::Run()
         m_MsgCirBuf_RT->PurgeMsgB4SeqNoInclusive(uiRefComplAdjLastSeqNo);
 
         if (uiRTSize == 0)
-          m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Refresh completed. RT circular buffer: Start Seq No: %u (adj), Size %u. (i.e. last seq no that contains data is %u). Seq No before %u (adj) have been purged.",
-                          m_ChannelID, uiRTStartSeqNo, uiRTSize, uiRTStartSeqNo-1, uiRefComplAdjLastSeqNo);
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Refresh completed. RT circular buffer: Start Seq No: %u (adj), Size %u. (i.e. last seq no that contains data is %u). Seq No before %u (adj) have been purged.",
+                          __FILE__, m_ChannelID, uiRTStartSeqNo, uiRTSize, uiRTStartSeqNo-1, uiRefComplAdjLastSeqNo);
         else
-          m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Refresh completed. RT circular buffer: Start Seq No: %u (adj), Size %u. Seq No before %u (adj) have been purged.",
-                          m_ChannelID, uiRTStartSeqNo, uiRTSize, uiRefComplAdjLastSeqNo);
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Refresh completed. RT circular buffer: Start Seq No: %u (adj), Size %u. Seq No before %u (adj) have been purged.",
+                          __FILE__, m_ChannelID, uiRTStartSeqNo, uiRTSize, uiRefComplAdjLastSeqNo);
 
         if (uiRFSize == 0)
-          m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Refresh completed. RF circular buffer: Start Seq No: %u (adj), Size %u. (i.e. last seq no that contains data is %u). Seq No before %u (adj) have been purged.",
-                          m_ChannelID, uiRFStartSeqNo, uiRFSize, uiRFStartSeqNo-1, uiAdjSeqNoOfRefCompl);
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Refresh completed. RF circular buffer: Start Seq No: %u (adj), Size %u. (i.e. last seq no that contains data is %u). Seq No before %u (adj) have been purged.",
+                          __FILE__, m_ChannelID, uiRFStartSeqNo, uiRFSize, uiRFStartSeqNo-1, uiAdjSeqNoOfRefCompl);
         else
-          m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Refresh completed. RF circular buffer: Start Seq No: %u (adj), Size %u. Seq No before %u (adj) have been purged.",
-                          m_ChannelID, uiRFStartSeqNo, uiRFSize, uiAdjSeqNoOfRefCompl);
+          m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Refresh completed. RF circular buffer: Start Seq No: %u (adj), Size %u. Seq No before %u (adj) have been purged.",
+                          __FILE__, m_ChannelID, uiRFStartSeqNo, uiRFSize, uiAdjSeqNoOfRefCompl);
 
       }
 
@@ -530,11 +530,11 @@ void RefreshProcessor_OMD::Run()
       if (!m_MaintainRefreshActn)
       {
         m_ShrObj->DeactivateRefresh(m_ChannelID);
-        m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Deactivated refresh mode.", m_ChannelID);
+        m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Deactivated refresh mode.", __FILE__, m_ChannelID);
       }
       else
       {
-        m_Logger->Write(Logger::NOTICE,"RefreshProcessor: ChannelID:%u. Maintain refresh activation mode.", m_ChannelID);
+        m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Maintain refresh activation mode.", __FILE__, m_ChannelID);
         m_MaintainRefreshActn = false;
       }
     } // if (usMsgType == OMD_REFRESH_COMPLETE)
