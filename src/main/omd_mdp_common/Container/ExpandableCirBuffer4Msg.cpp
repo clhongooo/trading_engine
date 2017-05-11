@@ -397,7 +397,7 @@ void ExpandableCirBuffer4Msg::PushMsg(const BYTE* pTArg, const uint32_t iSeqNo, 
   return;
 }
 
-StateOfNextSeqNo ExpandableCirBuffer4Msg::GetMsgSeqNoTStamp(BYTE* & pArg, uint32_t* uiSeqNo, uint64_t* ulTS, uint16_t* usMsgSize)
+StateOfNextSeqNo ExpandableCirBuffer4Msg::GetPtrMsgSeqNoTStamp(BYTE* & pArg, uint32_t* uiSeqNo, uint64_t* ulTS, uint16_t* usMsgSize)
 {
   boost::unique_lock<boost::shared_mutex> lock(m_SharedMutex);
 

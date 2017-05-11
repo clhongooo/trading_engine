@@ -44,7 +44,7 @@ class ExpandableCirBuffer4Msg
     ~ExpandableCirBuffer4Msg();
     unsigned int     AllocatedSize();
     unsigned int     Size();
-    StateOfNextSeqNo GetMsgSeqNoTStamp(BYTE* &,uint32_t*,uint64_t*,uint16_t*);
+    StateOfNextSeqNo GetPtrMsgSeqNoTStamp(BYTE* &,uint32_t*,uint64_t*,uint16_t*);
 
     bool      CheckDirtyFlagTStamp(const uint32_t,bool&,uint64_t&);
     void      PushMsg(const char*,const uint32_t,const uint64_t,const uint16_t);
