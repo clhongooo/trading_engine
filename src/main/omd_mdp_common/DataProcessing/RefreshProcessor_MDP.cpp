@@ -138,6 +138,31 @@ void RefreshProcessor_MDP::Run()
       continue;
     }
 
+    {
+      //--------------------------------------------------
+      // Check for missing sequence number
+      //--------------------------------------------------
+    uint32_t uiLargestMissingSeqNo = 0;
+      if (m_MsgCirBuf_RF->GetLargestMissingSeqNo(uiLargestMissingSeqNo))
+      {
+        m_LastCheckedAdjSeqNo = max(uiAdjSeqNoOfRefCompl,uiLargestMissingSeqNo);
+        m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. There are missing messages in m_MsgCirBuf_RF. Largest missing seq no %u. Wait for next refresh batch. Purge m_MsgCirBuf_RF up to %u", m_ChannelID, uiLargestMissingSeqNo, m_LastCheckedAdjSeqNo);
+        m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(m_LastCheckedAdjSeqNo);
+        m_MsgCirBuf_RF->GetLargestMissingSeqNo(uiLargestMissingSeqNo);
+        m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. m_MsgCirBuf_RF: Largest missing seq no %u. Size: %u", m_ChannelID, uiLargestMissingSeqNo, m_MsgCirBuf_RF->Size());
+        continue;
+      }
+
+      //--------------------------------------------------
+      // Check for missing sequence number
+      //--------------------------------------------------
+      if (m_MsgCirBuf_RT->GetLargestMissingSeqNo(uiLargestMissingSeqNo))
+      {
+        m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. There are missing messages in m_MsgCirBuf_RT. Largest missing seq no %u. Purge m_MsgCirBuf_RT up to the missing seq no.", m_ChannelID, uiLargestMissingSeqNo);
+        m_MsgCirBuf_RT->PurgeMsgB4SeqNoInclusive(uiLargestMissingSeqNo);
+      }
+    }
+
     //--------------------------------------------------
     // Get sequence no range
     //--------------------------------------------------
@@ -171,31 +196,6 @@ void RefreshProcessor_MDP::Run()
       m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
       m_LastCheckedAdjSeqNo = uiAdjSeqNoOfRefCompl;
       continue;
-    }
-
-    {
-      //--------------------------------------------------
-      // Check for missing sequence number
-      //--------------------------------------------------
-      uint32_t uiSmallestMissingSeqNo = 0;
-      if (m_MsgCirBuf_RF->GetSmallestMissingSeqNo(uiSmallestMissingSeqNo))
-      {
-        m_LastCheckedAdjSeqNo = max(uiAdjSeqNoOfRefCompl,uiSmallestMissingSeqNo);
-        m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. There are missing messages in m_MsgCirBuf_RF. Smallest missing seq no %u. Wait for next refresh batch. Purge m_MsgCirBuf_RF up to %u", m_ChannelID, uiSmallestMissingSeqNo, m_LastCheckedAdjSeqNo);
-        m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(m_LastCheckedAdjSeqNo);
-        m_MsgCirBuf_RF->GetSmallestMissingSeqNo(uiSmallestMissingSeqNo);
-        m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. m_MsgCirBuf_RF: Smallest missing seq no %u. Size: %u", m_ChannelID, uiSmallestMissingSeqNo, m_MsgCirBuf_RF->Size());
-        continue;
-      }
-
-      //--------------------------------------------------
-      // Check for missing sequence number
-      //--------------------------------------------------
-      if (m_MsgCirBuf_RT->GetSmallestMissingSeqNo(uiSmallestMissingSeqNo))
-      {
-        m_Logger->Write(Logger::INFO,"RefreshProcessor: ChannelID:%u. There are missing messages in m_MsgCirBuf_RT. Smallest missing seq no %u. Purge m_MsgCirBuf_RT up to the missing seq no.", m_ChannelID, uiSmallestMissingSeqNo);
-        m_MsgCirBuf_RT->PurgeMsgB4SeqNoInclusive(uiSmallestMissingSeqNo);
-      }
     }
 
     //--------------------------------------------------
