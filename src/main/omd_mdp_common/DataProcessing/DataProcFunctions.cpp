@@ -371,9 +371,9 @@ void DataProcFunctions_MDP::HandleMDPRaw(const BYTE *pbPkt, const unsigned short
     if (iMsgSize <= 0) break;
 
     //--------------------------------------------------
-    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap2    %d", channelID, sMcastType.c_str(), iWrap2);
-    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap3    %d", channelID, sMcastType.c_str(), iWrap3);
-    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap4    %d", channelID, sMcastType.c_str(), iWrap4);
+    // m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap2    %d", channelID, sMcastType.c_str(), iWrap2);
+    // m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap3    %d", channelID, sMcastType.c_str(), iWrap3);
+    // m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap4    %d", channelID, sMcastType.c_str(), iWrap4);
 
     mdpMsgHdr.wrap((char*)pbPkt, iWrap2, MDP_VERSION, iWrap4);
 
@@ -382,22 +382,22 @@ void DataProcFunctions_MDP::HandleMDPRaw(const BYTE *pbPkt, const unsigned short
 
     switch (mdpMsgHdr.templateId())
     {
-      case MDP_HEARTBEAT                          : OnHeartBeat                        ();                                          break;
-      case MDP_CHANNEL_RESET                      : OnChannelReset                     (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_SECURITY_DEFINITION_FUTURE : OnRefreshSecurityDefinitionFuture  (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_SECURITY_DEFINITION_SPREAD : OnRefreshSecurityDefinitionSpread  (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_SECURITY_STATUS                    : OnSecurityStatus                   (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_BOOK                       : OnRefreshBook                      (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_DAILY_STATISTICS           : OnRefreshDailyStatistics           (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_LIMITS_BANDING             : OnRefreshLimitsBanding             (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_SESSION_STATISTICS         : OnRefreshSessionStatistics         (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_TRADE                      : OnRefreshTrade                     (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_VOLUME                     : OnRefreshVolume                    (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_SNAPSHOT_FULL_REFRESH              : OnSnapshotFullRefresh              (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_QUOTE_REQUEST                      : OnQuoteRequest                     (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_INSTRUMENT_DEFINITION_OPTION       : OnInstrumentDefinitionOption       (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      case MDP_REFRESH_TRADE_SUMMARY              : OnRefreshTradeSummary              (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);  break;
-      default                                     : m_Logger->Write(Logger::DEBUG,"Unprocessed message. templateId: %d", mdpMsgHdr.templateId());   break;
+      case MDP_HEARTBEAT                          : OnHeartBeat                        ();                                                                     break;
+      case MDP_CHANNEL_RESET                      : OnChannelReset                     (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_REFRESH_SECURITY_DEFINITION_FUTURE : OnRefreshSecurityDefinitionFuture  (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_REFRESH_SECURITY_DEFINITION_SPREAD : OnRefreshSecurityDefinitionSpread  (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_SECURITY_STATUS                    : OnSecurityStatus                   (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_REFRESH_BOOK                       : OnRefreshBook                      (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_REFRESH_DAILY_STATISTICS           : OnRefreshDailyStatistics           (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_REFRESH_LIMITS_BANDING             : OnRefreshLimitsBanding             (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_REFRESH_SESSION_STATISTICS         : OnRefreshSessionStatistics         (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_REFRESH_TRADE                      : OnRefreshTrade                     (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_REFRESH_VOLUME                     : OnRefreshVolume                    (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_SNAPSHOT_FULL_REFRESH              : OnSnapshotFullRefresh              (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_QUOTE_REQUEST                      : OnQuoteRequest                     (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_INSTRUMENT_DEFINITION_OPTION       : OnInstrumentDefinitionOption       (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      case MDP_REFRESH_TRADE_SUMMARY              : OnRefreshTradeSummary              (channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3, sMcastType);      break;
+      default                                     : m_Logger->Write(Logger::DEBUG,"Unprocessed message. %s templateId: %d", sMcastType.c_str(), mdpMsgHdr.templateId());  break;
     }
 
     //--------------------------------------------------
@@ -425,13 +425,11 @@ vector<uint32_t> DataProcFunctions_MDP::Get_LastMsgSeqNumProcessed(const unsigne
     const size_t iWrap4 = iOffset + iMsgSize;
     if (iMsgSize <= 0) break;
     mdpMsgHdr.wrap((char*)pbPkt, iWrap2, MDP_VERSION, iWrap4);
-    m_Logger->Write(Logger::DEBUG,"templateId: %d", mdpMsgHdr.templateId());
     if (mdpMsgHdr.templateId() == MDP_SNAPSHOT_FULL_REFRESH)
     {
       SnapshotFullRefresh38 msg;
       msg.wrapForDecode((char*)pbPkt+iWrap2, mdpMsgHdr.encodedLength(), mdpMsgHdr.blockLength(), MDP_VERSION, iWrap3);
       vRtn.push_back(msg.lastMsgSeqNumProcessed());
-      // OnSnapshotFullRefresh(channelID, mdpMsgHdr, (char*)pbPkt + iWrap2, iWrap3);
     }
     iOffset += iMsgSize;
   }
@@ -444,7 +442,7 @@ void DataProcFunctions_MDP::OnHeartBeat()
 }
 
 
-void DataProcFunctions_MDP::OnRefreshVolume(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshVolume(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   MDIncrementalRefreshVolume37 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -465,12 +463,12 @@ void DataProcFunctions_MDP::OnRefreshVolume(const unsigned short channelID, cons
         << " UpdateAction: " << (int)(ent.mDUpdateAction())
         << " EntryType: " << string(ent.mDEntryType());
 
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 }
 
-void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   MDIncrementalRefreshBook32 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -491,7 +489,7 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
         << " EntryType: " << (char)(ent.mDEntryType())
         << " transactTime: " << SDateTime::fromUnixTimeToString(msg.transactTime(), SDateTime::NANOSEC);
 
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
 
     if (ent.mDEntryType() == MDEntryTypeBook::Bid || ent.mDEntryType() == MDEntryTypeBook::Offer ||
@@ -510,7 +508,7 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
           << " mDEntrySize: " << (int)(ent.mDEntrySize())
           << " numberOfOrders: " << (int)(ent.numberOfOrders())
           << " rptSeq: " << (int)(ent.rptSeq());
-        m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+        m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
       }
 
       OrderBook* ob = SharedObjects::Instance()->GetOrderBookCache()->GetOrderBook(ent.securityID());
@@ -540,13 +538,13 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
   }
 }
 
-void DataProcFunctions_MDP::OnInstrumentDefinitionOption(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnInstrumentDefinitionOption(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   MDInstrumentDefinitionOption41 msg;
 }
 
 
-void DataProcFunctions_MDP::OnRefreshTrade(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshTrade(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   MDIncrementalRefreshTrade36 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -560,7 +558,7 @@ void DataProcFunctions_MDP::OnRefreshTrade(const unsigned short channelID, const
 
       ostringstream oo;
       oo
-        << "TradeSummary: SecurityID: " << ent.securityID()
+        << "MDIncrementalRefreshTrade36: SecurityID: " << ent.securityID()
         << " RptSeq: " << (int)(ent.rptSeq())
         << " Price: " << (int64_t)(ent.mDEntryPx().mantissa())
         << " EntrySize: " << (int)(ent.mDEntrySize())
@@ -569,12 +567,12 @@ void DataProcFunctions_MDP::OnRefreshTrade(const unsigned short channelID, const
         << " TradeID: " << ent.tradeID()
         << " UpdateAction: " << (int)(ent.mDUpdateAction())
         << " EntryType: " << string(ent.mDEntryType());
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 }
 
-void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   MDIncrementalRefreshTradeSummary42 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -587,9 +585,9 @@ void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID
       order_id_ent.next();
 
       ostringstream oo;
-      oo << "NoOrderIDEntries: OrderID: " << order_id_ent.orderID()
+      oo << "MDIncrementalRefreshTradeSummary42: OrderID: " << order_id_ent.orderID()
         << " Qty: " << order_id_ent.lastQty();
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 
@@ -601,19 +599,19 @@ void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID
       ent.next();
 
       ostringstream oo;
-      oo << "TradeSummary: SecurityID: " << ent.securityID()
+      oo << "MDIncrementalRefreshTradeSummary42: SecurityID: " << ent.securityID()
         << " RptSeq: " << (int)(ent.rptSeq())
         << " Price: " << (int64_t)(ent.mDEntryPx().mantissa())
         << " EntrySize: " << (int)(ent.mDEntrySize())
         << " OrderNo: " << (int)(ent.numberOfOrders())
         << " AggressorSide: " << ent.aggressorSide()
         << " EntryType: " << string(ent.mDEntryType());
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 }
 
-void DataProcFunctions_MDP::OnRefreshDailyStatistics(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshDailyStatistics(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   MDIncrementalRefreshDailyStatistics33 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -626,7 +624,7 @@ void DataProcFunctions_MDP::OnRefreshDailyStatistics(const unsigned short channe
       ent.next();
 
       ostringstream oo;
-      oo << "Session Statistics: SecurityID: " << ent.securityID()
+      oo << "MDIncrementalRefreshDailyStatistics33: SecurityID: " << ent.securityID()
         << " RptSeq: " << (int)(ent.rptSeq())
         << " EntryPx: " << (int64_t)(ent.mDEntryPx().mantissa())
         << " EntryType: " << (char)(ent.mDEntryType())
@@ -654,12 +652,12 @@ void DataProcFunctions_MDP::OnRefreshDailyStatistics(const unsigned short channe
         case MDEntryTypeStatistics::LowestOffer:          { oo << "Lowest Offer: ";  break;   }
         default: break;
       }
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 }
 
-void DataProcFunctions_MDP::OnRefreshSessionStatistics(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshSessionStatistics(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   MDIncrementalRefreshSessionStatistics35 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -672,19 +670,19 @@ void DataProcFunctions_MDP::OnRefreshSessionStatistics(const unsigned short chan
       ent.next();
 
       ostringstream oo;
-      oo << "Session Statistics: SecurityID: " << ent.securityID()
+      oo << "MDIncrementalRefreshSessionStatistics35: SecurityID: " << ent.securityID()
         << " RptSeq: " << (int)(ent.rptSeq())
         << " EntryPx: " << (int64_t)(ent.mDEntryPx().mantissa())
         << " EntryType: " << (char)(ent.mDEntryType())
         << " OpenCloseSettlFlag: " << (int)(ent.openCloseSettlFlag())
         << " UpdateAction: " << (int)(ent.mDUpdateAction());
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
 
   }
 }
 
-void DataProcFunctions_MDP::OnRefreshLimitsBanding(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshLimitsBanding(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   MDIncrementalRefreshLimitsBanding34 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -697,20 +695,20 @@ void DataProcFunctions_MDP::OnRefreshLimitsBanding(const unsigned short channelI
       ent.next();
 
       ostringstream oo;
-      oo << "Limits Banding: SecurityID: " << ent.securityID()
+      oo << "MDIncrementalRefreshLimitsBanding34: SecurityID: " << ent.securityID()
         << " RptSeq: " << (int)(ent.rptSeq())
         << " HighLimit: " << (int64_t)(ent.highLimitPrice().mantissa())
         << " LowLimit: " << (int64_t)(ent.lowLimitPrice().mantissa())
         << " MaxPriceVariation: " << (int64_t)(ent.maxPriceVariation().mantissa())
         << " UpdateAction: " << (int)(ent.mDUpdateAction())
         << " EntryType: " << string(ent.mDEntryType());
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 
 }
 
-void DataProcFunctions_MDP::OnRefreshSecurityDefinitionFuture(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshSecurityDefinitionFuture(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   MDInstrumentDefinitionFuture27 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -723,7 +721,7 @@ void DataProcFunctions_MDP::OnRefreshSecurityDefinitionFuture(const unsigned sho
       ent.next();
 
       ostringstream oo;
-      oo << "Instrument Definition : "
+      oo << "MDInstrumentDefinitionFuture27: "
         << " event time: " << SDateTime::fromUnixTimeToString(ent.eventTime(), SDateTime::MICROSEC)
         << " event type: " << ent.eventType()
         << " security ID: " << msg.securityID()
@@ -731,7 +729,7 @@ void DataProcFunctions_MDP::OnRefreshSecurityDefinitionFuture(const unsigned sho
         << " security group: " << msg.getSecurityGroupAsString()
         << " total number reports: " << msg.totNumReports()
         << " market segment ID: " << msg.marketSegmentID();
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 
@@ -743,12 +741,12 @@ void DataProcFunctions_MDP::OnRefreshSecurityDefinitionFuture(const unsigned sho
       feed_types.next();
       ostringstream oo;
       oo << "NoMDFeedTypes : market depth - " << feed_types.marketDepth();
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 }
 
-void DataProcFunctions_MDP::OnRefreshSecurityDefinitionSpread(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnRefreshSecurityDefinitionSpread(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   MDInstrumentDefinitionSpread29 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -761,19 +759,19 @@ void DataProcFunctions_MDP::OnRefreshSecurityDefinitionSpread(const unsigned sho
       ent.next();
 
       ostringstream oo;
-      oo << "Instrument Definition : "
+      oo << "MDInstrumentDefinitionSpread29: "
         << " event time: " << SDateTime::fromUnixTimeToString(ent.eventTime(), SDateTime::MICROSEC)
         << " event type: " << ent.eventType()
         << " security ID: " << msg.securityID()
         << " symbol: " << msg.symbol()
         << " security group: " << msg.getSecurityGroupAsString()
         << " market segment ID: " << msg.marketSegmentID();
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 }
 
-void DataProcFunctions_MDP::OnQuoteRequest(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnQuoteRequest(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   QuoteRequest39 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -789,12 +787,12 @@ void DataProcFunctions_MDP::OnQuoteRequest(const unsigned short channelID, const
         << " symbol: " << sym.symbol()
         << " securityID: " << sym.securityID()
         << " OrderQty: " << sym.orderQty();
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 }
 
-void DataProcFunctions_MDP::OnSecurityStatus(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnSecurityStatus(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   SecurityStatus30 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -819,26 +817,26 @@ void DataProcFunctions_MDP::OnSecurityStatus(const unsigned short channelID, con
         case SecurityTradingStatus::NULL_VALUE:             { oo << "Status: NULL VALUE: ";                break; }
       }
       oo << security_status;
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
 
     {
       ostringstream oo;
-      oo << "SecurityStatus: SecurityID: " << msg.securityID()
+      oo << "SecurityStatus30: SecurityID: " << msg.securityID()
         << " SecurityGroup: " << msg.securityGroup()
         << " Asset: " << msg.asset()
         << " TradeDate: " << msg.tradeDate()
         << " SecurityTradingStatus: " << security_status
         << " HaltReason: " << msg.haltReason()
         << " SecurityTradingEvent: " << msg.securityTradingEvent();
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 
 
 }
 
-void DataProcFunctions_MDP::OnChannelReset(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnChannelReset(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   ChannelReset4 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -851,9 +849,9 @@ void DataProcFunctions_MDP::OnChannelReset(const unsigned short channelID, const
       ent.next();
       ostringstream oo;
       oo
-        << "Channel Reset: MDUpdateAction: " << (int)(ent.mDUpdateAction())
+        << "ChannelReset4: MDUpdateAction: " << (int)(ent.mDUpdateAction())
         << " MDEntryType: " << string(ent.mDEntryType());
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
 
@@ -868,12 +866,11 @@ void DataProcFunctions_MDP::OnChannelReset(const unsigned short channelID, const
 
   vector<string> vsOBID = FMap(vOBID, std::function<string(const unsigned long&)>([](const unsigned long& i) { return boost::lexical_cast<string>(i); }));
   const string sOBIDs = boost::algorithm::join(vsOBID, ",");
-  m_Logger->Write(Logger::INFO,"DataProcFunctions_MDP: ChannelID:%u. Resetting OrderBooks upon reception of MDP_CHANNEL_RESET: %s",
-                  channelID, sOBIDs.c_str());
+  m_Logger->Write(Logger::INFO,"DataProcFunctions_MDP: ChannelID:%u. %s Resetting OrderBooks upon reception of MDP_CHANNEL_RESET: %s", channelID, sMcastType.c_str(), sOBIDs.c_str());
 
 }
 
-void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len)
+void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType)
 {
   SnapshotFullRefresh38 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
@@ -884,7 +881,7 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
     {
       ostringstream oo;
       oo
-        << "SnapshotFullRefresh: SecurityID: " << (int)(msg.securityID())
+        << "SnapshotFullRefresh38: SecurityID: " << (int)(msg.securityID())
         << " TotNumReport: " << (int)(msg.totNumReports())
         << " LastMsgSeqNumProcessed: " << (int)(msg.lastMsgSeqNumProcessed())
         << " RptSeq: " << (int)(msg.rptSeq())
@@ -893,7 +890,7 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
         << " HighLimit: " << (int64_t)(msg.highLimitPrice().mantissa())
         << " LowLimit: " << (int64_t)(msg.lowLimitPrice().mantissa())
         << " MaxPriceVariation: " << (int64_t)(msg.maxPriceVariation().mantissa());
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
 
     while (ent.hasNext())
@@ -902,7 +899,7 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
 
       ostringstream oo;
       oo
-        << "noMDEntries: SecurityID: " << (int)(msg.securityID())
+        << "SnapshotFullRefresh38: SecurityID: " << (int)(msg.securityID())
         << " Price: " << (int64_t)(ent.mDEntryPx().mantissa())
         << " EntrySize: " << (int)(ent.mDEntrySize())
         << " OrderNo: " << (int)(ent.numberOfOrders())
@@ -918,7 +915,7 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
       if (ent.settlPriceType().intraday())     oo << "intraday ";
       if (ent.settlPriceType().reservedBits()) oo << "reservedBits ";
       if (ent.settlPriceType().nullValue())    oo << "null ";
-      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s", channelID, oo.str().c_str());
+      m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
 
     }
   }
