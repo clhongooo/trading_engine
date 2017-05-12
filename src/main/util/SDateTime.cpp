@@ -1035,12 +1035,12 @@ unsigned long SDateTime::fromStringToUnixTime(const string & yyyymmdd_hhmmss_fff
   long frac_sec = 0;
   switch(timePrecision)
   {
-    case NANOSEC:  { mul = 1000000000; frac_sec = microsec * 1000; break; }
-    case MICROSEC: { mul = 1000000   ; frac_sec = microsec       ; break; }
-    case MILLISEC: { mul = 1000      ; frac_sec = microsec / 1000; break; }
-    case SECOND:   { mul = 1         ; frac_sec = 0              ; break; }
-    case DAY:      { mul = 1         ; frac_sec = 0              ; break; }
-    default:       { mul = 1         ; frac_sec = 0              ; break; }
+    case NANOSEC:  { mul = 1000000000; frac_sec = microsec * 1000; return mul * sec_since_epoch + frac_sec; break; }
+    case MICROSEC: { mul = 1000000   ; frac_sec = microsec       ; return mul * sec_since_epoch + frac_sec; break; }
+    case MILLISEC: { mul = 1000      ; frac_sec = microsec / 1000; return mul * sec_since_epoch + frac_sec; break; }
+    case SECOND:   { mul = 1         ; frac_sec = 0              ; return mul * sec_since_epoch + frac_sec; break; }
+    case DAY:      {                                               return       sec_since_epoch / 86400   ; break; }
+    default:       { mul = 1         ; frac_sec = 0              ; return mul * sec_since_epoch + frac_sec; break; }
   }
 
   return mul * sec_since_epoch + frac_sec;

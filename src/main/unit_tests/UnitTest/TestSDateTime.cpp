@@ -631,7 +631,6 @@ void TestSDateTime::RunTest()
 
 
   {
-    // cout << "SunnyDebug: " << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ") " << endl << flush;
     YYYYMMDDHHMMSS ymdhms1(20150118,114200);
     const YYYYMMDD & ymd = ymdhms1.GetYYYYMMDD();
     const HHMMSS & hms = ymdhms1.GetHHMMSS();
@@ -667,19 +666,16 @@ void TestSDateTime::RunTest()
     YYYYMMDDHHMMSS ymdhms1(20150119,114200);
     YYYYMMDDHHMMSS ymdhms2(20150119,114201);
     CPPUNIT_ASSERT(ymdhms2 - ymdhms1 == 1);
-    // cout << "SunnyDebug: " << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ") " << ymdhms2 - ymdhms1 << endl << flush;
   }
   {
     YYYYMMDDHHMMSS ymdhms1(20150119,104200);
     YYYYMMDDHHMMSS ymdhms2(20150120,94200);
     CPPUNIT_ASSERT(ymdhms2 - ymdhms1 == 23*60*60);
-    // cout << "SunnyDebug: " << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ") " << ymdhms2 - ymdhms1 << endl << flush;
   }
   {
     YYYYMMDDHHMMSS ymdhms1(20150120,94200);
     YYYYMMDDHHMMSS ymdhms2(20150119,104200);
     CPPUNIT_ASSERT(ymdhms2 - ymdhms1 == -23*60*60);
-    // cout << "SunnyDebug: " << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ") " << ymdhms2 - ymdhms1 << endl << flush;
   } 
 
 
@@ -732,7 +728,6 @@ void TestSDateTime::RunTest()
   }
 
   {
-    // cout << "SunnyDebug: " << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ") " << SDateTime::fromUnixTimeToString(634695410, SDateTime::SECOND, SDateTime::GMT, SDateTime::GMT) << endl << flush;
     CPPUNIT_ASSERT(SDateTime::fromUnixTimeToString(634695410, SDateTime::SECOND, SDateTime::GMT, SDateTime::GMT) == "19900211_001650_000000");
     CPPUNIT_ASSERT(SDateTime::fromUnixTimeToString(634695410150, SDateTime::MILLISEC, SDateTime::GMT, SDateTime::GMT) == "19900211_001650_150000");
     CPPUNIT_ASSERT(SDateTime::fromUnixTimeToString(634695410150250, SDateTime::MICROSEC, SDateTime::GMT, SDateTime::GMT) == "19900211_001650_150250");
