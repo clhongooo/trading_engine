@@ -653,6 +653,9 @@ string SharedObjects::GetSymbolFromInstrumentID(const unsigned long instrumentID
 
 void SharedObjects::AddInstrumentIDToSymbolMapping(const unsigned long instrumentID, const string & symbol)
 {
-  boost::unique_lock<boost::shared_mutex> lock(m_InstrumentMapMutex);
+  boost::upgrade_lock<boost::shared_mutex> lock(m_InstrumentMapMutex);
+  if (m_InstrumentMap.find(instrumentID) != m_InstrumentMap.end()) return;
+
+  boost::upgrade_to_unique_lock<boost::shared_mutex> ulock(lock);
   m_InstrumentMap[instrumentID] = symbol;
 }

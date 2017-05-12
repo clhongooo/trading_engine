@@ -111,13 +111,13 @@ const  unsigned  long  SystemConfig::GetRefreshProcSleepMillisec()              
 const  unsigned  long  SystemConfig::GetDataComplInspectorSleepMillisec()           const  {  return  m_DataComplInspectorSleepMillisec;               }
 const  unsigned  long  SystemConfig::GetRTSClientSleepMillisec()                    const  {  return  m_RTSClientSleepMillisec;                        }
 
-const string                              SystemConfig::GetRTSUsername()            const  {  return  m_RTS_Username;                   }
-const unsigned short                      SystemConfig::GetRTSNumOfSvr()            const  {  return  m_RTS_NumOfSvr;                   }
 const boost::shared_ptr<vector<string> >         SystemConfig::GetRTSServerIP()            const  {  return  m_pRTS_ServerIP;                  }
 const boost::shared_ptr<vector<unsigned short> > SystemConfig::GetRTSServerPort()          const  {  return  m_pRTS_ServerPort;                }
-const unsigned short                      SystemConfig::GetRTSReconnectionWaitSec() const  {  return  m_RTS_ReconnectionWaitSec;        }
-const unsigned short                      SystemConfig::GetSystemServicePort()      const  {  return  m_SystemServicePort;              }
-const unsigned int                        SystemConfig::GetRFMsgCirBufProtection()  const  {  return  m_RFMsgCirBufProtection;          }
+const string          SystemConfig::GetRTSUsername()            const  {  return  m_RTS_Username;                   }
+const unsigned short  SystemConfig::GetRTSNumOfSvr()            const  {  return  m_RTS_NumOfSvr;                   }
+const unsigned short  SystemConfig::GetRTSReconnectionWaitSec() const  {  return  m_RTS_ReconnectionWaitSec;        }
+const unsigned short  SystemConfig::GetSystemServicePort()      const  {  return  m_SystemServicePort;              }
+const unsigned int    SystemConfig::GetRFMsgCirBufProtection()  const  {  return  m_RFMsgCirBufProtection;          }
 
 bool  SystemConfig::CheckIfRunRealTimeProcessor()                   const  {  return  m_RunRealTimeProcessor;                   }
 bool  SystemConfig::CheckIfRunRefreshProcessor()                    const  {  return  m_RunRefreshProcessor;                    }
