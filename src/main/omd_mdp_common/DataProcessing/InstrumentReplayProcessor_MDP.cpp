@@ -64,7 +64,7 @@ void InstrumentReplayProcessor_MDP::Run()
     m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Local Timestamp of Pkt: %s", __FILENAME__, m_ChannelID, SDateTime::fromUnixTimeToString(ulTS,SDateTime::MILLISEC).c_str());
 
     //--------------------------------------------------
-    m_DataProcFunc->HandleMDPRaw(pbPkt, m_ChannelID, McastIdentifier::ToString(McastIdentifier::INSTRUMENTREPLAY), usMsgSize);
+    m_DataProcFunc->HandleMDPRaw(pbPkt, m_ChannelID, McastIdentifier::ToString(McastIdentifier::INSTRUMENTREPLAY), usMsgSize, DataProcFunctions::DPF_DO_ACTUAL_PROCESSING);
 
     m_MsgCirBuf_IR->PopFront();
   }

@@ -103,6 +103,11 @@ void RefreshProcessor_MDP::Run()
       continue;
     }
 
+    //--------------------------------------------------
+    // Peek
+    //--------------------------------------------------
+    m_DataProcFunc->HandleMDPRaw(pbPkt, m_ChannelID, McastIdentifier::ToString(McastIdentifier::REFRESH), usMsgSize, DataProcFunctions::DPF_PRINT_ONLY);
+
     {
       //--------------------------------------------------
       // If not MDP_REFRESH_COMPLETE, keep saving to queue first
@@ -223,7 +228,7 @@ void RefreshProcessor_MDP::Run()
       const uint16_t usMsgSizeTmp = m_MsgCirBuf_RF->GetMsgSizeOfSeqNo(iSeqNo);
       const BYTE* pbPktTmp = m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(iSeqNo);
       m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. HandleMDPRaw() Looping through refresh messages. iSeqNo %u", __FILENAME__, m_ChannelID, iSeqNo);
-      m_DataProcFunc->HandleMDPRaw(pbPktTmp, m_ChannelID, McastIdentifier::ToString(McastIdentifier::REFRESH), usMsgSizeTmp);
+      m_DataProcFunc->HandleMDPRaw(pbPktTmp, m_ChannelID, McastIdentifier::ToString(McastIdentifier::REFRESH), usMsgSizeTmp, DataProcFunctions::DPF_DO_ACTUAL_PROCESSING);
     }
     m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. HandleMDPRaw() Finished looping through refresh messages.", __FILENAME__, m_ChannelID);
 

@@ -80,7 +80,7 @@ void RealTimeProcessor_MDP::Run()
     m_BinaryRecorder.WriteHKExUnixTime(pbPkt);
 
     //--------------------------------------------------
-    m_DataProcFunc->HandleMDPRaw(pbPkt, m_ChannelID, McastIdentifier::ToString(McastIdentifier::REALTIME), usMsgSize);
+    m_DataProcFunc->HandleMDPRaw(pbPkt, m_ChannelID, McastIdentifier::ToString(McastIdentifier::REALTIME), usMsgSize, DataProcFunctions::DPF_DO_ACTUAL_PROCESSING);
 
     m_MsgCirBuf->PopFront();
   }

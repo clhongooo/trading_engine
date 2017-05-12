@@ -26,6 +26,7 @@
 
 class DataProcFunctions {
   public:
+    enum DPF_ProcFlag {DPF_PRINT_ONLY=0, DPF_DO_ACTUAL_PROCESSING};
     DataProcFunctions();
     virtual ~DataProcFunctions() {}
 
@@ -42,25 +43,29 @@ class DataProcFunctions {
     //--------------------------------------------------
     virtual vector<uint32_t> Get_LastMsgSeqNumProcessed(const unsigned short, const BYTE *, const uint16_t) {}
 
-    virtual void  PeekTemplateID                   (const BYTE *, const unsigned short, const string &, const uint16_t)   {}
-    virtual void  HandleMDPRaw                     (const BYTE *, const unsigned short, const string &, const uint16_t)   {}
-    virtual void  OnHeartBeat                      (const unsigned short, const string &)                                                    {}
-    virtual void  OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnRefreshVolume                  (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnRefreshTrade                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnRefreshTradeSummary            (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnRefreshDailyStatistics         (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnRefreshSessionStatistics       (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnRefreshLimitsBanding           (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnRefreshSecurityDefinitionFuture(const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnRefreshSecurityDefinitionSpread(const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnQuoteRequest                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnSecurityStatus                 (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnChannelReset                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
-    virtual void  OnSnapshotFullRefresh            (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
+    virtual void  PeekTemplateID                   (const BYTE *, const unsigned short, const string &, const uint16_t) {}
+    virtual void  HandleMDPRaw                     (const BYTE *, const unsigned short, const string &, const uint16_t, const DPF_ProcFlag) {}
+    virtual void  OnHeartBeat                      (const unsigned short, const string &) {}
+    virtual void  OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnRefreshVolume                  (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnRefreshTrade                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnRefreshTradeSummary            (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnRefreshDailyStatistics         (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnRefreshSessionStatistics       (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnRefreshLimitsBanding           (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnRefreshSecurityDefinitionFuture(const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnRefreshSecurityDefinitionSpread(const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnQuoteRequest                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnSecurityStatus                 (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnChannelReset                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
+    virtual void  OnSnapshotFullRefresh            (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag) {}
 
     virtual const string CheckMsgTypeFromTemplateID(const unsigned short) {}
+
+    //--------------------------------------------------
+    const string ProcFlagToString(const DPF_ProcFlag pf) { return pf == DPF_PRINT_ONLY ? "DPF_PRINT_ONLY" : "DPF_DO_ACTUAL_PROCESSING"; }
+    const string PrintCMEPriceNull(const int64_t pn) { return (pn == 9223372036854775807 ? "Null" : boost::lexical_cast<string>(pn)); }
 
   protected:
     boost::shared_ptr<SystemConfig>      m_SysCfg;
@@ -110,22 +115,22 @@ class DataProcFunctions_MDP : public DataProcFunctions {
     vector<uint32_t> Get_LastMsgSeqNumProcessed(const unsigned short, const BYTE *, const uint16_t);
 
     void PeekTemplateID                   (const BYTE *, const unsigned short, const string &, const uint16_t);
-    void HandleMDPRaw                     (const BYTE *, const unsigned short, const string &, const uint16_t);
+    void HandleMDPRaw                     (const BYTE *, const unsigned short, const string &, const uint16_t, const DPF_ProcFlag);
     void OnHeartBeat                      (const unsigned short, const string &);
-    void OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnRefreshVolume                  (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnRefreshTrade                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnRefreshTradeSummary            (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnRefreshDailyStatistics         (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnRefreshSessionStatistics       (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnRefreshLimitsBanding           (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnRefreshSecurityDefinitionFuture(const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnRefreshSecurityDefinitionSpread(const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnQuoteRequest                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnSecurityStatus                 (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnChannelReset                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
-    void OnSnapshotFullRefresh            (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
+    void OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnRefreshVolume                  (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnRefreshTrade                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnRefreshTradeSummary            (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnRefreshDailyStatistics         (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnRefreshSessionStatistics       (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnRefreshLimitsBanding           (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnRefreshSecurityDefinitionFuture(const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnRefreshSecurityDefinitionSpread(const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnQuoteRequest                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnSecurityStatus                 (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnChannelReset                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
+    void OnSnapshotFullRefresh            (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &, const DPF_ProcFlag);
 
     const string CheckMsgTypeFromTemplateID(const unsigned short);
 
