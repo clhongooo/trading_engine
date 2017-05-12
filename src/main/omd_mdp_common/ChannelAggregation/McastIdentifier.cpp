@@ -48,6 +48,14 @@ const string McastIdentifier::ToString() const
   return ss.str();
 }
 
+const string McastIdentifier::ToString(const EMcastType & mt)
+{
+  if      (mt == REALTIME        ) return "RT";
+  else if (mt == REFRESH         ) return "RF";
+  else if (mt == INSTRUMENTREPLAY) return "IR";
+}
+
+
 //--------------------------------------------------
 // Old: (OMDC only)
 // Before line arbitration

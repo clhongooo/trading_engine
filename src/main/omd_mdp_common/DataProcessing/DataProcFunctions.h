@@ -42,7 +42,8 @@ class DataProcFunctions {
     //--------------------------------------------------
     virtual vector<uint32_t> Get_LastMsgSeqNumProcessed(const unsigned short, const BYTE *, const uint16_t) {}
 
-    virtual void  HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType, const uint16_t)   {}
+    virtual void  PeekTemplateID                   (const BYTE *, const unsigned short, const string &, const uint16_t)   {}
+    virtual void  HandleMDPRaw                     (const BYTE *, const unsigned short, const string &, const uint16_t)   {}
     virtual void  OnHeartBeat                      (const unsigned short, const string &)                                                    {}
     virtual void  OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
     virtual void  OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
@@ -58,6 +59,8 @@ class DataProcFunctions {
     virtual void  OnSecurityStatus                 (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
     virtual void  OnChannelReset                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
     virtual void  OnSnapshotFullRefresh            (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &) {}
+
+    virtual const string CheckMsgTypeFromTemplateID(const unsigned short) {}
 
   protected:
     boost::shared_ptr<SystemConfig>      m_SysCfg;
@@ -106,7 +109,8 @@ class DataProcFunctions_MDP : public DataProcFunctions {
 
     vector<uint32_t> Get_LastMsgSeqNumProcessed(const unsigned short, const BYTE *, const uint16_t);
 
-    void HandleMDPRaw                     (const BYTE *, const unsigned short, const McastIdentifier::EMcastType, const uint16_t);
+    void PeekTemplateID                   (const BYTE *, const unsigned short, const string &, const uint16_t);
+    void HandleMDPRaw                     (const BYTE *, const unsigned short, const string &, const uint16_t);
     void OnHeartBeat                      (const unsigned short, const string &);
     void OnRefreshBook                    (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
     void OnInstrumentDefinitionOption     (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
@@ -122,6 +126,8 @@ class DataProcFunctions_MDP : public DataProcFunctions {
     void OnSecurityStatus                 (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
     void OnChannelReset                   (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
     void OnSnapshotFullRefresh            (const unsigned short, const mktdata::MessageHeader &, char *, const int, const string &);
+
+    const string CheckMsgTypeFromTemplateID(const unsigned short);
 
   private:
 

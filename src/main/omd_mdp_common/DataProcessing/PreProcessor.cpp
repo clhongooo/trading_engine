@@ -67,8 +67,7 @@ PreProcessor::PreProcessor(const McastIdentifier & mi) :
   ostringstream oo;
   oo << SystemConfig::Instance()->GetCannedMcastFilePath() << "_" <<
     m_McastIdentifier.Channel_ID() << "_" <<
-    ((m_McastIdentifier.McastType() == McastIdentifier::REALTIME) ? "RT" : "RF") << "_" <<
-    ((m_McastIdentifier.Channel() == McastIdentifier::A) ? "A" : "B") << "_" <<
+    m_McastIdentifier.ToString() <<
     to_iso_string(m_ProgramStartTime).substr(0,15);
   //m_McastIdentifier.IP() << "_" << (unsigned short)(m_McastIdentifier.Port());
 

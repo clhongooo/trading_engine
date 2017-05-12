@@ -350,12 +350,29 @@ void DataProcFunctions_OMDD::OutputJsonToLog(const char * sCaller, const unsigne
 
 
 //--------------------------------------------------
-// FIXME copied from Kenny
+// CME stuff
 //--------------------------------------------------
-void DataProcFunctions_MDP::HandleMDPRaw(const BYTE *pbPkt, const unsigned short channelID, const McastIdentifier::EMcastType mt, const uint16_t usMsgSize)
+void DataProcFunctions_MDP::PeekTemplateID(const BYTE *pbPkt, const unsigned short channelID, const string & sMcastType, const uint16_t usMsgSize)
 {
-  VAL sMcastType = string((mt == McastIdentifier::REALTIME) ? "RT":"RF");
+  mktdata::MessageHeader mdpMsgHdr;
+  int iOffset = sizeof(MDP_Packet_Header);
 
+  while (iOffset < usMsgSize)
+  {
+    int16_t iMsgSize = READ_INT16(&pbPkt[iOffset]);
+    const size_t iWrap2 = iOffset + sizeof(int16_t);
+    const size_t iWrap3 = iMsgSize - sizeof(int16_t);
+    const size_t iWrap4 = iOffset + iMsgSize;
+    if (iMsgSize <= 0) break;
+    mdpMsgHdr.wrap((char*)pbPkt, iWrap2, MDP_VERSION, iWrap4);
+    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: Msg type / Template ID: %u = %s", channelID, sMcastType.c_str(), mdpMsgHdr.templateId(), CheckMsgTypeFromTemplateID(mdpMsgHdr.templateId()).c_str());
+    iOffset += iMsgSize;
+  }
+  return;
+}
+
+void DataProcFunctions_MDP::HandleMDPRaw(const BYTE *pbPkt, const unsigned short channelID, const string & sMcastType, const uint16_t usMsgSize)
+{
   mktdata::MessageHeader mdpMsgHdr;
   int iOffset = sizeof(MDP_Packet_Header);
 
@@ -367,18 +384,12 @@ void DataProcFunctions_MDP::HandleMDPRaw(const BYTE *pbPkt, const unsigned short
     const size_t iWrap4 = iOffset + iMsgSize;
 
     //--------------------------------------------------
-    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: Msg size: %d", channelID, sMcastType.c_str(), iMsgSize);
     if (iMsgSize <= 0) break;
-
-    //--------------------------------------------------
-    // m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap2    %d", channelID, sMcastType.c_str(), iWrap2);
-    // m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap3    %d", channelID, sMcastType.c_str(), iWrap3);
-    // m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: iWrap4    %d", channelID, sMcastType.c_str(), iWrap4);
 
     mdpMsgHdr.wrap((char*)pbPkt, iWrap2, MDP_VERSION, iWrap4);
 
     //--------------------------------------------------
-    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: Msg type: %u", channelID, sMcastType.c_str(), mdpMsgHdr.templateId());
+    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s Message Header: Msg type / Template ID: %u = %s", channelID, sMcastType.c_str(), mdpMsgHdr.templateId(), CheckMsgTypeFromTemplateID(mdpMsgHdr.templateId()).c_str());
 
     switch (mdpMsgHdr.templateId())
     {
@@ -920,5 +931,27 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
 
     }
   }
+}
 
+const string DataProcFunctions_MDP::CheckMsgTypeFromTemplateID(const unsigned short templateId)
+{
+  switch(templateId)
+  {
+    case  4:  return "MDP_CHANNEL_RESET"                      ; break;
+    case 12:  return "MDP_HEARTBEAT"                          ; break;
+    case 27:  return "MDP_REFRESH_SECURITY_DEFINITION_FUTURE" ; break;
+    case 29:  return "MDP_REFRESH_SECURITY_DEFINITION_SPREAD" ; break;
+    case 30:  return "MDP_SECURITY_STATUS"                    ; break;
+    case 32:  return "MDP_REFRESH_BOOK"                       ; break;
+    case 33:  return "MDP_REFRESH_DAILY_STATISTICS"           ; break;
+    case 34:  return "MDP_REFRESH_LIMITS_BANDING"             ; break;
+    case 35:  return "MDP_REFRESH_SESSION_STATISTICS"         ; break;
+    case 36:  return "MDP_REFRESH_TRADE"                      ; break;
+    case 37:  return "MDP_REFRESH_VOLUME"                     ; break;
+    case 38:  return "MDP_SNAPSHOT_FULL_REFRESH"              ; break;
+    case 39:  return "MDP_QUOTE_REQUEST"                      ; break;
+    case 41:  return "MDP_INSTRUMENT_DEFINITION_OPTION"       ; break;
+    case 42:  return "MDP_REFRESH_TRADE_SUMMARY"              ; break;
+    default:  return ""                                       ; break;
+  }
 }

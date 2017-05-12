@@ -113,7 +113,7 @@ void RefreshProcessor_MDP::Run()
         m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Not MDP_REFRESH_COMPLETE. m_LastCheckedAdjSeqNo: %u uiRFStartSeqNo: %u ulRFSize: %u uiLatestAdjSeqNo: %u usMsgSize: %u mph->PktSeqNum: %u mph->SendingTime: %s",
                         __FILENAME__, m_ChannelID, m_LastCheckedAdjSeqNo, uiRFStartSeqNo, ulRFSize, uiLatestAdjSeqNo, usMsgSize, mph->PktSeqNum, SDateTime::fromUnixTimeToString(mph->SendingTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::GMT).c_str());
         m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Not MDP_REFRESH_COMPLETE. Peeking inside...", __FILENAME__, m_ChannelID);
-        m_DataProcFunc->HandleMDPRaw(pbPkt, m_ChannelID, McastIdentifier::REFRESH, usMsgSize);
+        m_DataProcFunc->PeekTemplateID(pbPkt, m_ChannelID, McastIdentifier::ToString(McastIdentifier::REFRESH), usMsgSize);
         m_LastCheckedAdjSeqNo++;
         continue;
       }
@@ -223,7 +223,7 @@ void RefreshProcessor_MDP::Run()
       const uint16_t usMsgSizeTmp = m_MsgCirBuf_RF->GetMsgSizeOfSeqNo(iSeqNo);
       const BYTE* pbPktTmp = m_MsgCirBuf_RF->GetMsgPtrOfSeqNo(iSeqNo);
       m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. HandleMDPRaw() Looping through refresh messages. iSeqNo %u", __FILENAME__, m_ChannelID, iSeqNo);
-      m_DataProcFunc->HandleMDPRaw(pbPktTmp, m_ChannelID, McastIdentifier::REFRESH, usMsgSizeTmp);
+      m_DataProcFunc->HandleMDPRaw(pbPktTmp, m_ChannelID, McastIdentifier::ToString(McastIdentifier::REFRESH), usMsgSizeTmp);
     }
     m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. HandleMDPRaw() Finished looping through refresh messages.", __FILENAME__, m_ChannelID);
 

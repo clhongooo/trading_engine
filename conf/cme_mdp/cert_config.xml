@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration environment="Certification" updated="2017/04/13-01:14:02">
+<configuration environment="Certification" updated="2017/05/11-09:14:02">
   <channel id="901" label="Autocert - Options Interest rates - 1GE">
     <products>
       <product code="1GE">
@@ -16,10 +16,10 @@
         <group code="92"/>
       </product>
       <product code="2GE5">
-        <group code="4$"/>
+        <group code="$4"/>
       </product>
       <product code="2GE5">
-        <group code="$4"/>
+        <group code="4$"/>
       </product>
       <product code="3GE">
         <group code="92"/>
@@ -322,10 +322,10 @@
   <channel id="905" label="Autocert - Options Interest rates - 3GE">
     <products>
       <product code="07Z">
-        <group code="D$"/>
+        <group code="C$"/>
       </product>
       <product code="07Z">
-        <group code="C$"/>
+        <group code="D$"/>
       </product>
       <product code="0AAO">
         <group code="C$"/>
@@ -334,10 +334,10 @@
         <group code="C$"/>
       </product>
       <product code="1AAO">
-        <group code="D$"/>
+        <group code="C$"/>
       </product>
       <product code="1AAO">
-        <group code="C$"/>
+        <group code="D$"/>
       </product>
       <product code="27Z">
         <group code="C$"/>
@@ -452,10 +452,10 @@
         <group code="Y$"/>
       </product>
       <product code="2OMW">
-        <group code="E$"/>
+        <group code="M$"/>
       </product>
       <product code="2OMW">
-        <group code="M$"/>
+        <group code="E$"/>
       </product>
       <product code="3OEH">
         <group code="Y$"/>
@@ -628,10 +628,10 @@
         <group code="7$"/>
       </product>
       <product code="1ES">
-        <group code="H$"/>
+        <group code="$H"/>
       </product>
       <product code="1ES">
-        <group code="$H"/>
+        <group code="H$"/>
       </product>
       <product code="1OYM">
         <group code="7$"/>
@@ -740,10 +740,10 @@
         <group code="96"/>
       </product>
       <product code="1EMD">
-        <group code="$8"/>
+        <group code="8$"/>
       </product>
       <product code="1EMD">
-        <group code="8$"/>
+        <group code="$8"/>
       </product>
       <product code="1ES">
         <group code="96"/>
@@ -1201,34 +1201,34 @@
         <group code="B$"/>
       </product>
       <product code="5GE">
-        <group code="B$"/>
+        <group code="A$"/>
       </product>
       <product code="5GE">
-        <group code="A$"/>
-      </product>
-      <product code="6GE">
-        <group code="A$"/>
+        <group code="B$"/>
       </product>
       <product code="6GE">
         <group code="B$"/>
       </product>
-      <product code="7GE">
-        <group code="B$"/>
+      <product code="6GE">
+        <group code="A$"/>
       </product>
       <product code="7GE">
         <group code="A$"/>
       </product>
-      <product code="8GE">
+      <product code="7GE">
         <group code="B$"/>
       </product>
       <product code="8GE">
         <group code="A$"/>
       </product>
-      <product code="9GE">
+      <product code="8GE">
         <group code="B$"/>
       </product>
       <product code="9GE">
         <group code="A$"/>
+      </product>
+      <product code="9GE">
+        <group code="B$"/>
       </product>
       <product code="BGE">
         <group code="A$"/>
@@ -1282,26 +1282,20 @@
   </channel>
   <channel id="917" label="Autocert - Interest Rates Options">
     <products>
-      <product code="0EB">
+      <product code="0GLB">
         <group code="N$"/>
       </product>
-      <product code="1GE">
+      <product code="2GE">
         <group code="90"/>
       </product>
-      <product code="2EB">
-        <group code="N$"/>
-      </product>
-      <product code="3EB">
+      <product code="2GLB">
         <group code="N$"/>
       </product>
       <product code="3GE">
         <group code="90"/>
       </product>
-      <product code="4GLB">
+      <product code="3GLB">
         <group code="N$"/>
-      </product>
-      <product code="4ZQ">
-        <group code="90"/>
       </product>
       <product code="5EB">
         <group code="N$"/>
@@ -1309,19 +1303,16 @@
       <product code="6GE">
         <group code="90"/>
       </product>
-      <product code="6GLB">
+      <product code="7EB">
         <group code="N$"/>
       </product>
-      <product code="7GE">
-        <group code="90"/>
-      </product>
-      <product code="7ZQ">
-        <group code="90"/>
-      </product>
-      <product code="8GLB">
+      <product code="7GLB">
         <group code="N$"/>
       </product>
       <product code="9GE">
+        <group code="90"/>
+      </product>
+      <product code="BGE">
         <group code="90"/>
       </product>
     </products>
@@ -1370,19 +1361,19 @@
   </channel>
   <channel id="918" label="Autocert - Options">
     <products>
-      <product code="1GE">
+      <product code="0ZQ">
         <group code="90"/>
       </product>
-      <product code="1ZQ">
-        <group code="90"/>
-      </product>
-      <product code="2GLB">
+      <product code="1EB">
         <group code="N$"/>
       </product>
-      <product code="3ZQ">
+      <product code="1GLB">
+        <group code="N$"/>
+      </product>
+      <product code="2ZQ">
         <group code="90"/>
       </product>
-      <product code="4GE">
+      <product code="3GE">
         <group code="90"/>
       </product>
       <product code="4GLB">
@@ -1394,14 +1385,17 @@
       <product code="6EB">
         <group code="N$"/>
       </product>
-      <product code="6GLB">
-        <group code="N$"/>
+      <product code="6ZQ">
+        <group code="90"/>
       </product>
-      <product code="8GLB">
+      <product code="8EB">
         <group code="N$"/>
       </product>
       <product code="9EB">
         <group code="N$"/>
+      </product>
+      <product code="9ZQ">
+        <group code="90"/>
       </product>
     </products>
    <connections>
@@ -1449,29 +1443,29 @@
   </channel>
   <channel id="919" label="Autocert - Interest Rates Options">
     <products>
-      <product code="0GLB">
-        <group code="N$"/>
-      </product>
-      <product code="0ZQ">
-        <group code="90"/>
-      </product>
-      <product code="1GE">
-        <group code="90"/>
-      </product>
       <product code="1ZQ">
         <group code="90"/>
       </product>
-      <product code="3GE">
-        <group code="90"/>
+      <product code="3GLB">
+        <group code="N$"/>
       </product>
       <product code="3ZQ">
         <group code="90"/>
       </product>
+      <product code="4GLB">
+        <group code="N$"/>
+      </product>
+      <product code="4ZQ">
+        <group code="90"/>
+      </product>
+      <product code="5EB">
+        <group code="N$"/>
+      </product>
       <product code="5GLB">
         <group code="N$"/>
       </product>
-      <product code="6EB">
-        <group code="N$"/>
+      <product code="5ZQ">
+        <group code="90"/>
       </product>
       <product code="6GLB">
         <group code="N$"/>
@@ -1480,9 +1474,6 @@
         <group code="90"/>
       </product>
       <product code="8EB">
-        <group code="N$"/>
-      </product>
-      <product code="9EB">
         <group code="N$"/>
       </product>
       <product code="9GLB">
@@ -1537,41 +1528,35 @@
       <product code="0GLB">
         <group code="N$"/>
       </product>
-      <product code="1EB">
-        <group code="N$"/>
+      <product code="0ZQ">
+        <group code="90"/>
       </product>
       <product code="1ZQ">
         <group code="90"/>
       </product>
-      <product code="2GE">
-        <group code="90"/>
+      <product code="2EB">
+        <group code="N$"/>
       </product>
       <product code="2GLB">
         <group code="N$"/>
       </product>
-      <product code="5GE">
+      <product code="3ZQ">
+        <group code="90"/>
+      </product>
+      <product code="4ZQ">
         <group code="90"/>
       </product>
       <product code="6ZQ">
         <group code="90"/>
       </product>
-      <product code="7EB">
-        <group code="N$"/>
-      </product>
-      <product code="7GLB">
-        <group code="N$"/>
-      </product>
-      <product code="8EB">
-        <group code="N$"/>
-      </product>
-      <product code="8GE">
+      <product code="7ZQ">
         <group code="90"/>
       </product>
-      <product code="9ZQ">
+      <product code="8ZQ">
         <group code="90"/>
       </product>
-      <product code="BGE">
-        <group code="90"/>
+      <product code="9GLB">
+        <group code="N$"/>
       </product>
     </products>
    <connections>
@@ -1625,41 +1610,38 @@
       <product code="2GE">
         <group code="90"/>
       </product>
-      <product code="2GLB">
-        <group code="N$"/>
-      </product>
       <product code="3EB">
         <group code="N$"/>
       </product>
-      <product code="4EB">
-        <group code="N$"/>
-      </product>
-      <product code="4GLB">
-        <group code="N$"/>
+      <product code="4GE">
+        <group code="90"/>
       </product>
       <product code="4ZQ">
         <group code="90"/>
       </product>
-      <product code="6GE">
+      <product code="5GE">
         <group code="90"/>
       </product>
-      <product code="7GE">
+      <product code="5GLB">
+        <group code="N$"/>
+      </product>
+      <product code="6ZQ">
         <group code="90"/>
+      </product>
+      <product code="7EB">
+        <group code="N$"/>
+      </product>
+      <product code="7GLB">
+        <group code="N$"/>
       </product>
       <product code="7ZQ">
         <group code="90"/>
       </product>
-      <product code="8EB">
-        <group code="N$"/>
-      </product>
-      <product code="9EB">
-        <group code="N$"/>
-      </product>
       <product code="9GE">
         <group code="90"/>
       </product>
-      <product code="BGE">
-        <group code="90"/>
+      <product code="9GLB">
+        <group code="N$"/>
       </product>
     </products>
    <connections>
@@ -1710,40 +1692,40 @@
       <product code="0EB">
         <group code="N$"/>
       </product>
-      <product code="0GLB">
-        <group code="N$"/>
-      </product>
-      <product code="2EB">
-        <group code="N$"/>
-      </product>
-      <product code="3GE">
+      <product code="0ZQ">
         <group code="90"/>
       </product>
-      <product code="4GE">
+      <product code="1EB">
+        <group code="N$"/>
+      </product>
+      <product code="1GE">
         <group code="90"/>
       </product>
-      <product code="5EB">
+      <product code="1GLB">
         <group code="N$"/>
       </product>
-      <product code="5GE">
+      <product code="2GLB">
+        <group code="N$"/>
+      </product>
+      <product code="3GLB">
+        <group code="N$"/>
+      </product>
+      <product code="4EB">
+        <group code="N$"/>
+      </product>
+      <product code="4GLB">
+        <group code="N$"/>
+      </product>
+      <product code="7GE">
         <group code="90"/>
       </product>
-      <product code="6EB">
-        <group code="N$"/>
-      </product>
-      <product code="6ZQ">
+      <product code="7ZQ">
         <group code="90"/>
-      </product>
-      <product code="7GLB">
-        <group code="N$"/>
-      </product>
-      <product code="8EB">
-        <group code="N$"/>
       </product>
       <product code="8ZQ">
         <group code="90"/>
       </product>
-      <product code="9GE">
+      <product code="9ZQ">
         <group code="90"/>
       </product>
     </products>
@@ -1792,14 +1774,23 @@
   </channel>
   <channel id="923" label="Autocert - Equity Options">
     <products>
-      <product code="1EB">
+      <product code="0EB">
         <group code="N$"/>
+      </product>
+      <product code="0GLB">
+        <group code="N$"/>
+      </product>
+      <product code="2ZQ">
+        <group code="90"/>
       </product>
       <product code="3EB">
         <group code="N$"/>
       </product>
-      <product code="4EB">
-        <group code="N$"/>
+      <product code="3GE">
+        <group code="90"/>
+      </product>
+      <product code="4GE">
+        <group code="90"/>
       </product>
       <product code="5GE">
         <group code="90"/>
@@ -1807,20 +1798,14 @@
       <product code="5GLB">
         <group code="N$"/>
       </product>
-      <product code="6GE">
-        <group code="90"/>
-      </product>
-      <product code="7EB">
+      <product code="6EB">
         <group code="N$"/>
       </product>
-      <product code="7GE">
+      <product code="6GE">
         <group code="90"/>
       </product>
       <product code="8GE">
         <group code="90"/>
-      </product>
-      <product code="9GLB">
-        <group code="N$"/>
       </product>
       <product code="9ZQ">
         <group code="90"/>
@@ -1874,6 +1859,9 @@
       <product code="1EB">
         <group code="N$"/>
       </product>
+      <product code="1GLB">
+        <group code="N$"/>
+      </product>
       <product code="2GE">
         <group code="90"/>
       </product>
@@ -1883,16 +1871,22 @@
       <product code="3GLB">
         <group code="N$"/>
       </product>
-      <product code="4EB">
-        <group code="N$"/>
+      <product code="3ZQ">
+        <group code="90"/>
       </product>
-      <product code="5GLB">
+      <product code="4GLB">
         <group code="N$"/>
       </product>
       <product code="5ZQ">
         <group code="90"/>
       </product>
+      <product code="6GLB">
+        <group code="N$"/>
+      </product>
       <product code="7GLB">
+        <group code="N$"/>
+      </product>
+      <product code="8GLB">
         <group code="N$"/>
       </product>
       <product code="8ZQ">
@@ -1947,22 +1941,16 @@
   </channel>
   <channel id="925" label="Autocert - Equity Futures">
     <products>
-      <product code="0ZQ">
-        <group code="90"/>
-      </product>
-      <product code="1GE">
-        <group code="90"/>
-      </product>
-      <product code="1GLB">
+      <product code="2EB">
         <group code="N$"/>
       </product>
-      <product code="3ZQ">
+      <product code="2ZQ">
         <group code="90"/>
+      </product>
+      <product code="3EB">
+        <group code="N$"/>
       </product>
       <product code="4EB">
-        <group code="N$"/>
-      </product>
-      <product code="4GLB">
         <group code="N$"/>
       </product>
       <product code="5EB">
@@ -1971,16 +1959,22 @@
       <product code="5ZQ">
         <group code="90"/>
       </product>
-      <product code="6EB">
+      <product code="6GLB">
         <group code="N$"/>
       </product>
-      <product code="7EB">
+      <product code="6ZQ">
+        <group code="90"/>
+      </product>
+      <product code="7GE">
+        <group code="90"/>
+      </product>
+      <product code="8GLB">
         <group code="N$"/>
       </product>
-      <product code="7GLB">
+      <product code="9EB">
         <group code="N$"/>
       </product>
-      <product code="8ZQ">
+      <product code="9ZQ">
         <group code="90"/>
       </product>
       <product code="BGE">
@@ -2032,28 +2026,34 @@
   </channel>
   <channel id="927" label="Autocert - Equity Futures">
     <products>
-      <product code="0ZQ">
-        <group code="90"/>
-      </product>
-      <product code="1EB">
+      <product code="0EB">
         <group code="N$"/>
+      </product>
+      <product code="1GE">
+        <group code="90"/>
       </product>
       <product code="1GLB">
         <group code="N$"/>
       </product>
+      <product code="1ZQ">
+        <group code="90"/>
+      </product>
       <product code="2EB">
         <group code="N$"/>
       </product>
-      <product code="2GE">
+      <product code="4GE">
         <group code="90"/>
       </product>
-      <product code="2ZQ">
+      <product code="5EB">
+        <group code="N$"/>
+      </product>
+      <product code="7EB">
+        <group code="N$"/>
+      </product>
+      <product code="7GE">
         <group code="90"/>
       </product>
-      <product code="3ZQ">
-        <group code="90"/>
-      </product>
-      <product code="6GLB">
+      <product code="8EB">
         <group code="N$"/>
       </product>
       <product code="8GE">
@@ -2062,13 +2062,7 @@
       <product code="8GLB">
         <group code="N$"/>
       </product>
-      <product code="9EB">
-        <group code="N$"/>
-      </product>
-      <product code="9GLB">
-        <group code="N$"/>
-      </product>
-      <product code="9ZQ">
+      <product code="BGE">
         <group code="90"/>
       </product>
     </products>
@@ -2117,41 +2111,38 @@
   </channel>
   <channel id="929" label="Autocert - Equity Futures">
     <products>
-      <product code="0EB">
-        <group code="N$"/>
-      </product>
-      <product code="1GLB">
-        <group code="N$"/>
-      </product>
-      <product code="2EB">
-        <group code="N$"/>
-      </product>
-      <product code="3EB">
-        <group code="N$"/>
+      <product code="2GE">
+        <group code="90"/>
       </product>
       <product code="3GE">
         <group code="90"/>
       </product>
-      <product code="3GLB">
+      <product code="4EB">
         <group code="N$"/>
       </product>
-      <product code="5EB">
-        <group code="N$"/>
-      </product>
-      <product code="5ZQ">
+      <product code="4GE">
         <group code="90"/>
+      </product>
+      <product code="6EB">
+        <group code="N$"/>
       </product>
       <product code="6GE">
         <group code="90"/>
       </product>
-      <product code="6ZQ">
+      <product code="7EB">
+        <group code="N$"/>
+      </product>
+      <product code="7GE">
         <group code="90"/>
       </product>
-      <product code="7ZQ">
+      <product code="8GE">
         <group code="90"/>
       </product>
-      <product code="8ZQ">
-        <group code="90"/>
+      <product code="8GLB">
+        <group code="N$"/>
+      </product>
+      <product code="9EB">
+        <group code="N$"/>
       </product>
     </products>
    <connections>
@@ -2199,22 +2190,19 @@
   </channel>
   <channel id="931" label="Autocert - Futures Equities - 0ES">
     <products>
-      <product code="1GLB">
+      <product code="4EB">
         <group code="N$"/>
-      </product>
-      <product code="4GE">
-        <group code="90"/>
       </product>
       <product code="5GE">
         <group code="90"/>
       </product>
-      <product code="8GLB">
+      <product code="6GLB">
         <group code="N$"/>
       </product>
-      <product code="9GLB">
+      <product code="8EB">
         <group code="N$"/>
       </product>
-      <product code="9ZQ">
+      <product code="BGE">
         <group code="90"/>
       </product>
     </products>
@@ -2269,13 +2257,13 @@
       <product code="1FT5">
         <group code="91"/>
       </product>
-      <product code="2SLP">
-        <group code="91"/>
-      </product>
       <product code="3ES">
         <group code="91"/>
       </product>
       <product code="3NQ">
+        <group code="91"/>
+      </product>
+      <product code="4RSV">
         <group code="91"/>
       </product>
       <product code="4SMC">
@@ -2295,6 +2283,9 @@
       </product>
       <product code="6SMC">
         <group code="S$"/>
+      </product>
+      <product code="8DVE">
+        <group code="91"/>
       </product>
       <product code="8FT5">
         <group code="91"/>
@@ -2411,37 +2402,37 @@
       <product code="0BB">
         <group code="95"/>
       </product>
+      <product code="0QH">
+        <group code="95"/>
+      </product>
       <product code="0RT">
         <group code="P$"/>
       </product>
-      <product code="1BB">
-        <group code="95"/>
+      <product code="0WS">
+        <group code="P$"/>
       </product>
-      <product code="1QH">
+      <product code="1WS">
+        <group code="P$"/>
+      </product>
+      <product code="2BB">
         <group code="95"/>
       </product>
       <product code="2QH">
         <group code="95"/>
       </product>
-      <product code="2RT">
+      <product code="2WS">
         <group code="P$"/>
       </product>
-      <product code="3BB">
+      <product code="3QH">
         <group code="95"/>
-      </product>
-      <product code="3RT">
-        <group code="P$"/>
       </product>
       <product code="3WS">
         <group code="P$"/>
       </product>
-      <product code="4BB">
-        <group code="95"/>
-      </product>
-      <product code="4QH">
-        <group code="95"/>
-      </product>
       <product code="4RT">
+        <group code="P$"/>
+      </product>
+      <product code="4WS">
         <group code="P$"/>
       </product>
       <product code="5BB">
@@ -2456,14 +2447,8 @@
       <product code="5WS">
         <group code="P$"/>
       </product>
-      <product code="6BB">
+      <product code="6QH">
         <group code="95"/>
-      </product>
-      <product code="6RT">
-        <group code="P$"/>
-      </product>
-      <product code="6WS">
-        <group code="P$"/>
       </product>
       <product code="7BB">
         <group code="95"/>
@@ -2477,6 +2462,9 @@
       <product code="7WS">
         <group code="P$"/>
       </product>
+      <product code="8BB">
+        <group code="95"/>
+      </product>
       <product code="8QH">
         <group code="95"/>
       </product>
@@ -2487,6 +2475,9 @@
         <group code="P$"/>
       </product>
       <product code="9BB">
+        <group code="95"/>
+      </product>
+      <product code="9QH">
         <group code="95"/>
       </product>
     </products>
@@ -2541,13 +2532,16 @@
       <product code="0WS">
         <group code="P$"/>
       </product>
-      <product code="1BB">
-        <group code="95"/>
-      </product>
       <product code="1QH">
         <group code="95"/>
       </product>
       <product code="1WS">
+        <group code="P$"/>
+      </product>
+      <product code="2QH">
+        <group code="95"/>
+      </product>
+      <product code="2RT">
         <group code="P$"/>
       </product>
       <product code="2WS">
@@ -2556,11 +2550,11 @@
       <product code="3QH">
         <group code="95"/>
       </product>
-      <product code="3WS">
+      <product code="3RT">
         <group code="P$"/>
       </product>
-      <product code="4BB">
-        <group code="95"/>
+      <product code="3WS">
+        <group code="P$"/>
       </product>
       <product code="4QH">
         <group code="95"/>
@@ -2568,7 +2562,7 @@
       <product code="4WS">
         <group code="P$"/>
       </product>
-      <product code="5BB">
+      <product code="5QH">
         <group code="95"/>
       </product>
       <product code="5WS">
@@ -2583,16 +2577,13 @@
       <product code="6RT">
         <group code="P$"/>
       </product>
-      <product code="7BB">
-        <group code="95"/>
+      <product code="6WS">
+        <group code="P$"/>
       </product>
       <product code="7QH">
         <group code="95"/>
       </product>
-      <product code="7WS">
-        <group code="P$"/>
-      </product>
-      <product code="8BB">
+      <product code="8QH">
         <group code="95"/>
       </product>
       <product code="8WS">
@@ -2656,11 +2647,8 @@
   </channel>
   <channel id="936" label="Autocert - Futures Currencies - 26B">
     <products>
-      <product code="0BB">
-        <group code="95"/>
-      </product>
-      <product code="0QH">
-        <group code="95"/>
+      <product code="0RT">
+        <group code="P$"/>
       </product>
       <product code="0WS">
         <group code="P$"/>
@@ -2689,13 +2677,10 @@
       <product code="2WS">
         <group code="P$"/>
       </product>
-      <product code="3BB">
+      <product code="4BB">
         <group code="95"/>
       </product>
-      <product code="3WS">
-        <group code="P$"/>
-      </product>
-      <product code="4BB">
+      <product code="4QH">
         <group code="95"/>
       </product>
       <product code="4RT">
@@ -2704,13 +2689,13 @@
       <product code="4WS">
         <group code="P$"/>
       </product>
-      <product code="5RT">
-        <group code="P$"/>
-      </product>
-      <product code="6QH">
+      <product code="5BB">
         <group code="95"/>
       </product>
-      <product code="6RT">
+      <product code="5QH">
+        <group code="95"/>
+      </product>
+      <product code="5RT">
         <group code="P$"/>
       </product>
       <product code="6WS">
@@ -2722,16 +2707,19 @@
       <product code="7QH">
         <group code="95"/>
       </product>
-      <product code="7RT">
-        <group code="P$"/>
-      </product>
       <product code="7WS">
         <group code="P$"/>
       </product>
-      <product code="8BB">
+      <product code="8QH">
         <group code="95"/>
       </product>
+      <product code="8WS">
+        <group code="P$"/>
+      </product>
       <product code="9BB">
+        <group code="95"/>
+      </product>
+      <product code="9QH">
         <group code="95"/>
       </product>
       <product code="9WS">
@@ -2792,10 +2780,16 @@
       <product code="0RT">
         <group code="P$"/>
       </product>
-      <product code="0WS">
+      <product code="1BB">
+        <group code="95"/>
+      </product>
+      <product code="1WS">
         <group code="P$"/>
       </product>
       <product code="2BB">
+        <group code="95"/>
+      </product>
+      <product code="2QH">
         <group code="95"/>
       </product>
       <product code="2RT">
@@ -2804,28 +2798,22 @@
       <product code="3BB">
         <group code="95"/>
       </product>
-      <product code="3QH">
-        <group code="95"/>
-      </product>
       <product code="3RT">
         <group code="P$"/>
       </product>
       <product code="3WS">
         <group code="P$"/>
       </product>
-      <product code="4QH">
+      <product code="4BB">
         <group code="95"/>
       </product>
-      <product code="4RT">
+      <product code="4WS">
         <group code="P$"/>
       </product>
-      <product code="5BB">
+      <product code="5QH">
         <group code="95"/>
       </product>
       <product code="5RT">
-        <group code="P$"/>
-      </product>
-      <product code="5WS">
         <group code="P$"/>
       </product>
       <product code="6BB">
@@ -2834,16 +2822,19 @@
       <product code="6QH">
         <group code="95"/>
       </product>
+      <product code="6RT">
+        <group code="P$"/>
+      </product>
       <product code="6WS">
         <group code="P$"/>
       </product>
       <product code="7RT">
         <group code="P$"/>
       </product>
-      <product code="8BB">
-        <group code="95"/>
+      <product code="7WS">
+        <group code="P$"/>
       </product>
-      <product code="8QH">
+      <product code="8BB">
         <group code="95"/>
       </product>
       <product code="8RT">
@@ -2852,13 +2843,13 @@
       <product code="8WS">
         <group code="P$"/>
       </product>
+      <product code="9BB">
+        <group code="95"/>
+      </product>
       <product code="9QH">
         <group code="95"/>
       </product>
       <product code="9RT">
-        <group code="P$"/>
-      </product>
-      <product code="9WS">
         <group code="P$"/>
       </product>
     </products>
@@ -2907,22 +2898,19 @@
   </channel>
   <channel id="938" label="Autocert - Futures Currencies - 36B">
     <products>
-      <product code="0QH">
-        <group code="95"/>
-      </product>
       <product code="0RT">
         <group code="P$"/>
+      </product>
+      <product code="1BB">
+        <group code="95"/>
+      </product>
+      <product code="1QH">
+        <group code="95"/>
       </product>
       <product code="1RT">
         <group code="P$"/>
       </product>
-      <product code="1WS">
-        <group code="P$"/>
-      </product>
-      <product code="2QH">
-        <group code="95"/>
-      </product>
-      <product code="2WS">
+      <product code="2RT">
         <group code="P$"/>
       </product>
       <product code="3BB">
@@ -2931,23 +2919,23 @@
       <product code="3QH">
         <group code="95"/>
       </product>
+      <product code="3RT">
+        <group code="P$"/>
+      </product>
       <product code="4BB">
         <group code="95"/>
       </product>
-      <product code="4QH">
-        <group code="95"/>
-      </product>
-      <product code="4WS">
+      <product code="4RT">
         <group code="P$"/>
       </product>
-      <product code="5QH">
+      <product code="5BB">
         <group code="95"/>
       </product>
       <product code="6BB">
         <group code="95"/>
       </product>
-      <product code="6QH">
-        <group code="95"/>
+      <product code="6RT">
+        <group code="P$"/>
       </product>
       <product code="7BB">
         <group code="95"/>
@@ -2955,16 +2943,10 @@
       <product code="7RT">
         <group code="P$"/>
       </product>
-      <product code="7WS">
-        <group code="P$"/>
-      </product>
-      <product code="8RT">
-        <group code="P$"/>
+      <product code="8BB">
+        <group code="95"/>
       </product>
       <product code="9RT">
-        <group code="P$"/>
-      </product>
-      <product code="9WS">
         <group code="P$"/>
       </product>
     </products>
@@ -3019,11 +3001,11 @@
       <product code="0ZC">
         <group code="07"/>
       </product>
-      <product code="0ZL">
-        <group code="Q$"/>
-      </product>
       <product code="0ZW">
         <group code="Q$"/>
+      </product>
+      <product code="1EH">
+        <group code="07"/>
       </product>
       <product code="1ZW">
         <group code="Q$"/>
@@ -3043,22 +3025,25 @@
       <product code="3ZC">
         <group code="07"/>
       </product>
+      <product code="3ZL">
+        <group code="Q$"/>
+      </product>
       <product code="3ZW">
         <group code="Q$"/>
       </product>
-      <product code="4ZC">
-        <group code="07"/>
-      </product>
       <product code="4ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="4ZW">
         <group code="Q$"/>
       </product>
       <product code="5EH">
         <group code="07"/>
       </product>
-      <product code="5ZC">
-        <group code="07"/>
-      </product>
       <product code="5ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="5ZW">
         <group code="Q$"/>
       </product>
       <product code="6EH">
@@ -3067,17 +3052,23 @@
       <product code="6ZC">
         <group code="07"/>
       </product>
+      <product code="6ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="7ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="8EH">
+        <group code="07"/>
+      </product>
       <product code="8ZL">
         <group code="Q$"/>
       </product>
       <product code="8ZW">
         <group code="Q$"/>
       </product>
-      <product code="9EH">
+      <product code="9ZC">
         <group code="07"/>
-      </product>
-      <product code="9ZW">
-        <group code="Q$"/>
       </product>
     </products>
    <connections>
@@ -3125,13 +3116,13 @@
   </channel>
   <channel id="940" label="Autocert - Futures Currencies - 46B">
     <products>
+      <product code="0EH">
+        <group code="07"/>
+      </product>
       <product code="0ZC">
         <group code="07"/>
       </product>
       <product code="0ZL">
-        <group code="Q$"/>
-      </product>
-      <product code="0ZW">
         <group code="Q$"/>
       </product>
       <product code="1EH">
@@ -3143,10 +3134,10 @@
       <product code="1ZW">
         <group code="Q$"/>
       </product>
-      <product code="2EH">
+      <product code="2ZC">
         <group code="07"/>
       </product>
-      <product code="2ZW">
+      <product code="2ZL">
         <group code="Q$"/>
       </product>
       <product code="3ZC">
@@ -3158,17 +3149,8 @@
       <product code="4ZW">
         <group code="Q$"/>
       </product>
-      <product code="5EH">
-        <group code="07"/>
-      </product>
-      <product code="5ZW">
+      <product code="5ZL">
         <group code="Q$"/>
-      </product>
-      <product code="6EH">
-        <group code="07"/>
-      </product>
-      <product code="6ZC">
-        <group code="07"/>
       </product>
       <product code="6ZL">
         <group code="Q$"/>
@@ -3179,22 +3161,19 @@
       <product code="7EH">
         <group code="07"/>
       </product>
-      <product code="7ZL">
-        <group code="Q$"/>
-      </product>
-      <product code="7ZW">
-        <group code="Q$"/>
-      </product>
       <product code="8EH">
-        <group code="07"/>
-      </product>
-      <product code="8ZC">
         <group code="07"/>
       </product>
       <product code="8ZL">
         <group code="Q$"/>
       </product>
       <product code="8ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="9EH">
+        <group code="07"/>
+      </product>
+      <product code="9ZL">
         <group code="Q$"/>
       </product>
       <product code="9ZW">
@@ -3246,10 +3225,10 @@
   </channel>
   <channel id="941" label="Autocert - Futures Nymex - 0CL">
     <products>
-      <product code="0ZC">
-        <group code="07"/>
+      <product code="0ZL">
+        <group code="Q$"/>
       </product>
-      <product code="1ZC">
+      <product code="1EH">
         <group code="07"/>
       </product>
       <product code="1ZL">
@@ -3261,43 +3240,43 @@
       <product code="2EH">
         <group code="07"/>
       </product>
-      <product code="2ZL">
+      <product code="2ZW">
         <group code="Q$"/>
       </product>
-      <product code="3ZC">
+      <product code="3EH">
         <group code="07"/>
       </product>
       <product code="3ZL">
         <group code="Q$"/>
       </product>
-      <product code="4ZC">
+      <product code="4EH">
         <group code="07"/>
       </product>
       <product code="4ZL">
         <group code="Q$"/>
       </product>
-      <product code="4ZW">
-        <group code="Q$"/>
-      </product>
-      <product code="5EH">
+      <product code="5ZC">
         <group code="07"/>
       </product>
-      <product code="6ZL">
+      <product code="5ZW">
         <group code="Q$"/>
       </product>
-      <product code="6ZW">
-        <group code="Q$"/>
+      <product code="6EH">
+        <group code="07"/>
+      </product>
+      <product code="6ZC">
+        <group code="07"/>
       </product>
       <product code="7EH">
         <group code="07"/>
       </product>
-      <product code="7ZC">
-        <group code="07"/>
+      <product code="7ZL">
+        <group code="Q$"/>
       </product>
       <product code="7ZW">
         <group code="Q$"/>
       </product>
-      <product code="8EH">
+      <product code="8ZC">
         <group code="07"/>
       </product>
       <product code="9EH">
@@ -3305,9 +3284,6 @@
       </product>
       <product code="9ZC">
         <group code="07"/>
-      </product>
-      <product code="9ZL">
-        <group code="Q$"/>
       </product>
     </products>
    <connections>
@@ -3361,11 +3337,23 @@
       <product code="0ZC">
         <group code="07"/>
       </product>
-      <product code="1EH">
+      <product code="0ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="1ZC">
         <group code="07"/>
+      </product>
+      <product code="1ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="1ZW">
+        <group code="Q$"/>
       </product>
       <product code="2EH">
         <group code="07"/>
+      </product>
+      <product code="2ZL">
+        <group code="Q$"/>
       </product>
       <product code="2ZW">
         <group code="Q$"/>
@@ -3373,37 +3361,40 @@
       <product code="3EH">
         <group code="07"/>
       </product>
+      <product code="3ZC">
+        <group code="07"/>
+      </product>
       <product code="3ZW">
         <group code="Q$"/>
       </product>
-      <product code="5ZC">
+      <product code="4ZC">
+        <group code="07"/>
+      </product>
+      <product code="4ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="4ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="5EH">
         <group code="07"/>
       </product>
       <product code="5ZL">
         <group code="Q$"/>
       </product>
-      <product code="5ZW">
-        <group code="Q$"/>
+      <product code="6EH">
+        <group code="07"/>
       </product>
       <product code="6ZC">
         <group code="07"/>
       </product>
-      <product code="6ZL">
-        <group code="Q$"/>
-      </product>
-      <product code="6ZW">
-        <group code="Q$"/>
-      </product>
       <product code="7ZC">
         <group code="07"/>
-      </product>
-      <product code="7ZL">
-        <group code="Q$"/>
       </product>
       <product code="7ZW">
         <group code="Q$"/>
       </product>
-      <product code="8ZC">
+      <product code="8EH">
         <group code="07"/>
       </product>
       <product code="8ZL">
@@ -3418,7 +3409,7 @@
       <product code="9ZC">
         <group code="07"/>
       </product>
-      <product code="9ZW">
+      <product code="9ZL">
         <group code="Q$"/>
       </product>
     </products>
@@ -3473,38 +3464,26 @@
       <product code="0ZW">
         <group code="Q$"/>
       </product>
-      <product code="1EH">
-        <group code="07"/>
-      </product>
       <product code="1ZC">
         <group code="07"/>
       </product>
-      <product code="1ZL">
-        <group code="Q$"/>
-      </product>
-      <product code="1ZW">
-        <group code="Q$"/>
+      <product code="2EH">
+        <group code="07"/>
       </product>
       <product code="2ZC">
         <group code="07"/>
       </product>
-      <product code="2ZL">
-        <group code="Q$"/>
-      </product>
-      <product code="2ZW">
-        <group code="Q$"/>
-      </product>
-      <product code="3ZL">
-        <group code="Q$"/>
-      </product>
-      <product code="4EH">
+      <product code="3EH">
         <group code="07"/>
+      </product>
+      <product code="3ZW">
+        <group code="Q$"/>
       </product>
       <product code="4ZC">
         <group code="07"/>
       </product>
-      <product code="4ZL">
-        <group code="Q$"/>
+      <product code="5EH">
+        <group code="07"/>
       </product>
       <product code="5ZC">
         <group code="07"/>
@@ -3518,11 +3497,17 @@
       <product code="6EH">
         <group code="07"/>
       </product>
-      <product code="6ZC">
+      <product code="6ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="6ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="7ZC">
         <group code="07"/>
       </product>
-      <product code="7EH">
-        <group code="07"/>
+      <product code="7ZL">
+        <group code="Q$"/>
       </product>
       <product code="8EH">
         <group code="07"/>
@@ -3530,11 +3515,8 @@
       <product code="8ZC">
         <group code="07"/>
       </product>
-      <product code="8ZW">
+      <product code="8ZL">
         <group code="Q$"/>
-      </product>
-      <product code="9EH">
-        <group code="07"/>
       </product>
       <product code="9ZL">
         <group code="Q$"/>
@@ -3591,61 +3573,49 @@
       <product code="0EH">
         <group code="07"/>
       </product>
-      <product code="0ZL">
-        <group code="Q$"/>
-      </product>
-      <product code="0ZW">
-        <group code="Q$"/>
-      </product>
-      <product code="1EH">
-        <group code="07"/>
-      </product>
       <product code="1ZL">
         <group code="Q$"/>
       </product>
-      <product code="2EH">
-        <group code="07"/>
-      </product>
-      <product code="2ZC">
-        <group code="07"/>
-      </product>
-      <product code="3EH">
-        <group code="07"/>
-      </product>
-      <product code="3ZW">
+      <product code="2ZL">
         <group code="Q$"/>
+      </product>
+      <product code="3ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="4ZC">
+        <group code="07"/>
       </product>
       <product code="4ZW">
         <group code="Q$"/>
       </product>
-      <product code="5EH">
+      <product code="5ZC">
         <group code="07"/>
       </product>
-      <product code="6ZL">
+      <product code="5ZW">
         <group code="Q$"/>
       </product>
-      <product code="7EH">
-        <group code="07"/>
+      <product code="6ZW">
+        <group code="Q$"/>
       </product>
       <product code="7ZC">
         <group code="07"/>
       </product>
-      <product code="7ZL">
-        <group code="Q$"/>
-      </product>
       <product code="7ZW">
         <group code="Q$"/>
       </product>
-      <product code="8EH">
+      <product code="8ZC">
         <group code="07"/>
       </product>
-      <product code="8ZL">
+      <product code="8ZW">
         <group code="Q$"/>
       </product>
       <product code="9ZC">
         <group code="07"/>
       </product>
       <product code="9ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="9ZW">
         <group code="Q$"/>
       </product>
     </products>
@@ -3754,7 +3724,7 @@
       <product code="2EMD">
         <group code="S$"/>
       </product>
-      <product code="2FT5">
+      <product code="2SLP">
         <group code="91"/>
       </product>
       <product code="3DVE">
@@ -3767,6 +3737,9 @@
         <group code="S$"/>
       </product>
       <product code="4FT5">
+        <group code="91"/>
+      </product>
+      <product code="5DVE">
         <group code="91"/>
       </product>
       <product code="5SLP">
@@ -3784,7 +3757,7 @@
       <product code="7SLP">
         <group code="91"/>
       </product>
-      <product code="8DVE">
+      <product code="8RSV">
         <group code="91"/>
       </product>
       <product code="9ES">
@@ -3881,22 +3854,22 @@
   </channel>
   <channel id="948" label="Autocert - Futures Interest rates - 4GE">
     <products>
-      <product code="1SLP">
+      <product code="1DVE">
+        <group code="91"/>
+      </product>
+      <product code="2FT5">
         <group code="91"/>
       </product>
       <product code="2NQ">
         <group code="91"/>
       </product>
-      <product code="3NQ">
+      <product code="3DVE">
         <group code="91"/>
       </product>
       <product code="3RSV">
         <group code="91"/>
       </product>
       <product code="3SLP">
-        <group code="91"/>
-      </product>
-      <product code="5DVE">
         <group code="91"/>
       </product>
       <product code="5EMD">
@@ -3914,11 +3887,14 @@
       <product code="5SMC">
         <group code="S$"/>
       </product>
-      <product code="6FT5">
+      <product code="6ES">
         <group code="91"/>
       </product>
       <product code="7EMD">
         <group code="S$"/>
+      </product>
+      <product code="8DVE">
+        <group code="91"/>
       </product>
       <product code="8EMD">
         <group code="S$"/>
@@ -3981,22 +3957,25 @@
   </channel>
   <channel id="949" label="Autocert - CBOT Commodity Futures">
     <products>
-      <product code="0DVE">
-        <group code="91"/>
-      </product>
       <product code="0EMD">
         <group code="S$"/>
+      </product>
+      <product code="1SLP">
+        <group code="91"/>
       </product>
       <product code="1SMC">
         <group code="S$"/>
       </product>
-      <product code="2DVE">
-        <group code="91"/>
-      </product>
       <product code="2EMD">
         <group code="S$"/>
       </product>
+      <product code="2NQ">
+        <group code="91"/>
+      </product>
       <product code="2RSV">
+        <group code="91"/>
+      </product>
+      <product code="3NQ">
         <group code="91"/>
       </product>
       <product code="3SMC">
@@ -4011,7 +3990,7 @@
       <product code="4NQ">
         <group code="91"/>
       </product>
-      <product code="4RSV">
+      <product code="5DVE">
         <group code="91"/>
       </product>
       <product code="5NQ">
@@ -4023,16 +4002,13 @@
       <product code="6DVE">
         <group code="91"/>
       </product>
+      <product code="6FT5">
+        <group code="91"/>
+      </product>
       <product code="7NQ">
         <group code="91"/>
       </product>
-      <product code="7SLP">
-        <group code="91"/>
-      </product>
-      <product code="8DVE">
-        <group code="91"/>
-      </product>
-      <product code="9NQ">
+      <product code="7RSV">
         <group code="91"/>
       </product>
       <product code="BES">
@@ -4084,7 +4060,7 @@
   </channel>
   <channel id="950" label="Autocert - Futures Interest rates - 5GE">
     <products>
-      <product code="0FT5">
+      <product code="0DVE">
         <group code="91"/>
       </product>
       <product code="0RSV">
@@ -4102,14 +4078,14 @@
       <product code="2FT5">
         <group code="91"/>
       </product>
-      <product code="4DVE">
-        <group code="91"/>
-      </product>
       <product code="4NQ">
         <group code="91"/>
       </product>
       <product code="5EMD">
         <group code="S$"/>
+      </product>
+      <product code="5RSV">
+        <group code="91"/>
       </product>
       <product code="5SMC">
         <group code="S$"/>
@@ -4120,16 +4096,13 @@
       <product code="7NQ">
         <group code="91"/>
       </product>
+      <product code="7SLP">
+        <group code="91"/>
+      </product>
       <product code="7SMC">
         <group code="S$"/>
       </product>
       <product code="8NQ">
-        <group code="91"/>
-      </product>
-      <product code="8SLP">
-        <group code="91"/>
-      </product>
-      <product code="9FT5">
         <group code="91"/>
       </product>
       <product code="9NQ">
@@ -4184,6 +4157,9 @@
   </channel>
   <channel id="951" label="Autocert - CBOT Commodity Futures">
     <products>
+      <product code="0FT5">
+        <group code="91"/>
+      </product>
       <product code="0SMC">
         <group code="S$"/>
       </product>
@@ -4205,13 +4181,7 @@
       <product code="4EMD">
         <group code="S$"/>
       </product>
-      <product code="4SLP">
-        <group code="91"/>
-      </product>
       <product code="5FT5">
-        <group code="91"/>
-      </product>
-      <product code="5RSV">
         <group code="91"/>
       </product>
       <product code="7DVE">
@@ -4229,7 +4199,13 @@
       <product code="8ES">
         <group code="91"/>
       </product>
+      <product code="8SLP">
+        <group code="91"/>
+      </product>
       <product code="9DVE">
+        <group code="91"/>
+      </product>
+      <product code="9FT5">
         <group code="91"/>
       </product>
       <product code="9RSV">
@@ -4296,9 +4272,6 @@
       <product code="2DVE">
         <group code="91"/>
       </product>
-      <product code="2SLP">
-        <group code="91"/>
-      </product>
       <product code="3FT5">
         <group code="91"/>
       </product>
@@ -4306,6 +4279,9 @@
         <group code="91"/>
       </product>
       <product code="4ES">
+        <group code="91"/>
+      </product>
+      <product code="4SLP">
         <group code="91"/>
       </product>
       <product code="4SMC">
@@ -4384,16 +4360,10 @@
       <product code="03Z">
         <group code="X$"/>
       </product>
-      <product code="04Z">
-        <group code="X$"/>
-      </product>
       <product code="12Z">
         <group code="X$"/>
       </product>
       <product code="13Z">
-        <group code="X$"/>
-      </product>
-      <product code="14Z">
         <group code="X$"/>
       </product>
       <product code="22Z">
@@ -4402,16 +4372,10 @@
       <product code="23Z">
         <group code="X$"/>
       </product>
-      <product code="24Z">
-        <group code="X$"/>
-      </product>
       <product code="32Z">
         <group code="X$"/>
       </product>
       <product code="33Z">
-        <group code="X$"/>
-      </product>
-      <product code="34Z">
         <group code="X$"/>
       </product>
       <product code="42Z">
@@ -4420,16 +4384,10 @@
       <product code="43Z">
         <group code="X$"/>
       </product>
-      <product code="44Z">
-        <group code="X$"/>
-      </product>
       <product code="52Z">
         <group code="X$"/>
       </product>
       <product code="53Z">
-        <group code="X$"/>
-      </product>
-      <product code="54Z">
         <group code="X$"/>
       </product>
       <product code="62Z">
@@ -4438,16 +4396,10 @@
       <product code="63Z">
         <group code="X$"/>
       </product>
-      <product code="64Z">
-        <group code="X$"/>
-      </product>
       <product code="72Z">
         <group code="X$"/>
       </product>
       <product code="73Z">
-        <group code="X$"/>
-      </product>
-      <product code="74Z">
         <group code="X$"/>
       </product>
       <product code="82Z">
@@ -4456,16 +4408,10 @@
       <product code="83Z">
         <group code="X$"/>
       </product>
-      <product code="84Z">
-        <group code="X$"/>
-      </product>
       <product code="92Z">
         <group code="X$"/>
       </product>
       <product code="93Z">
-        <group code="X$"/>
-      </product>
-      <product code="94Z">
         <group code="X$"/>
       </product>
     </products>
@@ -4523,16 +4469,19 @@
       <product code="0SMC">
         <group code="S$"/>
       </product>
-      <product code="1DVE">
-        <group code="91"/>
-      </product>
       <product code="1EMD">
         <group code="S$"/>
       </product>
       <product code="1ES">
         <group code="91"/>
       </product>
+      <product code="2DVE">
+        <group code="91"/>
+      </product>
       <product code="2ES">
+        <group code="91"/>
+      </product>
+      <product code="2SLP">
         <group code="91"/>
       </product>
       <product code="2SMC">
@@ -4541,13 +4490,10 @@
       <product code="3EMD">
         <group code="S$"/>
       </product>
+      <product code="4DVE">
+        <group code="91"/>
+      </product>
       <product code="4RSV">
-        <group code="91"/>
-      </product>
-      <product code="4SLP">
-        <group code="91"/>
-      </product>
-      <product code="5FT5">
         <group code="91"/>
       </product>
       <product code="6RSV">
@@ -4614,9 +4560,6 @@
   </channel>
   <channel id="955" label="Autocert - FX Options">
     <products>
-      <product code="06B">
-        <group code="93"/>
-      </product>
       <product code="06J">
         <group code="R$"/>
       </product>
@@ -4626,7 +4569,19 @@
       <product code="16B">
         <group code="93"/>
       </product>
-      <product code="36B">
+      <product code="16J">
+        <group code="R$"/>
+      </product>
+      <product code="16S">
+        <group code="R$"/>
+      </product>
+      <product code="26B">
+        <group code="93"/>
+      </product>
+      <product code="26S">
+        <group code="R$"/>
+      </product>
+      <product code="36A">
         <group code="93"/>
       </product>
       <product code="36J">
@@ -4644,7 +4599,13 @@
       <product code="56A">
         <group code="93"/>
       </product>
-      <product code="66B">
+      <product code="56B">
+        <group code="93"/>
+      </product>
+      <product code="56S">
+        <group code="R$"/>
+      </product>
+      <product code="66A">
         <group code="93"/>
       </product>
       <product code="66J">
@@ -4662,11 +4623,8 @@
       <product code="86A">
         <group code="93"/>
       </product>
-      <product code="86B">
-        <group code="93"/>
-      </product>
-      <product code="96B">
-        <group code="93"/>
+      <product code="86S">
+        <group code="R$"/>
       </product>
       <product code="96J">
         <group code="R$"/>
@@ -4720,14 +4678,11 @@
   </channel>
   <channel id="956" label="Autocert - Futures Interest rates - 8GE">
     <products>
-      <product code="06A">
+      <product code="06B">
         <group code="93"/>
       </product>
-      <product code="06J">
-        <group code="R$"/>
-      </product>
-      <product code="06S">
-        <group code="R$"/>
+      <product code="16A">
+        <group code="93"/>
       </product>
       <product code="16B">
         <group code="93"/>
@@ -4738,31 +4693,13 @@
       <product code="1RSV">
         <group code="91"/>
       </product>
-      <product code="26A">
-        <group code="93"/>
-      </product>
       <product code="26B">
         <group code="93"/>
       </product>
-      <product code="26J">
+      <product code="26S">
         <group code="R$"/>
       </product>
       <product code="2RSV">
-        <group code="91"/>
-      </product>
-      <product code="36A">
-        <group code="93"/>
-      </product>
-      <product code="36B">
-        <group code="93"/>
-      </product>
-      <product code="36J">
-        <group code="R$"/>
-      </product>
-      <product code="36S">
-        <group code="R$"/>
-      </product>
-      <product code="3DVE">
         <group code="91"/>
       </product>
       <product code="3FT5">
@@ -4771,26 +4708,29 @@
       <product code="3RSV">
         <group code="91"/>
       </product>
+      <product code="46A">
+        <group code="93"/>
+      </product>
+      <product code="46J">
+        <group code="R$"/>
+      </product>
       <product code="46S">
         <group code="R$"/>
       </product>
-      <product code="56B">
-        <group code="93"/>
-      </product>
-      <product code="56J">
-        <group code="R$"/>
-      </product>
-      <product code="5DVE">
+      <product code="4SLP">
         <group code="91"/>
       </product>
-      <product code="66A">
+      <product code="56A">
         <group code="93"/>
+      </product>
+      <product code="56S">
+        <group code="R$"/>
+      </product>
+      <product code="5FT5">
+        <group code="91"/>
       </product>
       <product code="66B">
         <group code="93"/>
-      </product>
-      <product code="66J">
-        <group code="R$"/>
       </product>
       <product code="66S">
         <group code="R$"/>
@@ -4801,7 +4741,25 @@
       <product code="76A">
         <group code="93"/>
       </product>
+      <product code="76B">
+        <group code="93"/>
+      </product>
+      <product code="76J">
+        <group code="R$"/>
+      </product>
       <product code="76S">
+        <group code="R$"/>
+      </product>
+      <product code="86A">
+        <group code="93"/>
+      </product>
+      <product code="86B">
+        <group code="93"/>
+      </product>
+      <product code="86J">
+        <group code="R$"/>
+      </product>
+      <product code="86S">
         <group code="R$"/>
       </product>
       <product code="8SLP">
@@ -4810,8 +4768,8 @@
       <product code="96A">
         <group code="93"/>
       </product>
-      <product code="96B">
-        <group code="93"/>
+      <product code="96J">
+        <group code="R$"/>
       </product>
     </products>
    <connections>
@@ -4865,11 +4823,11 @@
       <product code="06B">
         <group code="93"/>
       </product>
-      <product code="06S">
+      <product code="06J">
         <group code="R$"/>
       </product>
-      <product code="16A">
-        <group code="93"/>
+      <product code="06S">
+        <group code="R$"/>
       </product>
       <product code="16B">
         <group code="93"/>
@@ -4877,29 +4835,23 @@
       <product code="16J">
         <group code="R$"/>
       </product>
-      <product code="26A">
+      <product code="26B">
         <group code="93"/>
       </product>
       <product code="26J">
         <group code="R$"/>
       </product>
-      <product code="26S">
-        <group code="R$"/>
-      </product>
       <product code="36A">
         <group code="93"/>
       </product>
-      <product code="46A">
+      <product code="36B">
         <group code="93"/>
       </product>
-      <product code="46B">
-        <group code="93"/>
+      <product code="36S">
+        <group code="R$"/>
       </product>
       <product code="46J">
         <group code="R$"/>
-      </product>
-      <product code="56A">
-        <group code="93"/>
       </product>
       <product code="56B">
         <group code="93"/>
@@ -4907,22 +4859,28 @@
       <product code="56J">
         <group code="R$"/>
       </product>
-      <product code="76B">
+      <product code="66A">
         <group code="93"/>
       </product>
       <product code="76J">
         <group code="R$"/>
       </product>
-      <product code="86B">
+      <product code="86A">
         <group code="93"/>
       </product>
       <product code="86J">
         <group code="R$"/>
       </product>
-      <product code="86S">
-        <group code="R$"/>
+      <product code="96A">
+        <group code="93"/>
+      </product>
+      <product code="96B">
+        <group code="93"/>
       </product>
       <product code="96J">
+        <group code="R$"/>
+      </product>
+      <product code="96S">
         <group code="R$"/>
       </product>
     </products>
@@ -4974,11 +4932,17 @@
       <product code="06A">
         <group code="93"/>
       </product>
-      <product code="06B">
+      <product code="06S">
+        <group code="R$"/>
+      </product>
+      <product code="16A">
         <group code="93"/>
       </product>
       <product code="16S">
         <group code="R$"/>
+      </product>
+      <product code="26A">
+        <group code="93"/>
       </product>
       <product code="26S">
         <group code="R$"/>
@@ -4986,23 +4950,32 @@
       <product code="36B">
         <group code="93"/>
       </product>
-      <product code="46B">
-        <group code="93"/>
-      </product>
-      <product code="46J">
+      <product code="36J">
         <group code="R$"/>
       </product>
+      <product code="36S">
+        <group code="R$"/>
+      </product>
+      <product code="46A">
+        <group code="93"/>
+      </product>
       <product code="46S">
+        <group code="R$"/>
+      </product>
+      <product code="56A">
+        <group code="93"/>
+      </product>
+      <product code="56J">
         <group code="R$"/>
       </product>
       <product code="56S">
         <group code="R$"/>
       </product>
-      <product code="66A">
-        <group code="93"/>
-      </product>
       <product code="66B">
         <group code="93"/>
+      </product>
+      <product code="66J">
+        <group code="R$"/>
       </product>
       <product code="66S">
         <group code="R$"/>
@@ -5013,17 +4986,20 @@
       <product code="76B">
         <group code="93"/>
       </product>
+      <product code="76J">
+        <group code="R$"/>
+      </product>
       <product code="76S">
         <group code="R$"/>
+      </product>
+      <product code="86B">
+        <group code="93"/>
       </product>
       <product code="86J">
         <group code="R$"/>
       </product>
       <product code="96A">
         <group code="93"/>
-      </product>
-      <product code="96S">
-        <group code="R$"/>
       </product>
     </products>
    <connections>
@@ -5071,41 +5047,35 @@
   </channel>
   <channel id="959" label="Autocert - Commodity Futures">
     <products>
+      <product code="06A">
+        <group code="93"/>
+      </product>
       <product code="06B">
         <group code="93"/>
       </product>
       <product code="06J">
         <group code="R$"/>
       </product>
-      <product code="16A">
-        <group code="93"/>
+      <product code="16J">
+        <group code="R$"/>
       </product>
       <product code="26A">
         <group code="93"/>
       </product>
-      <product code="26B">
-        <group code="93"/>
+      <product code="26J">
+        <group code="R$"/>
       </product>
       <product code="26S">
         <group code="R$"/>
       </product>
-      <product code="36B">
+      <product code="36A">
         <group code="93"/>
-      </product>
-      <product code="36J">
-        <group code="R$"/>
-      </product>
-      <product code="36S">
-        <group code="R$"/>
       </product>
       <product code="46A">
         <group code="93"/>
       </product>
       <product code="46J">
         <group code="R$"/>
-      </product>
-      <product code="56A">
-        <group code="93"/>
       </product>
       <product code="56B">
         <group code="93"/>
@@ -5122,26 +5092,23 @@
       <product code="66J">
         <group code="R$"/>
       </product>
-      <product code="76A">
+      <product code="76B">
         <group code="93"/>
       </product>
       <product code="76J">
         <group code="R$"/>
       </product>
-      <product code="86A">
-        <group code="93"/>
+      <product code="76S">
+        <group code="R$"/>
       </product>
       <product code="86B">
         <group code="93"/>
       </product>
-      <product code="86J">
-        <group code="R$"/>
-      </product>
-      <product code="86S">
-        <group code="R$"/>
-      </product>
       <product code="96B">
         <group code="93"/>
+      </product>
+      <product code="96J">
+        <group code="R$"/>
       </product>
       <product code="96S">
         <group code="R$"/>
@@ -5282,16 +5249,16 @@
   </channel>
   <channel id="962" label="Autocert - Interest Rates Futures">
     <products>
-      <product code="06S">
+      <product code="06A">
+        <group code="93"/>
+      </product>
+      <product code="06J">
         <group code="R$"/>
       </product>
-      <product code="16B">
+      <product code="16A">
         <group code="93"/>
       </product>
       <product code="16J">
-        <group code="R$"/>
-      </product>
-      <product code="16S">
         <group code="R$"/>
       </product>
       <product code="26A">
@@ -5303,8 +5270,8 @@
       <product code="26J">
         <group code="R$"/>
       </product>
-      <product code="36A">
-        <group code="93"/>
+      <product code="36J">
+        <group code="R$"/>
       </product>
       <product code="46A">
         <group code="93"/>
@@ -5318,10 +5285,13 @@
       <product code="56A">
         <group code="93"/>
       </product>
-      <product code="56B">
+      <product code="66A">
         <group code="93"/>
       </product>
-      <product code="56J">
+      <product code="66J">
+        <group code="R$"/>
+      </product>
+      <product code="66S">
         <group code="R$"/>
       </product>
       <product code="76S">
@@ -5332,12 +5302,6 @@
       </product>
       <product code="96B">
         <group code="93"/>
-      </product>
-      <product code="96J">
-        <group code="R$"/>
-      </product>
-      <product code="96S">
-        <group code="R$"/>
       </product>
     </products>
    <connections>

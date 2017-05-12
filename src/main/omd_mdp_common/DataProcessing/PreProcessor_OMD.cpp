@@ -35,10 +35,10 @@ void PreProcessor_OMD::Run()
     if (oph->PktSize > 0 && oph->PktSize <= MAX_OMD_PACKET_SIZE)
     {
 
-      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s (%c): Packet Header: Packet size:   %u", __FILENAME__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->PktSize);
-      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s (%c): Packet Header: Msg Count:     %u", __FILENAME__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->MsgCount);
-      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s (%c): Packet Header: Base Seq No:   %u", __FILENAME__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), m_LocalLastBaseSeqNo);
-      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s (%c): Packet Header: Send Time:     %s", __FILENAME__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(oph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str());
+      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s: Packet Header: Packet size:   %u", __FILENAME__, m_ChannelID, m_McastIdentifier.ToString().c_str(), oph->PktSize);
+      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s: Packet Header: Msg Count:     %u", __FILENAME__, m_ChannelID, m_McastIdentifier.ToString().c_str(), oph->MsgCount);
+      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s: Packet Header: Base Seq No:   %u", __FILENAME__, m_ChannelID, m_McastIdentifier.ToString().c_str(), m_LocalLastBaseSeqNo);
+      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s: Packet Header: Send Time:     %s", __FILENAME__, m_ChannelID, m_McastIdentifier.ToString().c_str(), SDateTime::fromUnixTimeToString(oph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str());
 
       //--------------------------------------------------
       // Output other Debug info
@@ -47,9 +47,9 @@ void PreProcessor_OMD::Run()
       m_Logger->Write(Logger::DEBUG,"%s: %s : %u : m_RawPktCirBuf.AllocatedSize() %u", __FILENAME__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(), m_RawPktCirBuf->AllocatedSize());
 
       if (m_PrintPreProcSeqNoAsInfo)
-        m_Logger->Write(Logger::INFO ,"%s: ChannelID:%u. %s (%c): Packet Header: Actual Seq No: %u", __FILENAME__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->SeqNum);
+        m_Logger->Write(Logger::INFO ,"%s: ChannelID:%u. %s: Packet Header: Actual Seq No: %u", __FILENAME__, m_ChannelID, m_McastIdentifier.ToString().c_str(), oph->SeqNum);
       else
-        m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s (%c): Packet Header: Actual Seq No: %u", __FILENAME__, m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), oph->SeqNum);
+        m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. %s: Packet Header: Actual Seq No: %u", __FILENAME__, m_ChannelID, m_McastIdentifier.ToString().c_str(), oph->SeqNum);
 
     }
 
@@ -58,9 +58,9 @@ void PreProcessor_OMD::Run()
     //--------------------------------------------------
     else if (oph->PktSize > MAX_OMD_PACKET_SIZE)
     {
-      m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. %s (%c): Received erroneous packet size: Send Time: %s, PktSize = %u.",
+      m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. %s: Received erroneous packet size: Send Time: %s, PktSize = %u.",
                       __FILENAME__,
-                      m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(oph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str(), oph->PktSize);
+                      m_ChannelID, m_McastIdentifier.ToString().c_str(), SDateTime::fromUnixTimeToString(oph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str(), oph->PktSize);
       m_RawPktCirBuf->PopFront();
       continue;
     }
@@ -75,9 +75,9 @@ void PreProcessor_OMD::Run()
     // //--------------------------------------------------
     // if (oph->SendTime < m_PrevPktHdrTime - 86400000000000) // # of nano sec in 1 day
     // {
-    //   m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. %s (%c): Trashed packet with erroneous Send Time in packet header: %s.",
+    //   m_Logger->Write(Logger::WARNING,"%s: ChannelID:%u. %s: Trashed packet with erroneous Send Time in packet header: %s.",
     //       __FILENAME__,
-    //       m_ChannelID, (m_McastIdentifier.McastType() == McastIdentifier::REALTIME ? "RT" : "RF"), (m_McastIdentifier.Channel() == McastIdentifier::A ? 'A':'B'), SDateTime::fromUnixTimeToString(oph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str());
+    //       m_ChannelID, m_McastIdentifier.ToString().c_str(), SDateTime::fromUnixTimeToString(oph->SendTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::HKT).c_str());
     //   m_RawPktCirBuf->PopFront();
     //   continue;
     // }

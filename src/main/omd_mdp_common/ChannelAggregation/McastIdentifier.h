@@ -39,6 +39,7 @@ class McastIdentifier {
     unsigned short          Hash_MC()        const;
     unsigned short          Hash_Chnl()      const;
     static unsigned short   GetMaxHash();
+    static const string     ToString(const EMcastType &);
 
   private:
     unsigned short  m_Channel_ID;
