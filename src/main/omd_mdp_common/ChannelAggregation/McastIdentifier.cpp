@@ -50,9 +50,9 @@ const string McastIdentifier::ToString() const
 
 const string McastIdentifier::ToString(const EMcastType & mt)
 {
-  if      (mt == REALTIME        ) return "RT";
-  else if (mt == REFRESH         ) return "RF";
-  else if (mt == INSTRUMENTREPLAY) return "IR";
+  if      (mt == REALTIME        ) return "RT      ";
+  else if (mt == REFRESH         ) return "RF      ";
+  else if (mt == INSTRUMENTREPLAY) return "IR      ";
 }
 
 
