@@ -474,7 +474,7 @@ void DataProcFunctions_MDP::OnRefreshVolume(const unsigned short channelID, cons
         << "MDIncrementalRefreshVolume37: SecurityID: " << ent.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(ent.securityID())
         << " RptSeq: " << (int)(ent.rptSeq())
-        << " EntrySize: " << PrintCMESizeNull((int)(ent.mDEntrySize()))
+        << " EntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
         << " UpdateAction: " << (int)(ent.mDUpdateAction())
         << " EntryType: " << string(ent.mDEntryType());
 
@@ -500,16 +500,16 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
         << ProcFlagToString(pf) << ": "
         << "MDIncrementalRefreshBook32: SecurityID: " << ent.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(ent.securityID())
-        << " RptSeq: " << (int)(ent.rptSeq())
-        << " EntrySize: " << PrintCMESizeNull((int)(ent.mDEntrySize()))
-        << " UpdateAction: " << (int)(ent.mDUpdateAction())
-        << " EntryType: " << (char)(ent.mDEntryType())
+        << " rptSeq: " << (int)(ent.rptSeq())
+        << " mDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
+        << " mDUpdateAction: " << (int)(ent.mDUpdateAction())
+        << " mDEntryType: " << (char)(ent.mDEntryType())
         << " transactTime: " << SDateTime::fromUnixTimeToString(msg.transactTime(), SDateTime::NANOSEC);
 
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
 
-    if (ent.mDEntryType() == MDEntryTypeBook::Bid || ent.mDEntryType() == MDEntryTypeBook::Offer ||
+    if (ent.mDEntryType() == MDEntryTypeBook::Bid        || ent.mDEntryType() == MDEntryTypeBook::Offer ||
         ent.mDEntryType() == MDEntryTypeBook::ImpliedBid || ent.mDEntryType() == MDEntryTypeBook::ImpliedOffer)
     {
 
@@ -519,18 +519,24 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
         oo
           << ProcFlagToString(pf) << ": "
           << "MDIncrementalRefreshBook32: SecurityID: " << ent.securityID()
-        << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(ent.securityID())
+          << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(ent.securityID())
           << " mDEntryType: " << (char)(ent.mDEntryType())
-          << " mDPriceLevel: " << (int)(ent.mDPriceLevel())
+          << " mDPriceLevel: " << PrintCMEInt8Null((int)(ent.mDPriceLevel()))
           << " mDUpdateAction: " << (int)(ent.mDUpdateAction())
           << " mDEntryPx.mantissa: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
-          << " mDEntrySize: " << PrintCMESizeNull((int)(ent.mDEntrySize()))
-          << " numberOfOrders: " << (int)(ent.numberOfOrders())
+          << " mDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
+          << " numberOfOrders: " << PrintCMEInt32Null((int)(ent.numberOfOrders()))
           << " rptSeq: " << (int)(ent.rptSeq());
         m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
       }
 
-      if (pf == DPF_DO_ACTUAL_PROCESSING)
+      if (
+        pf == DPF_DO_ACTUAL_PROCESSING &&
+        (int64_t)ent.mDEntryPx().mantissa() != 9223372036854775807 &&
+        (int)(ent.mDPriceLevel())           != 127 &&
+        (int)(ent.numberOfOrders())         != 2147483647 &&
+        (int)(ent.mDEntrySize())            != 2147483647
+        )
       {
         OrderBook* ob = m_ShrObj->GetOrderBookCache()->GetOrderBook(ent.securityID());
         OrderBook::BASide side = (((ent.mDEntryType() == MDEntryTypeBook::Bid) || (ent.mDEntryType() == MDEntryTypeBook::ImpliedBid)) ? OrderBook::BID : OrderBook::ASK);
@@ -583,14 +589,14 @@ void DataProcFunctions_MDP::OnRefreshTrade(const unsigned short channelID, const
         << ProcFlagToString(pf) << ": "
         << "MDIncrementalRefreshTrade36: SecurityID: " << ent.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(ent.securityID())
-        << " RptSeq: " << (int)(ent.rptSeq())
-        << " Price: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
-        << " EntrySize: " << PrintCMESizeNull((int)(ent.mDEntrySize()))
-        << " OrderNo: " << (int)(ent.numberOfOrders())
-        << " AggressorSide: " << ent.aggressorSide()
-        << " TradeID: " << ent.tradeID()
-        << " UpdateAction: " << (int)(ent.mDUpdateAction())
-        << " EntryType: " << string(ent.mDEntryType());
+        << " rptSeq: " << (int)(ent.rptSeq())
+        << " mDEntryPx: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
+        << " mDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
+        << " numberOfOrders: " << PrintCMEInt32Null((int)(ent.numberOfOrders()))
+        << " aggressorSide: " << ent.aggressorSide()
+        << " tradeID: " << ent.tradeID()
+        << " mDUpdateAction: " << (int)(ent.mDUpdateAction())
+        << " mDEntryType: " << string(ent.mDEntryType());
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
@@ -629,12 +635,12 @@ void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID
         << ProcFlagToString(pf) << ": "
         << "MDIncrementalRefreshTradeSummary42: SecurityID: " << ent.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(ent.securityID())
-        << " RptSeq: " << (int)(ent.rptSeq())
-        << " Price: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
-        << " EntrySize: " << PrintCMESizeNull((int)(ent.mDEntrySize()))
-        << " OrderNo: " << (int)(ent.numberOfOrders())
-        << " AggressorSide: " << ent.aggressorSide()
-        << " EntryType: " << string(ent.mDEntryType());
+        << " rptSeq: " << (int)(ent.rptSeq())
+        << " mDEntryPx: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
+        << " mDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
+        << " numberOfOrders: " << PrintCMEInt32Null((int)(ent.numberOfOrders()))
+        << " aggressorSide: " << ent.aggressorSide()
+        << " mDEntryType: " << string(ent.mDEntryType());
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
   }
@@ -955,13 +961,13 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
         << ProcFlagToString(pf) << ": "
         << "SnapshotFullRefresh38: SecurityID: " << msg.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(msg.securityID())
-        << " Price: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
-        << " EntrySize: " << PrintCMESizeNull((int)(ent.mDEntrySize()))
-        << " OrderNo: " << (int)(ent.numberOfOrders())
-        << " MDPriceLevel: " << (int)(ent.mDPriceLevel())
+        << " mDEntryPx: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
+        << " mDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
+        << " numberOfOrders: " << PrintCMEInt32Null((int)(ent.numberOfOrders()))
+        << " mDPriceLevel: " << PrintCMEInt8Null((int)(ent.mDPriceLevel()))
         << " tradingReferenceDate: " << SDateTime::fromUnixTimeToString(ent.tradingReferenceDate(), SDateTime::DAY)
-        << " OpenCloseSettlFlag: " << (int)(ent.openCloseSettlFlag())
-        << " EntryType: " << (char)(ent.mDEntryType());
+        << " openCloseSettlFlag: " << (int)(ent.openCloseSettlFlag())
+        << " mDEntryType: " << (char)(ent.mDEntryType());
 
       oo << " Settlement Price Type: " << PrintCMESettlementType(ent.settlPriceType());
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());

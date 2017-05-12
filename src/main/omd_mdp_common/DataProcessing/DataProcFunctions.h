@@ -66,7 +66,8 @@ class DataProcFunctions {
     //--------------------------------------------------
     const string ProcFlagToString(const DPF_ProcFlag pf) { return pf == DPF_PRINT_ONLY ? "DPF_PRINT_ONLY" : "DPF_DO_ACTUAL_PROCESSING"; }
     const string PrintCMEPriceNull(const int64_t pn) { return (pn == 9223372036854775807 ? "Null" : boost::lexical_cast<string>((double)pn/10000000.0)); }
-    const string PrintCMESizeNull(const int32_t pn) { return (pn == 2147483647? "Null" : boost::lexical_cast<string>(pn)); }
+    const string PrintCMEInt32Null(const int32_t pn) { return (pn == 2147483647? "Null" : boost::lexical_cast<string>(pn)); }
+    const string PrintCMEInt8Null(const int32_t pn) { return (pn == 127? "Null" : boost::lexical_cast<string>(pn)); }
     const string PrintCMESettlementType(const SettlPriceType & spt)
     {
       if (spt.finalfinal())   return "finalfinal";
