@@ -983,11 +983,12 @@ boost::shared_ptr<boost::posix_time::ptime> SDateTime::fromUnixTimeToPTime(const
 
   switch(timePrecision)
   {
-    case NANOSEC:  { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::microsec(ulUnixTime/1000 + ulAdjSeconds*1000000000))); break; }
-    case MICROSEC: { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::microsec(ulUnixTime      + ulAdjSeconds*1000000   ))); break; }
-    case MILLISEC: { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::millisec(ulUnixTime      + ulAdjSeconds*1000      ))); break; }
-    case SECOND:   { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::seconds (ulUnixTime      + ulAdjSeconds           ))); break; }
-    default:       {                                                                                                                                                                                  break; }
+    case NANOSEC:  { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::microsec(ulUnixTime/1000     + ulAdjSeconds*1000000000))); break; }
+    case MICROSEC: { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::microsec(ulUnixTime          + ulAdjSeconds*1000000   ))); break; }
+    case MILLISEC: { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::millisec(ulUnixTime          + ulAdjSeconds*1000      ))); break; }
+    case SECOND:   { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::seconds (ulUnixTime          + ulAdjSeconds           ))); break; }
+    case DAY:      { return boost::shared_ptr<boost::posix_time::ptime>(new boost::posix_time::ptime(*SDateTime::EpochDate, boost::posix_time::seconds (ulUnixTime*24*60*60 + ulAdjSeconds           ))); break; }
+    default:       {                                                                                                                                                                                      break; }
   }
 }
 
@@ -1038,6 +1039,7 @@ unsigned long SDateTime::fromStringToUnixTime(const string & yyyymmdd_hhmmss_fff
     case MICROSEC: { mul = 1000000   ; frac_sec = microsec       ; break; }
     case MILLISEC: { mul = 1000      ; frac_sec = microsec / 1000; break; }
     case SECOND:   { mul = 1         ; frac_sec = 0              ; break; }
+    case DAY:      { mul = 1         ; frac_sec = 0              ; break; }
     default:       { mul = 1         ; frac_sec = 0              ; break; }
   }
 

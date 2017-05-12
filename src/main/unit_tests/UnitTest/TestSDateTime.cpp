@@ -738,6 +738,8 @@ void TestSDateTime::RunTest()
     CPPUNIT_ASSERT(SDateTime::fromUnixTimeToString(634695410150250, SDateTime::MICROSEC, SDateTime::GMT, SDateTime::GMT) == "19900211_001650_150250");
     CPPUNIT_ASSERT(SDateTime::fromUnixTimeToString(634695410150250350, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::GMT) == "19900211_001650_150250");
     CPPUNIT_ASSERT(SDateTime::fromUnixTimeToString(634695410, SDateTime::SECOND, SDateTime::GMT, SDateTime::HKT) == "19900211_081650_000000");
+    CPPUNIT_ASSERT(SDateTime::fromUnixTimeToString(10, SDateTime::DAY, SDateTime::GMT, SDateTime::GMT) == "19700111_000000_000000");
+    CPPUNIT_ASSERT(SDateTime::fromStringToUnixTime("19700111_000000_000000", SDateTime::DAY) == 10);
     CPPUNIT_ASSERT(SDateTime::fromStringToUnixTime("19900211_001650_000000", SDateTime::SECOND) == 634695410);
     CPPUNIT_ASSERT(SDateTime::fromStringToUnixTime("19900211_001650_150250", SDateTime::MILLISEC) == 634695410150);
     CPPUNIT_ASSERT(SDateTime::fromStringToUnixTime("19900211_001650_150250", SDateTime::MICROSEC) == 634695410150250);

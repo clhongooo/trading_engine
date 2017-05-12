@@ -39,7 +39,7 @@ class SDateTime
 {
   public:
     static int DAYSINMTH[12];
-    enum TIMEPRECISION {SECOND, MILLISEC, MICROSEC, NANOSEC};
+    enum TIMEPRECISION {DAY, SECOND, MILLISEC, MICROSEC, NANOSEC};
     enum TIMEZONE {GMT, HKT, CST, EST};
     static scoped_ptr<boost::gregorian::date> EpochDate;
     //static void JulianDayNum2YMD(JulianDayNum jdn, YMD & ymd);
