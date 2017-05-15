@@ -96,6 +96,14 @@ typedef struct ATU_MDI_marketfeed_struct {
     m_ask_volume_5(0){
       strcpy(m_instrument,"");
     }
+  void SetMicrosecSinceEpoch(uint64_t u)
+  {
+    m_microsec_since_epoch_gmt = u;
+  }
+  void SetSymbol(const string & s)
+  {
+    strcpy(m_instrument,s.c_str());
+  }
   static string ToString(const ATU_MDI_marketfeed_struct & mfs)
   {
     std::ostringstream buffer; 
