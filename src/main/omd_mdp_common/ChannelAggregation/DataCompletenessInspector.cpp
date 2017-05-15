@@ -173,13 +173,13 @@ void DataCompletenessInspector::Run()
                   uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
                   SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::NANOSEC, SDateTime::HKT, SDateTime::HKT).c_str(),
                   uiLrgtMissingAdjSeqNo);
-              m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap is larger than %u; Refresh mode is now activated.", m_ChannelID, m_TriggerRefreshSeqNoGap);
+              m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap in RT is larger than %u; Refresh mode is now activated.", m_ChannelID, m_TriggerRefreshSeqNoGap);
             }
             else
             {
               if (bCanPrintRTSLog)
               {
-                m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap is larger than %u; Refresh mode is already activated.", m_ChannelID, m_TriggerRefreshSeqNoGap);
+                m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap in RT is larger than %u; Refresh mode is already activated.", m_ChannelID, m_TriggerRefreshSeqNoGap);
                 m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Start Seq No (adj): %u, Latest Seq No (adj): %u, Smallest Missing Seq No (adj): %u (TStamp=%s), Largest Missing Seq No (adj): %u",
                     m_ChannelID,
                     uiStartAdjSeqNo,
@@ -206,13 +206,13 @@ void DataCompletenessInspector::Run()
             {
               NotifyRTSClient(uiSmlMissingAdjSeqNo,uiLrgtMissingAdjSeqNo,uiLatestAdjSeqNo,bCanPrintRTSLog);
               if (bCanPrintRTSLog)
-                m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap is larger than %u; Attempting recovery from Retransmission server.",
+                m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap in RT is larger than %u; Attempting recovery from Retransmission server.",
                     m_ChannelID, m_TriggerRetransmissionSeqNoGap);
             }
             else
             {
               if (bCanPrintRTSLog)
-                m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap is larger than %u; But not attempting recovery from Retransmission server because refresh is activated.",
+                m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap in RT is larger than %u; But not attempting recovery from Retransmission server because refresh is activated.",
                     m_ChannelID, m_TriggerRetransmissionSeqNoGap);
             }
           }
