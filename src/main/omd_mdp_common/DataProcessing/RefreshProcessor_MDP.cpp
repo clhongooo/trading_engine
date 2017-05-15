@@ -69,7 +69,7 @@ void RefreshProcessor_MDP::Run()
     }
 
     //--------------------------------------------------
-    // We will just keep checking the message circular buffer for the message MDP_REFRESH_COMPLETE.
+    // We will just keep checking the message circular buffer for the message MDP_CYCLE_COMPLETE.
     // We don't process / pop any message, yet.
     //--------------------------------------------------
     bool bDirtyFlag = false;
@@ -110,14 +110,14 @@ void RefreshProcessor_MDP::Run()
 
     {
       //--------------------------------------------------
-      // If not MDP_REFRESH_COMPLETE, keep saving to queue first
+      // If not MDP_CYCLE_COMPLETE, keep saving to queue first
       //--------------------------------------------------
       const MDP_Packet_Header * mph = (MDP_Packet_Header *) pbPkt;
-      if (mph->PktSeqNum != MDP_REFRESH_COMPLETE)
+      if (mph->PktSeqNum != MDP_CYCLE_COMPLETE)
       {
-        m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Not MDP_REFRESH_COMPLETE. m_LastCheckedAdjSeqNo: %u uiRFStartSeqNo: %u ulRFSize: %u uiLatestAdjSeqNo: %u usMsgSize: %u mph->PktSeqNum: %u mph->SendingTime: %s",
+        m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Not MDP_CYCLE_COMPLETE. m_LastCheckedAdjSeqNo: %u uiRFStartSeqNo: %u ulRFSize: %u uiLatestAdjSeqNo: %u usMsgSize: %u mph->PktSeqNum: %u mph->SendingTime: %s",
                         __FILENAME__, m_ChannelID, m_LastCheckedAdjSeqNo, uiRFStartSeqNo, ulRFSize, uiLatestAdjSeqNo, usMsgSize, mph->PktSeqNum, SDateTime::fromUnixTimeToString(mph->SendingTime, SDateTime::NANOSEC, SDateTime::GMT, SDateTime::GMT).c_str());
-        m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Not MDP_REFRESH_COMPLETE. Peeking inside...", __FILENAME__, m_ChannelID);
+        m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Not MDP_CYCLE_COMPLETE. Peeking inside...", __FILENAME__, m_ChannelID);
         m_DataProcFunc->PeekTemplateID(pbPkt, m_ChannelID, McastIdentifier::ToString(McastIdentifier::REFRESH), usMsgSize);
         m_LastCheckedAdjSeqNo++;
         continue;
@@ -125,19 +125,19 @@ void RefreshProcessor_MDP::Run()
     }
 
     //--------------------------------------------------
-    // If MDP_REFRESH_COMPLETE
+    // If MDP_CYCLE_COMPLETE
     //--------------------------------------------------
     VAL & uiAdjSeqNoOfRefCompl = m_LastCheckedAdjSeqNo; // just for easy reading
-    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Received MDP_REFRESH_COMPLETE. m_MsgCirBuf_RF->Size(): %u uiAdjSeqNoOfRefCompl: %u", __FILENAME__, m_ChannelID, m_MsgCirBuf_RF->Size(),  uiAdjSeqNoOfRefCompl);
+    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Received MDP_CYCLE_COMPLETE. m_MsgCirBuf_RF->Size(): %u uiAdjSeqNoOfRefCompl: %u", __FILENAME__, m_ChannelID, m_MsgCirBuf_RF->Size(),  uiAdjSeqNoOfRefCompl);
 
     //--------------------------------------------------
-    // Just to make sure packets before MDP_REFRESH_COMPLETE has all arrived.
+    // Just to make sure packets before MDP_CYCLE_COMPLETE has all arrived.
     //--------------------------------------------------
     boost::this_thread::sleep(boost::posix_time::seconds(1));
 
     if (!m_ShrObj->CheckRefreshActivatnStatus(m_ChannelID))
     {
-      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. MDP_REFRESH_COMPLETE received. Will purge this refresh batch since refresh mode is not activated.", __FILENAME__, m_ChannelID);
+      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. MDP_CYCLE_COMPLETE received. Will purge this refresh batch since refresh mode is not activated.", __FILENAME__, m_ChannelID);
 
       boost::this_thread::sleep(boost::posix_time::milliseconds(m_RefreshProcSleepMillisec));
       m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);

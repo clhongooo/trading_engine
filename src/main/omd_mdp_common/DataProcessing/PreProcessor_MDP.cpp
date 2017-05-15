@@ -3,12 +3,12 @@
 PreProcessor_MDP::PreProcessor_MDP(const McastIdentifier & m) : PreProcessor(m)
 {
   //--------------------------------------------------
-  // set MDP_REFRESH_COMPLETE
+  // set MDP_CYCLE_COMPLETE
   //--------------------------------------------------
   m_MDP_Refresh_Complete.reserve(sizeof(MDP_Packet_Header));
   m_MDP_Refresh_Complete.insert(m_MDP_Refresh_Complete.begin(), sizeof(MDP_Packet_Header), '\0');
   MDP_Packet_Header mph;
-  mph.PktSeqNum = mph.SendingTime = MDP_REFRESH_COMPLETE;
+  mph.PktSeqNum = mph.SendingTime = MDP_CYCLE_COMPLETE;
   memcpy(&m_MDP_Refresh_Complete[0],&mph,sizeof(MDP_Packet_Header));
 }
 
@@ -77,19 +77,20 @@ void PreProcessor_MDP::Run()
     const size_t uiPktSize = m_RawPktCirBuf->GetPktSize();
 
     //--------------------------------------------------
-    // Manually insert an MDP_REFRESH_COMPLETE message into the queue because unlike OMD, CME just cycles the packet sequence number.
+    // Manually insert an MDP_CYCLE_COMPLETE message into the queue because unlike OMD, CME just cycles the packet sequence number.
     //--------------------------------------------------
-    if (mph->PktSeqNum == 1 && m_McastIdentifier.McastType() == McastIdentifier::REFRESH)
+    if (mph->PktSeqNum == 1 &&
+        (m_McastIdentifier.McastType() == McastIdentifier::REFRESH || m_McastIdentifier.McastType() == McastIdentifier::INSTRUMENTREPLAY))
     {
       m_MsgCirBuf->GetLatestSeqNo(m_LocalLastAdjSeqNo);
-      m_Logger->Write(Logger::DEBUG,"%s: %s : %u %s Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size before %u",
+      m_Logger->Write(Logger::DEBUG,"%s: %s : %u %s Manually inserted MDP_CYCLE_COMPLETE. m_LocalLastAdjSeqNo: %u Size before %u",
                       __FILENAME__,
                       m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(),
                       m_McastIdentifier.ToString().c_str(),
                       m_LocalLastAdjSeqNo, m_MsgCirBuf->Size());
       m_LocalLastAdjSeqNo++;
       m_MsgCirBuf->PushMsg(&m_MDP_Refresh_Complete[0],m_LocalLastAdjSeqNo,ulTStamp,sizeof(MDP_Packet_Header));
-      m_Logger->Write(Logger::DEBUG,"%s: %s : %u %s Manually inserted MDP_REFRESH_COMPLETE. m_LocalLastAdjSeqNo: %u Size after %u",
+      m_Logger->Write(Logger::DEBUG,"%s: %s : %u %s Manually inserted MDP_CYCLE_COMPLETE. m_LocalLastAdjSeqNo: %u Size after %u",
                       __FILENAME__,
                       m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(),
                       m_McastIdentifier.ToString().c_str(),

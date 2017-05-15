@@ -45,23 +45,26 @@ void InstrumentReplayProcessor_MDP::Run()
     if (snsn == ALL_RETRIEVED)
     {
       m_MsgCirBuf_IR->WaitForData();
+      boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
       continue;
     }
     else if (snsn == SEQNO_MISSING)
     {
-      if (m_ShrObj->CheckCapTestStatus()) m_MsgCirBuf_IR->PopFront();
-      else                                m_MsgCirBuf_IR->WaitForData();
+      //--------------------------------------------------
+      // Just keep going without recovery
+      //--------------------------------------------------
+      m_MsgCirBuf_IR->PopFront();
       continue;
     }
     const BYTE *pbPkt = pbPktMut;
 
-    //--------------------------------------------------
-    // Output Debug info
-    //--------------------------------------------------
-    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. m_MsgCirBuf_IR.Size()          %u",          __FILENAME__, m_ChannelID, m_MsgCirBuf_IR->Size());
-    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. m_MsgCirBuf_IR.AllocatedSize() %u",          __FILENAME__, m_ChannelID, m_MsgCirBuf_IR->AllocatedSize());
-    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Pkt Seq No:                    %u",          __FILENAME__, m_ChannelID, uiPktSeqNo);
-    m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Local Timestamp of Pkt: %s", __FILENAME__, m_ChannelID, SDateTime::fromUnixTimeToString(ulTS,SDateTime::MILLISEC).c_str());
+    // //--------------------------------------------------
+    // // Output Debug info
+    // //--------------------------------------------------
+    // m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. m_MsgCirBuf_IR.Size()          %u",          __FILENAME__, m_ChannelID, m_MsgCirBuf_IR->Size());
+    // m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. m_MsgCirBuf_IR.AllocatedSize() %u",          __FILENAME__, m_ChannelID, m_MsgCirBuf_IR->AllocatedSize());
+    // m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Pkt Seq No:                    %u",          __FILENAME__, m_ChannelID, uiPktSeqNo);
+    // m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. Message Header: Local Timestamp of Pkt: %s", __FILENAME__, m_ChannelID, SDateTime::fromUnixTimeToString(ulTS,SDateTime::MILLISEC).c_str());
 
     //--------------------------------------------------
     m_DataProcFunc->HandleMDPRaw(pbPkt, m_ChannelID, McastIdentifier::ToString(McastIdentifier::INSTRUMENTREPLAY), usMsgSize, DataProcFunctions::DPF_DO_ACTUAL_PROCESSING);
