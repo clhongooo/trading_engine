@@ -1007,7 +1007,7 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
       if (m_MsgCirBuf_RT->GetLatestSeqNo(uiLatestAdjSeqNo)) oo << uiLatestAdjSeqNo; else oo << "Nil";
     }
 
-    m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
+    m_Logger->Write(Logger::INFO,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
   }
 
   OrderBook* ob = m_ShrObj->GetOrderBookCache()->GetOrderBook(msg.securityID());
