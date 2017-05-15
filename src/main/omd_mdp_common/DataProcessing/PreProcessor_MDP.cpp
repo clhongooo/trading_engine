@@ -102,7 +102,7 @@ void PreProcessor_MDP::Run()
     // we defer our message parsing to RealTimeProcessor.
     //--------------------------------------------------
     m_MsgCirBuf->PushMsg(pbPkt,m_LocalLastAdjSeqNo+mph->PktSeqNum,ulTStamp,uiPktSize);
-    m_Logger->Write(Logger::INFO,"%s: %s : %u %s m_LocalLastAdjSeqNo: %u mph->PktSeqNum: %u uiPktSize: %u",
+    m_Logger->Write(Logger::DEBUG,"%s: %s : %u %s m_LocalLastAdjSeqNo: %u mph->PktSeqNum: %u uiPktSize: %u",
                     __FILENAME__, m_McastIdentifier.IP().c_str(), m_McastIdentifier.Port(),
                     m_McastIdentifier.ToString().c_str(),
                     m_LocalLastAdjSeqNo, mph->PktSeqNum, uiPktSize);

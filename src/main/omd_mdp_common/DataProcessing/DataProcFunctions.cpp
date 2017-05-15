@@ -974,7 +974,7 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
   auto& ent = msg.noMDEntries();
 
-  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  if (m_Logger->NeedToPrint(Logger::DEBUG) || m_ShrObj->CheckRefreshActivatnStatus(channelID))
   {
     ostringstream oo;
     oo
