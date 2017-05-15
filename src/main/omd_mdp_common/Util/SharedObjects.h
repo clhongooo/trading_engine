@@ -14,6 +14,7 @@
 #include <boost/thread.hpp>
 #include <boost/utility.hpp>
 #include <boost/weak_ptr.hpp>
+#include <boost/lexical_cast.hpp>
 #include <cstring>
 #include <deque>
 #include <vector>

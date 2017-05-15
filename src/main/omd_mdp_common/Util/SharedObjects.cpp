@@ -647,7 +647,7 @@ string SharedObjects::GetSymbolFromInstrumentID(const unsigned long instrumentID
   boost::shared_lock<boost::shared_mutex> lock(m_InstrumentMapMutex);
 
   map<unsigned long, string>::iterator it = m_InstrumentMap.find(instrumentID);
-  if (it == m_InstrumentMap.end()) return "";
+  if (it == m_InstrumentMap.end()) return boost::lexical_cast<string>(instrumentID);
   else                             return it->second;
 }
 
