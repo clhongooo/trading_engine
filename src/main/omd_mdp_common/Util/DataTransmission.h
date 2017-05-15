@@ -28,8 +28,8 @@ class DataTransmission : boost::noncopyable
 
     void SubscribeInstrument(const string &);
     bool CheckIfSubscribed(unsigned long);
-    bool NotifyTrade(long, long, double, double);
-    bool NotifyOrderBookUpdate(long, ATU_MDI_marketfeed_struct &);
+    void NotifyTrade(const string &, const double, const double);
+    void NotifyOrderBookUpdate(const string &, const ATU_MDI_marketfeed_struct &);
 
   private:
     //--------------------------------------------------
@@ -43,12 +43,6 @@ class DataTransmission : boost::noncopyable
     //--------------------------------------------------
     boost::shared_ptr<Logger>        m_Logger;
     boost::shared_ptr<SharedObjects> m_ShrObj;
-
-    //--------------------------------------------------
-    // omd_mdi
-    //--------------------------------------------------
-    OMD_Trade_CallBackFunc     * m_omd_trade_call_back_func;
-    OMD_OrderBook_CallBackFunc * m_omd_orderbook_call_back_func;
 
     set<unsigned long>           m_omd_mdi_subscribed_instrument;
     boost::shared_mutex          m_omd_mdi_subscription_Mutex;

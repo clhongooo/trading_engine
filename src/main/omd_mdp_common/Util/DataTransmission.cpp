@@ -17,19 +17,13 @@ DataTransmission::DataTransmission()
   m_ShrObj = SharedObjects::Instance();
 }
 
-bool DataTransmission::NotifyTrade(long tradeid, long code, double price, double qty)
+void DataTransmission::NotifyTrade(const string & symbol, const double price, const double qty)
 {
-  if (m_omd_trade_call_back_func!=NULL) {
-    (*m_omd_trade_call_back_func)(tradeid,code,price,qty);
-  }
-  return true;
+  m_Logger->Write(Logger::INFO,"%s: NotifyTrade: %s Price %f Qty %f",__FILENAME__, symbol.c_str(), price, qty);
 }
-bool DataTransmission::NotifyOrderBookUpdate(long tradeid, ATU_MDI_marketfeed_struct &s)
+void DataTransmission::NotifyOrderBookUpdate(const string & symbol, const ATU_MDI_marketfeed_struct &s)
 {
-  if (m_omd_orderbook_call_back_func!=NULL) {
-    (*m_omd_orderbook_call_back_func)(tradeid,s);
-  }
-  return true;
+  m_Logger->Write(Logger::INFO,"%s: NotifyOrderBookUpdate: %s %s",__FILENAME__, symbol.c_str(), ATU_MDI_marketfeed_struct::ToString(s).c_str());
 }
 void DataTransmission::SubscribeInstrument(const string &sFeedCode)
 {
