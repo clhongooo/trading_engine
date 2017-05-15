@@ -196,7 +196,7 @@ void RefreshProcessor_MDP::Run()
     const uint32_t uiMinLastMsgSeqNumProc = FMin(sLastMsgSeqNumProc);
     uint32_t dummy = 0;
     const uint32_t uiRTMsgCirBufStartSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
-    if (uiRTMsgCirBufStartSeqNo > uiMinLastMsgSeqNumProc)
+    if (uiRTMsgCirBufStartSeqNo > uiMinLastMsgSeqNumProc + 1)
     {
       m_Logger->Write(Logger::INFO,"%s: ChannelID:%u. uiRTMsgCirBufStartSeqNo %u is larger than uiMinLastMsgSeqNumProc %u. Wait for next refresh batch.",
                       __FILENAME__, m_ChannelID, uiRTMsgCirBufStartSeqNo, uiMinLastMsgSeqNumProc);
