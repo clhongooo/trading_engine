@@ -52,7 +52,7 @@ void CtpMd::ReadConfig(const string & sConfigPath)
 void CtpMd::setDataFolder(const string & df)
 {
   m_DataFolder = df;
-  m_BinaryRecorder.SetOutFilePath(m_DataFolder+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS()+".csv","w+");
+  m_BinaryRecorder.SetOutFilePath(m_DataFolder+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_ffffff()+".csv","w+");
 }
 void CtpMd::setWriteDataToFile(const string & wdtf)
 {
