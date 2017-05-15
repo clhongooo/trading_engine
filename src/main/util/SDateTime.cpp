@@ -1079,7 +1079,7 @@ string SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_000000()
 }
 
 
-string SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS()
+string SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_ffffff()
 {
   struct timeval tp;
   gettimeofday(&tp, NULL);
@@ -1160,13 +1160,25 @@ YYYYMMDDHHMMSS SDateTime::ChangeTimeZone(const YYYYMMDDHHMMSS & ymdhmsFrom, cons
 
 unsigned long SDateTime::GetCurrentUnixTimeInMillisecGMT()
 {
-  struct timeval tp;
-  gettimeofday(&tp, NULL);
-  return tp.tv_sec * 1000 + tp.tv_usec / 1000;
+  return GetCurrentUnixTimeInMicrosecGMT(TIMEZONE::GMT) / 1000;
+}
+unsigned long SDateTime::GetCurrentUnixTimeInMillisecGMT(const TIMEZONE tz)
+{
+  return GetCurrentUnixTimeInMicrosecGMT(tz) / 1000;
 }
 unsigned long SDateTime::GetCurrentUnixTimeInMicrosecGMT()
 {
+  return GetCurrentUnixTimeInMicrosecGMT(TIMEZONE::GMT);
+}
+unsigned long SDateTime::GetCurrentUnixTimeInMicrosecGMT(const TIMEZONE tz)
+{
   struct timeval tp;
   gettimeofday(&tp, NULL);
-  return tp.tv_sec * 1000000 + tp.tv_usec;
+  long lExtraOffsetSec = 0;
+  switch(tz)
+  {
+    case HKT: { lExtraOffsetSec = 8*60*60; break; }
+    default:  {                            break; }
+  }
+  return (tp.tv_sec + lExtraOffsetSec) * 1000000 + tp.tv_usec;
 }

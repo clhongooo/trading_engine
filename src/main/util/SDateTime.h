@@ -109,9 +109,11 @@ class SDateTime
     static unsigned long                               fromStringToUnixTime(const string &,      TIMEPRECISION                    );
     static string fromGeniumDateToString(unsigned int);
     static string GetCurrentTimeYYYYMMDD_HHMMSS_000000();
-    static string GetCurrentTimeYYYYMMDD_HHMMSS();
+    static string GetCurrentTimeYYYYMMDD_HHMMSS_ffffff();
     static unsigned long GetCurrentUnixTimeInMillisecGMT();
+    static unsigned long GetCurrentUnixTimeInMillisecGMT(const TIMEZONE);
     static unsigned long GetCurrentUnixTimeInMicrosecGMT();
+    static unsigned long GetCurrentUnixTimeInMicrosecGMT(const TIMEZONE);
 
     template <class T1, class T2>
       static bool FromCashTSToYMDHMS(const string & ts, T1 & yyyymmdd, T2 & hhmmss)
