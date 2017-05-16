@@ -189,7 +189,7 @@ void RefreshProcessor_MDP::Run()
       for (int i = 0; i < vLastMsgSeqNumProcTmp.size(); ++i) sLastMsgSeqNumProc.insert(vLastMsgSeqNumProcTmp[i]);
     });
 
-    FForEach(sLastMsgSeqNumProc,[&](const uint32_t iLastSeqNo) { m_Logger->Write(Logger::INFO,"%s: ChannelID:%u. LastMsgSeqNumProcessed: %u", __FILENAME__, m_ChannelID, iLastSeqNo); });
+    FForEach(sLastMsgSeqNumProc,[&](const uint32_t iLastSeqNo) { m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. LastMsgSeqNumProcessed: %u", __FILENAME__, m_ChannelID, iLastSeqNo); });
     //--------------------------------------------------
     // Some checkings to make sure the messages are present in m_MsgCirBuf_RT and m_MsgCirBuf_RF
     //--------------------------------------------------
