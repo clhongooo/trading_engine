@@ -472,6 +472,12 @@ void DataProcFunctions_MDP::OnHeartBeat(const unsigned short channelID, const st
 
 void DataProcFunctions_MDP::OnRefreshVolume(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
+  //--------------------------------------------------
+  // Skip processing
+  //--------------------------------------------------
+  return;
+  //--------------------------------------------------
+
   if (m_Logger->NeedToPrint(Logger::DEBUG))
   {
     MDIncrementalRefreshVolume37 msg;
@@ -596,6 +602,11 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
 
 void DataProcFunctions_MDP::OnInstrumentDefinitionOption(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
+  //--------------------------------------------------
+  // Skip processing
+  //--------------------------------------------------
+  return;
+  //--------------------------------------------------
   MDInstrumentDefinitionOption41 msg;
 }
 
@@ -689,6 +700,12 @@ void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID
 
 void DataProcFunctions_MDP::OnRefreshDailyStatistics(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
+  //--------------------------------------------------
+  // Skip processing
+  //--------------------------------------------------
+  return;
+  //--------------------------------------------------
+
   if (m_Logger->NeedToPrint(Logger::DEBUG))
   {
     MDIncrementalRefreshDailyStatistics33 msg;
@@ -729,6 +746,12 @@ void DataProcFunctions_MDP::OnRefreshDailyStatistics(const unsigned short channe
 
 void DataProcFunctions_MDP::OnRefreshSessionStatistics(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
+  //--------------------------------------------------
+  // Skip processing
+  //--------------------------------------------------
+  return;
+  //--------------------------------------------------
+
   if (m_Logger->NeedToPrint(Logger::DEBUG))
   {
     MDIncrementalRefreshSessionStatistics35 msg;
@@ -757,6 +780,12 @@ void DataProcFunctions_MDP::OnRefreshSessionStatistics(const unsigned short chan
 
 void DataProcFunctions_MDP::OnRefreshLimitsBanding(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
+  //--------------------------------------------------
+  // Skip processing
+  //--------------------------------------------------
+  return;
+  //--------------------------------------------------
+
   if (m_Logger->NeedToPrint(Logger::DEBUG))
   {
     MDIncrementalRefreshLimitsBanding34 msg;
@@ -862,6 +891,12 @@ void DataProcFunctions_MDP::OnRefreshSecurityDefinitionSpread(const unsigned sho
 
 void DataProcFunctions_MDP::OnQuoteRequest(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
+  //--------------------------------------------------
+  // Skip processing
+  //--------------------------------------------------
+  return;
+  //--------------------------------------------------
+
   if (m_Logger->NeedToPrint(Logger::DEBUG))
   {
     QuoteRequest39 msg;
@@ -886,6 +921,12 @@ void DataProcFunctions_MDP::OnQuoteRequest(const unsigned short channelID, const
 
 void DataProcFunctions_MDP::OnSecurityStatus(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
+  //--------------------------------------------------
+  // Skip processing
+  //--------------------------------------------------
+  return;
+  //--------------------------------------------------
+
   SecurityStatus30 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
   auto security_status = msg.securityTradingStatus();
