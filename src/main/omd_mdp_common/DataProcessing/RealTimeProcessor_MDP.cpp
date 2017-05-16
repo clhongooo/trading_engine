@@ -60,9 +60,9 @@ void RealTimeProcessor_MDP::Run()
     }
     else if (snsn == SEQNO_MISSING)
     {
-      if      (m_ShrObj->CheckCapTestStatus())                                       m_MsgCirBuf->PopFront();
-      else if (m_SysCfg->GetProcessingMode(dma::PM_FAST) && m_MsgCirBuf->Size() > 5) m_MsgCirBuf->PopFront();
-      else                                                                           m_MsgCirBuf->WaitForData();
+      if      (m_ShrObj->CheckCapTestStatus())                                           m_MsgCirBuf->PopFront();
+      else if (m_SysCfg->GetProcessingMode() == dma::PM_FAST && m_MsgCirBuf->Size() > 5) m_MsgCirBuf->PopFront();
+      else                                                                               m_MsgCirBuf->WaitForData();
       continue;
     }
     const BYTE *pbPkt = pbPktMut;

@@ -363,7 +363,7 @@ void SharedObjects::ActivateRefresh(unsigned short usChnl)
 void SharedObjects::DeactivateRefresh(unsigned short usChnl)
 {
   boost::unique_lock<boost::shared_mutex> lock(*(m_RefreshActnMutex[usChnl]));
-  m_RefreshActivated[usChnl] = -abs(m_RefreshActivated[usChnl];
+  m_RefreshActivated[usChnl] = -abs(m_RefreshActivated[usChnl]);
   return;
 }
 

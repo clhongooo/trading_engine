@@ -128,7 +128,7 @@ void DataCompletenessInspector::Run()
     uint32_t uiStartAdjSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
 
     if (m_SysCfg->GetProcessingMode() == dma::PM_FAST &&
-        m_ShrObj->CheckRefreshActivatnStatusCount() > 1) continue;
+        m_ShrObj->CheckRefreshActivatnStatusCount(m_ChannelID) > 1) continue;
 
     if
       (!m_MsgCirBuf_RT->GetLatestSeqNo(uiLatestAdjSeqNo)               ||
