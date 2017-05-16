@@ -1004,7 +1004,11 @@ void DataProcFunctions_MDP::OnChannelReset(const unsigned short channelID, const
 
     vector<string> vsOBID = FMap(vOBID, std::function<string(const unsigned long&)>([](const unsigned long& i) { return boost::lexical_cast<string>(i); }));
     const string sOBIDs = boost::algorithm::join(vsOBID, ",");
-    m_Logger->Write(Logger::INFO,"DataProcFunctions_MDP: ChannelID:%u. %s Resetting OrderBooks upon reception of MDP_CHANNEL_RESET: %s", channelID, sMcastType.c_str(), sOBIDs.c_str());
+    m_Logger->Write(Logger::NOTICE,"DataProcFunctions_MDP: ChannelID:%u. %s Resetting OrderBooks upon reception of MDP_CHANNEL_RESET: %s", channelID, sMcastType.c_str(), sOBIDs.c_str());
+
+    //--------------------------------------------------
+    m_ShrObj->ResetRefreshActivatnStatusCount(channelID);
+    m_Logger->Write(Logger::NOTICE,"DataProcFunctions_MDP: ChannelID:%u. %s Resetting refresh activation status count.", channelID, sMcastType.c_str());
   }
 
 }
@@ -1055,7 +1059,7 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
   {
     ent.next();
 
-    if (m_Logger->NeedToPrint(Logger::DEBUG))
+    if (m_Logger->NeedToPrint(Logger::DEBUG) || m_ShrObj->CheckRefreshActivatnStatus(channelID))
     {
       ostringstream oo;
       oo
