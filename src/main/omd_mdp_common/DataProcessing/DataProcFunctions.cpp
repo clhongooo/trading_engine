@@ -990,8 +990,6 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
       << " LowLimit: " << PrintCMEPriceNull((int64_t)(msg.lowLimitPrice().mantissa()))
       << " MaxPriceVariation: " << PrintCMEPriceNull((int64_t)(msg.maxPriceVariation().mantissa()));
 
-
-    if (pf == DPF_PRINT_ONLY)
     {
       ExpandableCirBuffer4Msg * m_MsgCirBuf_RT = m_ShrObj->GetMsgCirBufPtr(McastIdentifier::REALTIME, channelID);
 

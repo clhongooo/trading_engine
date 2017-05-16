@@ -137,7 +137,7 @@ void RefreshProcessor_MDP::Run()
 
     if (!m_ShrObj->CheckRefreshActivatnStatus(m_ChannelID))
     {
-      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. MDP_CYCLE_COMPLETE received. Will purge this refresh batch since refresh mode is not activated.", __FILENAME__, m_ChannelID);
+      m_Logger->Write(Logger::DEBUG,"%s: ChannelID:%u. MDP_CYCLE_COMPLETE received. Will purge this refresh batch since refresh mode is not activated.", __FILENAME__, m_ChannelID);
 
       boost::this_thread::sleep(boost::posix_time::milliseconds(m_RefreshProcSleepMillisec));
       m_MsgCirBuf_RF->PurgeMsgB4SeqNoInclusive(uiAdjSeqNoOfRefCompl);
