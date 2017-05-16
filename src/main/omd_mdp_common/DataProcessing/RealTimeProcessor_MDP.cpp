@@ -41,7 +41,7 @@ void RealTimeProcessor_MDP::Run()
     if (!m_ShrObj->CheckCapTestStatus() && m_ShrObj->CheckRefreshActivatnStatus(m_ChannelID))
     {
       boost::this_thread::sleep(boost::posix_time::seconds(1)); // force sleep 1 sleep
-      m_Logger->Write(Logger::NOTICE,"%s: ChannelID:%u. Refresh mode is on. RealTimeProcessor will halt processing until refresh is done.", __FILENAME__, m_ChannelID);
+      m_Logger->Write(Logger::INFO,"%s: ChannelID:%u. Refresh mode is on. RealTimeProcessor will halt processing until refresh is done.", __FILENAME__, m_ChannelID);
       continue;
     }
 

@@ -81,6 +81,7 @@ class SharedObjects
     void             DeactivateRefresh(unsigned short);
     bool             CheckRefreshActivatnStatus(unsigned short);
     unsigned short   CheckRefreshActivatnStatusCount(unsigned short);
+    void             ResetRefreshActivatnStatusCount(unsigned short);
 
     //--------------------------------------------------
     // OMD Readiness Test: Session 4: Capacity test

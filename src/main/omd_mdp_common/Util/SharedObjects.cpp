@@ -379,6 +379,12 @@ unsigned short SharedObjects::CheckRefreshActivatnStatusCount(unsigned short usC
   return abs(m_RefreshActivated[usChnl]);
 }
 
+void SharedObjects::ResetRefreshActivatnStatusCount(unsigned short usChnl)
+{
+  boost::unique_lock<boost::shared_mutex> lock(*(m_RefreshActnMutex[usChnl]));
+  m_RefreshActivated[usChnl] = 0;
+}
+
 
 //--------------------------------------------------
 // OMD Readiness Test: Session 4: Capacity test
