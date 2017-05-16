@@ -153,7 +153,7 @@ class SharedObjects
     // Refresh Activation
     // The nature is just bool, == 0 or > 0, but to facilitate counting the number of times refresh is activated during unit testing, used unsigned short rather than bool
     //--------------------------------------------------
-    vector<unsigned short>                 m_bRefreshActivated;
+    vector<int>                            m_RefreshActivated;
     vector<boost::shared_mutex*>           m_RefreshActnMutex;
 
     //--------------------------------------------------

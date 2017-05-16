@@ -68,8 +68,8 @@ void SharedObjects::ResetObjectsPurgeRawCirBuf()
     if (m_OrderBookIDInEachChnl[i])
       m_OrderBookIDInEachChnl[i]->clear();
   }
-  for (unsigned int i = 0; i < m_bRefreshActivated.size(); ++i)
-    m_bRefreshActivated[i] = 0; // this is not immediately after system start, no need to turn on refresh mode.
+  for (unsigned int i = 0; i < m_RefreshActivated.size(); ++i)
+    m_RefreshActivated[i] = 0; // this is not immediately after system start, no need to turn on refresh mode.
 
   m_bCapTest = false;
   m_NumOfRTSConn = 0;
@@ -192,7 +192,7 @@ void SharedObjects::InitializeSharedObjects(bool bFirstUse)
     {
       m_RawPktCirBuf.push_back(boost::shared_ptr<ExpandableCirBuffer>());
       m_MsgCirBuf.push_back(boost::shared_ptr<ExpandableCirBuffer4Msg>());
-      m_bRefreshActivated.push_back(1); // initialize to 1 meaning refresh mode is on on system start
+      m_RefreshActivated.push_back(1); // initialize to 1 meaning refresh mode is on on system start
       m_RefreshActnMutex.push_back(NULL);
       m_RTSeqResetOffset.push_back(NULL);
       m_RTSeqResetOffsetMutex.push_back(NULL);
@@ -356,27 +356,27 @@ void SharedObjects::ResetCountNumOfRTSConn()
 void SharedObjects::ActivateRefresh(unsigned short usChnl)
 {
   boost::unique_lock<boost::shared_mutex> lock(*(m_RefreshActnMutex[usChnl]));
-  m_bRefreshActivated[usChnl] += 1;
+  m_RefreshActivated[usChnl] = abs(m_RefreshActivated[usChnl]) + 1;
   return;
 }
 
 void SharedObjects::DeactivateRefresh(unsigned short usChnl)
 {
   boost::unique_lock<boost::shared_mutex> lock(*(m_RefreshActnMutex[usChnl]));
-  m_bRefreshActivated[usChnl] = 0;
+  m_RefreshActivated[usChnl] = -abs(m_RefreshActivated[usChnl];
   return;
 }
 
 bool SharedObjects::CheckRefreshActivatnStatus(unsigned short usChnl)
 {
   boost::shared_lock<boost::shared_mutex> lock(*(m_RefreshActnMutex[usChnl]));
-  return (m_bRefreshActivated[usChnl] > 0 ? true : false);
+  return (m_RefreshActivated[usChnl] > 0 ? true : false);
 }
 
 unsigned short SharedObjects::CheckRefreshActivatnStatusCount(unsigned short usChnl)
 {
   boost::shared_lock<boost::shared_mutex> lock(*(m_RefreshActnMutex[usChnl]));
-  return m_bRefreshActivated[usChnl];
+  return abs(m_RefreshActivated[usChnl]);
 }
 
 
