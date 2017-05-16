@@ -127,6 +127,9 @@ void DataCompletenessInspector::Run()
     uint32_t uiLatestAdjSeqNo = 0;
     uint32_t uiStartAdjSeqNo = m_MsgCirBuf_RT->GetStartSeqNo();
 
+    if (m_SysCfg->GetProcessingMode() == dma::PM_FAST &&
+        m_ShrObj->CheckRefreshActivatnStatusCount() > 1) continue;
+
     if
       (!m_MsgCirBuf_RT->GetLatestSeqNo(uiLatestAdjSeqNo)               ||
        !m_MsgCirBuf_RT->GetSmallestMissingSeqNo(uiSmlMissingAdjSeqNo)  ||
@@ -168,11 +171,11 @@ void DataCompletenessInspector::Run()
               m_ShrObj->ActivateRefresh(m_ChannelID);
               // must print log
               m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Start Seq No (adj): %u, Latest Seq No (adj): %u, Smallest Missing Seq No (adj): %u (TStamp=%s), Largest Missing Seq No (adj): %u",
-                  m_ChannelID,
-                  uiStartAdjSeqNo,
-                  uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
-                  SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::NANOSEC, SDateTime::HKT, SDateTime::HKT).c_str(),
-                  uiLrgtMissingAdjSeqNo);
+                              m_ChannelID,
+                              uiStartAdjSeqNo,
+                              uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
+                              SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::NANOSEC, SDateTime::HKT, SDateTime::HKT).c_str(),
+                              uiLrgtMissingAdjSeqNo);
               m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap in RT is larger than %u; Refresh mode is now activated.", m_ChannelID, m_TriggerRefreshSeqNoGap);
             }
             else
@@ -181,11 +184,11 @@ void DataCompletenessInspector::Run()
               {
                 m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap in RT is larger than %u; Refresh mode is already activated.", m_ChannelID, m_TriggerRefreshSeqNoGap);
                 m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Start Seq No (adj): %u, Latest Seq No (adj): %u, Smallest Missing Seq No (adj): %u (TStamp=%s), Largest Missing Seq No (adj): %u",
-                    m_ChannelID,
-                    uiStartAdjSeqNo,
-                    uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
-                    SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::NANOSEC, SDateTime::HKT, SDateTime::HKT).c_str(),
-                    uiLrgtMissingAdjSeqNo);
+                                m_ChannelID,
+                                uiStartAdjSeqNo,
+                                uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
+                                SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::NANOSEC, SDateTime::HKT, SDateTime::HKT).c_str(),
+                                uiLrgtMissingAdjSeqNo);
               }
             }
           }
@@ -196,24 +199,24 @@ void DataCompletenessInspector::Run()
             //--------------------------------------------------
             if (bCanPrintRTSLog)
               m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Start Seq No (adj): %u, Latest Seq No (adj): %u, Smallest Missing Seq No (adj): %u (TStamp=%s), Largest Missing Seq No (adj): %u",
-                  m_ChannelID,
-                  uiStartAdjSeqNo,
-                  uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
-                  SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::MILLISEC, SDateTime::HKT, SDateTime::HKT).c_str(),
-                  uiLrgtMissingAdjSeqNo);
+                              m_ChannelID,
+                              uiStartAdjSeqNo,
+                              uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
+                              SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::MILLISEC, SDateTime::HKT, SDateTime::HKT).c_str(),
+                              uiLrgtMissingAdjSeqNo);
 
             if (!m_ShrObj->CheckRefreshActivatnStatus(m_ChannelID))
             {
               NotifyRTSClient(uiSmlMissingAdjSeqNo,uiLrgtMissingAdjSeqNo,uiLatestAdjSeqNo,bCanPrintRTSLog);
               if (bCanPrintRTSLog)
                 m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap in RT is larger than %u; Attempting recovery from Retransmission server.",
-                    m_ChannelID, m_TriggerRetransmissionSeqNoGap);
+                                m_ChannelID, m_TriggerRetransmissionSeqNoGap);
             }
             else
             {
               if (bCanPrintRTSLog)
                 m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Seq no gap in RT is larger than %u; But not attempting recovery from Retransmission server because refresh is activated.",
-                    m_ChannelID, m_TriggerRetransmissionSeqNoGap);
+                                m_ChannelID, m_TriggerRetransmissionSeqNoGap);
             }
           }
 
@@ -230,26 +233,26 @@ void DataCompletenessInspector::Run()
               m_ShrObj->ActivateRefresh(m_ChannelID);
               // must print log
               m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Time gap is larger than %u ms; Refresh mode is now activated.",
-                  m_ChannelID, m_TriggerRefreshTimeGapMillisec);
+                              m_ChannelID, m_TriggerRefreshTimeGapMillisec);
               m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u, Start Seq No (adj): %u, Latest Seq No (adj): %u, Smallest Missing Seq No (adj): %u (TStamp=%s), Largest Missing Seq No (adj): %u",
-                  m_ChannelID,
-                  uiStartAdjSeqNo,
-                  uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
-                  SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::MILLISEC, SDateTime::HKT, SDateTime::HKT).c_str(),
-                  uiLrgtMissingAdjSeqNo);
+                              m_ChannelID,
+                              uiStartAdjSeqNo,
+                              uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
+                              SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::MILLISEC, SDateTime::HKT, SDateTime::HKT).c_str(),
+                              uiLrgtMissingAdjSeqNo);
             }
             else
             {
               if (bCanPrintRTSLog)
               {
                 m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Time gap is larger than %u ms; Refresh mode is already activated.",
-                    m_ChannelID, m_TriggerRefreshTimeGapMillisec);
+                                m_ChannelID, m_TriggerRefreshTimeGapMillisec);
                 m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u, Start Seq No (adj): %u, Latest Seq No (adj): %u, Smallest Missing Seq No (adj): %u (TStamp=%s), Largest Missing Seq No (adj): %u",
-                    m_ChannelID,
-                    uiStartAdjSeqNo,
-                    uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
-                    SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::MILLISEC, SDateTime::HKT, SDateTime::HKT).c_str(),
-                    uiLrgtMissingAdjSeqNo);
+                                m_ChannelID,
+                                uiStartAdjSeqNo,
+                                uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
+                                SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::MILLISEC, SDateTime::HKT, SDateTime::HKT).c_str(),
+                                uiLrgtMissingAdjSeqNo);
               }
             }
 
@@ -261,24 +264,24 @@ void DataCompletenessInspector::Run()
             //--------------------------------------------------
             if (bCanPrintRTSLog)
               m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Start Seq No (adj): %u, Latest Seq No (adj): %u, Smallest Missing Seq No (adj): %u (TStamp=%s), Largest Missing Seq No (adj): %u",
-                  m_ChannelID,
-                  uiStartAdjSeqNo,
-                  uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
-                  SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::MILLISEC, SDateTime::HKT, SDateTime::HKT).c_str(),
-                  uiLrgtMissingAdjSeqNo);
+                              m_ChannelID,
+                              uiStartAdjSeqNo,
+                              uiLatestAdjSeqNo, uiSmlMissingAdjSeqNo,
+                              SDateTime::fromUnixTimeToString(uiTStamp, SDateTime::MILLISEC, SDateTime::HKT, SDateTime::HKT).c_str(),
+                              uiLrgtMissingAdjSeqNo);
 
             if (!m_ShrObj->CheckRefreshActivatnStatus(m_ChannelID))
             {
               NotifyRTSClient(uiSmlMissingAdjSeqNo,uiLrgtMissingAdjSeqNo,uiLatestAdjSeqNo,bCanPrintRTSLog);
               if (bCanPrintRTSLog)
                 m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Time gap is larger than %u ms; Attempting recovery from Retransmission server.",
-                    m_ChannelID, m_TriggerRetransmissionTimeGapMillisec);
+                                m_ChannelID, m_TriggerRetransmissionTimeGapMillisec);
             }
             else
             {
               if (bCanPrintRTSLog)
                 m_Logger->Write(Logger::NOTICE, "DataCompletenessInspector: ChannelID:%u. Time gap is larger than %u ms; But not attempting recovery from Retransmission server because refresh is activated.",
-                    m_ChannelID, m_TriggerRetransmissionTimeGapMillisec);
+                                m_ChannelID, m_TriggerRetransmissionTimeGapMillisec);
             }
           }
         }
