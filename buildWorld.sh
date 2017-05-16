@@ -5,6 +5,8 @@ TARGET_FOLDER=target
 BIN_FOLDER=bin
 BUILD_MODE=DEBUG
 
+[[ -n $(which ctags) ]] && ctags -R .
+
 if [[ $@ == *"c"* && -d $TARGET_FOLDER ]]
 then
     rm -rf $TARGET_FOLDER
