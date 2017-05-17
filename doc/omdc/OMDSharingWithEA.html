@@ -1,0 +1,86 @@
+<h1>Major System Components</h1>
+
+<ul>
+<li>Multicast Receiver</li>
+<li>Data Completeness Inspector</li>
+<li>RTS Client</li>
+<li>PreProcessor</li>
+<li>Real Time Channel Processor</li>
+<li>Refresh Channel Processor</li>
+</ul>
+
+<h1>Program Flow</h1>
+
+<p>For each channel, there are 2 multicast streams for real-time and 2 for refresh altogether 4 streams,
+Each stream is handled by 1 Multicast Receiver, and 1 PreProcessor.
+Each channel is handled by 1 RealTimeProcessor and 1 RefreshProcessor</p>
+
+<p>E.g. Channel 10</p>
+
+<pre><code>RealTime A  -  McastReceiver  -  PreProcessor  -
+                                                |- RealTime Processor
+RealTime B  -  McastReceiver  -  PreProcessor  -
+
+Refresh  A  -  McastReceiver  -  PreProcessor  -
+                                                |- Refresh Processor
+Refresh  B  -  McastReceiver  -  PreProcessor  -
+</code></pre>
+
+<h2>McastReceiver</h2>
+
+<ul>
+<li>Simply stores received data into circular buffers as is.</li>
+</ul>
+
+<h2>PreProcessor</h2>
+
+<ul>
+<li>Optionally records binary data or parses data into JSON format.</li>
+<li>Handles sequence reset</li>
+<li>Breaks packets down to messages and inserts them into another circular buffer according to their sequence number.</li>
+</ul>
+
+<h2>Line Arbitration</h2>
+
+<ul>
+<li>Performed automatically when messages are inserted into the circle buffer by PreProcessor.</li>
+<li>Dirty flag exists in circle buffer to indicate if a particular sequence no is already present, in which case the message won't be memcpy'd for the second time.</li>
+</ul>
+
+<h2>Data Completeness Inspector</h2>
+
+<ul>
+<li>Continuously monitor circular buffers to determine if recovery options are needed.</li>
+<li>When determined necessary, triggers retransmission client or switch a channel into refresh mode.</li>
+<li>Recovery can be triggered by sequence number gap or inactive time gap.</li>
+</ul>
+
+<h2>Refresh</h2>
+
+<ul>
+<li>To minimize the time needed to finish refresh, the data in refresh channels are continuously listened to and buffered up</li>
+<li>And the buffered data is purged if the "Refresh Complete" message is received and refresh mode isn't triggered.</li>
+<li>The buffered data will be processed when "Refresh Complete" message is received and refresh mode is triggered.</li>
+<li>There are several cases where the system has to wait for the next refresh batch
+<ol>
+<li>There isn't enough data in the real time channel to continue from the specified LastSeqNum in the "Refresh Complete" message.</li>
+<li>There is missing sequence number in that particular refresh batch.</li>
+</ol></li>
+<li>Real time channel processing is paused until the whole refresh process is completed.</li>
+</ul>
+
+<h2>Circular buffer</h2>
+
+<ul>
+<li>Memory is reused as much as possible to avoid the time spent on memory allocation.</li>
+<li>Multicast data is directly written into circular buffers; To save copying time, memcpy is only used when absolutely necessary.</li>
+</ul>
+
+<h1>Other Features</h1>
+
+<ul>
+<li>Can turn on / off the recording of raw binary data at each component.</li>
+<li>Can turn on / off the outputing of parsed data as JSON at each component.</li>
+<li>Log is written using the Pantheios library.</li>
+<li>Can issue manual commands (e.g. To force refresh to be performed) into the system by telnet'ing the port 8000.</li>
+</ul>

@@ -1,0 +1,68 @@
+From: IVSupport [mailto:IVSupport@hkex.com.hk] 
+Sent: Tuesday, December 03, 2013 7:41 PM
+To: 'hkex.hosting@cash.com.hk'; 'daniel.ho@cash.com.hk'
+Cc: Majone Cheng; Branson Ngai; Howard Lee; Winky Yan; Tracy Koo; dennis.chan@cash.com.hk; IVSupport; BSS Support; AMS3INFO
+Subject: Configuration Setting for connection to OMD-C Readiness Test (OMD-C RT) &/ OMD-C End-to-End Test (OMD-C E2E) for OCG Batch 1 EPs - Celestial Securities Limited
+
+To        :      Celestial Securities Limited
+Attn     :      OCG Co-ordinator
+Cc        :      Primary and Technical Issues Contacts of Securities Market Data Vendor
+Date     :      3 December 2013
+
+Re       :      Configuration Setting for connection to OMD-C Readiness Test (OMD-C RT) & OMD-C End-to-End Test (OMD-C E2E) for OCG Batch 1 EPs
+
+Following your submission of “Information Sheet for Application of Testing Line” to HKEx, enclosed please find your firm’s configuration settings for connection to OMD-C RT and OMD-C E2E Testing environment.  Please apply the configuration settings as specified in the attached information sheet(s) to make connection to the test environment(s) upon the readiness of your HSTN or SDNet/2 circuit.   
+
+Enclosed please also find the OMD-C Readiness Test Procedure, OMD-C Test Session Schedule and Rundown for OCG Batch 1 EPs.
+
+Recapped here below are the URLs of some useful documents for OMD-C on-boarding activities for your easy reference.
+
+OMD Connectivity Guide
+http://www.hkex.com.hk/eng/prod/dataprod/omd/implementation/Documents/OMD_Connectivity_Guide_Securities%20Market%20%20Index%20datafeed%20(v1_3).pdf
+
+OMD Readiness Test Answer Book
+http://www.hkex.com.hk/eng/prod/dataprod/omd/implementation/Documents/Phase%201a%20Readiness%20Test%20Answer%20Book%20(Version%201%203).docx
+
+OMD Practice Session Answer Book
+http://www.hkex.com.hk/eng/prod/dataprod/omd/Documents/Phase%201a%20Practice%20Session%20Answer%20Book%20(Version%201.4).pdf
+
+Should you have any questions in related to OMD-C, please feel free to contact Vendor Support Hotline at (852) 2211 6558, email IVSupport@hkex.com.hk.
+
+For any enquiry related to OCG, please email to OrionCentralGateway@hkex.com.hk
+
+Thanks & Regards,
+
+Vendor Support & Data Management, Market Data,
+Global Markets Division,
+Hong Kong Exchanges and Clearing Limited
+
+
+------------------------------------------- 
+From: AMS3INFO 
+Sent: Thursday, November 28, 2013 7:22:28 PM 
+To: 'hkex.hosting@cash.com.hk'; 'daniel.ho@cash.com.hk' 
+Cc: IVSupport 
+Subject: Configuration Setting for connection to OCG End-to-End Testing Environment 
+Auto forwarded by a Rule
+
+To        :      Celestial Securities Limited
+Attn     :      OCG Co-ordinator
+Date     :      28 November 2013
+
+Re       :      Configuration Setting for connection to OCG End-to-End Testing Environment
+
+Following your submission of “Information Sheet for Application of Testing Line” to HKEx, enclosed please find your firm’s configuration settings for connection to OCG End-to-End (E2E) Testing environment. Please follow the configuration settings to make connection to the OCG E2E Testing environment upon the readiness of your BSS testing circuit.  Kindly be reminded that the OCG E2E Testing for Batch 1 users is scheduled from 9 December 2013 to 28 February 2014.  
+
+Should you require a change to the pre-assigned configuration setting, please complete and submit the attached “OCG End-to-End Testing Session Configuration Change Form” to us on or before 2 December 2013 by email to bsssupport@hkex.com.hk and follow by telephone call at 2840-3351 to confirm submission.  Please note that submission after the abovementioned deadline to change the configuration setting would not be effective before the start of OCG E2E Testing.
+
+The configuration setting for connection to OMD-C in OCG E2E testing environment will be shortly issued to EP or BSS vendor who requires the connection under separate cover.
+
+Should you have any query or require any assistance for the OCG E2E Testing, please send email to OrionCentralGateway@hkex.com.hk or bsssupoort@hkex.com.hk. 
+
+
+Regards,
+
+Cash Trading 
+Hong Kong Exchanges and Clearing Ltd
+
+

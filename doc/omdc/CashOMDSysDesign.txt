@@ -1,0 +1,53 @@
+
+
+
+--------------------------------------------------
+Data structs
+--------------------------------------------------
+HKEx OMD struct
+OMD internal data struct (in memory)
+
+
+For each channel: Circular array indexed by the sequence number (consolidated A + B)
+Dirty flag indicating whether:
+- data for that sequence number has been received
+- data has already been processed
+
+
+
+--------------------------------------------------
+Threads
+--------------------------------------------------
+Thread: Channel aggregators for receiving RT multicast for each A / B of each channel
+
+Thread: Data allocation thread, if missing data detected, wait N ms and try again, if still missing, then recovery by either RTS or refresh.
+Thread (when needed): RTS
+Thread (when needed): Refresh multicast for each A / B of each channel
+Thread: Individual data processing threads for processing each message type.
+
+Thread: Snapshot creation thread (which reads the internal memory objects and output)
+
+
+--------------------------------------------------
+5-into-1 consolidation mechanism
+--------------------------------------------------
+Phase 1: Line arbitration
+Phase 2: RTS
+Phase 3: Refresh
+
+
+
+
+--------------------------------------------------
+Roadmap principle
+--------------------------------------------------
+1. Construct everything along the main route first, leave the recovery to a later stage.
+2. Implement the most important message types first, add others later
+
+
+
+--------------------------------------------------
+NOTE
+--------------------------------------------------
+One important concept is that the OMD program can't make a snapshot unless no data is missing.
+36 channels, 72 including both A and B
