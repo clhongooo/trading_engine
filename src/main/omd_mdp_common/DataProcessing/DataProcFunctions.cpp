@@ -514,7 +514,11 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
   {
     ent.next();
 
-    if (m_Logger->NeedToPrint(Logger::DEBUG))
+    // if (m_Logger->NeedToPrint(Logger::DEBUG))
+    //--------------------------------------------------
+    // FIXME log level promoted for debug
+    //--------------------------------------------------
+    if (m_Logger->NeedToPrint(Logger::INFO))
     {
       ostringstream oo;
       oo
@@ -534,7 +538,11 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
         ent.mDEntryType() == MDEntryTypeBook::ImpliedBid || ent.mDEntryType() == MDEntryTypeBook::ImpliedOffer)
     {
 
-      if (m_Logger->NeedToPrint(Logger::DEBUG))
+      // if (m_Logger->NeedToPrint(Logger::DEBUG))
+      //--------------------------------------------------
+      // FIXME log level promoted for debug
+      //--------------------------------------------------
+      if (m_Logger->NeedToPrint(Logger::INFO))
       {
         ostringstream oo;
         oo
@@ -621,7 +629,11 @@ void DataProcFunctions_MDP::OnRefreshTrade(const unsigned short channelID, const
   {
     ent.next();
 
-    if (m_Logger->NeedToPrint(Logger::DEBUG))
+    // if (m_Logger->NeedToPrint(Logger::DEBUG))
+    //--------------------------------------------------
+    // FIXME log level promoted for debug
+    //--------------------------------------------------
+    if (m_Logger->NeedToPrint(Logger::INFO))
     {
       ostringstream oo;
       oo
@@ -654,7 +666,13 @@ void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
 
   auto& order_id_ent = msg.noOrderIDEntries();
-  if (m_Logger->NeedToPrint(Logger::DEBUG))
+
+
+  // if (m_Logger->NeedToPrint(Logger::DEBUG))
+  //--------------------------------------------------
+  // FIXME log level promoted for debug
+  //--------------------------------------------------
+  if (m_Logger->NeedToPrint(Logger::INFO))
   {
     while (order_id_ent.hasNext())
     {
@@ -674,7 +692,11 @@ void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID
   {
     ent.next();
 
-    if (m_Logger->NeedToPrint(Logger::DEBUG))
+    // if (m_Logger->NeedToPrint(Logger::DEBUG))
+    //--------------------------------------------------
+    // FIXME log level promoted for debug
+    //--------------------------------------------------
+    if (m_Logger->NeedToPrint(Logger::INFO))
     {
       ostringstream oo;
       oo
