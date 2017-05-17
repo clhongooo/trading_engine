@@ -1,0 +1,1383 @@
+﻿#ifndef VOLSURFACE_HPP
+#define VOLSURFACE_HPP
+
+#include <deque>
+#include <map>
+#include <fstream>
+#include "../corelib/HKFE.hpp"
+#include "../corelib/IParam.hpp"
+#include "../corelib/STool.hpp"
+#include "../corelib/SException.hpp"
+#include "../corelib/Tokenizer.hpp"
+
+using namespace std;
+
+class VolSurface
+{
+	private:
+		double _d_Exp_VHSI;
+		int _iYMD;	
+
+		//Vol Smile 1
+		map<const int,double> _m_VS_Rugd_1;
+		map<const int,double> _m_VS_Smth_1;
+		double _d_VS_1_ATM;
+		double _d_VS_1_VHSI;
+
+		//Vol Smile 1
+		map<const int,double> _m_VS_Rugd_2;
+		map<const int,double> _m_VS_Smth_2;
+		double _d_VS_2_ATM;
+		double _d_VS_2_VHSI;
+
+		//Vol Smile 1 at Month Start
+		int _iMthStt_YMD;
+		double _d_MthStt_VS_1_TTM;
+		double _d_MthStt_VS_1_ATM;
+		map<const int,double> _mMthStt_VS_1;
+
+		//SortedList lhtSc_VS_1 = new SortedList();
+
+
+	public:
+
+		VolSurface()
+		{
+			LoadFromFile1();
+			LoadFromFile2();
+		}
+
+
+		void LoadFromFile1()
+		{
+			//reset internal data first
+			_d_VS_1_ATM = 0;
+			_d_VS_2_ATM = 0;
+			_d_VS_1_VHSI = 0;
+			_d_VS_2_VHSI = 0;
+
+
+			{
+				ifstream ifs(IParam::DATA_FUT1);
+				if (ifs.is_open())
+				{
+					string sLine;
+					getline(ifs,sLine);
+					_d_VS_1_ATM = STool::ToDbl(sLine);
+					getline(ifs,sLine);
+					_iYMD = STool::YMD_Int3(sLine);
+					ifs.close();
+				}
+			}
+			{
+				ifstream ifs(IParam::DATA_FUT2);
+				if (ifs.is_open())
+				{
+					string sLine;
+					getline(ifs,sLine);
+					_d_VS_2_ATM = STool::ToDbl(sLine);
+					getline(ifs,sLine);
+					if (STool::YMD_Int3(sLine) != _iYMD)
+					{
+						SException se;
+						se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
+						throw se;
+					}
+					ifs.close();
+				}
+			}
+		}
+
+		void LoadFromFile2()
+		{
+			_m_VS_Rugd_1.clear();
+			_m_VS_Rugd_2.clear();
+			_m_VS_Smth_1.clear();
+			_m_VS_Smth_2.clear();
+
+			_d_MthStt_VS_1_TTM = 0;
+			_d_MthStt_VS_1_ATM = 0;
+			_mMthStt_VS_1.clear();
+			//lhtSc_VS_1 = new SortedList();
+			
+			{
+				ifstream ifs(IParam::VSMILE_1_SMTH);
+				if (ifs.is_open())
+				{
+					string sLine;
+
+					while (ifs.good())
+					{
+						getline(ifs,sLine);
+
+						Tokenizer tz(sLine,"\t");
+
+						string sParts[2];
+						if (tz.NextToken()) sParts[0] = tz.GetToken(); else continue;
+						if (tz.NextToken()) sParts[1] = tz.GetToken(); else continue;
+
+
+						if (sParts[0].compare("ATM") == 0)
+							_d_VS_1_ATM = STool::ToDbl(sParts[1],0);
+						else if (sParts[0].compare("VHSI") == 0)
+							_d_VS_1_VHSI = STool::ToDbl(sParts[1],2);
+						else
+						{
+							int iStrike = STool::ToInt(sParts[0]);
+							//ignore if the strike price is invalid
+							if (iStrike % IParam::VSMILE_INTVL == 0)
+								_m_VS_Smth_1[iStrike] = STool::ToDbl(sParts[1]);
+						}
+					}
+					ifs.close();
+				}
+			}
+			{
+				ifstream ifs(IParam::VSMILE_2_SMTH);
+				if (ifs.is_open())
+				{
+					string sLine;
+
+					while (ifs.good())
+					{
+						getline(ifs,sLine);
+
+						Tokenizer tz(sLine,"\t");
+
+						string sParts[2];
+						if (tz.NextToken()) sParts[0] = tz.GetToken(); else continue;
+						if (tz.NextToken()) sParts[1] = tz.GetToken(); else continue;
+
+
+						if (sParts[0].compare("ATM") == 0)
+							_d_VS_2_ATM = STool::ToDbl(sParts[1],0);
+						else if (sParts[0].compare("VHSI") == 0)
+							_d_VS_2_VHSI = STool::ToDbl(sParts[1],2);
+						else
+						{
+							int iStrike = STool::ToInt(sParts[0]);
+							//ignore if the strike price is invalid
+							if (iStrike % IParam::VSMILE_INTVL == 0)
+								_m_VS_Smth_2[iStrike] = STool::ToDbl(sParts[1]);
+						}
+					}
+					ifs.close();
+				}
+			}
+
+			{
+				ifstream ifs(IParam::VSMILE_1_RUGD);
+				if (ifs.is_open())
+				{
+					string sLine;
+
+					while (ifs.good())
+					{
+						getline(ifs,sLine);
+
+						Tokenizer tz(sLine,"\t");
+
+						string sParts[2];
+						if (tz.NextToken()) sParts[0] = tz.GetToken(); else continue;
+						if (tz.NextToken()) sParts[1] = tz.GetToken(); else continue;
+
+						int iStrike = STool::ToInt(sParts[0]);
+						//ignore if the strike price is invalid
+						if (iStrike % IParam::VSMILE_INTVL == 0)
+							_m_VS_Rugd_1[iStrike] = STool::ToDbl(sParts[1]);
+					}
+					ifs.close();
+				}
+			}
+			{
+				ifstream ifs(IParam::VSMILE_2_RUGD);
+				if (ifs.is_open())
+				{
+					string sLine;
+
+					while (ifs.good())
+					{
+						getline(ifs,sLine);
+
+						Tokenizer tz(sLine,"\t");
+
+						string sParts[2];
+						if (tz.NextToken()) sParts[0] = tz.GetToken(); else continue;
+						if (tz.NextToken()) sParts[1] = tz.GetToken(); else continue;
+
+						int iStrike = STool::ToInt(sParts[0]);
+						//ignore if the strike price is invalid
+						if (iStrike % IParam::VSMILE_INTVL == 0)
+							_m_VS_Rugd_2[iStrike] = STool::ToDbl(sParts[1]);
+					}
+					ifs.close();
+				}
+			}
+
+		}
+
+
+
+
+//dStrike: in HSI points
+//iFrontMth: 1 = 1st Front Month etc
+//dTTM: in years
+double GetLocalVol(double dUndPx1, double dStrike, int iReqYMD, int iFM_or_CtrtYMD)
+{
+	double dRtnVol = 0;
+
+	map m_VS_Rugd;
+
+	if (iReqYMD == _iYMD && STool::ContainsKey(_m_VS_Rugd_,(int)dStrike))
+	{
+		dRtnVol = (double)ht_VS_Rugd_[(int)dStrike];
+	}
+	else if (iReqYMD > _iYMD && lhtSc_VS_1.ContainsKey((int)Math.Floor(dFutPx1)))
+	{
+		//dRtnVol = (double)(((map)(lhtSc_VS_1[(int)Math.Floor(dFutPx1)]))[(int)dStrike]);
+	}
+	else if (iReqYMD < _iYMD && .ContainsKey(_m_VS_Smth_1,(int)dStrike))
+	{
+		//the latest VHSI is equal to the VHSI in the options data file
+		//we _must be getting the current volatility smile
+		//therefore just directly read off the implied volatility
+		dRtnVol = (double)ht_VS_[(int)dStrike];
+	}
+	else
+	{
+		SException se;
+		se.PrintMsg(__FILE__, __FUNCTION__, __LINE__);
+		throw se;
+	}
+
+	return dRtnVol / 100;
+}
+
+
+
+
+
+
+
+
+
+
+		string DebugMsg()
+		{
+			string sR = "DebugMsg():\n";
+
+			sR += STool::ToStr(_iYMD) + "\n";
+			sR += STool::ToStr(_d_Exp_VHSI,5) + "\n";
+
+			sR += "========\n";
+
+			sR += "VS1 ATM: " + STool::ToStr(_d_VS_1_ATM,5) + "\n";
+			sR += "VS2 ATM: " + STool::ToStr(_d_VS_2_ATM,5) + "\n";
+			sR += "VS1 VSHI: " + STool::ToStr(_d_VS_1_VHSI,5) + "\n";
+			sR += "VS2 VHSI: " + STool::ToStr(_d_VS_2_VHSI,5) + "\n";
+			sR += "Rug1: " + STool::ToStr((int)_m_VS_Rugd_1.size()) + "\n";
+			sR += "Rug2: " + STool::ToStr((int)_m_VS_Rugd_2.size()) + "\n";
+			sR += "Smth1: " + STool::ToStr((int)_m_VS_Smth_1.size()) + "\n";
+			sR += "Smth2: " + STool::ToStr((int)_m_VS_Smth_2.size()) + "\n";
+			sR += STool::ToStr(_d_MthStt_VS_1_TTM,5) + "\n";
+			sR += STool::ToStr(_d_MthStt_VS_1_ATM,5) + "\n";
+			sR += STool::ToStr((int)_mMthStt_VS_1.size()) + "\n";
+
+			return sR;
+		}
+};
+
+/*
+for (int i = 0; i < IParam.SCENARIOMAX; i++)
+{
+map _mSc_VS_1 = new map();
+int iScATMPrice = 0;
+string sTmpFileNm = IParam._VS_ScenarioPart1FilePath + i + IParam._VS_ScenarioPart2FilePath;
+using (StreamReader sr = new StreamReader(sTmpFileNm))
+{
+string sLine;
+while ((sLine = sr.ReadLine()) != null)
+{
+string[] sParts = sLine.Split('\t');
+if (sParts.Length < 2) return;
+if (sParts[0].CompareTo("ATM") == 0)
+iScATMPrice = (int)Math.Floor(Double.Parse(sParts[1]));
+else if (sParts[0].CompareTo("VHSI") == 0) continue;
+else
+{
+//ignore if the strike price is invalid
+int iStrike = int.Parse(sParts[0]);
+if (iStrike % IParam.VOLSMILEINTERVAL == 0)
+_mSc_VS_1.Add(iStrike, Double.Parse(sParts[1]));
+}
+}
+sr.Close;
+}
+lhtSc_VS_1.Add(iScATMPrice, _mSc_VS_1);
+}
+
+*/
+
+
+
+
+
+/*
+private int DHLC_BChk(int iPtr)
+{
+	if (iPtr >= iTRSIZE) return DHLC_BChk(iPtr - iTRSIZE);
+	else if (iPtr < 0) return DHLC_BChk(iPtr + iTRSIZE);
+	else return iPtr;
+}
+public static void Gen_VS_ImplPDF(RuleBasedDayTradeSys rbdts)
+{
+	try
+	{
+		HistoricalDataHelper hdh = HistoricalDataHelper.Instance;
+
+		double dATMPx1 = double.NaN;
+		double dATMPx2 = double.NaN;
+		double dTTM_VS1 = double.NaN; //TTM for the option prices in the volatility smile file
+		double dTTM_VS2 = double.NaN; //TTM for the option prices in the volatility smile file
+		map _mCallPrice1 = new map();
+		map _mPutPrice1 = new map();
+		map _mCallIV1 = new map();
+		map _mPutIV1 = new map();
+		map _mUnifiedIV1 = new map(); //combining call and put
+		map _mCallPrice2 = new map();
+		map _mPutPrice2 = new map();
+		map _mCallIV2 = new map();
+		map _mPutIV2 = new map();
+		map _mUnifiedIV2 = new map(); //combining call and put
+
+		using (StreamReader sr = new StreamReader(IParam.RawDataOpt1FilePath))
+		{
+			string sLine;
+			while ((sLine = sr.ReadLine()) != null)
+			{
+				string[] sParts = sLine.Split(',');
+				if (sParts.Length < 2) continue; //sth _missing on this row, skip it
+				if (sParts[2].CompareTo("") == 0) continue; //no strike price
+
+				//C,Jun-12,8400,-,-,
+				//P,Jun-12,8400,1,2,
+				double dBidPx = double.NaN, dAskPx = double.NaN;
+				double dAvgPx = double.NaN;
+
+				if (!double.TryParse(sParts[3], out dBidPx) || !double.TryParse(sParts[4], out dAskPx))
+					continue;  //prices _missing on this row, skip it
+
+				if (Math.Abs(dAskPx) < 1 || Math.Abs(dBidPx) < 1) continue;
+				if (dAskPx - dBidPx > IParam.MAXVOLSMILEBIDASKSPRD) continue; //_mid-price not reliable when the spread is so large
+
+				dAvgPx = (dBidPx + dAskPx) / 2;
+
+				if (sParts[0][0] == 'C') _mCallPrice1.Add(double.Parse(sParts[2]), dAvgPx);
+				else if (sParts[0][0] == 'P') _mPutPrice1.Add(double.Parse(sParts[2]), dAvgPx);
+			}
+			sr.Close;
+		}
+		using (StreamReader sr = new StreamReader(IParam.RawDataOpt2FilePath))
+		{
+			string sLine;
+			while ((sLine = sr.ReadLine()) != null)
+			{
+				string[] sParts = sLine.Split(',');
+				if (sParts.Length < 2) continue; //sth _missing on this row, skip it
+				if (sParts[2].CompareTo("") == 0) continue; //no strike price
+
+				//C,Jun-12,8400,-,-,
+				//P,Jun-12,8400,1,2,
+				double dBidPx = double.NaN , dAskPx = double.NaN;
+				double dAvgPx = double.NaN;
+
+				if (!double.TryParse(sParts[3], out dBidPx) || !double.TryParse(sParts[4], out dAskPx))
+					continue;  //prices _missing on this row, skip it
+
+				if (dAskPx - dBidPx > IParam.MAXVOLSMILEBIDASKSPRD) continue; //_mid-price not reliable when the spread is so large
+
+				dAvgPx = (dBidPx + dAskPx) / 2;
+
+				if (sParts[0][0] == 'C') _mCallPrice2.Add(double.Parse(sParts[2]),dAvgPx);
+				else if (sParts[0][0] == 'P') _mPutPrice2.Add(double.Parse(sParts[2]), dAvgPx);
+			}
+			sr.Close;
+		}
+		using (StreamReader sr = new StreamReader(IParam.RawDataFut1FilePath))
+		{
+			string sLine;
+			sLine = sr.ReadLine();
+			dATMPx1 = double.Parse(sLine);
+			sLine = sr.ReadLine();
+			DateTime dtDataDate = SymbolCodeHelper.ConvertYYYYMMDD(sLine);
+			dTTM_VS1 = hdh.GetCalendarTTMHK(dtDataDate, 1);
+			sr.Close;
+		}
+		using (StreamReader sr = new StreamReader(IParam.RawDataFut2FilePath))
+		{
+			string sLine;
+			sLine = sr.ReadLine();
+			dATMPx2 = double.Parse(sLine);
+			sLine = sr.ReadLine();
+			DateTime dtDataDate = SymbolCodeHelper.ConvertYYYYMMDD(sLine);
+			dTTM_VS2 = hdh.GetCalendarTTMHK(dtDataDate, 2);
+			sr.Close;
+		}
+
+		//ok, now calculate the implied volatilities
+		foreach (DictionaryEntry de in _mCallPrice1)
+		{
+			_mCallIV1.Add(de.Key,
+					BlackScholesAlt.CalcImpliedVolatility(true, dATMPx1, (double)(de.Key), IParam.rf, dTTM_VS1, (double)(de.Value)));
+		}
+		foreach (DictionaryEntry de in _mCallPrice2)
+		{
+			_mCallIV2.Add(de.Key,
+					BlackScholesAlt.CalcImpliedVolatility(true, dATMPx2, (double)(de.Key), IParam.rf, dTTM_VS2, (double)(de.Value)));
+		}
+		foreach (DictionaryEntry de in _mPutPrice1)
+		{
+			_mPutIV1.Add(de.Key,
+					BlackScholesAlt.CalcImpliedVolatility(false, dATMPx1, (double)(de.Key), IParam.rf, dTTM_VS1, (double)(de.Value)));
+		}
+		foreach (DictionaryEntry de in _mPutPrice2)
+		{
+			_mPutIV2.Add(de.Key,
+					BlackScholesAlt.CalcImpliedVolatility(false, dATMPx2, (double)(de.Key), IParam.rf, dTTM_VS2, (double)(de.Value)));
+		}
+
+		//getting our unified volatility smile
+		object[] oUnifiedStrikes1 = new object[htCallIV1.Keys.Count + _mPutIV1.Keys.Count];
+		_mCallIV1.Keys.CopyTo(oUnifiedStrikes1, 0);
+		_mPutIV1.Keys.CopyTo(oUnifiedStrikes1, _mCallIV1.Keys.Count);
+		Array.Sort(oUnifiedStrikes1);
+
+		object[] oUnifiedStrikes2 = new object[htCallIV2.Keys.Count + _mPutIV2.Keys.Count];
+		_mCallIV2.Keys.CopyTo(oUnifiedStrikes2, 0);
+		_mPutIV2.Keys.CopyTo(oUnifiedStrikes2, _mCallIV2.Keys.Count);
+		Array.Sort(oUnifiedStrikes2);
+
+		for (int i = 0; i < oUnifiedStrikes1.Length; i++)
+		{
+			double dCallIV = double.NaN;
+			double dPutIV = double.NaN;
+
+			if (htCallIV1.ContainsKey(oUnifiedStrikes1[i])) dCallIV = (double)htCallIV1[oUnifiedStrikes1[i]];
+			if (htPutIV1.ContainsKey(oUnifiedStrikes1[i])) dPutIV = (double)htPutIV1[oUnifiedStrikes1[i]];
+
+			if (!htUnifiedIV1.ContainsKey((int)(double)(oUnifiedStrikes1[i])))
+			{
+				if (!double.IsNaN(dCallIV) && !double.IsNaN(dPutIV) && (int)(double)(oUnifiedStrikes1[i]) < dATMPx1)
+					_mUnifiedIV1.Add((int)(double)(oUnifiedStrikes1[i]), dPutIV);
+				else if (!double.IsNaN(dCallIV) && !double.IsNaN(dPutIV) && (int)(double)(oUnifiedStrikes1[i]) > dATMPx1)
+					_mUnifiedIV1.Add((int)(double)(oUnifiedStrikes1[i]), dCallIV);
+				else if (!double.IsNaN(dCallIV) && double.IsNaN(dPutIV))
+					_mUnifiedIV1.Add((int)(double)(oUnifiedStrikes1[i]), dCallIV);
+				else if (double.IsNaN(dCallIV) && !double.IsNaN(dPutIV))
+					_mUnifiedIV1.Add((int)(double)(oUnifiedStrikes1[i]), dPutIV);
+			}
+		}
+
+		for (int i = 0; i < oUnifiedStrikes2.Length; i++)
+		{
+			double dCallIV = double.NaN;
+			double dPutIV = double.NaN;
+
+			if (htCallIV2.ContainsKey(oUnifiedStrikes2[i])) dCallIV = (double)htCallIV2[oUnifiedStrikes2[i]];
+			if (htPutIV2.ContainsKey(oUnifiedStrikes2[i])) dPutIV = (double)htPutIV2[oUnifiedStrikes2[i]];
+
+			if (!htUnifiedIV2.ContainsKey((int)(double)(oUnifiedStrikes2[i])))
+			{
+				if (!double.IsNaN(dCallIV) && !double.IsNaN(dPutIV) && (int)(double)(oUnifiedStrikes2[i]) < dATMPx2)
+					_mUnifiedIV2.Add((int)(double)(oUnifiedStrikes2[i]), dPutIV);
+				else if (!double.IsNaN(dCallIV) && !double.IsNaN(dPutIV) && (int)(double)(oUnifiedStrikes2[i]) > dATMPx2)
+					_mUnifiedIV2.Add((int)(double)(oUnifiedStrikes2[i]), dCallIV);
+				else if (!double.IsNaN(dCallIV) && double.IsNaN(dPutIV))
+					_mUnifiedIV2.Add((int)(double)(oUnifiedStrikes2[i]), dCallIV);
+				else if (double.IsNaN(dCallIV) && !double.IsNaN(dPutIV))
+					_mUnifiedIV2.Add((int)(double)(oUnifiedStrikes2[i]), dPutIV);
+			}
+		}
+
+		//before smoothing, output the rugged volatility smile
+		using (StreamWriter fout = new StreamWriter(IParam._VS_1RuggedFilePath, false))
+		{
+			object[] keys = new object[htUnifiedIV1.Keys.Count];
+			_mUnifiedIV1.Keys.CopyTo(keys, 0);
+			Array.Sort(keys);
+			for (int i = 0; i < keys.Length; i++)
+			{
+				fout.WriteLine(((int)(keys[i])).ToString() + "\t" +
+						((double)(htUnifiedIV1[keys[i]]) * 100).ToString());
+			}
+			fout.Close;
+		}
+		using (StreamWriter fout = new StreamWriter(IParam._VS_2RuggedFilePath, false))
+		{
+			object[] keys = new object[htUnifiedIV2.Keys.Count];
+			_mUnifiedIV2.Keys.CopyTo(keys, 0);
+			Array.Sort(keys);
+			for (int i = 0; i < keys.Length; i++)
+			{
+				fout.WriteLine(((int)(keys[i])).ToString() + "\t" +
+						((double)(htUnifiedIV2[keys[i]]) * 100).ToString());
+			}
+			fout.Close;
+		}
+
+
+
+		//output results only if _mUnifiedIV has enough elements,
+		//otherwise the good old data will be overwritten by the new and incomplete ones, esp before 9:30
+		if (htUnifiedIV1.Count > IParam.MINPTVOLSMILE && _VS_Smoothing(1, ref _mUnifiedIV1))
+		{
+			using (StreamWriter fout = new StreamWriter(IParam._VS_1FilePath, false))
+			{
+				fout.WriteLine("ATM\t" + dATMPx1.ToString());
+				fout.WriteLine("VHSI\t" + rbdts.LatestVHSI.ToString());
+				object[] keys = new object[htUnifiedIV1.Keys.Count];
+				_mUnifiedIV1.Keys.CopyTo(keys, 0);
+				Array.Sort(keys);
+				for (int i = 0; i < keys.Length; i++)
+				{
+					fout.WriteLine(((int)(keys[i])).ToString() + "\t" +
+							((double)(htUnifiedIV1[keys[i]]) * 100).ToString());
+				}
+				fout.Close;
+			}
+		}
+		if (htUnifiedIV2.Count > IParam.MINPTVOLSMILE && _VS_Smoothing(2, ref _mUnifiedIV2))
+		{
+			using (StreamWriter fout = new StreamWriter(IParam._VS_2FilePath, false))
+			{
+				fout.WriteLine("ATM\t" + dATMPx2.ToString());
+				fout.WriteLine("VHSI\t" + rbdts.LatestVHSI.ToString());
+				object[] keys = new object[htUnifiedIV2.Keys.Count];
+				_mUnifiedIV2.Keys.CopyTo(keys, 0);
+				Array.Sort(keys);
+				for (int i = 0; i < keys.Length; i++)
+				{
+					fout.WriteLine(((int)(keys[i])).ToString() + "\t" +
+							((double)(htUnifiedIV2[keys[i]]) * 100).ToString());
+				}
+				fout.Close;
+			}
+		}
+
+		map _mPDF1d = new map();
+		map _mPDF2d = new map();
+
+		//calculate the implied PDF prob density function for the 1st front _month
+		using (StreamWriter fout = new StreamWriter(IParam.VSImpliedPDF1FilePath, false))
+		{
+			BlackScholesAlt.GetRNPDF_from_VS_(htUnifiedIV1, dATMPx1, dTTM_VS1, ref _mPDF1d);
+
+			object[] keyPDF1d = new object[htPDF1d.Keys.Count];
+			_mPDF1d.Keys.CopyTo(keyPDF1d, 0);
+			Array.Sort(keyPDF1d);
+
+			for (int i = 0; i < keyPDF1d.Length; i++) //all items
+			{
+				fout.Write(Math.Round((double)keyPDF1d[i],0));
+				fout.Write("\t");
+				fout.WriteLine(string.Format("{0:0.00000000000000000000}", (double)htPDF1d[keyPDF1d[i]]));
+			}
+
+			fout.Close;
+		}
+		//calculate the implied PDF prob density function for the 2nd front _month
+		using (StreamWriter fout = new StreamWriter(IParam.VSImpliedPDF2FilePath, false))
+		{
+			BlackScholesAlt.GetRNPDF_from_VS_(htUnifiedIV2, dATMPx2, dTTM_VS2, ref _mPDF2d);
+
+			object[] keyPDF2d = new object[htPDF2d.Keys.Count];
+			_mPDF2d.Keys.CopyTo(keyPDF2d, 0);
+			Array.Sort(keyPDF2d);
+
+			for (int i = 0; i < keyPDF2d.Length; i++) //all items
+			{
+				fout.Write(Math.Round((double)keyPDF2d[i],0));
+				fout.Write("\t");
+				fout.WriteLine(string.Format("{0:0.00000000000000000000}", (double)htPDF2d[keyPDF2d[i]]));
+			}
+
+			fout.Close;
+		}
+
+
+		//collect statistics about the RNPDF
+		using (StreamWriter fout = new StreamWriter(IParam.ImpliedRNPDFStatFilePath, false))
+		{
+			StatHelper sh1 = new StatHelper(htPDF1d.Count);
+			StatHelper sh1PxChgScaled = new StatHelper(htPDF1d.Count);
+			StatHelper sh2 = new StatHelper(htPDF2d.Count);
+			StatHelper sh2PxChgScaled = new StatHelper(htPDF2d.Count);
+
+			if (htPDF1d.Count > 0)
+			{
+				foreach (DictionaryEntry de in _mPDF1d)
+				{
+					sh1.Add(           (double)de.Key,
+							(long)((double)de.Value * 1000000));
+					sh1PxChgScaled.Add(Math.Round((double)de.Key,0) / IParam.KURTOSISSCALINGFACTOR,
+							(long)((double)de.Value * 1000000));
+				}
+			}
+			if (htPDF2d.Count > 0)
+			{
+				foreach (DictionaryEntry de in _mPDF2d)
+				{
+					sh2.Add(           (double)de.Key,
+							(long)((double)de.Value * 1000000));
+					sh2PxChgScaled.Add(Math.Round((double)de.Key, 0) / IParam.KURTOSISSCALINGFACTOR,
+							(long)((double)de.Value * 1000000));
+				}
+			}
+
+			fout.Write("FM1\t");
+			fout.Write("SD\t");
+			fout.Write((int)sh1.Stdev);
+			fout.Write("\t");
+			fout.Write("SKW\t");
+			fout.Write(Math.Round(sh1PxChgScaled.Skewness,2));
+			fout.Write("\tK+/K-\t");
+			fout.Write(Math.Round(sh1PxChgScaled.KurtosisPve/sh1PxChgScaled.KurtosisNve*100, 2));
+			fout.Write("\tK\t");
+			fout.Write(Math.Round(sh1PxChgScaled.Kurtosis, 2));
+			fout.Write("\tK+\t");
+			fout.Write(Math.Round(sh1PxChgScaled.KurtosisPve, 2));
+			fout.Write("\tK-\t");
+			fout.Write(Math.Round(sh1PxChgScaled.KurtosisNve, 2));
+			fout.WriteLine("");
+
+			fout.Write("FM2\t");
+			fout.Write("SD\t");
+			fout.Write((int)sh2.Stdev);
+			fout.Write("\t");
+			fout.Write("SKW\t");
+			fout.Write(Math.Round(sh2PxChgScaled.Skewness, 2));
+			fout.Write("\tK+/K-\t");
+			fout.Write(Math.Round(sh2PxChgScaled.KurtosisPve / sh2PxChgScaled.KurtosisNve * 100, 2));
+			fout.Write("\tK\t");
+			fout.Write(Math.Round(sh2PxChgScaled.Kurtosis, 2));
+			fout.Write("\tK+\t");
+			fout.Write(Math.Round(sh2PxChgScaled.KurtosisPve, 2));
+			fout.Write("\tK-\t");
+			fout.Write(Math.Round(sh2PxChgScaled.KurtosisNve, 2));
+			fout.WriteLine("");
+
+			//--------------------------------------------------------
+
+			fout.Close;
+		}
+
+
+	}
+	catch (Exception e)
+	{
+		Console.WriteLine("Volatility smile file could not be generated:");
+		Console.WriteLine(e.Message);
+		Environment.Exit(0);
+	}
+}
+
+
+public double GetScenarioVolatilityFromModel(double dFutPx1, double dFutPx2, double dStrike, DateTime dtCT, int iFrontMth)
+{
+	double dRtnVol = double.NaN;
+
+	//get the relevant figures according to front-_monthness
+	double dFutPrice = dFutPx1;
+	if (iFrontMth == 1) dFutPrice = dFutPx1;
+	else if (iFrontMth == 2) dFutPrice = dFutPx2;
+
+	double d_VS_VHSI_ = double.NaN;
+	double dVS_ATM_ = double.NaN;
+	map _m_VS_ = null;
+	map _m_VS_Rugd_ = null;
+	if (iFrontMth == 1)
+	{
+		d_VS_VHSI_ = _d_VS_1_VHSI;
+		dVS_ATM_ = _d_VS_1_ATM;
+		_m_VS_ = _m_VS_Smth_1;
+		_m_VS_Rugd_ = _m_VS_Rugd_1;
+	}
+	else if (iFrontMth == 2)
+	{
+		d_VS_VHSI_ = _d_VS_2_VHSI;
+		dVS_ATM_ = _d_VS_2_ATM;
+		_m_VS_ = _m_VS_Smth_2;
+		_m_VS_Rugd_ = _m_VS_Rugd_2;
+	}
+
+	//new _method: accounting for the curling / rolling up of the volatility smile
+	if (ht_VS_.ContainsKey((int)dStrike))
+	{
+		//the rolling up rate 3000 points below or 4000 above ATM
+		double a = 64.10308681;
+		double b = -22.54235833;
+		double c = -52.98359007;
+		double d = -31.51438583;
+		double e = -7.768533802;
+		double f = 52.01569809;
+		double g = 0.971764854;
+		double h = 0.340564233;
+		double i = 0.838342455;
+		double j = 0.031324491;
+
+
+		string s1FrontMthFutCode = hdh.GetFutCodeHK_WthMinDTM(dtCT, 5 / 1440d);
+		double dNewTTM = hdh.GetCalendarTTMHK(dtCT, s1FrontMthFutCode);
+		if (dNewTTM > 4d / 365d) dNewTTM = dNewTTM * 5 / 7; //using trading days
+		double dNewTIME = 1 - dNewTTM;
+
+		double dEstTailChg1 = (g * Math.Pow((_d_Exp_VHSI/d_VS_VHSI_)-1,2) +
+				h * Math.Pow((_d_Exp_VHSI/d_VS_VHSI_)-1,1) +
+				i) * dNewTTM * 365 * j;
+		double dEstCumTailChg2 = a * Math.Pow(dNewTIME, 6) +
+			b * Math.Pow(dNewTIME, 4) +
+			c * Math.Pow(dNewTIME, 3) +
+			d * Math.Pow(dNewTIME, 2) +
+			e * Math.Pow(dNewTIME, 1) +
+			f;
+		double dEstCumTailChgRefPt = dEstTailChg1 + dEstCumTailChg2;
+
+
+		int iTmp1 = (int)Math.Max(Math.Round((dVS_ATM_-3000)/IParam.VOLSMILEINTERVAL,0)*IParam.VOLSMILEINTERVAL,IParam.VOLSMILEREGENSTART);
+		int iTmp2 = (int)Math.Max(Math.Round((_d_MthStt_VS_1_ATM-3000)/IParam.VOLSMILEINTERVAL,0)*IParam.VOLSMILEINTERVAL,IParam.VOLSMILEREGENSTART);
+		int iTmp3 = (int)Math.Max(Math.Round(dVS_ATM_ / IParam.VOLSMILEINTERVAL, 0) * IParam.VOLSMILEINTERVAL, IParam.VOLSMILEREGENSTART);
+		int iTmp4 = (int)Math.Max(Math.Round(_d_MthStt_VS_1_ATM / IParam.VOLSMILEINTERVAL, 0) * IParam.VOLSMILEINTERVAL, IParam.VOLSMILEREGENSTART);
+		double dLatestTailChgFrmMthStt_ = ((double)ht_VS_[iTmp1] * (double)htMthStt_VS_1[iTmp4] / (double)ht_VS_[iTmp3])
+			/ (double)htMthStt_VS_1[iTmp2] - 1;
+		double dEstTailChgRefPt = dEstCumTailChgRefPt - dLatestTailChgFrmMthStt_;
+
+
+		//the expected IV change at the reference point
+		double dEstCurl = 0;
+		if (dStrike > dFutPrice)
+			dEstCurl = dEstTailChgRefPt * Math.Min((dStrike - dFutPrice) / 4000, 1d);
+		else if (dStrike < dFutPrice)
+			dEstCurl = dEstTailChgRefPt * Math.Min((dFutPrice - dStrike) / 3000, 1d);
+
+
+		//adjust from the latest vol smile
+		//_d_VS_1_ATM = our old ATM
+		//dFutPrice = our new ATM
+		int iHorShiftedStrike = (int)Math.Max(Math.Min(Math.Round((dStrike - dFutPrice + dVS_ATM_) /
+						IParam.VOLSMILEINTERVAL, 0) * IParam.VOLSMILEINTERVAL,
+					IParam.VOLSMILEREGENEND), IParam.VOLSMILEREGENSTART);
+		dRtnVol =
+			(double)ht_VS_[iHorShiftedStrike] * //horizontal shift from _month start
+			(_d_Exp_VHSI / d_VS_VHSI_) * //then predict the new volatility level and adjust the whole curve
+			(1 + dEstCurl); //linear interpolation for curling / rolling up
+
+
+	}
+
+	return dRtnVol / 100;
+}
+
+
+
+
+public static void Output_VS_Meth(int iFrontMth, string s, bool bAppend)
+{
+	using (StreamWriter fout = new StreamWriter(iFrontMth == 1 ?
+				IParam._VS_MethFilePath1 : IParam._VS_MethFilePath2,
+				bAppend))
+	{
+		fout.WriteLine("Front Mth: " + iFrontMth.ToString() + ": " + s);
+		fout.Close;
+	}
+}
+
+//returns false if error unacceptable
+//returns true otherwise
+public static bool Check_VS_SmoothgEffective(map _m_VS_Rugd_, map _mSmooth_VS_)
+{
+	double dSumErrSq = 0;
+
+	foreach (DictionaryEntry de in _m_VS_Rugd_)
+	{
+		if (htSmooth_VS_.ContainsKey(de.Key))
+			dSumErrSq += Math.Pow((double)(de.Value) * 100 - (double)(htSmooth_VS_[de.Key]) * 100, 2);
+	}
+
+	if (dSumErrSq > _m_VS_Rugd_.Count / 3d ) return false;
+	else return true;
+
+
+}
+public static bool _VS_Smoothing(int iFrontMth, ref map _m_VS_)
+{
+	Output_VS_Meth(iFrontMth, "", false);
+
+
+	map _m_VS_LeastSqCubic = _VS_LeastSqCubic(ref _m_VS_);
+
+
+	map _m_VS_Augmented = (map)ht_VS_.DeepClone();
+	//to guide the curve at the high ends
+	if (ht_VS_Augmented.ContainsKey(IParam.VOLSMILEREGENEND))
+		_m_VS_Augmented[IParam.VOLSMILEREGENEND] = _m_VS_LeastSqCubic[IParam.VOLSMILEREGENEND];
+	else
+		_m_VS_Augmented.Add(IParam.VOLSMILEREGENEND, _m_VS_LeastSqCubic[IParam.VOLSMILEREGENEND]);
+
+
+
+	map _m_VS_LeastSqQuartic = _VS_LeastSqQuartic(ref _m_VS_Augmented);
+	map _m_VS_LeastSqQuintic = _VS_LeastSqQuintic(ref _m_VS_Augmented);
+	map _m_VS_LeastSqSextic = _VS_LeastSqSextic(ref _m_VS_Augmented);
+
+
+
+	if (ht_VS_LeastSqSextic != null && Check_VS_SmoothgEffective(ht_VS_, _m_VS_LeastSqSextic))
+	{
+		Output_VS_Meth(iFrontMth, "Least Square (Sextic) used.", true);
+		Output_VS_Meth(iFrontMth, "Error between rugged and smoothed vol smile is small.", true);
+		_m_VS_ = (map)ht_VS_LeastSqSextic.DeepClone();
+		return true;
+	}
+	else if (ht_VS_LeastSqQuintic != null && Check_VS_SmoothgEffective(ht_VS_, _m_VS_LeastSqQuintic))
+	{
+		Output_VS_Meth(iFrontMth, "Least Square (Quintic) used.", true);
+		Output_VS_Meth(iFrontMth, "Error between rugged and smoothed vol smile is small.", true);
+		_m_VS_ = (map)ht_VS_LeastSqQuintic.DeepClone();
+		return true;
+	}
+	else if (ht_VS_LeastSqQuartic != null && Check_VS_SmoothgEffective(ht_VS_, _m_VS_LeastSqQuartic))
+	{
+		Output_VS_Meth(iFrontMth, "Least Square (Quartic) used.", true);
+		Output_VS_Meth(iFrontMth, "Error between rugged and smoothed vol smile is small.", true);
+		_m_VS_ = (map)ht_VS_LeastSqQuartic.DeepClone();
+		return true;
+	}
+	else if (ht_VS_LeastSqCubic != null && Check_VS_SmoothgEffective(ht_VS_, _m_VS_LeastSqCubic))
+	{
+		Output_VS_Meth(iFrontMth, "Least Square (Cubic) used.", true);
+		Output_VS_Meth(iFrontMth, "Error between rugged and smoothed vol smile is small.", true);
+		_m_VS_ = (map)ht_VS_LeastSqCubic.DeepClone();
+		return true;
+	}
+	else
+	{
+		//try to get a quintic polynomial fit
+		if (_VS_LagrangePolyQuintic(iFrontMth, ref _m_VS_Augmented) && Check_VS_SmoothgEffective(ht_VS_, _m_VS_Augmented))
+		{
+			Output_VS_Meth(iFrontMth, "Lagrange Polynomial (Quintic) used.", true);
+			Output_VS_Meth(iFrontMth, "Error between rugged and smoothed vol smile is small.", true);
+			_m_VS_ = (map)ht_VS_Augmented.DeepClone();
+			return true;
+		}
+		else
+		{
+			//what shape is that??? no choice but to use (linear) interpolation
+			map _m_VS_Interp = null;
+
+			if (ht_VS_LeastSqQuintic != null) _m_VS_Interp = _VS_Interpolation(ht_VS_, _m_VS_LeastSqQuintic);
+			else if (ht_VS_LeastSqQuartic != null) _m_VS_Interp = _VS_Interpolation(ht_VS_, _m_VS_LeastSqQuartic);
+			else if (ht_VS_LeastSqCubic != null) _m_VS_Interp = _VS_Interpolation(ht_VS_, _m_VS_LeastSqCubic);
+
+			Output_VS_Meth(iFrontMth, "Linear Interpolation used.", true);
+
+			if (Check_VS_SmoothgEffective(ht_VS_, _m_VS_Interp))
+				Output_VS_Meth(iFrontMth, "Error between rugged and smoothed vol smile is small.", true);
+			else
+				Output_VS_Meth(iFrontMth, "Error between rugged and smoothed vol smile is large.", true);
+
+			_m_VS_ = (map)ht_VS_Interp.DeepClone();
+			return true;
+		}
+	}
+
+
+}
+
+public static map _VS_Interpolation(map _m_VS_, map _m_VS_LinRgrn)
+{
+	map _m_VS_Tmp = new map();
+
+	object[] oK = new object[ht_VS_.Count];
+	_m_VS_.Keys.CopyTo(oK, 0);
+	Array.Sort(oK);
+
+	int iJustAbv = 0;
+
+	for (int i = IParam.VOLSMILEREGENSTART; i <= IParam.VOLSMILEREGENEND; i += IParam.VOLSMILEINTERVAL)
+	{
+		while (i > (int)oK[iJustAbv] && iJustAbv < oK.Length-1) iJustAbv++;
+
+		if (ht_VS_.ContainsKey(i))
+		{
+			_m_VS_Tmp.Add(i, _m_VS_[i]);
+		}
+		else
+		{
+			if (iJustAbv == 0 || iJustAbv >= oK.Length - 1)
+			{
+				_m_VS_Tmp.Add(i, (double)ht_VS_LinRgrn[i]);
+			}
+			else
+			{
+				double dTmp2 =
+					(double)ht_VS_[(int)oK[iJustAbv-1]] * ((double)((int)oK[iJustAbv] - i) / ((int)oK[iJustAbv] - (int)oK[iJustAbv-1])) +
+					(double)ht_VS_[(int)oK[iJustAbv]] * ((double)(i - (int)oK[iJustAbv-1]) / ((int)oK[iJustAbv] - (int)oK[iJustAbv-1]));
+
+				_m_VS_Tmp.Add(i, dTmp2);
+			}
+
+		}
+
+
+	}
+
+	return _m_VS_Tmp;
+}
+
+
+public static map _VS_LeastSqCubic(ref map _m_VS_)
+{
+	LstSquCubicRegr solvr = new LstSquCubicRegr();
+	foreach (DictionaryEntry de in _m_VS_) solvr.AddPoints((double)(int)(de.Key), (double)(de.Value));
+
+	double a = solvr.aTerm;
+	double b = solvr.bTerm;
+	double c = solvr.cTerm;
+	double d = solvr.dTerm;
+
+	map _m_VS_Tmp = new map();
+
+	for (int i = IParam.VOLSMILEREGENSTART; i <= IParam.VOLSMILEREGENEND; i += IParam.VOLSMILEINTERVAL)
+	{
+		double dTmp = i;
+		if (!double.IsNaN(a) && !double.IsNaN(b) && !double.IsNaN(c) && !double.IsNaN(d) &&
+				a != 0 && b != 0 && c != 0 && d != 0)
+			_m_VS_Tmp[i] = a * dTmp * dTmp * dTmp +
+				b * dTmp * dTmp +
+				c * dTmp +
+				d;
+	}
+
+	foreach (DictionaryEntry de in _m_VS_Tmp)
+	{
+		if ((double)de.Value < 0) return null;
+	}
+
+	if (ht_VS_Tmp.Count == 0) return null;
+
+	return _m_VS_Tmp;
+}
+
+public static map _VS_LeastSqQuartic(ref map _m_VS_)
+{
+	LstSquQuarticRegr solvr = new LstSquQuarticRegr();
+	foreach (DictionaryEntry de in _m_VS_) solvr.AddPoints((double)((int)(de.Key)) / 1000, (double)(de.Value)); //divide 1000 to prevent overflow in the regression solver
+
+	double a = solvr.aTerm;
+	double b = solvr.bTerm;
+	double c = solvr.cTerm;
+	double d = solvr.dTerm;
+	double e = solvr.eTerm;
+
+	map _m_VS_Tmp = new map();
+
+	for (int i = IParam.VOLSMILEREGENSTART; i <= IParam.VOLSMILEREGENEND; i += IParam.VOLSMILEINTERVAL)
+	{
+		double dTmp = i / 1000d;
+		if (!double.IsNaN(a) && !double.IsNaN(b) && !double.IsNaN(c) && !double.IsNaN(d) && !double.IsNaN(e) &&
+				a != 0 && b != 0 && c != 0 && d != 0 && e != 0)
+			_m_VS_Tmp[i] = a * dTmp * dTmp * dTmp * dTmp +
+				b * dTmp * dTmp * dTmp +
+				c * dTmp * dTmp +
+				d * dTmp +
+				e;
+	}
+
+	foreach (DictionaryEntry de in _m_VS_Tmp)
+	{
+		if ((double)de.Value < 0) return null;
+	}
+
+	if (ht_VS_Tmp.Count == 0) return null;
+
+	return _m_VS_Tmp;
+}
+public static map _VS_LeastSqQuintic(ref map _m_VS_)
+{
+	LstSquQuinticRegr solvr = new LstSquQuinticRegr();
+	foreach (DictionaryEntry de in _m_VS_) solvr.AddPoints((double)((int)(de.Key))/10000, (double)(de.Value)); //divide 1000 to prevent overflow in the regression solver
+
+	double a = solvr.aTerm;
+	double b = solvr.bTerm;
+	double c = solvr.cTerm;
+	double d = solvr.dTerm;
+	double e = solvr.eTerm;
+	double f = solvr.fTerm;
+
+	map _m_VS_Tmp = new map();
+
+	for (int i = IParam.VOLSMILEREGENSTART; i <= IParam.VOLSMILEREGENEND; i += IParam.VOLSMILEINTERVAL)
+	{
+		double dTmp = i / 10000d;
+		if (!double.IsNaN(a) && !double.IsNaN(b) && !double.IsNaN(c) && !double.IsNaN(d) && !double.IsNaN(e) && !double.IsNaN(f) &&
+				a != 0 && b != 0 && c != 0 && d != 0 && e != 0 && f != 0)
+			_m_VS_Tmp[i] = a * dTmp * dTmp * dTmp * dTmp * dTmp +
+				b * dTmp * dTmp * dTmp * dTmp +
+				c * dTmp * dTmp * dTmp +
+				d * dTmp * dTmp +
+				e * dTmp +
+				f;
+	}
+
+	foreach (DictionaryEntry de in _m_VS_Tmp)
+	{
+		if ((double)de.Value < 0) return null;
+	}
+
+	if (ht_VS_Tmp.Count == 0) return null;
+
+	return _m_VS_Tmp;
+}
+public static map _VS_LeastSqSextic(ref map _m_VS_)
+{
+	LstSquSexticRegr solvr = new LstSquSexticRegr();
+	foreach (DictionaryEntry de in _m_VS_) solvr.AddPoints((double)((int)(de.Key)) / 100000, (double)(de.Value)); //divide 1000 to prevent overflow in the regression solver
+
+	double a = solvr.aTerm;
+	double b = solvr.bTerm;
+	double c = solvr.cTerm;
+	double d = solvr.dTerm;
+	double e = solvr.eTerm;
+	double f = solvr.fTerm;
+	double g = solvr.gTerm;
+
+	map _m_VS_Tmp = new map();
+
+	for (int i = IParam.VOLSMILEREGENSTART; i <= IParam.VOLSMILEREGENEND; i += IParam.VOLSMILEINTERVAL)
+	{
+		double dTmp = i / 100000d;
+		if (!double.IsNaN(a) && !double.IsNaN(b) && !double.IsNaN(c) && !double.IsNaN(d) && !double.IsNaN(e) && !double.IsNaN(f) && !double.IsNaN(g) &&
+				a != 0 && b != 0 && c != 0 && d != 0 && e != 0 && f != 0 && g != 0)
+			_m_VS_Tmp[i] = a * dTmp * dTmp * dTmp * dTmp * dTmp * dTmp +
+				b * dTmp * dTmp * dTmp * dTmp * dTmp +
+				c * dTmp * dTmp * dTmp * dTmp +
+				d * dTmp * dTmp * dTmp +
+				e * dTmp * dTmp +
+				f * dTmp +
+				g;
+	}
+
+	foreach (DictionaryEntry de in _m_VS_Tmp)
+	{
+		if ((double)de.Value < 0) return null;
+	}
+
+	if (ht_VS_Tmp.Count == 0) return null;
+
+	return _m_VS_Tmp;
+}
+public static bool _VS_LagrangePolyCubic(ref map _m_VS_)
+{
+	//(k1,v1) left point
+	//(k2,v2) trough in the smile
+	//(k3,v3) right point
+	double v1 = 0, v2 = 0, v3 = 0, v4 = 0;
+	int k1 = 0, k2 = 0, k3 = 0, k4 = 0;
+	int iTroughIdx = 0;
+
+	if (ht_VS_.Count < IParam.MINPTVOLSMILE)
+	{
+		return false;
+	}
+	else
+	{
+		object[] oK = new object[ht_VS_.Count];
+		_m_VS_.Keys.CopyTo(oK, 0);
+		Array.Sort(oK);
+
+		//locate the trough, (k2,v2)
+		for (int i = 0; i < oK.Length; i++)
+		{
+			if (double.IsNaN(v2) || v2 == 0 || (double)(ht_VS_[oK[i]]) < v2)
+			{
+				v2 = (double)(ht_VS_[oK[i]]);
+				k2 = (int)(oK[i]);
+				iTroughIdx = i;
+			}
+		}
+
+		//locate the left data point, (k1,v1)
+		k1 = (int)Math.Round(((int)(oK[0]) + k2) / 2d / IParam.OPTSTRIKEINTVL, 0) * IParam.OPTSTRIKEINTVL;
+		while (!ht_VS_.ContainsKey(k1)
+				|| k1 < k2) k1 += IParam.OPTSTRIKEINTVL;
+		if (k1 == k2) return false;
+		v1 = (double)ht_VS_[k1];
+
+		//locate the second left data point, (k4,v4)
+		k4 = (int)(Math.Round((double)(k2 + k1) / 2d / IParam.OPTSTRIKEINTVL, 0) * IParam.OPTSTRIKEINTVL);
+		while (!ht_VS_.ContainsKey(k4)
+				|| k4 < k2 || k4 <= k1) k4 += IParam.OPTSTRIKEINTVL;
+		if (k4 == k2) return false;
+		v4 = (double)ht_VS_[k4];
+
+		//locate the right data point, (k3,v3)
+		k3 = (int)Math.Round(((int)(oK[oK.Length - 1]) + k2) / 2d / IParam.OPTSTRIKEINTVL, 0) * IParam.OPTSTRIKEINTVL;
+		while (!ht_VS_.ContainsKey(k3)
+				|| k3 > k2) k3 -= IParam.OPTSTRIKEINTVL;
+		if (k3 == k2) return false;
+		v3 = (double)ht_VS_[k3];
+
+
+		//---------------------------------------------------------------
+		// Lagrange polynomial: Cubic: x^3
+		//---------------------------------------------------------------
+		double A = v1 / (k1 - k2) / (k1 - k3) / (k1 - k4);
+		double B = v2 / (k2 - k1) / (k2 - k3) / (k2 - k4);
+		double C = v3 / (k3 - k1) / (k3 - k2) / (k3 - k4);
+		double D = v4 / (k4 - k1) / (k4 - k2) / (k4 - k3);
+
+		double a = A + B + C + D;
+		double b = -(A + B + C) * k4 - (A + B + D) * k3 - (A + C + D) * k2 - (B + C + D) * k1;
+		double c = (A + B) * k3 * k4 + (A + C) * k2 * k4 + (A + D) * k2 * k3 +
+			(B + C) * k1 * k4 + (B + D) * k1 * k3 + (C + D) * k1 * k2;
+		double d = -A * k2 * k3 * k4 - B * k1 * k3 * k4 - C * k1 * k2 * k4 - D * k1 * k2 * k3;
+
+		map _m_VS_Tmp = new map();
+
+		for (int i = IParam.VOLSMILEREGENSTART; i <= IParam.VOLSMILEREGENEND; i += IParam.VOLSMILEINTERVAL)
+		{
+			double IV = a * Math.Pow((double)i, 3) +
+				b * Math.Pow((double)i, 2) +
+				c * Math.Pow((double)i, 1) +
+				d;
+			_m_VS_Tmp[i] = IV;
+		}
+
+		foreach (DictionaryEntry de in _m_VS_Tmp)
+			if ((double)de.Value < 0)
+				return false;
+
+		//check convexity
+		for (int i = IParam.VOLSMILEREGENSTART;
+				i <= IParam.VOLSMILEREGENEND - 2 * IParam.VOLSMILEINTERVAL;
+				i += IParam.VOLSMILEINTERVAL)
+		{
+			if ((double)ht_VS_Tmp[i+2*IParam.VOLSMILEINTERVAL] - (double)ht_VS_Tmp[i+1*IParam.VOLSMILEINTERVAL]
+					<
+					(double)ht_VS_Tmp[i+1*IParam.VOLSMILEINTERVAL] - (double)ht_VS_Tmp[i])
+				return false;
+		}
+
+		//ok, no problem
+		_m_VS_ = (map)ht_VS_Tmp.DeepClone();
+
+
+		return true;
+	}
+}
+
+public static bool _VS_LagrangePolyQuintic(int iFrontMth, ref map _m_VS_)
+{
+	//(k1,v1) left point 1
+	//(k4,v4) left point 2
+	//(k6,v6) left point 3
+	//(k2,v2) trough in the smile
+	//(k3,v3) right point 1
+	//(k5,v5) right point 2
+	double v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0, v6 = 0;
+	int k1 = 0, k2 = 0, k3 = 0, k4 = 0, k5 = 0, k6 = 0;
+	int iTroughIdx = 0;
+
+	object[] oK = new object[ht_VS_.Count];
+	_m_VS_.Keys.CopyTo(oK, 0);
+	Array.Sort(oK);
+
+	//locate the trough, (k2,v2)
+	for (int i = 1; i < oK.Length - 1; i++)
+	{
+		if (double.IsNaN(v2) || v2 == 0 || (double)(ht_VS_[oK[i]]) < v2)
+		{
+			v2 = (double)(ht_VS_[oK[i]]);
+			k2 = (int)(oK[i]);
+			iTroughIdx = i;
+		}
+	}
+
+	//the leftmost data point is used to fix the overall shape of the curve
+	k1 = (int)(oK[0]);
+	v1 = (double)ht_VS_[k1];
+
+	//the rightmost data point is used to fix the overall shape of the curve
+	k5 = (int)(oK[oK.Length - 1]);
+	v5 = (double)ht_VS_[k5];
+
+	//locate somewhere a bit higher than _mid-point
+	double d1 = (double)(int)(oK[1]);
+	double d2 = (double)(int)(oK[oK.Length - 2]);
+	k4 = (int)(Math.Round((d1 + d2) / 2d / IParam.OPTSTRIKEINTVL, 0) * IParam.OPTSTRIKEINTVL + IParam.OPTSTRIKEINTVL);
+	while (!ht_VS_.ContainsKey(k4)
+			&& k4 < (int)oK[oK.Length - 2]) k4 += IParam.OPTSTRIKEINTVL;
+	v4 = (double)ht_VS_[k4];
+
+	//locate a point to the left of k4, (k6,v6)
+	k6 = k4 - IParam.OPTSTRIKEINTVL;
+	while (!ht_VS_.ContainsKey(k6)
+			&& k6 > (int)oK[1]) k6 -= IParam.OPTSTRIKEINTVL;
+	v6 = (double)ht_VS_[k6];
+
+	//locate a point to the right of k4, (k3,v3)
+	k3 = k4 + IParam.OPTSTRIKEINTVL;
+	while (!ht_VS_.ContainsKey(k3)
+			&& k3 < (int)oK[oK.Length - 2]) k3 += IParam.OPTSTRIKEINTVL;
+	v3 = (double)ht_VS_[k3];
+
+	if (k2 == k3 || k2 == k4 || k2 == k6 ||
+			k3 == k4 || k3 == k6 ||
+			k4 == k6)
+	{
+		if (ht_VS_.Count - 2 == 6) //only 6 pts excluding the boundaries, actual IV from 1-6
+		{
+			//keep k1, k5
+			k2 = (int)oK[2]; v2 = (double)ht_VS_[k2];
+			k3 = (int)oK[3]; v3 = (double)ht_VS_[k3];
+			k4 = (int)oK[4]; v4 = (double)ht_VS_[k4];
+			k6 = (int)oK[5]; v6 = (double)ht_VS_[k6];
+		}
+		else if (ht_VS_.Count - 2 == 7) //actual IV from 1-7
+		{
+			//keep k1, k5
+			k2 = (int)oK[3]; v2 = (double)ht_VS_[k2];
+			k3 = (int)oK[4]; v3 = (double)ht_VS_[k3];
+			k4 = (int)oK[5]; v4 = (double)ht_VS_[k4];
+			k6 = (int)oK[6]; v6 = (double)ht_VS_[k6];
+		}
+		else if (ht_VS_.Count - 2 == 8) //actual IV from 1-8
+		{
+			//keep k1, k5
+			k2 = (int)oK[4]; v2 = (double)ht_VS_[k2];
+			k3 = (int)oK[5]; v3 = (double)ht_VS_[k3];
+			k4 = (int)oK[6]; v4 = (double)ht_VS_[k4];
+			k6 = (int)oK[7]; v6 = (double)ht_VS_[k6];
+		}
+		else if (ht_VS_.Count - 2 == 9) //actual IV from 1-9
+		{
+			//keep k1, k5
+			k2 = (int)oK[5]; v2 = (double)ht_VS_[k2];
+			k3 = (int)oK[6]; v3 = (double)ht_VS_[k3];
+			k4 = (int)oK[7]; v4 = (double)ht_VS_[k4];
+			k6 = (int)oK[8]; v6 = (double)ht_VS_[k6];
+		}
+		else if (ht_VS_.Count - 2 == 10) //actual IV from 1-10
+		{
+			//keep k1, k5
+			k2 = (int)oK[6]; v2 = (double)ht_VS_[k2];
+			k3 = (int)oK[7]; v3 = (double)ht_VS_[k3];
+			k4 = (int)oK[8]; v4 = (double)ht_VS_[k4];
+			k6 = (int)oK[9]; v6 = (double)ht_VS_[k6];
+		}
+		else if (ht_VS_.Count - 2 == 11) //actual IV from 1-11
+		{
+			//keep k1, k5
+			k2 = (int)oK[6]; v2 = (double)ht_VS_[k2];
+			k3 = (int)oK[8]; v3 = (double)ht_VS_[k3];
+			k4 = (int)oK[9]; v4 = (double)ht_VS_[k4];
+			k6 = (int)oK[10]; v6 = (double)ht_VS_[k6];
+		}
+		else if (ht_VS_.Count - 2 > 11) //plenty of points
+		{
+			//keep k1, k5
+
+			//_move k2, keep k3, k4, k6
+			bool bNoConflict = false;
+			while (!bNoConflict)
+			{
+				if (k2 == k3) { k2 = k3 - IParam.OPTSTRIKEINTVL; v2 = (double)ht_VS_[k2]; }
+				if (k2 == k4) { k2 = k4 - IParam.OPTSTRIKEINTVL; v2 = (double)ht_VS_[k2]; }
+				if (k2 == k6) { k2 = k6 - IParam.OPTSTRIKEINTVL; v2 = (double)ht_VS_[k2]; }
+
+				if (k2 == k3 || k2 == k4 || k2 == k6 ||
+						k3 == k4 || k3 == k6 ||
+						k4 == k6) bNoConflict = false;
+				else bNoConflict = true;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	//---------------------------------------------------------------
+	// Lagrange polynomial: Quintic: deg(P(x)) == 5
+	//---------------------------------------------------------------
+	//using this curve to regenerate the whole volatility smile
+	//in a _much higher resolution, to facilitate implied PDF calculation
+	//dk's = just to _make the numbers smaller
+	double dk1 = k1 / IParam.OPTSTRIKEINTVL;
+	double dk2 = k2 / IParam.OPTSTRIKEINTVL;
+	double dk3 = k3 / IParam.OPTSTRIKEINTVL;
+	double dk4 = k4 / IParam.OPTSTRIKEINTVL;
+	double dk5 = k5 / IParam.OPTSTRIKEINTVL;
+	double dk6 = k6 / IParam.OPTSTRIKEINTVL;
+
+	double p7 = (dk1 - dk2) * (dk1 - dk3) * (dk1 - dk4) * (dk1 - dk5) * (dk1 - dk6);
+	double p8 = (dk2 - dk1) * (dk2 - dk3) * (dk2 - dk4) * (dk2 - dk5) * (dk2 - dk6);
+	double p9 = (dk3 - dk1) * (dk3 - dk2) * (dk3 - dk4) * (dk3 - dk5) * (dk3 - dk6);
+	double p10 = (dk4 - dk1) * (dk4 - dk2) * (dk4 - dk3) * (dk4 - dk5) * (dk4 - dk6);
+	double p11 = (dk5 - dk1) * (dk5 - dk2) * (dk5 - dk3) * (dk5 - dk4) * (dk5 - dk6);
+	double p12 = (dk6 - dk1) * (dk6 - dk2) * (dk6 - dk3) * (dk6 - dk4) * (dk6 - dk5);
+
+	map _m_VS_Tmp = new map();
+
+	for (int i = IParam.VOLSMILEREGENSTART; i <= IParam.VOLSMILEREGENEND; i += IParam.VOLSMILEINTERVAL)
+	{
+		double j = (double)i / IParam.OPTSTRIKEINTVL;
+		double p1 = (j-dk2)*(j-dk3)*(j-dk4)*(j-dk5)*(j-dk6);
+		double p2 = (j-dk1)*(j-dk3)*(j-dk4)*(j-dk5)*(j-dk6);
+		double p3 = (j-dk1)*(j-dk2)*(j-dk4)*(j-dk5)*(j-dk6);
+		double p4 = (j-dk1)*(j-dk2)*(j-dk3)*(j-dk5)*(j-dk6);
+		double p5 = (j-dk1)*(j-dk2)*(j-dk3)*(j-dk4)*(j-dk6);
+		double p6 = (j-dk1)*(j-dk2)*(j-dk3)*(j-dk4)*(j-dk5);
+
+		double IV = v1 * p1 / p7 +
+			v2 * p2 / p8 +
+			v3 * p3 / p9 +
+			v4 * p4 / p10 +
+			v5 * p5 / p11 +
+			v6 * p6 / p12;
+		_m_VS_Tmp[i] = IV;
+	}
+
+	foreach (DictionaryEntry de in _m_VS_Tmp)
+		if ((double)de.Value < 0)
+		{
+			Output_VS_Meth(iFrontMth, "Lagrange Polynomial (Quintic) failed - Negative values appear in the fitted curve", true);
+			return false;
+		}
+
+	//to check convexity, or not to check convexity, that is the question
+	//for (int i = IParam.VOLSMILEREGENSTART;
+	//            i <= IParam.VOLSMILEREGENEND - 2 * IParam.VOLSMILEINTERVAL;
+	//            i += IParam.VOLSMILEINTERVAL)
+	//{
+	//    if ((double)ht_VS_Tmp[i + 2 * IParam.VOLSMILEINTERVAL] - (double)ht_VS_Tmp[i + 1 * IParam.VOLSMILEINTERVAL]
+	//        <
+	//        (double)ht_VS_Tmp[i + 1 * IParam.VOLSMILEINTERVAL] - (double)ht_VS_Tmp[i])
+	//    {
+	//        Output_VS_Meth(iFrontMth, "Lagrange Polynomial (Quintic) failed - Convexity test failed", true);
+	//        return false;
+	//    }
+	//}
+
+	//ok, no problem
+	_m_VS_ = (map)ht_VS_Tmp.DeepClone();
+
+
+	return true;
+}
+
+*/
+
+
+
+#endif
