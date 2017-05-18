@@ -999,7 +999,7 @@ void DataProcFunctions_MDP::OnChannelReset(const unsigned short channelID, const
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
   auto& ent = msg.noMDEntries();
 
-  if (m_Logger->NeedToPrint(Logger::DEBUG))
+  if (m_Logger->NeedToPrint(Logger::INFO))
   {
     while (ent.hasNext())
     {
