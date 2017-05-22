@@ -38,17 +38,17 @@ using namespace boost::filesystem;
 using namespace boost::interprocess;
 #include "ThostFtdcMdApi.h"
 
-class CtpMd : public CThostFtdcMdSpi {
+class CtpMd : public CThostFtdcMdSpi
+{
   public:
     CtpMd();
     virtual void run();
-    virtual ~CtpMd(){}
+    virtual ~CtpMd();
 
     //--------------------------------------------------
     virtual void notify_marketfeed(const ATU_MDI_marketfeed_struct &);
     virtual void on_process_subscription(const ATU_MDI_subscription_struct &s);
 
-    virtual void ReadConfig(const string &);
     //--------------------------------------------------
     // CTP callback
     //--------------------------------------------------
@@ -61,7 +61,6 @@ class CtpMd : public CThostFtdcMdSpi {
     virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData);
     //--------------------------------------------------
 
-    void release_CThostFtdcMdApi();
     virtual void setDataFolder(const string &);
     virtual void setWriteDataToFile(const string &);
     virtual void SetFlushOnEveryWrite(const bool);
@@ -96,7 +95,6 @@ class CtpMd : public CThostFtdcMdSpi {
     TThostFtdcInvestorIDType m_user_id;
     TThostFtdcPasswordType   m_password;
     TThostFtdcSessionIDType  m_session_id;
-    // TThostFtdcFrontIDType    m_front_id;
     set<string>              m_subscribedSymbols;
 
     BinaryRecorder           m_BinaryRecorder;

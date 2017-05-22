@@ -6,45 +6,15 @@ CtpMd::CtpMd() : m_pCThostFtdcMdApi(NULL),m_p_ctp_lib_handle(NULL),m_DataFolder(
   m_subscribedSymbols.clear();
 }
 
-void CtpMd::ReadConfig(const string & sConfigPath)
+CtpMd::~CtpMd()
 {
-  m_Logger = StdStreamLogger::Instance();
-  boost::property_tree::ptree pt;
-  boost::property_tree::ini_parser::read_ini(sConfigPath, pt);
-
-  string sLogLevel = STool::Trim(pt.get<std::string>("General.LogLevel"));
-  if      (sLogLevel == "EMERGENCY") { m_Logger->SetLogLevel(StdStreamLogger::EMERGENCY); }
-  else if (sLogLevel == "ALERT")     { m_Logger->SetLogLevel(StdStreamLogger::ALERT);     }
-  else if (sLogLevel == "CRITICAL")  { m_Logger->SetLogLevel(StdStreamLogger::CRITICAL);  }
-  else if (sLogLevel == "ERROR")     { m_Logger->SetLogLevel(StdStreamLogger::ERROR);     }
-  else if (sLogLevel == "WARNING")   { m_Logger->SetLogLevel(StdStreamLogger::WARNING);   }
-  else if (sLogLevel == "NOTICE")    { m_Logger->SetLogLevel(StdStreamLogger::NOTICE);    }
-  else if (sLogLevel == "INFO")      { m_Logger->SetLogLevel(StdStreamLogger::INFO);      }
-  else if (sLogLevel == "DEBUG")     { m_Logger->SetLogLevel(StdStreamLogger::DEBUG);     }
-
-  m_Logger->Write(StdStreamLogger::INFO,"Reading Config file: %s", sConfigPath.c_str());
-  m_Logger->Write(StdStreamLogger::INFO,"LogLevel: %s", sLogLevel.c_str());
-
-  //--------------------------------------------------
-  // CtpMd
-  //--------------------------------------------------
-  setDataFolder     (STool::Trim(pt.get<std::string>("General.DataFolder")));
-  setWriteDataToFile(STool::Trim(pt.get<std::string>("General.WriteDataToFile")));
-  setConnectString  (STool::Trim(pt.get<std::string>("Account.ConnectionString")));
-  setBrokerID       (STool::Trim(pt.get<std::string>("Account.BrokerID")));
-  setInvestorID     (STool::Trim(pt.get<std::string>("Account.UserID")));
-  setPassword       (            pt.get<std::string>("Account.Password"));
-
-  vector<string> vSym;
-  const string sSyms = pt.get<std::string>("General.SubscribeSymbols");
-  boost::split(vSym,sSyms,boost::is_any_of(","));
-  setSubscribeSymbols<vector<string> >(vSym);
-
-  string sFlushOnEveryWrite = pt.get<std::string>("General.FlushOnEveryWrite");
-  boost::algorithm::to_lower(sFlushOnEveryWrite);
-  if (sFlushOnEveryWrite == "true" || sFlushOnEveryWrite == "t" || sFlushOnEveryWrite == "yes" || sFlushOnEveryWrite == "y") SetFlushOnEveryWrite(true);
+  if (m_pCThostFtdcMdApi == NULL) return;
+  m_pCThostFtdcMdApi->RegisterSpi(NULL);
+  m_Logger->Write(StdStreamLogger::INFO,"Called RegisterSpi(NULL)");
+  m_pCThostFtdcMdApi->Release();
+  m_Logger->Write(StdStreamLogger::INFO,"Called Release()");
+  m_pCThostFtdcMdApi = NULL;
 }
-
 
 //--------------------------------------------------
 // setters
@@ -98,7 +68,8 @@ void CtpMd::run()
   {
     m_Logger->Write(StdStreamLogger::ERROR,"CTP libthostmduserapi.so NOT loaded");
     return;
-  } else
+  }
+  else
   {
     m_Logger->Write(StdStreamLogger::INFO,"CTP libthostmduserapi.so loaded");
   }
@@ -229,12 +200,4 @@ void CtpMd::notify_marketfeed(const ATU_MDI_marketfeed_struct &s)
 {
 }
 
-void CtpMd::release_CThostFtdcMdApi()
-{
-  if (m_pCThostFtdcMdApi == NULL) return;
-  m_pCThostFtdcMdApi->RegisterSpi(NULL);
-  m_Logger->Write(StdStreamLogger::INFO,"Called RegisterSpi(NULL)");
-  m_pCThostFtdcMdApi->Release();
-  m_Logger->Write(StdStreamLogger::INFO,"Called Release()");
-  m_pCThostFtdcMdApi = NULL;
-}
+

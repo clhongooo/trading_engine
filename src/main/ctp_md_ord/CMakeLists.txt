@@ -1,5 +1,5 @@
-project(ctp_md)
+project(ctp_md_ord)
 include_directories(. ../ctp_include ../logger ../util)
 link_directories(/usr/local/pantheios/lib)
-add_executable(${PROJECT_NAME} CtpMd.cpp Main.cpp)
+add_executable(${PROJECT_NAME} CtpMd.cpp CtpOrd.cpp Main.cpp)
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} logger util dl pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)
