@@ -10,9 +10,9 @@ CtpMd::~CtpMd()
 {
   if (m_pCThostFtdcMdApi == NULL) return;
   m_pCThostFtdcMdApi->RegisterSpi(NULL);
-  m_Logger->Write(StdStreamLogger::INFO,"Called RegisterSpi(NULL)");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called RegisterSpi(NULL)", __FILENAME__);
   m_pCThostFtdcMdApi->Release();
-  m_Logger->Write(StdStreamLogger::INFO,"Called Release()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called Release()", __FILENAME__);
   m_pCThostFtdcMdApi = NULL;
 }
 
@@ -43,26 +43,26 @@ void CtpMd::run()
   m_p_ctp_lib_handle = dlopen("thostmduserapi.so",RTLD_NOW);
   if (m_p_ctp_lib_handle == NULL)
   {
-    m_Logger->Write(StdStreamLogger::ERROR,"CTP libthostmduserapi.so NOT loaded. %s", dlerror());
+    m_Logger->Write(StdStreamLogger::ERROR,"%s: CTP libthostmduserapi.so NOT loaded. %s", __FILENAME__, dlerror());
     return;
   }
   else
   {
-    m_Logger->Write(StdStreamLogger::INFO,"CTP libthostmduserapi.so loaded");
+    m_Logger->Write(StdStreamLogger::INFO,"%s: CTP libthostmduserapi.so loaded", __FILENAME__);
   }
   typedef CThostFtdcMdApi* (*CreateFtdcMdApiPtr)(const char *, bool, bool);
   CreateFtdcMdApiPtr CreateFtdcMdApi = (CreateFtdcMdApiPtr)dlsym(m_p_ctp_lib_handle,"_ZN15CThostFtdcMdApi15CreateFtdcMdApiEPKcbb");
 
   m_pCThostFtdcMdApi = CreateFtdcMdApi("",true,true);
-  m_Logger->Write(StdStreamLogger::INFO,"Called CreateFtdcMdApi");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called CreateFtdcMdApi", __FILENAME__);
   m_pCThostFtdcMdApi->RegisterSpi((CThostFtdcMdSpi*) this);
-  m_Logger->Write(StdStreamLogger::INFO,"Called RegisterSpi()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called RegisterSpi()", __FILENAME__);
   m_pCThostFtdcMdApi->RegisterFront((char*)m_connection_string.c_str());
-  m_Logger->Write(StdStreamLogger::INFO,"Called RegisterFront()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called RegisterFront()", __FILENAME__);
   m_pCThostFtdcMdApi->Init();
-  m_Logger->Write(StdStreamLogger::INFO,"Called Init()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called Init()", __FILENAME__);
   if (m_pCThostFtdcMdApi!=NULL) m_pCThostFtdcMdApi->Join();
-  m_Logger->Write(StdStreamLogger::INFO,"After Join()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: After Join()", __FILENAME__);
 }
 
 //--------------------------------------------------
@@ -70,27 +70,27 @@ void CtpMd::run()
 //--------------------------------------------------
 void CtpMd::OnFrontConnected()
 {
-  m_Logger->Write(StdStreamLogger::INFO,"Front is connected");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Front is connected", __FILENAME__);
   CThostFtdcReqUserLoginField req;
   memset(&req, 0, sizeof(req));
   strcpy(req.BrokerID, m_broker_id);
   strcpy(req.UserID, m_user_id);
   strcpy(req.Password, m_password);
   int iResult = m_pCThostFtdcMdApi->ReqUserLogin(&req, ++m_iRequestID);
-  m_Logger->Write(StdStreamLogger::INFO,"Called ReqUserLogin()");
-  m_Logger->Write(StdStreamLogger::NOTICE,"User Login is %s",(iResult == 0) ? "OK" : "Fail");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called ReqUserLogin()", __FILENAME__);
+  m_Logger->Write(StdStreamLogger::NOTICE,"%s: User Login is %s", __FILENAME__,(iResult == 0) ? "OK" : "Fail");
   SubscribeSymbols(m_subscribedSymbols);
 }
 
 void CtpMd::OnRspError(CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
   if (pRspInfo && (pRspInfo->ErrorID != 0))
-    m_Logger->Write(StdStreamLogger::ERROR,"ErrorID=%d, ErrorMsg=%s",pRspInfo->ErrorID,pRspInfo->ErrorMsg);
+    m_Logger->Write(StdStreamLogger::ERROR,"%s: ErrorID=%d, ErrorMsg=%s", __FILENAME__,pRspInfo->ErrorID,pRspInfo->ErrorMsg);
 }
 
 void CtpMd::OnFrontDisconnected(int nReason)
 {
-  m_Logger->Write(StdStreamLogger::NOTICE,"Front is disconnected!");
+  m_Logger->Write(StdStreamLogger::NOTICE,"%s: Front is disconnected!", __FILENAME__);
 }
 
 void CtpMd::OnHeartBeatWarning(int nTimeLapse)
@@ -169,7 +169,7 @@ void CtpMd::SubscribeSymbol(const string & sym)
   strcpy(csSym, sym.c_str());
   _ppInstrumentID[0] = csSym;
   m_pCThostFtdcMdApi->SubscribeMarketData(_ppInstrumentID,1);
-  m_Logger->Write(StdStreamLogger::INFO,"Subscribed %s.",sym.c_str());
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Subscribed %s.", __FILENAME__,sym.c_str());
 }
 
 void CtpMd::notify_marketfeed(const ATU_MDI_marketfeed_struct &s)

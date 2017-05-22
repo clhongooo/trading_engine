@@ -33,34 +33,34 @@ void CtpOrd::run()
   m_p_ctp_lib_handle=dlopen("thosttraderapi.so",RTLD_NOW);
   if (m_p_ctp_lib_handle == NULL)
   {
-    m_Logger->Write(StdStreamLogger::ERROR,"CTP libthosttraderapi.so NOT loaded. %s", dlerror());
+    m_Logger->Write(StdStreamLogger::ERROR,"%s: CTP libthosttraderapi.so NOT loaded. %s", __FILENAME__, dlerror());
     return;
   }
   else
   {
-    m_Logger->Write(StdStreamLogger::INFO,"CTP libthosttraderapi.so loaded");
+    m_Logger->Write(StdStreamLogger::INFO,"%s: CTP libthosttraderapi.so loaded", __FILENAME__);
   }
   typedef CThostFtdcTraderApi* (*CreateFtdcTradeApiPtr)(char const*);
   CreateFtdcTradeApiPtr CreateFtdcTradeApi= (CreateFtdcTradeApiPtr)dlsym(m_p_ctp_lib_handle,"_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc");
 
   m_pCThostFtdcTraderApi=CreateFtdcTradeApi(m_FlowDataFolder.c_str());
-  m_Logger->Write(StdStreamLogger::INFO,"Called CreateFtdcTradeApi");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called CreateFtdcTradeApi", __FILENAME__);
   m_pCThostFtdcTraderApi->RegisterSpi((CThostFtdcTraderSpi*) this);
-  m_Logger->Write(StdStreamLogger::INFO,"Called RegisterSpi()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called RegisterSpi()", __FILENAME__);
   m_pCThostFtdcTraderApi->SubscribePublicTopic(THOST_TERT_QUICK);
-  m_Logger->Write(StdStreamLogger::INFO,"Called SubscribePublicTopic()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called SubscribePublicTopic()", __FILENAME__);
   m_pCThostFtdcTraderApi->SubscribePrivateTopic(THOST_TERT_QUICK);
-  m_Logger->Write(StdStreamLogger::INFO,"Called SubscribePrivateTopic()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called SubscribePrivateTopic()", __FILENAME__);
   m_pCThostFtdcTraderApi->RegisterFront((char*)m_connection_string.c_str());
-  m_Logger->Write(StdStreamLogger::INFO,"Called RegisterFront()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called RegisterFront()", __FILENAME__);
   m_pCThostFtdcTraderApi->Init();
-  m_Logger->Write(StdStreamLogger::INFO,"Called Init()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called Init()", __FILENAME__);
   if (m_pCThostFtdcTraderApi!=NULL) m_pCThostFtdcTraderApi->Join();
-  m_Logger->Write(StdStreamLogger::INFO,"After Join()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: After Join()", __FILENAME__);
 }
 
 CtpOrd::~CtpOrd() {
-  m_Logger->Write(StdStreamLogger::INFO,"Trader API is released");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Trader API is released", __FILENAME__);
   if (m_pCThostFtdcTraderApi!=NULL) {
     m_pCThostFtdcTraderApi->RegisterSpi(NULL);
     m_pCThostFtdcTraderApi->Release();
@@ -120,7 +120,7 @@ bool CtpOrd::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
         req.LimitPrice = s.m_price;
       }
       req.StopPrice = _stop_price;
-      m_Logger->Write(StdStreamLogger::INFO,"Stop condition: %f %d %s", _stop_price,_stop_condition,_orderType);
+      m_Logger->Write(StdStreamLogger::INFO,"%s: Stop condition: %f %d %s", __FILENAME__, _stop_price,_stop_condition,_orderType);
       switch(_stop_condition){
         case 1:	{req.ContingentCondition = THOST_FTDC_CC_BidPriceGreaterEqualStopPrice; break;}
         case 2:	{req.ContingentCondition = THOST_FTDC_CC_BidPriceLesserEqualStopPrice; break;}
@@ -178,8 +178,8 @@ bool CtpOrd::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
     boost::unique_lock<boost::recursive_mutex> lock(m_requestIDMutex);
     int iResult = m_pCThostFtdcTraderApi->ReqOrderInsert(&req, ++m_iRequestID);
 
-    m_Logger->Write(StdStreamLogger::INFO,"Order Insert to CTP order id=%s", s.m_order_id.c_str());
-    m_Logger->Write(StdStreamLogger::INFO,"ReqOrderInsert result: %s", ((iResult == 0) ? "OK" : "Fail"));
+    m_Logger->Write(StdStreamLogger::INFO,"%s: Order Insert to CTP order id=%s", __FILENAME__, s.m_order_id.c_str());
+    m_Logger->Write(StdStreamLogger::INFO,"%s: ReqOrderInsert result: %s", __FILENAME__, ((iResult == 0) ? "OK" : "Fail"));
 
     //this should generate errorfeed or orderfeed as notification of error
   }
@@ -196,10 +196,10 @@ bool CtpOrd::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
         m_orderid_instrument.find(s.m_order_id) != m_orderid_instrument.end())
       s.m_instrument = m_orderid_instrument[s.m_order_id];
     strcpy(req.InstrumentID, s.m_instrument.c_str());
-    m_Logger->Write(StdStreamLogger::INFO,"Order Deleted from CTP order id=%s", s.m_order_id.c_str());
+    m_Logger->Write(StdStreamLogger::INFO,"%s: Order Deleted from CTP order id=%s", __FILENAME__, s.m_order_id.c_str());
     boost::unique_lock<boost::recursive_mutex> lock(m_requestIDMutex);
     int iResult = m_pCThostFtdcTraderApi->ReqOrderAction(&req, ++m_iRequestID);
-    m_Logger->Write(StdStreamLogger::INFO,"ReqOrderAction result: %s", ((iResult == 0) ? "OK" : "Fail"));
+    m_Logger->Write(StdStreamLogger::INFO,"%s: ReqOrderAction result: %s", __FILENAME__, ((iResult == 0) ? "OK" : "Fail"));
     //this should generate errorfeed or orderfeed as notification of error
   }
 
@@ -214,7 +214,7 @@ bool CtpOrd::on_process_portfolio_get_working_orders(ATU_OTI_portfolio_get_worki
   boost::unique_lock<boost::recursive_mutex> lock(m_requestIDMutex);
   if (m_pCThostFtdcTraderApi == NULL) sleep(2); // The purpose of adding sleep is that the CTP initialization may take more time to finish.
   int iResult = m_pCThostFtdcTraderApi->ReqQryOrder(&req, ++m_iRequestID);
-  m_Logger->Write(StdStreamLogger::INFO,"ReqQryOrder result: %s", ((iResult == 0) ? "OK" : "Fail"));
+  m_Logger->Write(StdStreamLogger::INFO,"%s: ReqQryOrder result: %s", __FILENAME__, ((iResult == 0) ? "OK" : "Fail"));
 
   return true;
 }
@@ -234,13 +234,13 @@ bool CtpOrd::on_process_portfolio_get_trade_history(ATU_OTI_portfolio_get_trade_
   boost::unique_lock<boost::recursive_mutex> lock(m_requestIDMutex);
   if (m_pCThostFtdcTraderApi == NULL) sleep(2); // The purpose of adding sleep is that the CTP initialization may take more time to finish.
   int iResult = m_pCThostFtdcTraderApi->ReqQryTrade(&req, ++m_iRequestID);
-  m_Logger->Write(StdStreamLogger::INFO,"ReqQryTrade result: %s", ((iResult == 0) ? "OK" : "Fail"));
+  m_Logger->Write(StdStreamLogger::INFO,"%s: ReqQryTrade result: %s", __FILENAME__, ((iResult == 0) ? "OK" : "Fail"));
   return true;
 }
 
 
 void CtpOrd::OnFrontConnected() {
-  m_Logger->Write(StdStreamLogger::INFO,"Front is connected");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Front is connected", __FILENAME__);
   ReqUserLogin();
 }
 
@@ -252,11 +252,11 @@ void CtpOrd::ReqUserLogin() {
   strcpy(req.Password, m_password);
   boost::unique_lock<boost::recursive_mutex> lock(m_requestIDMutex);
   int iResult = m_pCThostFtdcTraderApi->ReqUserLogin(&req, ++m_iRequestID);
-  m_Logger->Write(StdStreamLogger::INFO,"UserLogin result: %s", ((iResult == 0) ? "OK" : "Fail"));
+  m_Logger->Write(StdStreamLogger::INFO,"%s: UserLogin result: %s", __FILENAME__, ((iResult == 0) ? "OK" : "Fail"));
 }
 
 void CtpOrd::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
-  m_Logger->Write(StdStreamLogger::INFO,"Called OnRspUserLogin()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called OnRspUserLogin()", __FILENAME__);
   if (bIsLast && !IsErrorRspInfo(pRspInfo)) {
     m_front_id = pRspUserLogin->FrontID;
     m_session_id = pRspUserLogin->SessionID;
@@ -275,7 +275,7 @@ void CtpOrd::OnRspSettlementInfoConfirm(
   CThostFtdcRspInfoField *pRspInfo,
   int nRequestID,
   bool bIsLast) {
-  m_Logger->Write(StdStreamLogger::INFO,"Called OnRspSettlementInfoConfirm()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called OnRspSettlementInfoConfirm()", __FILENAME__);
   if (bIsLast && !IsErrorRspInfo(pRspInfo)) {
     //ReqQryInstrument();
   }
@@ -284,7 +284,7 @@ void CtpOrd::OnRspSettlementInfoConfirm(
 
 void CtpOrd::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument,
                                 CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
-  m_Logger->Write(StdStreamLogger::INFO,"Called OnRspQryInstrument()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called OnRspQryInstrument()", __FILENAME__);
   if (bIsLast && !IsErrorRspInfo(pRspInfo)) {
     //		ReqQryTradingAccount();
   }
@@ -294,7 +294,7 @@ void CtpOrd::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument,
 void CtpOrd::OnRspQryTradingAccount(
   CThostFtdcTradingAccountField *pTradingAccount,
   CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
-  m_Logger->Write(StdStreamLogger::INFO,"Balance=%f, Available=%f", pTradingAccount->Balance ,pTradingAccount->Available);
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Balance=%f, Available=%f", __FILENAME__, pTradingAccount->Balance ,pTradingAccount->Available);
   if (bIsLast && !IsErrorRspInfo(pRspInfo)) {
     //ReqQryInvestorPosition();
   }
@@ -304,8 +304,8 @@ void CtpOrd::OnRspQryTradingAccount(
 void CtpOrd::OnRspQryInvestorPosition(
   CThostFtdcInvestorPositionField *pInvestorPosition,
   CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
-  m_Logger->Write(StdStreamLogger::INFO,"Called OnRspQryInvestorPosition()");
-  m_Logger->Write(StdStreamLogger::INFO,"%s %s %s today pos=%d pos=%d open vol=%d openAmt=%f", pInvestorPosition->TradingDay,pInvestorPosition->PosiDirection,pInvestorPosition->InstrumentID,pInvestorPosition->TodayPosition, pInvestorPosition->Position, pInvestorPosition->OpenVolume,pInvestorPosition->OpenAmount);
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called OnRspQryInvestorPosition()", __FILENAME__);
+  m_Logger->Write(StdStreamLogger::INFO,"%s: %s %s %s today pos=%d pos=%d open vol=%d openAmt=%f", __FILENAME__, pInvestorPosition->TradingDay,pInvestorPosition->PosiDirection,pInvestorPosition->InstrumentID,pInvestorPosition->TodayPosition, pInvestorPosition->Position, pInvestorPosition->OpenVolume,pInvestorPosition->OpenAmount);
   if (!IsErrorRspInfo(pRspInfo)) {		//ReqOrderInsert();
 
   }
@@ -313,8 +313,8 @@ void CtpOrd::OnRspQryInvestorPosition(
 void CtpOrd::OnRspQryInvestorPositionDetail(
   CThostFtdcInvestorPositionDetailField *pInvestorPosition,
   CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
-  m_Logger->Write(StdStreamLogger::INFO,"Called OnRspQryInvestorPositionDetail()");
-  m_Logger->Write(StdStreamLogger::INFO,"%s %s %s %s TradeID=%s Volume=%d OpenPrice=%f", pInvestorPosition->TradingDay,pInvestorPosition->OpenDate,pInvestorPosition->Direction,pInvestorPosition->InstrumentID, pInvestorPosition->TradeID, pInvestorPosition->Volume, pInvestorPosition->OpenPrice);
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called OnRspQryInvestorPositionDetail()", __FILENAME__);
+  m_Logger->Write(StdStreamLogger::INFO,"%s: %s %s %s %s TradeID=%s Volume=%d OpenPrice=%f", __FILENAME__, pInvestorPosition->TradingDay,pInvestorPosition->OpenDate,pInvestorPosition->Direction,pInvestorPosition->InstrumentID, pInvestorPosition->TradeID, pInvestorPosition->Volume, pInvestorPosition->OpenPrice);
   if (!IsErrorRspInfo(pRspInfo)) {		//ReqOrderInsert();
 
   }
@@ -322,7 +322,7 @@ void CtpOrd::OnRspQryInvestorPositionDetail(
 
 void CtpOrd::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder,
                               CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
-  m_Logger->Write(StdStreamLogger::INFO,"Called OnRspOrderInsert()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called OnRspOrderInsert()", __FILENAME__);
   IsErrorRspInfo(pRspInfo);
   ATU_OTI_orderfeed_struct of;
   of.m_timestamp = SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_ffffff();
@@ -382,7 +382,7 @@ void CtpOrd::OnRspOrderAction(
   CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
 
   //Do not believe order information attached in the response with Error.
-  m_Logger->Write(StdStreamLogger::INFO,"Called OnRspOrderAction()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called OnRspOrderAction()", __FILENAME__);
   IsErrorRspInfo(pRspInfo);
   ATU_OTI_orderfeed_struct of;
   of.m_islast=0;
@@ -419,7 +419,7 @@ void CtpOrd::OnRspOrderAction(
 }
 
 void CtpOrd::OnRtnOrder(CThostFtdcOrderField *pOrder) {
-  m_Logger->Write(StdStreamLogger::INFO,"Called OnRtnOrder()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called OnRtnOrder()", __FILENAME__);
 
   printCThostFtdcOrderField(pOrder);
   ATU_OTI_orderfeed_struct of;
@@ -487,14 +487,14 @@ void CtpOrd::OnRtnOrder(CThostFtdcOrderField *pOrder) {
 
   of.m_order_validity = "N/A";
 
-  m_Logger->Write(StdStreamLogger::INFO,"StatusMsg:%s",pOrder->StatusMsg);
+  m_Logger->Write(StdStreamLogger::INFO,"%s: StatusMsg:%s", __FILENAME__,pOrder->StatusMsg);
 
   // notify_orderfeed(of);
 
 }
 
 void CtpOrd::OnRtnTrade(CThostFtdcTradeField *pTrade) {
-  m_Logger->Write(StdStreamLogger::INFO,"Called OnRtnTrade()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called OnRtnTrade()", __FILENAME__);
   //	cout << pTrade->InstrumentID << "," << pTrade->Direction << "," << pTrade->Price << "," << pTrade->Volume << "," << pTrade->TraderID << "," << pTrade->OrderLocalID << "," << pTrade->OrderRef << endl;
 
   ATU_OTI_tradefeed_struct tf;
@@ -542,15 +542,15 @@ void CtpOrd::OnRtnTrade(CThostFtdcTradeField *pTrade) {
 }
 
 void CtpOrd::OnFrontDisconnected(int nReason) {
-  m_Logger->Write(StdStreamLogger::INFO,"Call OnFrontDisconnected: Reason = %d",nReason);
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Call OnFrontDisconnected: Reason = %d", __FILENAME__,nReason);
 }
 
 void CtpOrd::OnHeartBeatWarning(int nTimeLapse) {
-  m_Logger->Write(StdStreamLogger::INFO,"Call OnHeartBeatWarning. nTimerLapse=%d",nTimeLapse);
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Call OnHeartBeatWarning. nTimerLapse=%d", __FILENAME__,nTimeLapse);
 }
 
 void CtpOrd::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
-  m_Logger->Write(StdStreamLogger::INFO,"Called OnRspError()");
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Called OnRspError()", __FILENAME__);
   IsErrorRspInfo(pRspInfo);
   //TODO:: should call notify_errorfeed
   //TODO:: or should call orderfeed with error_status marked..
@@ -559,7 +559,7 @@ void CtpOrd::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool b
 bool CtpOrd::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo) {
   bool bResult = ((pRspInfo) && (pRspInfo->ErrorID != 0));
   if (bResult)
-    m_Logger->Write(StdStreamLogger::INFO,"ErrorID=%d, ErrorMsg=%s",pRspInfo->ErrorID,pRspInfo->ErrorMsg);
+    m_Logger->Write(StdStreamLogger::INFO,"%s: ErrorID=%d, ErrorMsg=%s", __FILENAME__,pRspInfo->ErrorID,pRspInfo->ErrorMsg);
   return bResult;
 }
 
@@ -580,10 +580,10 @@ void CtpOrd::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField 
     return;
   }
 
-  m_Logger->Write(StdStreamLogger::INFO,"OrderRef=%s",pOrder->OrderRef);
+  m_Logger->Write(StdStreamLogger::INFO,"%s: OrderRef=%s", __FILENAME__,pOrder->OrderRef);
 
   if(pOrder->OrderStatus == THOST_FTDC_OST_AllTraded || pOrder->OrderStatus == THOST_FTDC_OST_Canceled || pOrder->OrderStatus == THOST_FTDC_OST_PartTradedNotQueueing || pOrder->OrderStatus == THOST_FTDC_OST_NoTradeNotQueueing){
-    m_Logger->Write(StdStreamLogger::INFO,"Order is executed or canceled");
+    m_Logger->Write(StdStreamLogger::INFO,"%s: Order is executed or canceled", __FILENAME__);
 
     if (bIsLast) {
       of.m_islast=1;
@@ -801,5 +801,5 @@ void CtpOrd::printCThostFtdcOrderField(CThostFtdcOrderField *pOrder)
   oo<<endl;
   oo<<endl;
 
-  m_Logger->Write(StdStreamLogger::INFO,"printCThostFtdcOrderField: %s", oo.str().c_str());
+  m_Logger->Write(StdStreamLogger::INFO,"%s: printCThostFtdcOrderField: %s", __FILENAME__, oo.str().c_str());
 }
