@@ -92,6 +92,7 @@ class CtpOrd : public CThostFtdcTraderSpi
     //--------------------------------------------------
     // 
     //--------------------------------------------------
+    virtual void setFlowDataFolder(const string &);
     virtual void setConnectString(const string &);
     virtual void setBrokerID(const string &);
     virtual void setInvestorID(const string &);
@@ -102,6 +103,7 @@ class CtpOrd : public CThostFtdcTraderSpi
   private:
     CThostFtdcTraderApi*     m_pCThostFtdcTraderApi;
     void*                    m_p_ctp_lib_handle;
+    string                   m_FlowDataFolder;
     string                   m_connection_string;
     TThostFtdcBrokerIDType   m_broker_id;
     TThostFtdcInvestorIDType m_user_id;

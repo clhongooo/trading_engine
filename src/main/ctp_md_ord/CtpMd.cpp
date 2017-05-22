@@ -66,7 +66,7 @@ void CtpMd::run()
   m_p_ctp_lib_handle = dlopen("thostmduserapi.so",RTLD_NOW);
   if (m_p_ctp_lib_handle == NULL)
   {
-    m_Logger->Write(StdStreamLogger::ERROR,"CTP libthostmduserapi.so NOT loaded");
+    m_Logger->Write(StdStreamLogger::ERROR,"CTP libthostmduserapi.so NOT loaded. %s", dlerror());
     return;
   }
   else

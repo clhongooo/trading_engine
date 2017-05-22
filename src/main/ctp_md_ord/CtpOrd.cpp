@@ -4,6 +4,13 @@ CtpOrd::CtpOrd() : m_pCThostFtdcTraderApi(NULL), m_iRequestID(0), m_orderRefCoun
 {
   m_Logger = StdStreamLogger::Instance();
 }
+//--------------------------------------------------
+// setters
+//--------------------------------------------------
+void CtpOrd::setFlowDataFolder(const string & fdf)
+{
+  m_FlowDataFolder = fdf;
+}
 void CtpOrd::setConnectString(const string & connStr)
 {
   m_connection_string = connStr;
@@ -23,20 +30,20 @@ void CtpOrd::setPassword(const string & pwd)
 
 void CtpOrd::run()
 {
-  m_p_ctp_lib_handle=dlopen("libthosttraderapi.so",RTLD_NOW);
+  m_p_ctp_lib_handle=dlopen("thosttraderapi.so",RTLD_NOW);
   if (m_p_ctp_lib_handle == NULL)
   {
-    m_Logger->Write(StdStreamLogger::ERROR,"CTP libthosttraderapi.so NOT loaded");
+    m_Logger->Write(StdStreamLogger::ERROR,"CTP libthosttraderapi.so NOT loaded. %s", dlerror());
     return;
   }
   else
   {
     m_Logger->Write(StdStreamLogger::INFO,"CTP libthosttraderapi.so loaded");
   }
-  typedef CThostFtdcTraderApi* (*CreateFtdcTradeApiPtr)();
+  typedef CThostFtdcTraderApi* (*CreateFtdcTradeApiPtr)(char const*);
   CreateFtdcTradeApiPtr CreateFtdcTradeApi= (CreateFtdcTradeApiPtr)dlsym(m_p_ctp_lib_handle,"_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc");
 
-  m_pCThostFtdcTraderApi=CreateFtdcTradeApi();
+  m_pCThostFtdcTraderApi=CreateFtdcTradeApi(m_FlowDataFolder.c_str());
   m_Logger->Write(StdStreamLogger::INFO,"Called CreateFtdcTradeApi");
   m_pCThostFtdcTraderApi->RegisterSpi((CThostFtdcTraderSpi*) this);
   m_Logger->Write(StdStreamLogger::INFO,"Called RegisterSpi()");

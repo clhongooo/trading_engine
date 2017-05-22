@@ -53,6 +53,7 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd, bo
   //--------------------------------------------------
   // CtpOrd
   //--------------------------------------------------
+  p_ctpord->setFlowDataFolder (STool::Trim(pt.get<std::string>("OrderRouting.FlowDataFolder")));
   p_ctpord->setConnectString  (STool::Trim(pt.get<std::string>("OrderRouting.ConnectionString")));
   p_ctpord->setBrokerID       (STool::Trim(pt.get<std::string>("OrderRouting.BrokerID")));
   p_ctpord->setInvestorID     (STool::Trim(pt.get<std::string>("OrderRouting.UserID")));
