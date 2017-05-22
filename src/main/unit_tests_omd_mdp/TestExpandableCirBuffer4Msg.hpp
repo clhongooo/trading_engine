@@ -12,8 +12,8 @@
 #include <boost/thread/thread.hpp>
 #include <boost/lockfree/queue.hpp>
 #include <boost/shared_ptr.hpp>
-#include "Container/ExpandableCirBuffer4Msg.h"
-#include "MemoryManagement/CentralMemMgr.h"
+#include "ExpandableCirBuffer4Msg.h"
+#include "CentralMemMgr.h"
 #include "BinaryTools.h"
 #include <iostream>
 #include <cstdlib>

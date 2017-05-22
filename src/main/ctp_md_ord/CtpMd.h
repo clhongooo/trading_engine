@@ -5,7 +5,7 @@
 #include "STool.h"
 #include "SDateTime.h"
 #include "Constants.h"
-#include "BinaryTools.h"
+#include "ExpandableCirBuffer.h"
 
 #include <dlfcn.h>
 #include <iostream>
@@ -41,7 +41,7 @@ using namespace boost::interprocess;
 class CtpMd : public CThostFtdcMdSpi
 {
   public:
-    CtpMd();
+    CtpMd(boost::shared_ptr<ExpandableCirBuffer>);
     virtual void run();
     virtual ~CtpMd();
 
@@ -61,9 +61,6 @@ class CtpMd : public CThostFtdcMdSpi
     virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData);
     //--------------------------------------------------
 
-    virtual void setDataFolder(const string &);
-    virtual void setWriteDataToFile(const string &);
-    virtual void SetFlushOnEveryWrite(const bool);
     virtual void setConnectString(const string &);
     virtual void setBrokerID(const string &);
     virtual void setInvestorID(const string &);
@@ -88,8 +85,6 @@ class CtpMd : public CThostFtdcMdSpi
     CThostFtdcMdApi*         m_pCThostFtdcMdApi;
     void*                    m_p_ctp_lib_handle;
     int                      m_iRequestID;
-    string                   m_DataFolder;
-    bool                     m_WriteDataToFile;
     string                   m_connection_string;
     TThostFtdcBrokerIDType   m_broker_id;
     TThostFtdcInvestorIDType m_user_id;
@@ -97,8 +92,8 @@ class CtpMd : public CThostFtdcMdSpi
     TThostFtdcSessionIDType  m_session_id;
     set<string>              m_subscribedSymbols;
 
-    BinaryRecorder           m_BinaryRecorder;
     boost::shared_ptr<FILE>  m_data_outfile;
+    boost::shared_ptr<ExpandableCirBuffer> m_ecbMD;
 
     //--------------------------------------------------
     // System objects

@@ -7,12 +7,12 @@
 #include "BinaryTools.h"
 #include "Testing/UTest/UTest.h"
 
-#include "MemoryManagement/CentralMemMgr.h"
+#include "CentralMemMgr.h"
 
 #include "TestExpandableCirBuffer.hpp"
-#include "Container/ExpandableCirBuffer.h"
+#include "ExpandableCirBuffer.h"
 #include "TestExpandableCirBuffer4Msg.hpp"
-#include "Container/ExpandableCirBuffer4Msg.h"
+#include "ExpandableCirBuffer4Msg.h"
 
 
 #include "Testing/UTest/UTest.h"

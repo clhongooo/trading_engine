@@ -1,6 +1,6 @@
 #include "CtpOrd.h"
 
-CtpOrd::CtpOrd() : m_pCThostFtdcTraderApi(NULL), m_iRequestID(0), m_orderRefCount(0), m_lastOrderTimestamp("")
+CtpOrd::CtpOrd(boost::shared_ptr<ExpandableCirBuffer> p) : m_pCThostFtdcTraderApi(NULL), m_iRequestID(0), m_orderRefCount(0), m_lastOrderTimestamp(""),m_ecbOrd(p)
 {
   m_Logger = StdStreamLogger::Instance();
 }
@@ -73,16 +73,9 @@ CtpOrd::~CtpOrd() {
     dlclose(m_p_ctp_lib_handle);
   }
 }
-bool CtpOrd::on_notify_tradefeed(ATU_OTI_tradefeed_struct &s) {
-  return true;
-}
-bool CtpOrd::on_notify_orderfeed(ATU_OTI_orderfeed_struct &s) {
-  return true;
-}
-//process incoming signal feed and dispatch for all the order in the list if necessary
 bool CtpOrd::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
-  //here we determine what order to create or delete
-  if (s.m_order_action.compare("insert")==0) {
+  if (s.m_order_action.compare("insert")==0)
+  {
     if (s.m_order_id != "" &&
         s.m_instrument != "")
     {
@@ -127,7 +120,7 @@ bool CtpOrd::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
         req.LimitPrice = s.m_price;
       }
       req.StopPrice = _stop_price;
-  m_Logger->Write(StdStreamLogger::INFO,"Stop condition: %f %d %s", _stop_price,_stop_condition,_orderType);
+      m_Logger->Write(StdStreamLogger::INFO,"Stop condition: %f %d %s", _stop_price,_stop_condition,_orderType);
       switch(_stop_condition){
         case 1:	{req.ContingentCondition = THOST_FTDC_CC_BidPriceGreaterEqualStopPrice; break;}
         case 2:	{req.ContingentCondition = THOST_FTDC_CC_BidPriceLesserEqualStopPrice; break;}
@@ -185,8 +178,8 @@ bool CtpOrd::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
     boost::unique_lock<boost::recursive_mutex> lock(m_requestIDMutex);
     int iResult = m_pCThostFtdcTraderApi->ReqOrderInsert(&req, ++m_iRequestID);
 
-  m_Logger->Write(StdStreamLogger::INFO,"Order Insert to CTP order id=%s", s.m_order_id.c_str());
-  m_Logger->Write(StdStreamLogger::INFO,"ReqOrderInsert result: %s", ((iResult == 0) ? "OK" : "Fail"));
+    m_Logger->Write(StdStreamLogger::INFO,"Order Insert to CTP order id=%s", s.m_order_id.c_str());
+    m_Logger->Write(StdStreamLogger::INFO,"ReqOrderInsert result: %s", ((iResult == 0) ? "OK" : "Fail"));
 
     //this should generate errorfeed or orderfeed as notification of error
   }
@@ -203,10 +196,10 @@ bool CtpOrd::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
         m_orderid_instrument.find(s.m_order_id) != m_orderid_instrument.end())
       s.m_instrument = m_orderid_instrument[s.m_order_id];
     strcpy(req.InstrumentID, s.m_instrument.c_str());
-  m_Logger->Write(StdStreamLogger::INFO,"Order Deleted from CTP order id=%s", s.m_order_id.c_str());
+    m_Logger->Write(StdStreamLogger::INFO,"Order Deleted from CTP order id=%s", s.m_order_id.c_str());
     boost::unique_lock<boost::recursive_mutex> lock(m_requestIDMutex);
     int iResult = m_pCThostFtdcTraderApi->ReqOrderAction(&req, ++m_iRequestID);
-  m_Logger->Write(StdStreamLogger::INFO,"ReqOrderAction result: %s", ((iResult == 0) ? "OK" : "Fail"));
+    m_Logger->Write(StdStreamLogger::INFO,"ReqOrderAction result: %s", ((iResult == 0) ? "OK" : "Fail"));
     //this should generate errorfeed or orderfeed as notification of error
   }
 
@@ -222,7 +215,6 @@ bool CtpOrd::on_process_portfolio_get_working_orders(ATU_OTI_portfolio_get_worki
   if (m_pCThostFtdcTraderApi == NULL) sleep(2); // The purpose of adding sleep is that the CTP initialization may take more time to finish.
   int iResult = m_pCThostFtdcTraderApi->ReqQryOrder(&req, ++m_iRequestID);
   m_Logger->Write(StdStreamLogger::INFO,"ReqQryOrder result: %s", ((iResult == 0) ? "OK" : "Fail"));
-
 
   return true;
 }
@@ -567,7 +559,7 @@ void CtpOrd::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool b
 bool CtpOrd::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo) {
   bool bResult = ((pRspInfo) && (pRspInfo->ErrorID != 0));
   if (bResult)
-  m_Logger->Write(StdStreamLogger::INFO,"ErrorID=%d, ErrorMsg=%s",pRspInfo->ErrorID,pRspInfo->ErrorMsg);
+    m_Logger->Write(StdStreamLogger::INFO,"ErrorID=%d, ErrorMsg=%s",pRspInfo->ErrorID,pRspInfo->ErrorMsg);
   return bResult;
 }
 
@@ -591,7 +583,7 @@ void CtpOrd::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField 
   m_Logger->Write(StdStreamLogger::INFO,"OrderRef=%s",pOrder->OrderRef);
 
   if(pOrder->OrderStatus == THOST_FTDC_OST_AllTraded || pOrder->OrderStatus == THOST_FTDC_OST_Canceled || pOrder->OrderStatus == THOST_FTDC_OST_PartTradedNotQueueing || pOrder->OrderStatus == THOST_FTDC_OST_NoTradeNotQueueing){
-  m_Logger->Write(StdStreamLogger::INFO,"Order is executed or canceled");
+    m_Logger->Write(StdStreamLogger::INFO,"Order is executed or canceled");
 
     if (bIsLast) {
       of.m_islast=1;

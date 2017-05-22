@@ -36,7 +36,7 @@ BinaryRecorder::BinaryWriter::~BinaryWriter()
   {
     fflush(m_OutFile);
     fclose(m_OutFile);
-    delete m_OutFile;
+    // delete m_OutFile;
     m_OutFile = NULL;
   }
 }

@@ -1,6 +1,6 @@
 #include "CtpMd.h"
 
-CtpMd::CtpMd() : m_pCThostFtdcMdApi(NULL),m_p_ctp_lib_handle(NULL),m_DataFolder(""),m_WriteDataToFile(false),m_connection_string("")
+CtpMd::CtpMd(boost::shared_ptr<ExpandableCirBuffer> p) : m_pCThostFtdcMdApi(NULL),m_p_ctp_lib_handle(NULL),m_connection_string(""),m_ecbMD(p)
 {
   m_Logger = StdStreamLogger::Instance();
   m_subscribedSymbols.clear();
@@ -19,29 +19,6 @@ CtpMd::~CtpMd()
 //--------------------------------------------------
 // setters
 //--------------------------------------------------
-void CtpMd::setDataFolder(const string & df)
-{
-  m_DataFolder = df;
-  m_BinaryRecorder.SetOutFilePath(m_DataFolder+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_ffffff()+".csv","w+");
-}
-void CtpMd::setWriteDataToFile(const string & wdtf)
-{
-  string wdtf2 = wdtf;
-  boost::algorithm::to_lower(wdtf2);
-  if (wdtf2 == "true" || wdtf2 == "t" || wdtf2 == "yes" || wdtf2 == "y") m_WriteDataToFile = true;
-  else                                                                   m_WriteDataToFile = false;
-  if (m_WriteDataToFile && !m_BinaryRecorder.EnableWriter())
-  {
-    m_Logger->Write(StdStreamLogger::ERROR,"File cannot be opened. Exiting.");
-    exit(1);
-  }
-  if (m_WriteDataToFile) m_Logger->Write(StdStreamLogger::INFO,"Write data to file = true");
-  else                   m_Logger->Write(StdStreamLogger::INFO,"Write data to file = false");
-}
-void CtpMd::SetFlushOnEveryWrite(const bool b)
-{
-  m_BinaryRecorder.SetFlushOnEveryWrite(b);
-}
 void CtpMd::setConnectString(const string & connStr)
 {
   m_connection_string = connStr;
@@ -135,7 +112,7 @@ void CtpMd::OnRspSubMarketData(CThostFtdcSpecificInstrumentField* pSpecificInstr
 
 void CtpMd::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData)
 {
-  ATU_MDI_marketfeed_struct mfs;
+  ATU_MDI_marketfeed_struct* mfs = (ATU_MDI_marketfeed_struct *)(m_ecbMD->GetWritingPtr());
 
   //--------------------------------------------------
   // string tradingDay = pDepthMarketData->TradingDay;
@@ -146,35 +123,34 @@ void CtpMd::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketDat
   // sprintf(sMicrosec,"%06d",pDepthMarketData->UpdateMillisec*1000);
   // mfs.m_timestamp     = tradingDay+"_"+updateTime+"_"+string(sMicrosec);
   //--------------------------------------------------
-  mfs.m_microsec_since_epoch_gmt = SDateTime::GetCurrentUnixTimeInMicrosecGMT();
-  memset(mfs.m_instrument,'\0',strlen(mfs.m_instrument)); // just to enable better compression ratio in the output binary data file.
-  strcpy(mfs.m_instrument,pDepthMarketData->InstrumentID);
+  mfs->m_microsec_since_epoch_gmt = SDateTime::GetCurrentUnixTimeInMicrosecGMT();
+  memset(mfs->m_instrument,'\0',strlen(mfs->m_instrument)); // just to enable better compression ratio in the output binary data file.
+  strcpy(mfs->m_instrument,pDepthMarketData->InstrumentID);
 
-  mfs.m_traded_price  = (pDepthMarketData->LastPrice  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->LastPrice;
-  mfs.m_bid_price_1   = (pDepthMarketData->BidPrice1  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice1;
-  mfs.m_bid_price_2   = (pDepthMarketData->BidPrice2  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice2;
-  mfs.m_bid_price_3   = (pDepthMarketData->BidPrice3  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice3;
-  mfs.m_bid_price_4   = (pDepthMarketData->BidPrice4  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice4;
-  mfs.m_bid_price_5   = (pDepthMarketData->BidPrice5  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice5;
-  mfs.m_ask_price_1   = (pDepthMarketData->AskPrice1  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice1;
-  mfs.m_ask_price_2   = (pDepthMarketData->AskPrice2  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice2;
-  mfs.m_ask_price_3   = (pDepthMarketData->AskPrice3  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice3;
-  mfs.m_ask_price_4   = (pDepthMarketData->AskPrice4  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice4;
-  mfs.m_ask_price_5   = (pDepthMarketData->AskPrice5  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice5;
-  mfs.m_traded_volume = (pDepthMarketData->Volume     == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->Volume;
-  mfs.m_bid_volume_1  = (pDepthMarketData->BidVolume1 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume1;
-  mfs.m_bid_volume_2  = (pDepthMarketData->BidVolume2 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume2;
-  mfs.m_bid_volume_3  = (pDepthMarketData->BidVolume3 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume3;
-  mfs.m_bid_volume_4  = (pDepthMarketData->BidVolume4 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume4;
-  mfs.m_bid_volume_5  = (pDepthMarketData->BidVolume5 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume5;
-  mfs.m_ask_volume_1  = (pDepthMarketData->AskVolume1 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume1;
-  mfs.m_ask_volume_2  = (pDepthMarketData->AskVolume2 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume2;
-  mfs.m_ask_volume_3  = (pDepthMarketData->AskVolume3 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume3;
-  mfs.m_ask_volume_4  = (pDepthMarketData->AskVolume4 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume4;
-  mfs.m_ask_volume_5  = (pDepthMarketData->AskVolume5 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume5;
+  mfs->m_traded_price  = (pDepthMarketData->LastPrice  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->LastPrice;
+  mfs->m_bid_price_1   = (pDepthMarketData->BidPrice1  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice1;
+  mfs->m_bid_price_2   = (pDepthMarketData->BidPrice2  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice2;
+  mfs->m_bid_price_3   = (pDepthMarketData->BidPrice3  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice3;
+  mfs->m_bid_price_4   = (pDepthMarketData->BidPrice4  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice4;
+  mfs->m_bid_price_5   = (pDepthMarketData->BidPrice5  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidPrice5;
+  mfs->m_ask_price_1   = (pDepthMarketData->AskPrice1  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice1;
+  mfs->m_ask_price_2   = (pDepthMarketData->AskPrice2  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice2;
+  mfs->m_ask_price_3   = (pDepthMarketData->AskPrice3  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice3;
+  mfs->m_ask_price_4   = (pDepthMarketData->AskPrice4  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice4;
+  mfs->m_ask_price_5   = (pDepthMarketData->AskPrice5  == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskPrice5;
+  mfs->m_traded_volume = (pDepthMarketData->Volume     == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->Volume;
+  mfs->m_bid_volume_1  = (pDepthMarketData->BidVolume1 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume1;
+  mfs->m_bid_volume_2  = (pDepthMarketData->BidVolume2 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume2;
+  mfs->m_bid_volume_3  = (pDepthMarketData->BidVolume3 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume3;
+  mfs->m_bid_volume_4  = (pDepthMarketData->BidVolume4 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume4;
+  mfs->m_bid_volume_5  = (pDepthMarketData->BidVolume5 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->BidVolume5;
+  mfs->m_ask_volume_1  = (pDepthMarketData->AskVolume1 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume1;
+  mfs->m_ask_volume_2  = (pDepthMarketData->AskVolume2 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume2;
+  mfs->m_ask_volume_3  = (pDepthMarketData->AskVolume3 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume3;
+  mfs->m_ask_volume_4  = (pDepthMarketData->AskVolume4 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume4;
+  mfs->m_ask_volume_5  = (pDepthMarketData->AskVolume5 == DBL_MAX) ? ATU_INVALID_PRICE : pDepthMarketData->AskVolume5;
 
-  m_BinaryRecorder.WriteATUMDIStruct(mfs);
-  // notify_marketfeed(mfs);
+  m_ecbMD->PushBack(sizeof(ATU_MDI_marketfeed_struct));
 }
 
 //--------------------------------------------------

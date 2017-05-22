@@ -27,6 +27,7 @@
 #include "STool.h"
 #include "SDateTime.h"
 #include "Constants.h"
+#include "ExpandableCirBuffer.h"
 
 using namespace std;
 #include <boost/algorithm/string.hpp>
@@ -53,13 +54,11 @@ class CTraderSpi;
 class CtpOrd : public CThostFtdcTraderSpi
 {
   public:
-    CtpOrd();
+    CtpOrd(boost::shared_ptr<ExpandableCirBuffer>);
     virtual void run();
     virtual ~CtpOrd();
 
     //--------------------------------------------------
-    virtual bool on_notify_orderfeed(ATU_OTI_orderfeed_struct &s);
-    virtual bool on_notify_tradefeed(ATU_OTI_tradefeed_struct &s);
     virtual bool on_process_signalfeed(ATU_OTI_signalfeed_struct &s);
 
     //--------------------------------------------------
@@ -128,6 +127,7 @@ class CtpOrd : public CThostFtdcTraderSpi
     boost::recursive_mutex m_requestIDMutex;
     boost::recursive_mutex m_orderRefMutex;
 
+    boost::shared_ptr<ExpandableCirBuffer> m_ecbOrd;
     //--------------------------------------------------
     // System objects
     //--------------------------------------------------
