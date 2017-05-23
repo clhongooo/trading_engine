@@ -1,0 +1,23 @@
+Hi Grace,
+
+If your team needs to set up a new VPN connection, please complete the Schedule 2 here: http://www.cmegroup.com/globex/files/CMEGlobexSch2AccessRequest.pdf
+Upon receiving the complete paperwork, our Network Engineer will contact you around 3 – 5 U.S. business days to provide the VPN connection details.
+
+For the certification environment setup, please follow the similar instruction in my original email below to (1) send me the CME Group Login of the tester and; (2) application system details. As discussed, if this is a new system, perhaps it’s easier to come up with a new application name instead of simply changing the version. And the new system must be certified before rolling out to production. 
+
+Free feel to reach out for further questions. 
+
+                                                
+Tiffany Chan
+Manager, Global Account Management
+Office: +852 2582 2219
+Mobile: + 852 9223 3422
+tiffany.chan@cmegroup.com
+
+CME Group
+Unit 7711, 77/F, The Centre
+99 Queen’s Road Central, Hong Kong
+www.cmegroup.com
+
+For any real-time production issues, errors or trade-related questions, please contact our 24-hr production support hotline of CME Global Command Center (GCC) at +65 6532 5010 for immediate assistance. 
+
