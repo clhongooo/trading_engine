@@ -7,10 +7,11 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "ExpandableCirBuffer.h"
 #include <boost/thread.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include "ExpandableCirBuffer.h"
+#include "ZMQServerClient.h"
 #include "StdStreamLogger.h"
 #include "CtpMd.h"
 #include "CtpOrd.h"
@@ -19,7 +20,7 @@
 using namespace std;
 using namespace boost;
 
-void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd, boost::shared_ptr<CtpOrd> p_ctpord, boost::shared_ptr<BinaryRecorder> p_BinaryRecorder)
+void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd, boost::shared_ptr<CtpOrd> p_ctpord, boost::shared_ptr<ZMQServer> p_zmq_server_md, boost::shared_ptr<ZMQServer> p_zmq_server_ord, boost::shared_ptr<BinaryRecorder> p_BinaryRecorder)
 {
   boost::shared_ptr<StdStreamLogger> m_Logger = StdStreamLogger::Instance();
   boost::property_tree::ptree pt;
@@ -41,19 +42,21 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd, bo
   //--------------------------------------------------
   // CtpMd
   //--------------------------------------------------
-  p_ctpmd->setConnectString  (STool::Trim(pt.get<std::string>("MarketData.ConnectionString")));
-  p_ctpmd->setBrokerID       (STool::Trim(pt.get<std::string>("MarketData.BrokerID")));
-  p_ctpmd->setInvestorID     (STool::Trim(pt.get<std::string>("MarketData.UserID")));
-  p_ctpmd->setPassword       (            pt.get<std::string>("MarketData.Password"));
+  p_ctpmd->setConnectString    (STool::Trim(pt.get<std::string>("MarketData.ConnectionString")));
+  p_ctpmd->setBrokerID         (STool::Trim(pt.get<std::string>("MarketData.BrokerID")));
+  p_ctpmd->setInvestorID       (STool::Trim(pt.get<std::string>("MarketData.UserID")));
+  p_ctpmd->setPassword         (STool::Trim(pt.get<std::string>("MarketData.Password")));
+  p_zmq_server_md->Set         (STool::Trim(pt.get<std::string>("MarketData.ZmqMdPort")));
 
   //--------------------------------------------------
   // CtpOrd
   //--------------------------------------------------
-  p_ctpord->setFlowDataFolder (STool::Trim(pt.get<std::string>("OrderRouting.FlowDataFolder")));
-  p_ctpord->setConnectString  (STool::Trim(pt.get<std::string>("OrderRouting.ConnectionString")));
-  p_ctpord->setBrokerID       (STool::Trim(pt.get<std::string>("OrderRouting.BrokerID")));
-  p_ctpord->setInvestorID     (STool::Trim(pt.get<std::string>("OrderRouting.UserID")));
-  p_ctpord->setPassword       (            pt.get<std::string>("OrderRouting.Password"));
+  p_ctpord->setFlowDataFolder  (STool::Trim(pt.get<std::string>("OrderRouting.FlowDataFolder")));
+  p_ctpord->setConnectString   (STool::Trim(pt.get<std::string>("OrderRouting.ConnectionString")));
+  p_ctpord->setBrokerID        (STool::Trim(pt.get<std::string>("OrderRouting.BrokerID")));
+  p_ctpord->setInvestorID      (STool::Trim(pt.get<std::string>("OrderRouting.UserID")));
+  p_ctpord->setPassword        (STool::Trim(pt.get<std::string>("OrderRouting.Password")));
+  p_zmq_server_ord->Set        (STool::Trim(pt.get<std::string>("OrderRouting.ZmqOrdPort")));
 
   //--------------------------------------------------
   vector<string> vSym;
@@ -93,38 +96,69 @@ int main(int argc, const char *argv[])
     return 0;
   }
 
+  boost::shared_ptr<StdStreamLogger> m_Logger = StdStreamLogger::Instance();
+  //--------------------------------------------------
+  boost::shared_ptr<ZMQServer> p_zmq_server_md (new ZMQServer());
+  boost::shared_ptr<ZMQServer> p_zmq_server_ord(new ZMQServer());
+  //--------------------------------------------------
   boost::shared_ptr<CentralMemMgr> cmm = CentralMemMgr::Instance();
-
   boost::shared_ptr<ExpandableCirBuffer> p_ecbMD (new ExpandableCirBuffer(1,4096,sizeof(ATU_MDI_marketfeed_struct)+3,cmm));
   boost::shared_ptr<ExpandableCirBuffer> p_ecbOrd(new ExpandableCirBuffer(1,4096,4096,cmm));
+  //--------------------------------------------------
   boost::shared_ptr<CtpMd>  p_ctpmd (new CtpMd(p_ecbMD));
   boost::shared_ptr<CtpOrd> p_ctpord(new CtpOrd(p_ecbOrd));
+  //--------------------------------------------------
   boost::shared_ptr<BinaryRecorder> p_BinaryRecorder(new BinaryRecorder());
-
-  ReadConfig(argv[1], p_ctpmd, p_ctpord, p_BinaryRecorder);
+  //--------------------------------------------------
+  ReadConfig(argv[1], p_ctpmd, p_ctpord, p_zmq_server_md, p_zmq_server_ord, p_BinaryRecorder);
+  //--------------------------------------------------
 
   boost::scoped_ptr<boost::thread> m_p_run_md_thread (new boost::thread(boost::bind(&CtpMd::run,p_ctpmd.get())));
   boost::scoped_ptr<boost::thread> m_p_run_ord_thread(new boost::thread(boost::bind(&CtpOrd::run,p_ctpord.get())));
 
+  BYTE * pb = NULL;
+  unsigned long ulTStamp;
   for (;;)
   {
     //--------------------------------------------------
     // always give priority to order routing
     //--------------------------------------------------
+    while (p_ecbOrd->GetReadingPtrTStamp(pb,&ulTStamp))
+    {
+      const string sFeed((char*)pb);
+      p_ecbOrd->PopFront();
+      p_zmq_server_ord->Send(sFeed);
+      m_Logger->Write(StdStreamLogger::INFO,"Sent from zmq: %s", sFeed.c_str());
+    }
+    Tuple2<bool,string> tup = p_zmq_server_ord->GetStr();
+    while (tup._1())
+    {
+      m_Logger->Write(StdStreamLogger::INFO,"Received from zmq: %s", tup._2().c_str());
+      ATU_OTI_signalfeed_struct sfs;
+      if (ATU_OTI_signalfeed_struct::ParseString(tup._2(),sfs))
+        p_ctpord->on_process_signalfeed(sfs);
+      tup = p_zmq_server_ord->GetStr();
+    }
 
     //--------------------------------------------------
     // process market data with spare time
     //--------------------------------------------------
-    BYTE * pb = NULL;
-    unsigned long ulTStamp;
-    if (p_ecbMD->GetReadingPtrTStamp(pb,&ulTStamp))
+    while (p_ecbMD->GetReadingPtrTStamp(pb,&ulTStamp))
     {
       const ATU_MDI_marketfeed_struct* mfs = (ATU_MDI_marketfeed_struct*)pb;
       p_BinaryRecorder->WriteATUMDIStruct(*mfs);
       p_ecbMD->PopFront();
+
+      if (!p_ecbOrd->Empty() || max(p_zmq_server_ord->GetSendQueueSize(),p_zmq_server_ord->GetRecvQueueSize()) > 0) break;
     }
+
+    while (p_ecbOrd->Empty() && max(p_zmq_server_ord->GetSendQueueSize(),p_zmq_server_ord->GetRecvQueueSize()) == 0)
+      boost::this_thread::sleep(boost::posix_time::microseconds(100*1000));
   }
 
+  //--------------------------------------------------
+  // Won't reach here anyway
+  //--------------------------------------------------
   m_p_run_md_thread->join();
   m_p_run_ord_thread->join();
 
