@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Note:
+// The code was adopted from Alex Wang's implementation for CAPI in 2014.
+// Therefore the coding style isn't too consistent with the rest of the project.
+// Let it be for now.
+//--------------------------------------------------
 #ifndef _ATU_CTP_OTI_H_
 #define _ATU_CTP_OTI_H_
 #include <boost/bind.hpp>
@@ -89,8 +95,6 @@ class CtpOrd : public CThostFtdcTraderSpi
     void ReqUserLogin();
 
     //--------------------------------------------------
-    // 
-    //--------------------------------------------------
     virtual void setFlowDataFolder(const string &);
     virtual void setConnectString(const string &);
     virtual void setBrokerID(const string &);
@@ -116,16 +120,16 @@ class CtpOrd : public CThostFtdcTraderSpi
     bool IsTradingOrder(CThostFtdcOrderField *pOrder);
     string createOrderRef(string orderid);
     string getOrderRef(string orderid);
-    string getOrderID(string orderref);
+    string getOrderID(const string & orderref);
 
     inline void notify_tradefeed(const ATU_OTI_tradefeed_struct &);
     inline void notify_orderfeed(const ATU_OTI_orderfeed_struct &);
 
     map<string,string> m_order_idToOrderRef;
     map<string,string> m_OrderRefToorder_id;
+    map<string,string> m_orderid_instrument;
     int m_orderRefCount;
     string m_lastOrderTimestamp;
-    map<string,string> m_orderid_instrument;
 
     //--------------------------------------------------
     boost::recursive_mutex m_requestIDMutex;

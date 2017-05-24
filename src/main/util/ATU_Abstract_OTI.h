@@ -38,18 +38,17 @@ typedef struct ATU_OTI_signalfeed_struct
   {
     std::ostringstream buffer; 
     buffer <<
-      std::setprecision(6) <<
       sf.m_timestamp        <<  ",signalfeed," <<
       sf.m_market           <<  ","            <<
       sf.m_instrument       <<  ","            <<
       sf.m_order_id         <<  ","            <<
-      sf.m_price            <<  ","            <<   setprecision(2) << fixed <<
+      sf.m_price            <<  ","            <<   setprecision(5) << fixed <<
       sf.m_qty              <<  ","            <<
       sf.m_open_or_close    <<  ","            <<
       sf.m_buy_or_sell      <<  ","            <<
       sf.m_order_action     <<  ","            <<
       sf.m_order_type       <<  ","            <<
-      sf.m_order_validity   <<  "\n";
+      sf.m_order_validity   <<  "\n"           <<   setprecision(0) << fixed;
     return buffer.str();
   }
   static bool ParseString(const string & csv, ATU_OTI_signalfeed_struct & sf)
@@ -124,26 +123,25 @@ typedef struct ATU_OTI_orderfeed_struct
   {
     std::ostringstream buffer; 
     buffer <<
-      std::setprecision(6) <<
-      of.m_timestamp          <<  ",orderfeed,"  <<
-      of.m_market             <<  ","            <<
-      of.m_instrument         <<  ","            <<
-      of.m_order_id           <<  ","            <<
-      of.m_price              <<  ","            <<   setprecision(2) << fixed <<
-      of.m_qty                <<  ","            <<
-      of.m_open_or_close      <<  ","            <<
-      of.m_buy_or_sell        <<  ","            <<
-      of.m_qty_filled         <<  ","            <<
-      of.m_order_type         <<  ","            <<
-      of.m_order_validity     <<  ","            <<
-      of.m_deleted            <<  ","            <<
-      of.m_order_status       <<  ","            <<
-      of.m_error_description  <<  ","            <<
-      of.m_portfolio_name     <<  ","            <<
-      of.m_created_timestamp  <<  ","            <<
-      of.m_changed_timestamp  <<  ","            <<
-      of.m_source             <<  ","            <<
-      of.m_islast             <<  "\n";
+      of.m_timestamp          <<  ",orderfeed,"    <<
+      of.m_market             <<  ","              <<
+      of.m_instrument         <<  ","              <<
+      of.m_order_id           <<  ","              <<
+      of.m_price              <<  ","              <<   setprecision(5) << fixed <<
+      of.m_qty                <<  ","              <<
+      of.m_open_or_close      <<  ","              <<
+      of.m_buy_or_sell        <<  ","              <<
+      of.m_qty_filled         <<  ","              <<
+      of.m_deleted            <<  ","              <<
+      of.m_order_status       <<  ","              <<
+      of.m_error_description  <<  ","              <<
+      of.m_source             <<  ","              <<
+      of.m_order_type         <<  ","              <<
+      of.m_order_validity     <<  ","              <<
+      of.m_portfolio_name     <<  ","              <<
+      of.m_created_timestamp  <<  ","              <<
+      of.m_changed_timestamp  <<  ","              <<
+      of.m_islast             <<  "\n"             <<   setprecision(0) << fixed;
     return buffer.str();
   }
 } ATU_OTI_orderfeed_struct;
@@ -181,12 +179,11 @@ typedef struct ATU_OTI_tradefeed_struct
   {
     std::ostringstream buffer; 
     buffer <<
-      std::setprecision(6) <<
       tf.m_timestamp        <<  ",tradefeed,"  <<
       tf.m_market           <<  ","            <<
       tf.m_instrument       <<  ","            <<
       tf.m_order_id         <<  ","            <<
-      tf.m_price            <<  ","            <<   setprecision(2) << fixed <<
+      tf.m_price            <<  ","            <<   setprecision(5) << fixed <<
       tf.m_qty              <<  ","            <<
       tf.m_open_or_close    <<  ","            <<
       tf.m_buy_or_sell      <<  ","            <<
@@ -194,7 +191,7 @@ typedef struct ATU_OTI_tradefeed_struct
       tf.m_portfolio_name   <<  ","            <<
       tf.m_trade_timestamp  <<  ","            <<
       tf.m_source           <<  ","            <<
-      tf.m_islast           <<  "\n";
+      tf.m_islast           <<  "\n"           <<   setprecision(0) << fixed;
     return buffer.str();
   }
 } ATU_OTI_tradefeed_struct;

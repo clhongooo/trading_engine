@@ -369,7 +369,7 @@ void CtpOrd::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder,
     of.m_order_type = "limit_order";
   }
 
-  of.m_order_validity = "N/A";
+  of.m_order_validity = "NA";
 
   notify_orderfeed(of);
 }
@@ -726,7 +726,7 @@ string CtpOrd::getOrderRef(string orderid) {
     return m_order_idToOrderRef[orderid];
   }
 }
-string CtpOrd::getOrderID(string orderref) {
+string CtpOrd::getOrderID(const string & orderref) {
   boost::unique_lock<boost::recursive_mutex> lock(m_orderRefMutex);
   if (m_OrderRefToorder_id.find(orderref)==m_OrderRefToorder_id.end()) {
     return orderref;
