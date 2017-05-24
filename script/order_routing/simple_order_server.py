@@ -5,6 +5,7 @@ import zmq
 import argparse
 from threading import Thread
 
+JUSTIFY_COL=200
 received_from_client = []
 
 def justify_str(s,totlen,left_right="right",padchar=' '):
@@ -28,7 +29,7 @@ def recv_zmq():
     global received_from_client
     while True:
         m = zmq_socket.recv()
-        print right_justify("Received: %s" % m, 200)
+        print right_justify("Received: %s" % m, JUSTIFY_COL)
         received_from_client.append(m)
 
 def send_zmq():
@@ -37,7 +38,7 @@ def send_zmq():
     while True:
         if len(received_from_client) > 0:
             zmq_socket.send(received_from_client[0])
-            print "Sent: %s" % received_from_client[0]
+            print right_justify("Sent: %s" % received_from_client[0], JUSTIFY_COL)
             del received_from_client[0]
         else:
             time.sleep(1)
@@ -49,7 +50,7 @@ args = parser.parse_args()
 
 ###################################################
 context = zmq.Context()
-zmq_socket = context.socket(zmq.PAIR)
+zmq_socket= context.socket(zmq.PAIR)
 zmq_socket.bind("tcp://*:%s" % args.port)
 
 recv_thd = Thread(target = recv_zmq)

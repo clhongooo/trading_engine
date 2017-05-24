@@ -64,12 +64,12 @@ def expand_to_signalfeed(oid_sf_tup_dict,fields_list,oid_suffix=0):
 def recv_zmq():
     global zmq_socket
     while True:
-        print right_justify("Received: %s" % zmq_socket.recv(),JUSTIFY_COL)
+        print right_justify("Received: %s" % zmq_socket.recv(), JUSTIFY_COL)
 
 def send_zmq(msg):
     global zmq_socket
     zmq_socket.send(msg)
-    print right_justify("Sent: %s" % msg,JUSTIFY_COL)
+    print right_justify("Sent: %s" % msg, JUSTIFY_COL)
 
 ###################################################
 parser = argparse.ArgumentParser(description = "Connects to ZMQ server and places orders by constructing signal feed upon user input.")
@@ -80,7 +80,7 @@ args = parser.parse_args()
 
 ###################################################
 context = zmq.Context()
-zmq_socket = context.socket(zmq.PAIR)
+zmq_socket= context.socket(zmq.PAIR)
 zmq_socket.connect("tcp://%s:%s" % (args.ip,args.port))
 
 recv_thd = Thread(target = recv_zmq)
