@@ -3,7 +3,8 @@
 #include "ATU_Abstract_MDI.h"
 using namespace std;
 
-typedef struct ATU_OTI_signalfeed_struct{
+typedef struct ATU_OTI_signalfeed_struct
+{
   string m_timestamp;
   string m_market;
   string m_instrument;
@@ -11,7 +12,7 @@ typedef struct ATU_OTI_signalfeed_struct{
   double m_price;
   double m_qty;
   string m_open_or_close;
-  int m_buy_or_sell;
+  int    m_buy_or_sell;
   string m_order_action;
   string m_order_type;
   string m_order_validity;
@@ -33,9 +34,53 @@ typedef struct ATU_OTI_signalfeed_struct{
     m_portfolio_name(""),
     m_client_user(""),
     m_order_attributes(""){}
+  static string ToString(const ATU_OTI_signalfeed_struct & sf)
+  {
+    std::ostringstream buffer; 
+    buffer <<
+      std::setprecision(6) <<
+      sf.m_timestamp        <<  ",signalfeed," <<
+      sf.m_market           <<  ","            <<
+      sf.m_instrument       <<  ","            <<
+      sf.m_order_id         <<  ","            <<
+      sf.m_price            <<  ","            <<   setprecision(2) << fixed <<
+      sf.m_qty              <<  ","            <<
+      sf.m_open_or_close    <<  ","            <<
+      sf.m_buy_or_sell      <<  ","            <<
+      sf.m_order_action     <<  ","            <<
+      sf.m_order_type       <<  ","            <<
+      sf.m_order_validity   <<  "\n";
+    return buffer.str();
+  }
+  static bool ParseString(const string & csv, ATU_OTI_signalfeed_struct & sf)
+  {
+    vector<string> vSF;
+    boost::split(vSF, csv, boost::is_any_of(","));
+    if (vSF[1] != "signalfeed") return false;
+
+    sf.m_timestamp                              =                              vSF[ 0]  ;
+    sf.m_market                                 =                              vSF[ 2]  ;
+    sf.m_instrument                             =                              vSF[ 3]  ;
+    sf.m_order_id                               =                              vSF[ 4]  ;
+    sf.m_price                                  =  boost::lexical_cast<double>(vSF[ 5]) ;
+    sf.m_qty                                    =  boost::lexical_cast<double>(vSF[ 6]) ;
+    sf.m_open_or_close                          =                              vSF[ 7]  ;
+    sf.m_buy_or_sell                            =  boost::lexical_cast<int>   (vSF[ 8]) ;
+    sf.m_order_action                           =                              vSF[ 9]  ;
+    sf.m_order_type                             =                              vSF[10]  ;
+    sf.m_order_validity                         =                              vSF[11]  ;
+
+    if (vSF.size() > 12) sf.m_portfolio_name    =                              vSF[12]  ;
+    if (vSF.size() > 13) sf.m_client_user       =                              vSF[13]  ;
+    if (vSF.size() > 14) sf.m_order_attributes  =                              vSF[14]  ;
+
+    return true;
+  }
+
 } ATU_OTI_signalfeed_struct;
 
-typedef struct ATU_OTI_orderfeed_struct{
+typedef struct ATU_OTI_orderfeed_struct
+{
   string m_timestamp;
   string m_market;
   string m_instrument;
@@ -43,18 +88,18 @@ typedef struct ATU_OTI_orderfeed_struct{
   double m_price;
   double m_qty;
   string m_open_or_close;
-  int m_buy_or_sell;
+  int    m_buy_or_sell;
   double m_qty_filled;
   string m_order_type;
   string m_order_validity;
-  int m_deleted;
-  int m_order_status;
+  int    m_deleted;
+  int    m_order_status;
   string m_error_description;
   string m_portfolio_name;
   string m_created_timestamp;
   string m_changed_timestamp;
-  int m_source;
-  int m_islast;
+  int    m_source;
+  int    m_islast;
   ATU_OTI_orderfeed_struct():
     m_timestamp(""),
     m_market(""),
@@ -75,43 +120,36 @@ typedef struct ATU_OTI_orderfeed_struct{
     m_changed_timestamp(""),
     m_source(0),
     m_islast(0){}
+  static string ToString(const ATU_OTI_orderfeed_struct & of)
+  {
+    std::ostringstream buffer; 
+    buffer <<
+      std::setprecision(6) <<
+      of.m_timestamp          <<  ",orderfeed,"  <<
+      of.m_market             <<  ","            <<
+      of.m_instrument         <<  ","            <<
+      of.m_order_id           <<  ","            <<
+      of.m_price              <<  ","            <<   setprecision(2) << fixed <<
+      of.m_qty                <<  ","            <<
+      of.m_open_or_close      <<  ","            <<
+      of.m_buy_or_sell        <<  ","            <<
+      of.m_qty_filled         <<  ","            <<
+      of.m_order_type         <<  ","            <<
+      of.m_order_validity     <<  ","            <<
+      of.m_deleted            <<  ","            <<
+      of.m_order_status       <<  ","            <<
+      of.m_error_description  <<  ","            <<
+      of.m_portfolio_name     <<  ","            <<
+      of.m_created_timestamp  <<  ","            <<
+      of.m_changed_timestamp  <<  ","            <<
+      of.m_source             <<  ","            <<
+      of.m_islast             <<  "\n";
+    return buffer.str();
+  }
 } ATU_OTI_orderfeed_struct;
 
-typedef struct ATU_OTI_riskfeed_struct{
-  string m_timestamp;
-  string m_market;
-  string m_instrument;
-  string m_order_id;
-  string m_msg_description;
-  ATU_OTI_riskfeed_struct():
-    m_timestamp(""),
-    m_market(""),
-    m_instrument(""),
-    m_order_id(""),
-    m_msg_description(""){}
-} ATU_OTI_riskfeed_struct;
-
-typedef struct ATU_OTI_riskstatusfeed_struct{
-  string m_timestamp;
-  string m_identity;
-  string m_instrument;
-  string m_key;
-  string m_value;
-  ATU_OTI_riskstatusfeed_struct():
-    m_timestamp(""),
-    m_identity(""),
-    m_instrument(""),
-    m_key(""),
-    m_value(""){}
-} ATU_OTI_riskstatusfeed_struct;
-
-typedef struct ATU_OTI_ping_struct{
-  string m_timestamp;
-  ATU_OTI_ping_struct():
-    m_timestamp(""){}
-} ATU_OTI_ping_struct;
-
-typedef struct ATU_OTI_tradefeed_struct{
+typedef struct ATU_OTI_tradefeed_struct
+{
   string m_timestamp;
   string m_market;
   string m_instrument;
@@ -119,12 +157,12 @@ typedef struct ATU_OTI_tradefeed_struct{
   double m_price;
   double m_qty;
   string m_open_or_close;
-  int m_buy_or_sell;
+  int    m_buy_or_sell;
   string m_trade_id;
   string m_portfolio_name;
   string m_trade_timestamp;
-  int m_source;
-  int m_islast;
+  int    m_source;
+  int    m_islast;
   ATU_OTI_tradefeed_struct():
     m_timestamp(""),
     m_market(""),
@@ -139,33 +177,30 @@ typedef struct ATU_OTI_tradefeed_struct{
     m_trade_timestamp(""),
     m_source(0),
     m_islast(0){}
+  static string ToString(const ATU_OTI_tradefeed_struct & tf)
+  {
+    std::ostringstream buffer; 
+    buffer <<
+      std::setprecision(6) <<
+      tf.m_timestamp        <<  ",tradefeed,"  <<
+      tf.m_market           <<  ","            <<
+      tf.m_instrument       <<  ","            <<
+      tf.m_order_id         <<  ","            <<
+      tf.m_price            <<  ","            <<   setprecision(2) << fixed <<
+      tf.m_qty              <<  ","            <<
+      tf.m_open_or_close    <<  ","            <<
+      tf.m_buy_or_sell      <<  ","            <<
+      tf.m_trade_id         <<  ","            <<
+      tf.m_portfolio_name   <<  ","            <<
+      tf.m_trade_timestamp  <<  ","            <<
+      tf.m_source           <<  ","            <<
+      tf.m_islast           <<  "\n";
+    return buffer.str();
+  }
 } ATU_OTI_tradefeed_struct;
 
-typedef struct ATU_OTI_portfoliofeed_struct{
-  string m_timestamp;
-  string m_market;
-  string m_instrument;
-  double m_net_position;
-  double m_average_open_price;
-  double m_net_invested;
-  double m_realized_pnl;
-  double m_unrealized_pnl;
-  double m_total_pnl;
-  int m_islast;
-  ATU_OTI_portfoliofeed_struct():
-    m_timestamp(""),
-    m_market(""),
-    m_instrument(""),
-    m_net_position(0),
-    m_average_open_price(0),
-    m_net_invested(0),
-    m_realized_pnl(0),
-    m_unrealized_pnl(0),
-    m_total_pnl(0),
-    m_islast(0){}
-} ATU_OTI_portfoliofeed_struct;
-
-typedef struct ATU_OTI_portfolio_get_trade_history_struct{
+typedef struct ATU_OTI_portfolio_get_trade_history_struct
+{
   string m_timestamp;
   string m_portfolio_name;
   string m_period;
@@ -177,7 +212,8 @@ typedef struct ATU_OTI_portfolio_get_trade_history_struct{
     m_client_user(""){}
 } ATU_OTI_portfolio_get_trade_history_struct;
 
-typedef struct ATU_OTI_portfolio_get_working_orders_struct{
+typedef struct ATU_OTI_portfolio_get_working_orders_struct
+{
   string m_timestamp;
   string m_portfolio_name;
   string m_period;
@@ -188,83 +224,5 @@ typedef struct ATU_OTI_portfolio_get_working_orders_struct{
     m_period(""),
     m_client_user(""){}
 } ATU_OTI_portfolio_get_working_orders_struct;
-
-typedef struct ATU_OTI_portfolio_get_PnL_struct{
-  string m_timestamp;
-  string m_portfolio_name;
-  string m_period;
-  string m_client_user;
-  ATU_OTI_portfolio_get_PnL_struct():
-    m_timestamp(""),
-    m_portfolio_name(""),
-    m_period(""),
-    m_client_user(""){}
-} ATU_OTI_portfolio_get_PnL_struct;
-
-typedef struct ATU_OTI_risk_setting_struct{
-  string m_timestamp;
-  string m_function;
-  ATU_OTI_risk_setting_struct():
-    m_timestamp(""),
-    m_function(""){}
-} ATU_OTI_risk_setting_struct;
-
-typedef struct ATU_OTI_insert_order_struct{
-  string m_timestamp;
-  string m_market;
-  string m_instrument;
-  string m_order_id;
-  double m_price;
-  double m_qty;
-  string m_open_or_close;
-  int m_buy_or_sell;
-  string m_order_action;
-  string m_order_type;
-  string m_order_validity;
-  ATU_OTI_insert_order_struct():
-    m_timestamp(""),
-    m_market(""),
-    m_instrument(""),
-    m_order_id(""),
-    m_price(0),
-    m_qty(0),
-    m_open_or_close(""),
-    m_buy_or_sell(0),
-    m_order_action(""),
-    m_order_type(""),
-    m_order_validity(""){}
-} ATU_OTI_insert_order_struct;
-
-typedef struct ATU_OTI_delete_order_struct{
-  string m_timestamp;
-  string m_market;
-  string m_instrument;
-  string m_order_id;
-  ATU_OTI_delete_order_struct():
-    m_timestamp(""),
-    m_market(""),
-    m_instrument(""),
-    m_order_id(""){}
-} ATU_OTI_delete_order_struct;
-
-typedef struct ATU_OTI_quoterequestfeed_struct{
-  string m_timestamp;
-  string m_market;
-  string m_instrument;
-  int m_buysellboth;
-  double m_volume;
-  ATU_OTI_quoterequestfeed_struct():
-    m_timestamp(""),
-    m_market(""),
-    m_instrument(""),
-    m_buysellboth(0),
-    m_volume(0){}
-} ATU_OTI_quoterequestfeed_struct;
-
-typedef struct ATU_OTI_reset_struct{
-  string m_timestamp;
-  ATU_OTI_reset_struct():
-    m_timestamp(""){}
-} ATU_OTI_reset_struct;
 
 #endif //_ATU_ABSTRACT_OTI_H_

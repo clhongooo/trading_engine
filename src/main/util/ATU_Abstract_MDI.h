@@ -25,26 +25,6 @@ typedef struct ATU_MDI_subscription_struct {
     m_subscription_attribute(""){}
 } ATU_MDI_subscription_struct;
 
-typedef struct ATU_MDI_unsubscription_struct {
-  string m_timestamp;
-  string m_market;
-  string m_instrument;
-  ATU_MDI_unsubscription_struct():
-    m_timestamp(""),
-    m_market(""),
-    m_instrument(""){}
-} ATU_MDI_unsubscription_struct;
-
-typedef struct ATU_MDI_acknowledgement_struct {
-  string m_timestamp;
-  string m_status;
-  string m_errormsg;
-  ATU_MDI_acknowledgement_struct():
-    m_timestamp(""),
-    m_status(""),
-    m_errormsg(""){}
-} ATU_MDI_acknowledgement_struct;
-
 typedef struct ATU_MDI_marketfeed_struct {
   uint64_t m_microsec_since_epoch_gmt;
   char     m_instrument[50];
@@ -168,37 +148,5 @@ typedef struct ATU_MDI_marketfeed_struct {
     return true;
   }
 } ATU_MDI_marketfeed_struct;
-
-typedef struct ATU_MDI_ping_struct {
-  string m_timestamp;
-  ATU_MDI_ping_struct():
-    m_timestamp(""){}
-} ATU_MDI_ping_struct;
-
-typedef struct ATU_MDI_reset_struct {
-  string m_timestamp;
-  ATU_MDI_reset_struct():
-    m_timestamp(""){}
-} ATU_MDI_reset_struct;
-
-typedef struct ATU_MDI_ohlcfeed_struct {
-  string m_timestamp;
-  string m_market;
-  string m_instrument;
-  double m_open;
-  double m_high;
-  double m_low;
-  double m_close;
-  double m_traded_volume;
-  ATU_MDI_ohlcfeed_struct():
-    m_timestamp(""),
-    m_market(""),
-    m_instrument(""),
-    m_open(0),
-    m_high(0),
-    m_low(0),
-    m_close(0),
-    m_traded_volume(0){}
-} ATU_MDI_ohlcfeed_struct;
 
 #endif /* ATU_ABSTRACT_MDI_H_ */
