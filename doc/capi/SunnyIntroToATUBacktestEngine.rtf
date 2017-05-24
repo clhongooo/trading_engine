@@ -1,0 +1,222 @@
+{\rtf1\ansi\ansicpg950\deff0\deflang1033\deflangfe3076{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\froman\fprq2\fcharset136 \'b7\'73\'b2\'d3\'a9\'fa\'c5\'e9;}}
+{\colortbl ;\red33\green33\blue33;}
+{\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\f0\fs24\par
+Dear Vincent\par
+\par
+Apart from the things I mentioned in my previous email (on Aug20). There are other things that I would like you to modify as well.\par
+\par
+To facilitate our subsequent testing, you will need to modify your 3 strategies to \ul\b fit into our backtest framework\ulnone\b0 .\par
+\par
+\ul\b Our requirements\par
+\ulnone\b0 We have a python API for our backtest engine. Please check the attached file "cashAlgoAPI.py". As you can see from the code, the class CASHOrderManager connects to our back-end server and forwards your instructions to it. Then you will receive feedbacks from our server through callback functions.\par
+\par
+\ul\b Placing orders\par
+\ulnone\b0 You can place orders by creating an instance of the cashAlgoAPI.Order class, and then call the insertOrder() method of CASHOrderManager.\par
+Like this,\par
+\~\~\~\~ cashAlgoAPI.Order(made.timestamp, "HFE", "HSIF4", orderid, 30000, 10, "open", 1, "insert", "limit_order", "today")\par
+\~\~\~\~ manager.insertOrder(order)\par
+\par
+\ul\b Getting feeds\ulnone\b0\par
+Our backtest engine communicates with you through various feeds:\par
+\pard\fi-480\li480\lang3076\f1\'83\'dc\lang1033\f0\tab The back-test engine informs your strategy of the latest market prices and volumes through the "market feed".\par
+\lang3076\f1\'83\'dc\lang1033\f0\tab "Order feed" is the acknowledgement from the order manager after your strategy has placed / cancelled the order. The order feed will update you every time when your order is placed and when your order is filled.\par
+\lang3076\f1\'83\'dc\lang1033\f0\tab "Trade feed" is similar to "order feed", but it only contains executed trades. So it's a subset of the order feed.\par
+\pard\par
+\par
+\b OrderFeed\par
+\trowd\trgaph10\trleft-118\trrh300\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl Field no.\cell Field name\cell Description\cell Sample\cell\row\trowd\trgaph10\trleft-118\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl\b0 1\cell Timestamp\cell Server timestamp, in the format of \par
+YYYYMMDD_HHMMSS_NNNNNN\cell 20140110_101010_900000\cell\row\trowd\trgaph10\trleft-118\trrh423\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 2\cell Market(string)\cell Code of market\cell HKIF,\cell\row\trowd\trgaph10\trleft-118\trrh416\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 3\cell Product Code(string)\cell Definition and code of products\cell HSIF4,\cell\row\trowd\trgaph10\trleft-118\trrh408\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 4\cell Order ID(string)\cell User supplied global unique order ID\cell ID_00001,\cell\row\trowd\trgaph10\trleft-118\trrh413\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 5\cell Price (double)\cell Traded price of the transaction\cell 23401,\cell\row\trowd\trgaph10\trleft-118\trrh391\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 6\cell Quantity (double)\cell Number of contract(s) traded in the transaction\cell 6,\cell\row\trowd\trgaph10\trleft-118\trrh412\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 7\cell Open or Close (string)\cell open,close \cell open,\cell\row\trowd\trgaph10\trleft-118\trrh417\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 8\cell Buy or Sell (int)\cell 1- buy or 2 - sell from \cell 1,\cell\row\trowd\trgaph10\trleft-118\trrh409\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 9\cell Quantity Filled (double)\cell Quantity of trade Filled\cell 10,\cell\row\trowd\trgaph10\trleft-118\trrh415\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 10\cell Deleted (int)\cell 1 - if order is deleted; 0 \endash  otherwise\cell 1,\cell\row\trowd\trgaph10\trleft-118\trrh408\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 11\cell Order Status(int)\cell 0 - OK, 1 \endash  Error\cell 0,\cell\row\trowd\trgaph10\trleft-118\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx864\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2977\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6127\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 12\cell Error Description(string)\cell empty if order status is OK;\line error message if order status is Error\cell\cell\row\pard\ul\b\par
+\par
+Tradefeed \par
+\ulnone\b0\par
+\trowd\trgaph10\trleft-31\trrh300\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx984\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2741\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6021\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl\b Field no.\cell Field name\cell Description\cell Sample\cell\row\trowd\trgaph10\trleft-31\trrh690\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx984\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2741\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6021\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl\b0 1\cell Timestamp \cell Server timestamp, in the format of \par
+YYYYMMDD_HHMMSS_NNNNNN\cell 20140110_101010_900000\cell\row\trowd\trgaph10\trleft-31\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx984\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2741\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6021\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 2\cell Market(string)\cell Market(string) from signalfeed\cell HKIF,\cell\row\trowd\trgaph10\trleft-21\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx994\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2751\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6031\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8748\pard\intbl 3\cell Product Code(string)\cell Product Code(string) from signalfeed\cell HSIF4,\cell\row\trowd\trgaph10\trleft-21\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx994\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2751\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6031\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8748\pard\intbl 4\cell Order ID(string)\cell Order ID(string) from signalfeed\cell ID_00001,\cell\row\trowd\trgaph10\trleft-21\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx994\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2751\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6031\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8748\pard\intbl 5\cell Price (double)\cell traded price\cell 23420,\cell\row\trowd\trgaph10\trleft-21\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx994\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2751\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6031\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8748\pard\intbl 6\cell Quantity (double)\cell Quantity traded\cell 12,\cell\row\trowd\trgaph10\trleft-31\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx984\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2741\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6021\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 7\cell Buy or Sell (int)\cell 1- buy or 2 - sell from orderfeed\cell 1,\par
+\cell\row\trowd\trgaph10\trleft-31\trrh399\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx984\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2741\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6021\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 8\cell Trade ID (string)\cell Global unique trade ID for the trade executed\cell ID_00002,\cell\row\trowd\trgaph10\trleft-31\trrh748\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx984\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2741\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6021\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 9\cell Source (int)\cell 0 - "Market" for real-time updated from exchange\line 1 - "MessageReply" for reply of portfolio related messages\cell 0\cell\row\trowd\trgaph10\trleft-31\trrh406\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx984\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2741\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6021\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx8738\pard\intbl 10\cell End line\cell Indicates the end of the message\cell\\n\cell\row\pard\ul\b\par
+\ulnone\b0\par
+\par
+\ul\b Sample program\par
+\ulnone\b0 Please see "strategy.py". It is a simple example of how our API can be called. You need to implement the functions onMarketDataUpdate() onOrderFeed() onTradeFeed(), as well as main. For the call back functions, a data structure is provided to you as the function argument. You\rquote ll need to use them in your code.\par
+\par
+\ul\b Testing your program\par
+\ulnone\b0 We have created a virtual machine for you to do your testing.\par
+We will inform you how to connect to it shortly.\par
+\par
+\par
+Please feel free to ask if you think anything is unclear. I am happy to answer your questions.\par
+\par
+Thank you very much!\par
+\par
+\pard\sa200\sl276\slmult1\par
+\par
+_______________\par
+\par
+\pard\cf1 Dear Yang\par
+\~\par
+Thanks for your good suggestion.\par
+\~\par
+Here\rquote s a brief description of our API:\par
+There are 4 kinds of feeds that your strategy will use: market feed, signal feed, order feed, and trade feed.\par
+\~\par
+The back-test engine informs your strategy of the latest market data through the "market feed".\par
+Your strategy sends "signal feed" to the order manager when placing limit / market orders or cancel orders.\par
+"Order feed" is the acknowledgement from the order manager after your strategy has placed / cancelled the order. The order feed will update you every time when your order is placed and when your order is filled.\par
+"Trade feed" is similar to "order feed", but it only contains executed trades. So it\rquote s a subset of the order feed.\par
+\~\par
+Please have a look at the attached .h file.\par
+There are 2 functions that needs to be implemented by you.\par
+\~\par
+void on_orderfeed(ATU_OTI_orderfeed_struct &);\par
+void on_tradefeed(ATU_OTI_tradefeed_struct &);\par
+\~\par
+These functions will be called whenever a orderfeed / tradefeed is pushed to you.\par
+\~\par
+The format of the orderfeed and tradefeed are as follows:\par
+\~\par
+typedef struct \{\par
+\~ string m_timestamp;\par
+\~ string m_market;\par
+\~ string m_feedcode;\par
+\~ string m_order_id;\par
+\~ double m_price;\par
+\~ double m_qty;\par
+\~ string m_open_or_close;\par
+\~ int m_buy_or_sell;\par
+\~ double m_qty_filled;\par
+\~ string m_order_type;\par
+\~ string m_order_validity;\par
+\~ int m_deleted;\par
+\~ int m_order_status;\par
+\~ string m_error_description;\par
+\~ string m_portfolio_name;\par
+\~ string m_created_timestamp;\par
+\~ string m_changed_timestamp;\par
+\~ int m_source;\par
+\~ int m_islast;\par
+\} ATU_OTI_orderfeed_struct;\par
+\~\par
+\~\par
+typedef struct \{\par
+\~ string m_timestamp;\par
+\~ string m_market;\par
+\~ string m_feedcode;\par
+\~ string m_order_id;\par
+\~ double m_price;\par
+\~ double m_qty;\par
+\~ string m_open_or_close;\par
+\~ int m_buy_or_sell;\par
+\~ string m_trade_id;\par
+\~ string m_portfolio_name;\par
+\~ string m_trade_timestamp;\par
+\~ int m_source;\par
+\~ int m_islast;\par
+\} ATU_OTI_tradefeed_struct;\par
+\~\par
+\~\par
+\b OrderFeed\b0\par
+\trowd\trgaph10\trleft-118\trrh300\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx952\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3284\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6773\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9661\pard\intbl\cf0\b Field no.\b0\cell\b Field name\b0\cell\b Description\b0\cell\b Sample\b0\cell\row\trowd\trgaph10\trleft-118\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx952\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3284\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6773\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9661\pard\intbl 1\cell Timestamp\cell Server timestamp, in the format of \par
+YYYYMMDD_HHMMSS_NNNNNN\cell 20140110_101010_900000\cell\row\trowd\trgaph10\trleft-108\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx962\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3294\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6783\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9671\pard\intbl 2\cell Market(string)\cell Code of market\cell HKIF,\cell\row\trowd\trgaph10\trleft-108\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx962\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3294\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6783\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9671\pard\intbl 3\cell Product Code(string)\cell Definition and code of products\cell HSIF4,\cell\row\trowd\trgaph10\trleft-108\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx962\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3294\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6783\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9671\pard\intbl 4\cell Order ID(string)\cell User supplied global unique order ID\cell EA_00001,\cell\row\trowd\trgaph10\trleft-108\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx962\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3294\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6783\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9671\pard\intbl 5\cell Price (double)\cell Traded price of the transaction\cell 23401,\cell\row\trowd\trgaph10\trleft-108\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx962\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3294\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6783\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9671\pard\intbl 6\cell Quantity (double)\cell Number of contract(s) traded in the transaction\cell 6,\cell\row\trowd\trgaph10\trleft-108\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx962\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3294\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6783\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9671\pard\intbl 7\cell Open or Close (string)\cell open,close \cell open,\cell\row\trowd\trgaph10\trleft-108\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx962\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3294\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6783\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9671\pard\intbl 8\cell Buy or Sell (int)\cell 1- buy or 2 - sell from \cell 1,\cell\row\trowd\trgaph10\trleft-108\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx962\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3294\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6783\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9671\pard\intbl 9\cell Quantity Filled (double)\cell Quantity of trade Filled\cell 10,\cell\row\trowd\trgaph10\trleft-108\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx962\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3294\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6783\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9671\pard\intbl 10\cell Deleted (int)\cell 1 - if order is deleted; 0 \endash  otherwise\cell 1,\cell\row\trowd\trgaph10\trleft-108\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx962\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3294\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6783\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9671\pard\intbl 11\cell Order Status(int)\cell 0 - OK, 1 \endash  Error\cell 0,\cell\row\trowd\trgaph10\trleft-108\trrh705\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx962\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx3294\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6783\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9671\pard\intbl 12\cell Error Description(string)\cell empty if order status is OK;\line error message if order status is Error\cell\~\cell\row\pard\cf1\b\~\b0\par
+\b\~\b0\par
+\ul\b Tradefeed \ulnone\b0\par
+\~\par
+\trowd\trgaph10\trleft-31\trrh300\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx1039\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2901\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6390\clbrdrt\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9278\pard\intbl\cf0\b Field no.\b0\cell\b Field name\b0\cell\b Description\b0\cell\b Sample\b0\cell\row\trowd\trgaph10\trleft-31\trrh690\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx1039\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2901\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6390\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9278\pard\intbl 1\cell Timestamp \cell Server timestamp, in the format of \par
+YYYYMMDD_HHMMSS_NNNNNN\cell 20140110_101010_900000\cell\row\trowd\trgaph10\trleft-31\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx1039\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2901\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6390\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9278\pard\intbl 2\cell Market(string)\cell Market(string) from signalfeed\cell HKIF,\cell\row\trowd\trgaph10\trleft-21\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx1049\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2911\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6400\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9288\pard\intbl 3\cell Product Code(string)\cell Product Code(string) from signalfeed\cell HSIF4,\cell\row\trowd\trgaph10\trleft-21\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx1049\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2911\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6400\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9288\pard\intbl 4\cell Order ID(string)\cell Order ID(string) from signalfeed\cell EA_00001,\cell\row\trowd\trgaph10\trleft-21\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx1049\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2911\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6400\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9288\pard\intbl 5\cell Price (double)\cell traded price\cell 23420,\cell\row\trowd\trgaph10\trleft-21\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx1049\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2911\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6400\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9288\pard\intbl 6\cell Quantity (double)\cell Quantity traded\cell 12,\cell\row\trowd\trgaph10\trleft-21\trrh465\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx1049\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2911\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6400\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9288\pard\intbl 7\cell Buy or Sell (int)\cell 1- buy or 2 - sell from orderfeed\cell 1,\par
+\~\cell\row\trowd\trgaph10\trleft-31\trrh660\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx1039\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2901\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6390\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9278\pard\intbl 8\cell Trade ID (string)\cell Global unique trade ID for the trade executed\cell EA_00002,\cell\row\trowd\trgaph10\trleft-31\trrh1170\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx1039\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2901\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6390\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9278\pard\intbl 9\cell Source (int)\cell 0 - "Market" for real-time updated from exchange\line 1 - "MessageReply" for reply of portfolio related messages\cell 0\cell\row\trowd\trgaph10\trleft-21\trrh1170\trpaddl10\trpaddr10\trpaddfl3\trpaddfr3
+\clbrdrl\brdrw20\brdrs\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx1049\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx2911\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx6400\clbrdrr\brdrw20\brdrs\clbrdrb\brdrw20\brdrs \cellx9288\pard\intbl 10\cell End line\cell Indicates the end of the message\cell\\n\cell\row\pard\cf1\b\~\b0\par
+\~\par
+Some examples are:\par
+Order Feed: 20140805T170756.040450,HKIF,HHIJ3,ORDER_1_1,10587,2,open,1,0,0,0,\par
+Order Feed: 20140805T170756.043295,HKIF,HSIJ3,ORDER_1_2,22095,1,open,2,0,0,0,\par
+Order Feed: 20140805T170756.043295,HKIF,HSIJ3,ORDER_1_2,22095,1,open,2,1,1,0,\par
+Order Feed: 20140805T170756.040450,HKIF,HHIJ3,ORDER_1_1,10587,2,open,1,1,0,0,\par
+Order Feed: 20140805T170756.040450,HKIF,HHIJ3,ORDER_1_1,10587,2,open,1,2,1,0,\par
+Order Feed: 20140805T170756.050713,HKIF,HHIJ3,ORDER_2_3,10582,2,open,1,0,0,0,\par
+Order Feed: 20140805T170756.050713,HKIF,HHIJ3,ORDER_2_3,10582,2,open,1,1,0,0,\par
+Order Feed: 20140805T170756.050713,HKIF,HHIJ3,ORDER_2_3,10582,2,open,1,2,1,0,\par
+Order Feed: 20140805T170756.052906,HKIF,HSIJ3,ORDER_1_4,0,1,open,2,0,0,0,\par
+Order Feed: 20140805T170756.052906,HKIF,HSIJ3,ORDER_1_4,0,1,open,2,1,1,0,\par
+Order Feed: 20140805T170756.053287,HKIF,HSIJ3,ORDER_2_5,22086,1,open,2,0,0,0,\par
+Order Feed: 20140805T170756.053287,HKIF,HSIJ3,ORDER_2_5,22086,1,open,2,1,1,0,\par
+Order Feed: 20140805T170756.059365,HKIF,HHIJ3,ORDER_3_6,10581,2,open,1,0,0,0,\par
+Order Feed: 20140805T170756.059365,HKIF,HHIJ3,ORDER_3_6,10581,2,open,1,1,0,0,\par
+Order Feed: 20140805T170756.059365,HKIF,HHIJ3,ORDER_3_6,10581,2,open,1,2,1,0,\par
+Order Feed: 20140805T170756.060374,HKIF,HSIJ3,ORDER_3_7,22086,1,open,2,0,0,0,\par
+Order Feed: 20140805T170756.060374,HKIF,HSIJ3,ORDER_3_7,22086,1,open,2,1,1,0,\par
+Order Feed: 20140805T170756.065193,HKIF,HHIJ3,ORDER_4_8,10579,2,open,1,0,0,0,\par
+Order Feed: 20140805T170756.071321,HKIF,HHIJ3,ORDER_5_9,10583,2,open,1,0,0,0,\par
+Order Feed: 20140805T170756.072784,HKIF,HHIJ3,ORDER_4_8,10579,2,open,1,0,1,0,\par
+Order Feed: 20140805T170756.073110,HKIF,HSIJ3,ORDER_5_10,22092,1,open,2,0,0,0,\par
+Order Feed: 20140805T170756.071321,HKIF,HHIJ3,ORDER_5_9,10583,2,open,1,1,0,0,\par
+Order Feed: 20140805T170756.071321,HKIF,HHIJ3,ORDER_5_9,10583,2,open,1,2,1,0,\par
+Order Feed: 20140805T170756.077642,HKIF,HHIJ3,ORDER_6_11,10584,2,open,1,0,0,0,\par
+\~\par
+Trade Feed: 20130422_093609_000000,HKIF,HSIJ3,ORDER_1_2,22095,1,2,ORDER_1_20,0\par
+Trade Feed: 20130422_093612_000000,HKIF,HHIJ3,ORDER_1_1,10586,1,1,ORDER_1_10,0\par
+Trade Feed: 20130422_093612_000000,HKIF,HHIJ3,ORDER_1_1,10587,1,1,ORDER_1_11,0\par
+Trade Feed: 20130422_093614_000000,HKIF,HHIJ3,ORDER_2_3,10581,1,1,ORDER_2_30,0\par
+Trade Feed: 20130422_093614_000000,HKIF,HHIJ3,ORDER_2_3,10582,1,1,ORDER_2_31,0\par
+Trade Feed: 20130422_093615_000000,HKIF,HSIJ3,ORDER_1_4,22088,1,2,ORDER_1_40,0\par
+Trade Feed: 20130422_093615_000000,HKIF,HSIJ3,ORDER_2_5,22086,1,2,ORDER_2_50,0\par
+Trade Feed: 20130422_093621_000000,HKIF,HHIJ3,ORDER_3_6,10581,1,1,ORDER_3_60,0\par
+Trade Feed: 20130422_093621_000000,HKIF,HHIJ3,ORDER_3_6,10581,1,1,ORDER_3_60,0\par
+Trade Feed: 20130422_093622_000000,HKIF,HSIJ3,ORDER_3_7,22086,1,2,ORDER_3_70,0\par
+Trade Feed: 20130422_093636_000000,HKIF,HHIJ3,ORDER_5_9,10583,1,1,ORDER_5_90,0\par
+Trade Feed: 20130422_093637_000000,HKIF,HHIJ3,ORDER_5_9,10583,1,1,ORDER_5_90,0\par
+Trade Feed: 20130422_093641_000000,HKIF,HSIJ3,ORDER_6_12,22092,1,2,ORDER_6_120,0\par
+Trade Feed: 20130422_093641_000000,HKIF,HSIJ3,ORDER_5_10,22092,1,2,ORDER_5_100,0\par
+Trade Feed: 20130422_093642_000000,HKIF,HHIJ3,ORDER_6_11,10584,1,1,ORDER_6_110,0\par
+\~\par
+\~\par
+For the samples about signalfeed, please see the function SendOrder() in the attachment.\par
+\~\par
+I know I may not have made myself clear, so please feel free ask me questions when you have doubts.\par
+\pard\sa200\sl276\slmult1\~\cf0\par
+\par
+}
+ 
