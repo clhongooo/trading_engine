@@ -74,6 +74,7 @@ add_subdirectory(unit_tests_omd_mdp)
 add_subdirectory(omd_mdp)
 add_subdirectory(bin_mdi_reader)
 add_subdirectory(unit_tests)
+add_subdirectory(zmq_svr_clt)
 
 
 include_directories(${PANTHEIOS_INC}

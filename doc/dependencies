@@ -4,5 +4,5 @@ commoncpp
 boost
 pantheios / stlsoft
 gsl
-zmq
+libzmq-dev
 cppunit
