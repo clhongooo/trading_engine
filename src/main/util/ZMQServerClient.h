@@ -1,3 +1,8 @@
+//--------------------------------------------------
+// The reason why 2 ExpandableCirBuffer's are used is that if we relied on zmq's socket queue,
+// We will have a chance of calling the same socket for both send and receive simultaneously,
+// which cases the program to crash.
+//--------------------------------------------------
 #ifndef ZMQSERVERCLIENTTHREAD_H_
 #define ZMQSERVERCLIENTTHREAD_H_
 
