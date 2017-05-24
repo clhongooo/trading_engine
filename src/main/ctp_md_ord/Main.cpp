@@ -49,6 +49,12 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd, bo
   p_zmq_server_md->Set         (STool::Trim(pt.get<std::string>("MarketData.ZmqMdPort")));
 
   //--------------------------------------------------
+  vector<string> vSym;
+  const string sSyms = pt.get<std::string>("General.SubscribeSymbols");
+  boost::split(vSym,sSyms,boost::is_any_of(","));
+  p_ctpmd->setSubscribeSymbols<vector<string> >(vSym);
+
+  //--------------------------------------------------
   // CtpOrd
   //--------------------------------------------------
   p_ctpord->setFlowDataFolder  (STool::Trim(pt.get<std::string>("OrderRouting.FlowDataFolder")));
@@ -59,10 +65,10 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd, bo
   p_zmq_server_ord->Set        (STool::Trim(pt.get<std::string>("OrderRouting.ZmqOrdPort")));
 
   //--------------------------------------------------
-  vector<string> vSym;
-  const string sSyms = pt.get<std::string>("General.SubscribeSymbols");
-  boost::split(vSym,sSyms,boost::is_any_of(","));
-  p_ctpmd->setSubscribeSymbols<vector<string> >(vSym);
+  // to ruin things
+  //--------------------------------------------------
+  if (STool::ToLowerCase(pt.get<std::string>("MarketData.IsON"))   != "true") p_ctpmd->setConnectString("0.0.0.1");
+  if (STool::ToLowerCase(pt.get<std::string>("OrderRouting.IsON")) != "true") p_ctpord->setConnectString("0.0.0.1");
 
   //--------------------------------------------------
   p_BinaryRecorder->SetOutFilePath(STool::Trim(pt.get<std::string>("MarketData.DataFolder"))+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_ffffff()+".csv","w+");
@@ -153,7 +159,7 @@ int main(int argc, const char *argv[])
     }
 
     while (p_ecbOrd->Empty() && max(p_zmq_server_ord->GetSendQueueSize(),p_zmq_server_ord->GetRecvQueueSize()) == 0)
-      boost::this_thread::sleep(boost::posix_time::microseconds(100*1000));
+      boost::this_thread::sleep(boost::posix_time::microseconds(10*1000));
   }
 
   //--------------------------------------------------
