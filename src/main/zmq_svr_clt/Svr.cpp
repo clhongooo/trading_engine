@@ -18,7 +18,6 @@ int main(int argc, const char *argv[])
 
   const string sPort(argv[1]);
   ZMQServer zsvr(sPort);
-  zsvr.Run();
 
   string s;
   for (;;)

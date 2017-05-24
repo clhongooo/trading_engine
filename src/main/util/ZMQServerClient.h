@@ -19,14 +19,15 @@ class ZMQServerClientBase {
     ZMQServerClientBase();
     virtual ~ZMQServerClientBase() {}
     virtual void Send(const string &);
-    virtual void Run();
     virtual Tuple2<bool,string> GetStr();
     const size_t GetSendQueueSize();
     const size_t GetRecvQueueSize();
+    virtual void Set(const string &) = 0;
   protected:
     virtual void SendRecvLoop();
     virtual void KeepWaitingForRead();
     virtual void KeepWaitingForWrite();
+    virtual void Run();
     boost::scoped_ptr<zmq::context_t> m_zmqcontext;
     boost::scoped_ptr<zmq::socket_t>  m_zmqsocket;
     boost::scoped_ptr<ExpandableCirBuffer> m_recv_queue;
@@ -36,11 +37,15 @@ class ZMQServerClientBase {
 
 class ZMQServer : public ZMQServerClientBase {
   public:
+    ZMQServer();
     ZMQServer(const string &);
+    void Set(const string &);
 };
 
 class ZMQClient : public ZMQServerClientBase {
   public:
+    ZMQClient();
     ZMQClient(const string &);
+    void Set(const string &);
 };
 #endif

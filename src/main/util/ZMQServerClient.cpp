@@ -14,16 +14,24 @@ ZMQServerClientBase::ZMQServerClientBase()
   assert (rc == 0);
 }
 
-ZMQServer::ZMQServer(const string & s_Port) : ZMQServerClientBase()
+ZMQServer::ZMQServer() : ZMQServerClientBase() {}
+ZMQClient::ZMQClient() : ZMQServerClientBase() {}
+
+ZMQServer::ZMQServer(const string & sPort  ) : ZMQServerClientBase() { Set(sPort  ); }
+ZMQClient::ZMQClient(const string & sIPPort) : ZMQServerClientBase() { Set(sIPPort); }
+
+void ZMQServer::Set(const string & sPort)
 {
-  const string sConn = "tcp://*:"+s_Port;
+  const string sConn = "tcp://*:"+sPort;
   m_zmqsocket->bind(sConn.c_str());
+  Run();
 }
 
-ZMQClient::ZMQClient(const string & s_IP_Port) : ZMQServerClientBase()
+void ZMQClient::Set(const string & sIPPort)
 {
-  const string sConn = "tcp://"+s_IP_Port;
+  const string sConn = "tcp://"+sIPPort;
   m_zmqsocket->connect(sConn.c_str());
+  Run();
 }
 
 void ZMQServerClientBase::Send(const string & s)

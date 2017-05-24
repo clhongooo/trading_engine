@@ -4,7 +4,6 @@
 #include <iostream>
 #include <boost/scoped_ptr.hpp>
 #include "ZMQServerClient.h"
-#include "SFunctional.h"
 
 using namespace std;
 using namespace boost;
@@ -19,7 +18,6 @@ int main(int argc, const char *argv[])
 
   const string sIPPort(argv[1]);
   ZMQClient zclt(sIPPort);
-  zclt.Run();
 
   string s;
   for (;;)
