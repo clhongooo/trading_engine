@@ -67,8 +67,6 @@ CtpOrd::~CtpOrd() {
     m_pCThostFtdcTraderApi = NULL;
   }
 
-
-
   if (m_p_ctp_lib_handle!=NULL) {
     dlclose(m_p_ctp_lib_handle);
   }
@@ -263,8 +261,8 @@ void CtpOrd::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFt
     //		int iNextOrderRef = atoi(pRspUserLogin->MaxOrderRef);
     //		iNextOrderRef++;
     //		sprintf(ORDER_REF, "%d", iNextOrderRef); // overflow if > 13 char
-    cerr << "pRspUserLogin->MaxOrderRef = " << pRspUserLogin->MaxOrderRef << endl;
-    cerr << "--->>> GetTradingDay() = " << m_pCThostFtdcTraderApi->GetTradingDay() << endl;
+    m_Logger->Write(StdStreamLogger::INFO, "%s: pRspUserLogin->MaxOrderRef = %s", __FILENAME__,  pRspUserLogin->MaxOrderRef);
+    m_Logger->Write(StdStreamLogger::INFO, "%s: --->>> GetTradingDay() = %s", __FILENAME__,  m_pCThostFtdcTraderApi->GetTradingDay());
     //ReqSettlementInfoConfirm();
   }
 }
@@ -373,7 +371,7 @@ void CtpOrd::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder,
 
   of.m_order_validity = "N/A";
 
-  // notify_orderfeed(of);
+  notify_orderfeed(of);
 }
 
 
@@ -415,7 +413,7 @@ void CtpOrd::OnRspOrderAction(
   of.m_order_type = "N/A";
 
   of.m_order_validity = "N/A";
-  // notify_orderfeed(of);
+  notify_orderfeed(of);
 }
 
 void CtpOrd::OnRtnOrder(CThostFtdcOrderField *pOrder) {
@@ -489,7 +487,7 @@ void CtpOrd::OnRtnOrder(CThostFtdcOrderField *pOrder) {
 
   m_Logger->Write(StdStreamLogger::INFO,"%s: StatusMsg:%s", __FILENAME__,pOrder->StatusMsg);
 
-  // notify_orderfeed(of);
+  notify_orderfeed(of);
 
 }
 
@@ -538,7 +536,7 @@ void CtpOrd::OnRtnTrade(CThostFtdcTradeField *pTrade) {
   string _tradeDate = pTrade->TradeDate, _tradeTime = _tradeTime_l;
   tf.m_trade_timestamp=_tradeDate+"_"+_tradeTime_l;
   tf.m_source=0;
-  // notify_tradefeed(tf);
+  notify_tradefeed(tf);
 }
 
 void CtpOrd::OnFrontDisconnected(int nReason) {
@@ -575,7 +573,7 @@ void CtpOrd::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField 
   if (pOrder==NULL) {
     if (bIsLast) {
       of.m_islast=1;
-      // notify_orderfeed(of);
+      notify_orderfeed(of);
     }
     return;
   }
@@ -587,7 +585,7 @@ void CtpOrd::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField 
 
     if (bIsLast) {
       of.m_islast=1;
-      // notify_orderfeed(of);
+      notify_orderfeed(of);
     }
     return ;
   }
@@ -637,10 +635,10 @@ void CtpOrd::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField 
   }
 
   of.m_order_validity = "N/A";
-  // notify_orderfeed(of);
+  notify_orderfeed(of);
   if (bIsLast) {
     of.m_islast=1;
-    // notify_orderfeed(of);
+    notify_orderfeed(of);
   }
 
 }
@@ -649,7 +647,7 @@ void CtpOrd::OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField 
   if (pTrade==NULL) {
     tf.m_source=1;
     tf.m_islast=1;
-    // notify_tradefeed(tf);
+    notify_tradefeed(tf);
     return;
   }
   tf.m_timestamp = SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_ffffff();
@@ -693,10 +691,10 @@ void CtpOrd::OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField 
   tf.m_trade_timestamp=_tradeDate+"_"+_tradeTime_l;
   tf.m_source=1;
 
-  // notify_tradefeed(tf);
+  notify_tradefeed(tf);
   if (bIsLast) {
     tf.m_islast=1;
-    // notify_tradefeed(tf);
+    notify_tradefeed(tf);
   }
 }
 
@@ -803,3 +801,18 @@ void CtpOrd::printCThostFtdcOrderField(CThostFtdcOrderField *pOrder)
 
   m_Logger->Write(StdStreamLogger::INFO,"%s: printCThostFtdcOrderField: %s", __FILENAME__, oo.str().c_str());
 }
+
+void CtpOrd::notify_tradefeed(const ATU_OTI_tradefeed_struct & tf)
+{
+  BYTE * pb = m_ecbOrd->GetWritingPtr();
+  strcpy((char*)pb,ATU_OTI_tradefeed_struct::ToString(tf).c_str());
+  m_ecbOrd->PushBack(strlen((char*)pb));
+}
+
+void CtpOrd::notify_orderfeed(const ATU_OTI_orderfeed_struct & of)
+{
+  BYTE * pb = m_ecbOrd->GetWritingPtr();
+  strcpy((char*)pb,ATU_OTI_orderfeed_struct::ToString(of).c_str());
+  m_ecbOrd->PushBack(strlen((char*)pb));
+}
+

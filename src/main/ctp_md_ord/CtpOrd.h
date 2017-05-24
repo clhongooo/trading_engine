@@ -117,6 +117,10 @@ class CtpOrd : public CThostFtdcTraderSpi
     string createOrderRef(string orderid);
     string getOrderRef(string orderid);
     string getOrderID(string orderref);
+
+    inline void notify_tradefeed(const ATU_OTI_tradefeed_struct &);
+    inline void notify_orderfeed(const ATU_OTI_orderfeed_struct &);
+
     map<string,string> m_order_idToOrderRef;
     map<string,string> m_OrderRefToorder_id;
     int m_orderRefCount;
@@ -126,11 +130,7 @@ class CtpOrd : public CThostFtdcTraderSpi
     //--------------------------------------------------
     boost::recursive_mutex m_requestIDMutex;
     boost::recursive_mutex m_orderRefMutex;
-
     boost::shared_ptr<ExpandableCirBuffer> m_ecbOrd;
-    //--------------------------------------------------
-    // System objects
-    //--------------------------------------------------
     boost::shared_ptr<StdStreamLogger> m_Logger;
 };
 
