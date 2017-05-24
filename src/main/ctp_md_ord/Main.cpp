@@ -122,6 +122,7 @@ int main(int argc, const char *argv[])
   boost::scoped_ptr<boost::thread> m_p_run_md_thread (new boost::thread(boost::bind(&CtpMd::run,p_ctpmd.get())));
   boost::scoped_ptr<boost::thread> m_p_run_ord_thread(new boost::thread(boost::bind(&CtpOrd::run,p_ctpord.get())));
 
+  bool bBusyLoop = true;
   BYTE * pb = NULL;
   unsigned long ulTStamp;
   for (;;)
@@ -135,6 +136,7 @@ int main(int argc, const char *argv[])
       p_ecbOrd->PopFront();
       p_zmq_server_ord->Send(sFeed);
       m_Logger->Write(StdStreamLogger::INFO,"Sent from zmq: %s", sFeed.c_str());
+      bBusyLoop = false;
     }
     Tuple2<bool,string> tup = p_zmq_server_ord->GetStr();
     while (tup._1())
@@ -144,6 +146,7 @@ int main(int argc, const char *argv[])
       if (ATU_OTI_signalfeed_struct::ParseString(tup._2(),sfs))
         p_ctpord->on_process_signalfeed(sfs);
       tup = p_zmq_server_ord->GetStr();
+      bBusyLoop = false;
     }
 
     //--------------------------------------------------
@@ -154,12 +157,16 @@ int main(int argc, const char *argv[])
       const ATU_MDI_marketfeed_struct* mfs = (ATU_MDI_marketfeed_struct*)pb;
       p_BinaryRecorder->WriteATUMDIStruct(*mfs);
       p_ecbMD->PopFront();
+      bBusyLoop = false;
 
       if (!p_ecbOrd->Empty() || max(p_zmq_server_ord->GetSendQueueSize(),p_zmq_server_ord->GetRecvQueueSize()) > 0) break;
     }
 
-    while (p_ecbOrd->Empty() && max(p_zmq_server_ord->GetSendQueueSize(),p_zmq_server_ord->GetRecvQueueSize()) == 0)
-      boost::this_thread::sleep(boost::posix_time::microseconds(10*1000));
+    //--------------------------------------------------
+    // prevent busy loop
+    //--------------------------------------------------
+    if (bBusyLoop) boost::this_thread::sleep(boost::posix_time::microseconds(10*1000));
+    else           bBusyLoop = true;
   }
 
   //--------------------------------------------------
