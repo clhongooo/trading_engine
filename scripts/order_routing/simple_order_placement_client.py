@@ -3,6 +3,7 @@ import sys
 import time
 import zmq
 import argparse
+from parse_capi_feeds import parse_capi_feed
 from threading import Thread
 
 JUSTIFY_COL=200
@@ -37,7 +38,7 @@ def get_exchg(sym):
 
 def expand_to_signalfeed(oid_sf_tup_dict,fields_list,oid_suffix=0):
     def construct_tup(sf):
-        return (sf, ','.join(sf))
+        return (sf, ','.join(map(str,sf)))
 
     if len(fields_list) == 2:
         oaction,oid = fields_list
@@ -53,18 +54,20 @@ def expand_to_signalfeed(oid_sf_tup_dict,fields_list,oid_suffix=0):
         fts           = ymdhms + "_000000"
         oid           = '_'.join(map(str, ["oid",hms,oid_suffix]))
         open_or_close = "open"
-        buy_or_sell   = "0" if qty >= 0 else "1"
+        buy_or_sell   = "1" if float(qty) >= 0 else "2"
         oaction       = "insert" if oaction.lower() == "i" else "delete"
         otype         = "limit_order"
         oval          = "today"
 
-        sf = [fts, "signalfeed", exchg, sym, oid, px, qty, open_or_close, buy_or_sell, oaction, otype, oval]
+        sf = [fts, "signalfeed", exchg, sym, oid, px, abs(float(qty)), open_or_close, buy_or_sell, oaction, otype, oval]
         return construct_tup(sf)
 
 def recv_zmq():
     global zmq_socket
     while True:
-        print right_justify("Received: %s" % zmq_socket.recv(), JUSTIFY_COL)
+        m = zmq_socket.recv()
+        print right_justify("Received: %s" % m, JUSTIFY_COL)
+        print '\n'.join(parse_capi_feed(m))
 
 def send_zmq(msg):
     global zmq_socket
