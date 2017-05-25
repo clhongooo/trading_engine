@@ -3,6 +3,7 @@ import sys
 import time
 import zmq
 import argparse
+# import random
 from threading import Thread
 
 JUSTIFY_COL=200
@@ -29,6 +30,9 @@ BBlue="\033[1;34m"        # Blue
 BPurple="\033[1;35m"      # Purple
 BCyan="\033[1;36m"        # Cyan
 BWhite="\033[1;37m"       # White
+
+def in_colour(s,colour):
+    return colour + str(s) + Color_Off
 ###################################################
 
 MD_DICT = {} # non-threadsafe, anyway
@@ -94,9 +98,32 @@ recv_thd.start()
 
 
 while True:
-    print BBlack + ("%s" % time.strftime("%Y-%m-%d %H:%M:%S")) + Color_Off
+    print in_colour("%s" % time.strftime("%Y-%m-%d %H:%M:%S"), BBlack)
+
+    # ###################################################
+    # # for testing
+    # ###################################################
+    # MD_DICT = dict(map(lambda x: ("sym"+str(x),(30.+random.randint(1, 10)/10.,30.3,30.6)),range(1,10)))
+    # ###################################################
 
     for k,v in sorted(MD_DICT.items()):
-        print BBlue + str(k) + " " + Color_Off + right_justify("T: ",5) + right_justify(v[0],10) + right_justify("B/A: ",10) + ' '.join(map(lambda x: right_justify(x,10),v[1:]))
+        t,b,a = tuple(map(float,v))
+        sys.stdout.write (in_colour(k,BBlue) + " " + right_justify("T: ",5) + right_justify(t,10) + right_justify("B/A: ",10))
+
+        price6 = [t if t  < b else "",
+                  t if t == b else b,
+                  t if (t  > b and t  < a) else "",
+                  t if t == a else a,
+                  t if t  > a else "",
+                  str(round((a-b)/(a+b)*200.,2))+"%"]
+
+        displ6 = [BBlack,
+                  Red if t <= b else Color_Off,
+                  Yellow,
+                  Green if t >= a else Color_Off,
+                  BBlack,
+                  Color_Off]
+
+        print ' '.join(map(lambda x: in_colour(right_justify(x[0],10),x[1]), zip(price6,displ6)))
 
     time.sleep(1)
