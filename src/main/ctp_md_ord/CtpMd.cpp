@@ -85,7 +85,7 @@ void CtpMd::OnFrontConnected()
 void CtpMd::OnRspError(CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
   if (pRspInfo && (pRspInfo->ErrorID != 0))
-    m_Logger->Write(StdStreamLogger::ERROR,"%s: ErrorID=%d, ErrorMsg=%s", __FILENAME__,pRspInfo->ErrorID,pRspInfo->ErrorMsg);
+    m_Logger->Write(StdStreamLogger::ERROR,"%s: ErrorID=%d, ErrorMsg=%s ErrorMsg=%s", __FILENAME__,pRspInfo->ErrorID,pRspInfo->ErrorMsg,ctp::GetCTPErrorMsg(pRspInfo->ErrorID).c_str());
 }
 
 void CtpMd::OnFrontDisconnected(int nReason)
@@ -99,11 +99,8 @@ void CtpMd::OnHeartBeatWarning(int nTimeLapse)
 
 void CtpMd::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
-  if (pRspInfo->ErrorID != 0)
-  {
-    char _errorID[20];
-    sprintf(_errorID,"%d",pRspInfo->ErrorID);
-  }
+  if (pRspInfo && (pRspInfo->ErrorID != 0))
+    m_Logger->Write(StdStreamLogger::ERROR,"%s: ErrorID=%d, ErrorMsg=%s ErrorMsg=%s", __FILENAME__,pRspInfo->ErrorID,pRspInfo->ErrorMsg,ctp::GetCTPErrorMsg(pRspInfo->ErrorID).c_str());
 }
 
 void CtpMd::OnRspSubMarketData(CThostFtdcSpecificInstrumentField* pSpecificInstrument, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)

@@ -34,6 +34,7 @@
 #include "SDateTime.h"
 #include "Constants.h"
 #include "ExpandableCirBuffer.h"
+#include "CtpError.h"
 
 using namespace std;
 #include <boost/algorithm/string.hpp>

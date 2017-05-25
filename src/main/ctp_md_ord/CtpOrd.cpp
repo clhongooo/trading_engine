@@ -385,7 +385,7 @@ void CtpOrd::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder,
   //OnRtnOder receive correct order message, OnRspOrderInsert receive wrong order message
   of.m_order_status = 1;
   ostringstream oo;
-  oo << "ErrorID:" << pRspInfo->ErrorID;
+  oo << "ErrorID:" << pRspInfo->ErrorID << "_" << ctp::GetCTPErrorMsg(pRspInfo->ErrorID);
   of.m_error_description = oo.str();
 
   //real-time update
@@ -436,7 +436,7 @@ void CtpOrd::OnRspOrderAction(
   of.m_order_status = 1;
 
   ostringstream oo;
-  oo << "ErrorID:" << pRspInfo->ErrorID;
+  oo << "ErrorID:" << pRspInfo->ErrorID << "_" << ctp::GetCTPErrorMsg(pRspInfo->ErrorID);
   of.m_error_description = oo.str();
 
   //real-time update
@@ -589,8 +589,7 @@ void CtpOrd::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool b
 
 bool CtpOrd::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo) {
   bool bResult = ((pRspInfo) && (pRspInfo->ErrorID != 0));
-  if (bResult)
-    m_Logger->Write(StdStreamLogger::INFO,"%s: ErrorID=%d, ErrorMsg=%s", __FILENAME__,pRspInfo->ErrorID,pRspInfo->ErrorMsg);
+  if (bResult) m_Logger->Write(StdStreamLogger::INFO,"%s: ErrorID=%d, ErrorMsg=%s, ErrorMsg=%s", __FILENAME__,pRspInfo->ErrorID,pRspInfo->ErrorMsg,ctp::GetCTPErrorMsg(pRspInfo->ErrorID).c_str());
   return bResult;
 }
 
