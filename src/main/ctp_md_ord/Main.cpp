@@ -156,6 +156,7 @@ int main(int argc, const char *argv[])
     {
       const ATU_MDI_marketfeed_struct* mfs = (ATU_MDI_marketfeed_struct*)pb;
       p_BinaryRecorder->WriteATUMDIStruct(*mfs);
+      p_zmq_server_md->Send(ATU_MDI_marketfeed_struct::ToString(*mfs));
       p_ecbMD->PopFront();
       bBusyLoop = false;
 

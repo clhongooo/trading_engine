@@ -97,6 +97,6 @@ while True:
     print BBlack + ("%s" % time.strftime("%Y-%m-%d %H:%M:%S")) + Color_Off
 
     for k,v in MD_DICT.items():
-        print BBlue + str(k) + " " + Color_Off + ' '.join(map(lambda x: right_justify(x,10),v))
+        print BBlue + str(k) + " " + Color_Off + right_justify("T: ",5) + right_justify(v[0],10) + right_justify("B/A: ",10) + ' '.join(map(lambda x: right_justify(x,10),v[1:]))
 
     time.sleep(1)
