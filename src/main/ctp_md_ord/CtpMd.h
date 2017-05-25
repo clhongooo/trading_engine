@@ -37,6 +37,7 @@ using namespace std;
 using namespace boost::filesystem;
 using namespace boost::interprocess;
 #include "ThostFtdcMdApi.h"
+#include "CtpError.h"
 
 class CtpMd : public CThostFtdcMdSpi
 {
