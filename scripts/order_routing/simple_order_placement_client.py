@@ -101,7 +101,7 @@ def recv_zmq():
 def send_zmq(msg):
     global zmq_socket
     zmq_socket.send(msg)
-    print right_justify("Sent: %s%s%s" % (BYellow,msg,Color_Off), JUSTIFY_COL)
+    print right_justify("Sent: %s%s%s" % (BWhite,msg,Color_Off), JUSTIFY_COL)
 
 ###################################################
 parser = argparse.ArgumentParser(description = "Connects to ZMQ server and places orders by constructing signal feed upon user input.")
@@ -126,7 +126,7 @@ signalfeed_dict = dict(map(lambda x: (x[0][4], (x[0],x[1])), signalfeed_list))
 
 def recursion(oid_sf_tup_dict):
     print '\n'.join(map(lambda x: right_justify(x[0],8) + "   " + x[1], enumerate(map(lambda x: oid_sf_tup_dict[x][1], sorted(map(lambda x: x[0][4], oid_sf_tup_dict.values()))))))
-    user_input = raw_input("command [s oid | i,sym,price,qty | d,order_id | q]\n").strip()
+    user_input = raw_input("command [s #n | i,sym,price,qty | d,order_id | q]\n").strip()
     print BRed + user_input + Color_Off
     if len(user_input) == 0:
         recursion(oid_sf_tup_dict)
