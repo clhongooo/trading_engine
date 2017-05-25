@@ -1,8 +1,10 @@
 g++
 cmake
-commoncpp
-boost
+build-essential
+valgrind
+libcommoncpp2-dev
+libboost-all-dev
+libgsl0ldbl
+libzmq3-dev
+libcppunit-dev
 pantheios / stlsoft
-gsl
-libzmq-dev
-cppunit
