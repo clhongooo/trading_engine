@@ -130,14 +130,18 @@ int main(int argc, const char *argv[])
     //--------------------------------------------------
     // always give priority to order routing
     //--------------------------------------------------
-    while (p_ecbOrd->GetReadingPtrTStamp(pb,&ulTStamp))
+    if (!p_ecbOrd->EmptyNoLock())
     {
-      const string sFeed((char*)pb);
-      p_ecbOrd->PopFront();
-      p_zmq_server_ord->Send(sFeed);
-      m_Logger->Write(StdStreamLogger::INFO,"Sent to zmq: %s", sFeed.c_str());
-      bBusyLoop = false;
+      while (p_ecbOrd->GetReadingPtrTStamp(pb,&ulTStamp))
+      {
+        const string sFeed((char*)pb);
+        p_ecbOrd->PopFront();
+        p_zmq_server_ord->Send(sFeed);
+        m_Logger->Write(StdStreamLogger::INFO,"Sent to zmq: %s", sFeed.c_str());
+        bBusyLoop = false;
+      }
     }
+    //--------------------------------------------------
     Tuple2<bool,string> tup = p_zmq_server_ord->GetStr();
     while (tup._1())
     {
@@ -152,21 +156,24 @@ int main(int argc, const char *argv[])
     //--------------------------------------------------
     // process market data with spare time
     //--------------------------------------------------
-    while (p_ecbMD->GetReadingPtrTStamp(pb,&ulTStamp))
+    if (!p_ecbMD->EmptyNoLock())
     {
-      const ATU_MDI_marketfeed_struct* mfs = (ATU_MDI_marketfeed_struct*)pb;
-      p_BinaryRecorder->WriteATUMDIStruct(*mfs);
-      p_zmq_server_md->Send(ATU_MDI_marketfeed_struct::ToString(*mfs));
-      p_ecbMD->PopFront();
-      bBusyLoop = false;
+      while (p_ecbMD->GetReadingPtrTStamp(pb,&ulTStamp))
+      {
+        const ATU_MDI_marketfeed_struct* mfs = (ATU_MDI_marketfeed_struct*)pb;
+        p_BinaryRecorder->WriteATUMDIStruct(*mfs);
+        p_zmq_server_md->Send(ATU_MDI_marketfeed_struct::ToString(*mfs));
+        p_ecbMD->PopFront();
+        bBusyLoop = false;
 
-      if (!p_ecbOrd->Empty() || max(p_zmq_server_ord->GetSendQueueSize(),p_zmq_server_ord->GetRecvQueueSize()) > 0) break;
+        if (!p_ecbOrd->Empty() || max(p_zmq_server_ord->GetSendQueueSize(),p_zmq_server_ord->GetRecvQueueSize()) > 0) break;
+      }
     }
 
     //--------------------------------------------------
     // prevent busy loop
     //--------------------------------------------------
-    if (bBusyLoop) boost::this_thread::sleep(boost::posix_time::microseconds(10*1000));
+    if (bBusyLoop) boost::this_thread::sleep(boost::posix_time::milliseconds(1));
     else           bBusyLoop = true;
   }
 

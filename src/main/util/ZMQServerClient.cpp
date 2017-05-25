@@ -80,12 +80,13 @@ void ZMQServerClientBase::SendRecvLoop()
   unsigned long ulTS;
   BYTE * pb;
 
+  bool bBusyLoop = true;
   for (;;)
   {
     //--------------------------------------------------
     // send first
     //--------------------------------------------------
-    if (m_send_queue->GetReadingPtrTStamp(pb,&ulTS))
+    if (!m_send_queue->EmptyNoLock() && m_send_queue->GetReadingPtrTStamp(pb,&ulTS))
     {
       const size_t sz = m_send_queue->GetPktSize();
       zmq::message_t zmq_send_msg(sz);
@@ -94,6 +95,7 @@ void ZMQServerClientBase::SendRecvLoop()
       m_zmqsocket->send(zmq_send_msg);
       // m_zmqsocket->send(zmq_send_msg, ZMQ_NOBLOCK);
       m_send_queue->PopFront();
+      bBusyLoop = false;
     }
 
     //--------------------------------------------------
@@ -102,11 +104,20 @@ void ZMQServerClientBase::SendRecvLoop()
     // KeepWaitingForRead();
     const int rc = m_zmqsocket->recv(&zmqm, ZMQ_DONTWAIT);
     const size_t sz = zmqm.size();
-    if (rc <= 0) continue;
-    BYTE * pw = m_recv_queue->GetWritingPtr();
-    memcpy(pw,(char*)zmqm.data(),sz);
-    ((char*)pw)[sz] = '\0';
-    m_recv_queue->PushBack(sz);
+    if (rc > 0)
+    {
+      BYTE * pw = m_recv_queue->GetWritingPtr();
+      memcpy(pw,(char*)zmqm.data(),sz);
+      ((char*)pw)[sz] = '\0';
+      m_recv_queue->PushBack(sz);
+      bBusyLoop = false;
+    }
+
+    //--------------------------------------------------
+    // prevent busy loop
+    //--------------------------------------------------
+    if (bBusyLoop) boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+    else           bBusyLoop = true;
   }
 }
 
@@ -114,15 +125,16 @@ Tuple2<bool,string> ZMQServerClientBase::GetStr()
 {
   unsigned long ulTS;
   BYTE * pb;
-  if (m_recv_queue->GetReadingPtrTStamp(pb,&ulTS))
+
+  if (m_recv_queue->EmptyNoLock() || !m_recv_queue->GetReadingPtrTStamp(pb,&ulTS))
+  {
+    return Tuple2<bool,string>(false,"");
+  }
+  else
   {
     const string sRtn((char*)pb,m_recv_queue->GetPktSize());
     m_recv_queue->PopFront();
     return Tuple2<bool,string>(true,sRtn);
-  }
-  else
-  {
-    return Tuple2<bool,string>(false,"");
   }
 }
 
