@@ -54,6 +54,9 @@ using namespace std;
 using namespace boost::filesystem;
 using namespace boost::interprocess;
 
+
+#define CTPNA "NA"
+
 class CThostFtdcTraderApi;
 class CTraderSpi;
 
@@ -121,6 +124,7 @@ class CtpOrd : public CThostFtdcTraderSpi
     string createOrderRef(string orderid);
     string getOrderRef(string orderid);
     string getOrderID(const string & orderref);
+    const string InterpreteReqOrderReturnValue(const int);
 
     inline void notify_tradefeed(const ATU_OTI_tradefeed_struct &);
     inline void notify_orderfeed(const ATU_OTI_orderfeed_struct &);

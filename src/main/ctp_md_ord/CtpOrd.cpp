@@ -93,7 +93,7 @@ bool CtpOrd::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
     strcpy(req.OrderRef, orderref.c_str());
 
     req.ContingentCondition = THOST_FTDC_CC_Immediately;
-    //Limit order or Market order or stop order
+    // Limit order or Market order or stop order
     if(s.m_order_type.compare("limit_order")==0){
       req.OrderPriceType = THOST_FTDC_OPT_LimitPrice;
       req.LimitPrice = s.m_price;
@@ -120,12 +120,12 @@ bool CtpOrd::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
       req.StopPrice = _stop_price;
       m_Logger->Write(StdStreamLogger::INFO,"%s: Stop condition: %f %d %s", __FILENAME__, _stop_price,_stop_condition,_orderType);
       switch(_stop_condition){
-        case 1:	{req.ContingentCondition = THOST_FTDC_CC_BidPriceGreaterEqualStopPrice; break;}
-        case 2:	{req.ContingentCondition = THOST_FTDC_CC_BidPriceLesserEqualStopPrice; break;}
-        case 3:	{req.ContingentCondition = THOST_FTDC_CC_AskPriceGreaterEqualStopPrice; break;}
-        case 4:	{req.ContingentCondition = THOST_FTDC_CC_AskPriceLesserEqualStopPrice; break;}
+        case 1:	{req.ContingentCondition = THOST_FTDC_CC_BidPriceGreaterEqualStopPrice;  break;}
+        case 2:	{req.ContingentCondition = THOST_FTDC_CC_BidPriceLesserEqualStopPrice;   break;}
+        case 3:	{req.ContingentCondition = THOST_FTDC_CC_AskPriceGreaterEqualStopPrice;  break;}
+        case 4:	{req.ContingentCondition = THOST_FTDC_CC_AskPriceLesserEqualStopPrice;   break;}
         case 5:	{req.ContingentCondition = THOST_FTDC_CC_LastPriceGreaterEqualStopPrice; break;}
-        case 6:	{req.ContingentCondition = THOST_FTDC_CC_LastPriceLesserEqualStopPrice; break;}
+        case 6:	{req.ContingentCondition = THOST_FTDC_CC_LastPriceLesserEqualStopPrice;  break;}
       }
     }
 
@@ -179,7 +179,20 @@ bool CtpOrd::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
     m_Logger->Write(StdStreamLogger::INFO,"%s: Order Insert to CTP order id=%s", __FILENAME__, s.m_order_id.c_str());
     m_Logger->Write(StdStreamLogger::INFO,"%s: ReqOrderInsert result: %s", __FILENAME__, ((iResult == 0) ? "OK" : "Fail"));
 
-    //this should generate errorfeed or orderfeed as notification of error
+    if (iResult != 0)
+    {
+      ATU_OTI_orderfeed_struct of(s);
+      of.m_qty_filled = 0;
+      of.m_deleted = 1;
+      of.m_order_status = 1;
+      of.m_error_description = "ReqOrderInsert_Return:" + InterpreteReqOrderReturnValue(iResult);
+      of.m_portfolio_name = "";
+      of.m_created_timestamp = "";
+      of.m_changed_timestamp = "";
+      of.m_source = 0;
+      of.m_islast = 0;
+      notify_orderfeed(of);
+    }
   }
   else if (s.m_order_action.compare("delete")==0) {
     CThostFtdcInputOrderActionField req;
@@ -194,11 +207,26 @@ bool CtpOrd::on_process_signalfeed(ATU_OTI_signalfeed_struct &s) {
         m_orderid_instrument.find(s.m_order_id) != m_orderid_instrument.end())
       s.m_instrument = m_orderid_instrument[s.m_order_id];
     strcpy(req.InstrumentID, s.m_instrument.c_str());
-    m_Logger->Write(StdStreamLogger::INFO,"%s: Order Deleted from CTP order id=%s", __FILENAME__, s.m_order_id.c_str());
     boost::unique_lock<boost::recursive_mutex> lock(m_requestIDMutex);
     int iResult = m_pCThostFtdcTraderApi->ReqOrderAction(&req, ++m_iRequestID);
+
+    m_Logger->Write(StdStreamLogger::INFO,"%s: Order Deleted from CTP order id=%s", __FILENAME__, s.m_order_id.c_str());
     m_Logger->Write(StdStreamLogger::INFO,"%s: ReqOrderAction result: %s", __FILENAME__, ((iResult == 0) ? "OK" : "Fail"));
-    //this should generate errorfeed or orderfeed as notification of error
+
+    if (iResult != 0)
+    {
+      ATU_OTI_orderfeed_struct of(s);
+      of.m_qty_filled = -1;
+      of.m_deleted = 0;
+      of.m_order_status = 1;
+      of.m_error_description = "ReqOrderInsert_Return:" + InterpreteReqOrderReturnValue(iResult);
+      of.m_portfolio_name = "";
+      of.m_created_timestamp = "";
+      of.m_changed_timestamp = "";
+      of.m_source = 0;
+      of.m_islast = 0;
+      notify_orderfeed(of);
+    }
   }
 
   return true;
@@ -356,7 +384,9 @@ void CtpOrd::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder,
 
   //OnRtnOder receive correct order message, OnRspOrderInsert receive wrong order message
   of.m_order_status = 1;
-  of.m_error_description = string(pRspInfo->ErrorMsg);
+  ostringstream oo;
+  oo << "ErrorID:" << pRspInfo->ErrorID;
+  of.m_error_description = oo.str();
 
   //real-time update
   of.m_source = 0;
@@ -369,7 +399,7 @@ void CtpOrd::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder,
     of.m_order_type = "limit_order";
   }
 
-  of.m_order_validity = "NA";
+  of.m_order_validity = CTPNA;
 
   notify_orderfeed(of);
 }
@@ -404,15 +434,18 @@ void CtpOrd::OnRspOrderAction(
 
   //OnRtnOder receive correct order message, OnRspOrderAction receive wrong order message
   of.m_order_status = 1;
-  of.m_error_description = string(pRspInfo->ErrorMsg);
+
+  ostringstream oo;
+  oo << "ErrorID:" << pRspInfo->ErrorID;
+  of.m_error_description = oo.str();
 
   //real-time update
   of.m_source = 0;
 
   //cancel order failed, pInputOrderAction don't provide order type information
-  of.m_order_type = "N/A";
+  of.m_order_type = CTPNA;
 
-  of.m_order_validity = "N/A";
+  of.m_order_validity = CTPNA;
   notify_orderfeed(of);
 }
 
@@ -429,7 +462,7 @@ void CtpOrd::OnRtnOrder(CThostFtdcOrderField *pOrder) {
   of.m_price = pOrder->LimitPrice;
   of.m_qty = pOrder->VolumeTotalOriginal;
   //TODO: need to determine if it is open or close
-  of.m_open_or_close="NA";
+  of.m_open_or_close=CTPNA;
   if(pOrder->CombOffsetFlag[0] == THOST_FTDC_OF_Open){
     of.m_open_or_close = "open";
   }
@@ -459,15 +492,15 @@ void CtpOrd::OnRtnOrder(CThostFtdcOrderField *pOrder) {
   of.m_error_description = "";
   if(pOrder->OrderSubmitStatus == THOST_FTDC_OSS_InsertRejected ) {
     of.m_order_status = 1;
-    of.m_error_description = "Insert Order Rejected";
+    of.m_error_description = "THOST_FTDC_OSS_InsertRejected";
   }
   if(pOrder->OrderSubmitStatus == THOST_FTDC_OSS_CancelRejected ) {
     of.m_order_status = 1;
-    of.m_error_description = "Cancel Order Rejected";
+    of.m_error_description = "THOST_FTDC_OSS_CancelRejected";
   }
   if(pOrder->OrderSubmitStatus == THOST_FTDC_OSS_ModifyRejected ) {
     of.m_order_status = 1;
-    of.m_error_description = "Modify Order Rejected";
+    of.m_error_description = "THOST_FTDC_OSS_ModifyRejected";
   }
 
 
@@ -483,7 +516,7 @@ void CtpOrd::OnRtnOrder(CThostFtdcOrderField *pOrder) {
     of.m_order_type = "limit_order";
   }
 
-  of.m_order_validity = "N/A";
+  of.m_order_validity = CTPNA;
 
   m_Logger->Write(StdStreamLogger::INFO,"%s: StatusMsg:%s", __FILENAME__,pOrder->StatusMsg);
 
@@ -526,7 +559,7 @@ void CtpOrd::OnRtnTrade(CThostFtdcTradeField *pTrade) {
   }
   tf.m_trade_id=pTrade->TradeID;
   boost::trim(tf.m_trade_id);
-  tf.m_portfolio_name="N/A";
+  tf.m_portfolio_name=CTPNA;
 
   char _tradeTime_c[9],_tradeTime_l[9];
   strcpy(_tradeTime_c, pTrade->TradeTime);
@@ -596,7 +629,7 @@ void CtpOrd::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField 
   of.m_order_id = getOrderID(string(pOrder->OrderRef));
   of.m_price = pOrder->LimitPrice;
   of.m_qty = pOrder->VolumeTotalOriginal;
-  of.m_open_or_close="N/A";
+  of.m_open_or_close=CTPNA;
   if(pOrder->CombOffsetFlag[0] == THOST_FTDC_OF_Open){
     of.m_open_or_close = "open";
   }
@@ -634,7 +667,7 @@ void CtpOrd::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField 
     of.m_order_type = "limit_order";
   }
 
-  of.m_order_validity = "N/A";
+  of.m_order_validity = CTPNA;
   notify_orderfeed(of);
   if (bIsLast) {
     of.m_islast=1;
@@ -657,7 +690,7 @@ void CtpOrd::OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField 
   tf.m_price=pTrade->Price;
   tf.m_qty=pTrade->Volume;
   tf.m_islast=0;
-  tf.m_open_or_close="NA";
+  tf.m_open_or_close=CTPNA;
   if(pTrade->OffsetFlag == THOST_FTDC_OF_Open){
     tf.m_open_or_close="open";
   }
@@ -680,7 +713,7 @@ void CtpOrd::OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField 
   }
   tf.m_trade_id=pTrade->TradeID;
   boost::trim(tf.m_trade_id);
-  tf.m_portfolio_name="N/A";
+  tf.m_portfolio_name=CTPNA;
 
   char _tradeTime_c[9],_tradeTime_l[9];
   strcpy(_tradeTime_c, pTrade->TradeTime);
@@ -814,5 +847,21 @@ void CtpOrd::notify_orderfeed(const ATU_OTI_orderfeed_struct & of)
   BYTE * pb = m_ecbOrd->GetWritingPtr();
   strcpy((char*)pb,ATU_OTI_orderfeed_struct::ToString(of).c_str());
   m_ecbOrd->PushBack(strlen((char*)pb));
+}
+
+const string CtpOrd::InterpreteReqOrderReturnValue(const int i)
+{
+  //--------------------------------------------------
+  // According to CTP's API doc
+  //--------------------------------------------------
+  switch(i)
+  {
+    case  0: { return "Successful";                                        }
+    case -1: { return "Network_connection_failed";                         }
+    case -2: { return "Number_of_unprocessed_requests_exceeded_limit";     }
+    case -3: { return "Number_of_requests_sent_per_second_exceeded_limit"; }
+    default: { return "Unknown";                                           }
+  }
+  return "Unknown";
 }
 
