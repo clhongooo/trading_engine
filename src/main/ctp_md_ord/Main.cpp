@@ -135,7 +135,7 @@ int main(int argc, const char *argv[])
       const string sFeed((char*)pb);
       p_ecbOrd->PopFront();
       p_zmq_server_ord->Send(sFeed);
-      m_Logger->Write(StdStreamLogger::INFO,"Sent from zmq: %s", sFeed.c_str());
+      m_Logger->Write(StdStreamLogger::INFO,"Sent to zmq: %s", sFeed.c_str());
       bBusyLoop = false;
     }
     Tuple2<bool,string> tup = p_zmq_server_ord->GetStr();
