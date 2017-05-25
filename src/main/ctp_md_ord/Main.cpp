@@ -67,8 +67,8 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<CtpMd> p_ctpmd, bo
   //--------------------------------------------------
   // to ruin things
   //--------------------------------------------------
-  if (STool::ToLowerCase(pt.get<std::string>("MarketData.IsON"))   != "true") p_ctpmd->setConnectString("0.0.0.1");
-  if (STool::ToLowerCase(pt.get<std::string>("OrderRouting.IsON")) != "true") p_ctpord->setConnectString("0.0.0.1");
+  if (STool::ToLowerCase(pt.get<std::string>("MarketData.IsON"))   != "true") p_ctpmd->setConnectString ("tcp://0.0.0.1:1");
+  if (STool::ToLowerCase(pt.get<std::string>("OrderRouting.IsON")) != "true") p_ctpord->setConnectString("tcp://0.0.0.1:1");
 
   //--------------------------------------------------
   p_BinaryRecorder->SetOutFilePath(STool::Trim(pt.get<std::string>("MarketData.DataFolder"))+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_ffffff()+".csv","w+");
