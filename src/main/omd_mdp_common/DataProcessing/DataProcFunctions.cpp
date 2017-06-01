@@ -472,12 +472,6 @@ void DataProcFunctions_MDP::OnHeartBeat(const unsigned short channelID, const st
 
 void DataProcFunctions_MDP::OnRefreshVolume(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
-  //--------------------------------------------------
-  // Skip processing
-  //--------------------------------------------------
-  return;
-  //--------------------------------------------------
-
   if (m_Logger->NeedToPrint(Logger::DEBUG))
   {
     MDIncrementalRefreshVolume37 msg;
@@ -495,9 +489,9 @@ void DataProcFunctions_MDP::OnRefreshVolume(const unsigned short channelID, cons
         << "MDIncrementalRefreshVolume37: SecurityID: " << ent.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(ent.securityID())
         << " rptSeq: " << (uint32_t)(ent.rptSeq())
-        << " mDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
-        << " mDUpdateAction: " << (int)(ent.mDUpdateAction())
-        << " mDEntryType: " << string(ent.mDEntryType());
+        << " MDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
+        << " MDUpdateAction: " << (int)(ent.mDUpdateAction())
+        << " MDEntryType: " << string(ent.mDEntryType());
 
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
@@ -526,9 +520,9 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
         << "MDIncrementalRefreshBook32: SecurityID: " << ent.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(ent.securityID())
         << " rptSeq: " << (uint32_t)(ent.rptSeq())
-        << " mDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
-        << " mDUpdateAction: " << (int)(ent.mDUpdateAction())
-        << " mDEntryType: " << (char)(ent.mDEntryType())
+        << " MDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
+        << " MDUpdateAction: " << (int)(ent.mDUpdateAction())
+        << " MDEntryType: " << (char)(ent.mDEntryType())
         << " transactTime: " << SDateTime::fromUnixTimeToString(msg.transactTime(), SDateTime::NANOSEC);
 
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
@@ -549,11 +543,11 @@ void DataProcFunctions_MDP::OnRefreshBook(const unsigned short channelID, const 
           << ProcFlagToString(pf) << ": "
           << "MDIncrementalRefreshBook32: SecurityID: " << ent.securityID()
           << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(ent.securityID())
-          << " mDEntryType: " << (char)(ent.mDEntryType())
-          << " mDPriceLevel: " << PrintCMEInt8Null((int)(ent.mDPriceLevel()))
-          << " mDUpdateAction: " << (int)(ent.mDUpdateAction())
-          << " mDEntryPx.mantissa: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
-          << " mDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
+          << " MDEntryType: " << (char)(ent.mDEntryType())
+          << " MDPriceLevel: " << PrintCMEInt8Null((int)(ent.mDPriceLevel()))
+          << " MDUpdateAction: " << (int)(ent.mDUpdateAction())
+          << " MDEntryPx.mantissa: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
+          << " MDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
           << " numberOfOrders: " << PrintCMEInt32Null((int)(ent.numberOfOrders()))
           << " rptSeq: " << (uint32_t)(ent.rptSeq());
         m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
@@ -641,13 +635,13 @@ void DataProcFunctions_MDP::OnRefreshTrade(const unsigned short channelID, const
         << "MDIncrementalRefreshTrade36: SecurityID: " << ent.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(ent.securityID())
         << " rptSeq: " << (uint32_t)(ent.rptSeq())
-        << " mDEntryPx: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
-        << " mDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
+        << " MDEntryPx: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
+        << " MDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
         << " numberOfOrders: " << PrintCMEInt32Null((int)(ent.numberOfOrders()))
         << " aggressorSide: " << ent.aggressorSide()
         << " tradeID: " << (int32_t)(ent.tradeID())
-        << " mDUpdateAction: " << (int)(ent.mDUpdateAction())
-        << " mDEntryType: " << string(ent.mDEntryType());
+        << " MDUpdateAction: " << (int)(ent.mDUpdateAction())
+        << " MDEntryType: " << string(ent.mDEntryType());
 
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
@@ -704,11 +698,11 @@ void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID
         << "MDIncrementalRefreshTradeSummary42: SecurityID: " << ent.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(ent.securityID())
         << " rptSeq: " << (uint32_t)(ent.rptSeq())
-        << " mDEntryPx: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
-        << " mDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
+        << " MDEntryPx: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
+        << " MDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
         << " numberOfOrders: " << PrintCMEInt32Null((int)(ent.numberOfOrders()))
         << " aggressorSide: " << ent.aggressorSide()
-        << " mDEntryType: " << string(ent.mDEntryType());
+        << " MDEntryType: " << string(ent.mDEntryType());
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
 
@@ -722,12 +716,6 @@ void DataProcFunctions_MDP::OnRefreshTradeSummary(const unsigned short channelID
 
 void DataProcFunctions_MDP::OnRefreshDailyStatistics(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
-  //--------------------------------------------------
-  // Skip processing
-  //--------------------------------------------------
-  return;
-  //--------------------------------------------------
-
   if (m_Logger->NeedToPrint(Logger::DEBUG))
   {
     MDIncrementalRefreshDailyStatistics33 msg;
@@ -768,12 +756,6 @@ void DataProcFunctions_MDP::OnRefreshDailyStatistics(const unsigned short channe
 
 void DataProcFunctions_MDP::OnRefreshSessionStatistics(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
-  //--------------------------------------------------
-  // Skip processing
-  //--------------------------------------------------
-  return;
-  //--------------------------------------------------
-
   if (m_Logger->NeedToPrint(Logger::DEBUG))
   {
     MDIncrementalRefreshSessionStatistics35 msg;
@@ -802,12 +784,6 @@ void DataProcFunctions_MDP::OnRefreshSessionStatistics(const unsigned short chan
 
 void DataProcFunctions_MDP::OnRefreshLimitsBanding(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
-  //--------------------------------------------------
-  // Skip processing
-  //--------------------------------------------------
-  return;
-  //--------------------------------------------------
-
   if (m_Logger->NeedToPrint(Logger::DEBUG))
   {
     MDIncrementalRefreshLimitsBanding34 msg;
@@ -914,12 +890,6 @@ void DataProcFunctions_MDP::OnRefreshSecurityDefinitionSpread(const unsigned sho
 
 void DataProcFunctions_MDP::OnQuoteRequest(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
-  //--------------------------------------------------
-  // Skip processing
-  //--------------------------------------------------
-  return;
-  //--------------------------------------------------
-
   if (m_Logger->NeedToPrint(Logger::DEBUG))
   {
     QuoteRequest39 msg;
@@ -944,12 +914,6 @@ void DataProcFunctions_MDP::OnQuoteRequest(const unsigned short channelID, const
 
 void DataProcFunctions_MDP::OnSecurityStatus(const unsigned short channelID, const mktdata::MessageHeader& hdr, char *buf, const int len, const string & sMcastType, const DPF_ProcFlag pf)
 {
-  //--------------------------------------------------
-  // Skip processing
-  //--------------------------------------------------
-  return;
-  //--------------------------------------------------
-
   SecurityStatus30 msg;
   msg.wrapForDecode(buf, hdr.encodedLength(), hdr.blockLength(), MDP_VERSION, len);
   auto security_status = msg.securityTradingStatus();
@@ -1089,10 +1053,10 @@ void DataProcFunctions_MDP::OnSnapshotFullRefresh(const unsigned short channelID
         << ProcFlagToString(pf) << ": "
         << "SnapshotFullRefresh38: SecurityID: " << msg.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(msg.securityID())
-        << " mDEntryType: " << (char)(ent.mDEntryType())
-        << " mDEntryPx: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
-        << " mDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
-        << " mDPriceLevel: " << PrintCMEInt8Null((int)(ent.mDPriceLevel()))
+        << " MDEntryType: " << (char)(ent.mDEntryType())
+        << " MDEntryPx: " << PrintCMEPriceNull((int64_t)ent.mDEntryPx().mantissa())
+        << " MDEntrySize: " << PrintCMEInt32Null((int)(ent.mDEntrySize()))
+        << " MDPriceLevel: " << PrintCMEInt8Null((int)(ent.mDPriceLevel()))
         << " numberOfOrders: " << PrintCMEInt32Null((int)(ent.numberOfOrders()))
         << " tradingReferenceDate: " << SDateTime::fromUnixTimeToString(ent.tradingReferenceDate(), SDateTime::DAY)
         << " openCloseSettlFlag: " << (int)(ent.openCloseSettlFlag());
