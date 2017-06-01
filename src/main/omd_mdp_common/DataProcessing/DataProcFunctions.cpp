@@ -848,18 +848,19 @@ void DataProcFunctions_MDP::OnRefreshSecurityDefinitionFuture(const unsigned sho
 
     if (m_Logger->NeedToPrint(Logger::DEBUG))
     {
+
       ostringstream oo;
       oo
         << ProcFlagToString(pf) << ": "
         << "MDInstrumentDefinitionFuture27: "
-        << " Event time: " << SDateTime::fromUnixTimeToString(ent.eventTime(), SDateTime::NANOSEC)
+        << " Event time: " << SDateTime::fromUnixTimeToString_s(ent.eventTime(), SDateTime::NANOSEC)
         << " Event type: " << ent.eventType()
         << " Security ID: " << msg.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(msg.securityID())
         << " Symbol: " << msg.symbol()
-        << " Security group: " << msg.getSecurityGroupAsString()
+        << " Security group: " << STool::RemoveNullChar(msg.getSecurityGroupAsString())
         << " Total number reports: " << msg.totNumReports()
-        << " Market segment ID: " << msg.marketSegmentID();
+        << " Market segment ID: " << (int)msg.marketSegmentID();
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
 
@@ -897,13 +898,13 @@ void DataProcFunctions_MDP::OnRefreshSecurityDefinitionSpread(const unsigned sho
       oo
         << ProcFlagToString(pf) << ": "
         << "MDInstrumentDefinitionSpread29: "
-        << " Event time: " << SDateTime::fromUnixTimeToString(ent.eventTime(), SDateTime::NANOSEC)
+        << " Event time: " << SDateTime::fromUnixTimeToString_s(ent.eventTime(), SDateTime::NANOSEC)
         << " Event type: " << ent.eventType()
         << " Security ID: " << msg.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(msg.securityID())
         << " Symbol: " << msg.symbol()
-        << " Security group: " << msg.getSecurityGroupAsString()
-        << " Market segment ID: " << msg.marketSegmentID();
+        << " Security group: " << STool::RemoveNullChar(msg.getSecurityGroupAsString())
+        << " Market segment ID: " << (int)msg.marketSegmentID();
       m_Logger->Write(Logger::DEBUG,"DataProcFunctions_MDP: ChannelID:%u. %s %s", channelID, sMcastType.c_str(), oo.str().c_str());
     }
 
@@ -931,7 +932,7 @@ void DataProcFunctions_MDP::OnQuoteRequest(const unsigned short channelID, const
       ostringstream oo;
       oo
         << ProcFlagToString(pf) << ": "
-        << "Quote Request: "
+        << "QuoteRequest39: "
         << " Symbol: " << sym.symbol()
         << " SecurityID: " << sym.securityID()
         << " Symbol(from lookup): " << m_ShrObj->GetSymbolFromInstrumentID(sym.securityID())

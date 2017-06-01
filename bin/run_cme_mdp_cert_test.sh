@@ -8,7 +8,8 @@
 #     $BIN 'multicast://224.0.28.123:16657|10.249.71.131' $CMEInstrumentsFile CNHH7 CNHM7
 # fi
 BIN=omd_mdp
-CONFIG=../conf/cme_mdp/Config_MDP_nrcert.ini
+# CONFIG=../conf/cme_mdp/Config_MDP_nrcert.ini
+CONFIG=../conf/cme_mdp/Config_MDP_cert.ini
 if [[ $1 == "d" ]]
 then
     gdb --args $BIN $CONFIG
