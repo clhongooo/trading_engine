@@ -76,6 +76,14 @@ class STool
     static string GetNthItemFromCSV(const string &,const int);
     static double Sign(const double);
     template<typename T>
+      static const string RemoveNullChar(const T & v)
+      {
+        string sTmp = boost::lexical_cast<string>(v);
+        sTmp.erase(std::remove(sTmp.begin(), sTmp.end(), '\0'), sTmp.end());
+        return sTmp;
+      }
+
+    template<typename T>
       static string MkString(vector<T> v)
       {
         if (!v.empty())
