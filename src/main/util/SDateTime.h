@@ -99,13 +99,16 @@ class SDateTime
     static bool IsValidYMD  (int year, int month, int day);
     static int  DaysInMonth (int y,int m);
     static int  DaysInYear  (int year);
-    static std::string FormatPTimeYYYYMMDDHHMMSS(const boost::posix_time::ptime &);
+    static std::string FormatPTimeYYYYMMDDHHMMSS_(const boost::posix_time::ptime &);
+    static std::string FormatPTimeYYYYMMDDHHMM_s(const boost::posix_time::ptime &);
     static std::string FormatPTimeYYYYMMDD(const boost::posix_time::ptime &);
     static std::string FormatPTimeHHMMSS(const boost::posix_time::ptime &);
     static boost::shared_ptr<boost::posix_time::ptime> fromUnixTimeToPTime (const unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE);
     static boost::shared_ptr<boost::posix_time::ptime> fromUnixTimeToPTime (const unsigned long, TIMEPRECISION);
     static string                                      fromUnixTimeToString(const unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE);
     static string                                      fromUnixTimeToString(const unsigned long, TIMEPRECISION);
+    static string                                      fromUnixTimeToString_s(const unsigned long, TIMEPRECISION, TIMEZONE, TIMEZONE);
+    static string                                      fromUnixTimeToString_s(const unsigned long, TIMEPRECISION);
     static unsigned long                               fromStringToUnixTime(const string &,      TIMEPRECISION                    );
     static string fromGeniumDateToString(unsigned int);
     static string GetCurrentTimeYYYYMMDD_HHMMSS_000000();

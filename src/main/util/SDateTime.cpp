@@ -934,7 +934,7 @@ int SDateTime::DaysInYear(int year)
   return (IsLeapYear(year) ? 366 : 365);
 }
 
-std::string SDateTime::FormatPTimeYYYYMMDDHHMMSS(const boost::posix_time::ptime & pt)
+std::string SDateTime::FormatPTimeYYYYMMDDHHMMSS_(const boost::posix_time::ptime & pt)
 {
   using namespace boost::posix_time;
   static std::locale loc(std::cout.getloc(), new time_facet("%Y%m%d_%H%M%s"));
@@ -945,6 +945,16 @@ std::string SDateTime::FormatPTimeYYYYMMDDHHMMSS(const boost::posix_time::ptime 
   string s = ss.str();
   boost::replace_all(s,".","_");
   return s;
+}
+std::string SDateTime::FormatPTimeYYYYMMDDHHMM_s(const boost::posix_time::ptime & pt)
+{
+  using namespace boost::posix_time;
+  static std::locale loc(std::cout.getloc(), new time_facet("%Y%m%d %H%M"));
+
+  std::basic_stringstream<char> ss;
+  ss.imbue(loc);
+  ss << pt;
+  return ss.str();
 }
 
 std::string SDateTime::FormatPTimeYYYYMMDD(const boost::posix_time::ptime & pt)
@@ -997,11 +1007,23 @@ string SDateTime::fromUnixTimeToString(const unsigned long ulUnixTime, TIMEPRECI
   return SDateTime::fromUnixTimeToString(ulUnixTime, timePrecision, SDateTime::GMT, SDateTime::GMT);
 }
 
+string SDateTime::fromUnixTimeToString_s(const unsigned long ulUnixTime, TIMEPRECISION timePrecision)
+{
+  return SDateTime::fromUnixTimeToString_s(ulUnixTime, timePrecision, SDateTime::GMT, SDateTime::GMT);
+}
+
 string SDateTime::fromUnixTimeToString(const unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)
 {
   boost::shared_ptr<boost::posix_time::ptime> p_pt = SDateTime::fromUnixTimeToPTime(ulUnixTime, timePrecision, tzSrc, tzDest);
   if (!p_pt) return "";
-  return FormatPTimeYYYYMMDDHHMMSS(*p_pt);
+  return FormatPTimeYYYYMMDDHHMMSS_(*p_pt);
+}
+
+string SDateTime::fromUnixTimeToString_s(const unsigned long ulUnixTime, TIMEPRECISION timePrecision, TIMEZONE tzSrc, TIMEZONE tzDest)
+{
+  boost::shared_ptr<boost::posix_time::ptime> p_pt = SDateTime::fromUnixTimeToPTime(ulUnixTime, timePrecision, tzSrc, tzDest);
+  if (!p_pt) return "";
+  return FormatPTimeYYYYMMDDHHMM_s(*p_pt);
 }
 
 unsigned long SDateTime::fromStringToUnixTime(const string & yyyymmdd_hhmmss_ffffff, TIMEPRECISION timePrecision)
