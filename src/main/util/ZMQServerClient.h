@@ -21,7 +21,7 @@ using namespace boost;
 
 class ZMQServerClientBase {
   public:
-    ZMQServerClientBase();
+    ZMQServerClientBase(const int);
     virtual ~ZMQServerClientBase() {}
     virtual void Send(const string &);
     virtual Tuple2<bool,string> GetStr();
@@ -38,19 +38,20 @@ class ZMQServerClientBase {
     boost::scoped_ptr<ExpandableCirBuffer> m_recv_queue;
     boost::scoped_ptr<ExpandableCirBuffer> m_send_queue;
     boost::scoped_ptr<boost::thread> p_thd;
+    int m_zmq_type;
 };
 
 class ZMQServer : public ZMQServerClientBase {
   public:
-    ZMQServer();
-    ZMQServer(const string &);
+    ZMQServer(const int);
+    ZMQServer(const int, const string &);
     void Set(const string &);
 };
 
 class ZMQClient : public ZMQServerClientBase {
   public:
-    ZMQClient();
-    ZMQClient(const string &);
+    ZMQClient(const int);
+    ZMQClient(const int, const string &);
     void Set(const string &);
 };
 #endif

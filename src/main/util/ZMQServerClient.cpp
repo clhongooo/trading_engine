@@ -1,24 +1,26 @@
 #include "ZMQServerClient.h"
 
-ZMQServerClientBase::ZMQServerClientBase()
+ZMQServerClientBase::ZMQServerClientBase(const int zmq_type) : m_zmq_type(zmq_type)
 {
   //--------------------------------------------------
   m_send_queue.reset(new ExpandableCirBuffer(1,4096,81920,CentralMemMgr::Instance()));
   m_recv_queue.reset(new ExpandableCirBuffer(1,4096,81920,CentralMemMgr::Instance()));
   //--------------------------------------------------
   m_zmqcontext.reset(new zmq::context_t(1));
-  m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, ZMQ_PAIR));
+  m_zmqsocket.reset(new zmq::socket_t(*m_zmqcontext, zmq_type));
+
+  if (zmq_type == ZMQ_SUB) m_zmqsocket->setsockopt(ZMQ_SUBSCRIBE, "", 0);
 
   const int val = 0;
-  const int rc = zmq_setsockopt (*m_zmqsocket, ZMQ_LINGER, &val, sizeof(val));
+  const int rc = zmq_setsockopt(*m_zmqsocket, ZMQ_LINGER, &val, sizeof(val));
   assert (rc == 0);
 }
 
-ZMQServer::ZMQServer() : ZMQServerClientBase() {}
-ZMQClient::ZMQClient() : ZMQServerClientBase() {}
+ZMQServer::ZMQServer(const int zmq_type) : ZMQServerClientBase(zmq_type) {}
+ZMQClient::ZMQClient(const int zmq_type) : ZMQServerClientBase(zmq_type) {}
 
-ZMQServer::ZMQServer(const string & sPort  ) : ZMQServerClientBase() { Set(sPort  ); }
-ZMQClient::ZMQClient(const string & sIPPort) : ZMQServerClientBase() { Set(sIPPort); }
+ZMQServer::ZMQServer(const int zmq_type, const string & sPort  ) : ZMQServerClientBase(zmq_type) { Set(sPort  ); }
+ZMQClient::ZMQClient(const int zmq_type, const string & sIPPort) : ZMQServerClientBase(zmq_type) { Set(sIPPort); }
 
 void ZMQServer::Set(const string & sPort)
 {
@@ -83,34 +85,40 @@ void ZMQServerClientBase::SendRecvLoop()
   bool bBusyLoop = true;
   for (;;)
   {
-    //--------------------------------------------------
-    // send first
-    //--------------------------------------------------
-    if (!m_send_queue->EmptyNoLock() && m_send_queue->GetReadingPtrTStamp(pb,&ulTS))
+    if (m_zmq_type != ZMQ_SUB)
     {
-      const size_t sz = m_send_queue->GetPktSize();
-      zmq::message_t zmq_send_msg(sz);
-      memcpy((void *)zmq_send_msg.data(),pb,sz);
-      KeepWaitingForWrite();
-      m_zmqsocket->send(zmq_send_msg);
-      // m_zmqsocket->send(zmq_send_msg, ZMQ_NOBLOCK);
-      m_send_queue->PopFront();
-      bBusyLoop = false;
+      //--------------------------------------------------
+      // send first
+      //--------------------------------------------------
+      if (!m_send_queue->EmptyNoLock() && m_send_queue->GetReadingPtrTStamp(pb,&ulTS))
+      {
+        const size_t sz = m_send_queue->GetPktSize();
+        zmq::message_t zmq_send_msg(sz);
+        memcpy((void *)zmq_send_msg.data(),pb,sz);
+        KeepWaitingForWrite();
+        m_zmqsocket->send(zmq_send_msg);
+        // m_zmqsocket->send(zmq_send_msg, ZMQ_NOBLOCK);
+        m_send_queue->PopFront();
+        bBusyLoop = false;
+      }
     }
 
-    //--------------------------------------------------
-    // recv
-    //--------------------------------------------------
-    // KeepWaitingForRead();
-    const int rc = m_zmqsocket->recv(&zmqm, ZMQ_DONTWAIT);
-    const size_t sz = zmqm.size();
-    if (rc > 0)
+    if (m_zmq_type != ZMQ_PUB)
     {
-      BYTE * pw = m_recv_queue->GetWritingPtr();
-      memcpy(pw,(char*)zmqm.data(),sz);
-      ((char*)pw)[sz] = '\0';
-      m_recv_queue->PushBack(sz);
-      bBusyLoop = false;
+      //--------------------------------------------------
+      // recv
+      //--------------------------------------------------
+      // KeepWaitingForRead();
+      const int rc = m_zmqsocket->recv(&zmqm, ZMQ_DONTWAIT);
+      const size_t sz = zmqm.size();
+      if (rc > 0)
+      {
+        BYTE * pw = m_recv_queue->GetWritingPtr();
+        memcpy(pw,(char*)zmqm.data(),sz);
+        ((char*)pw)[sz] = '\0';
+        m_recv_queue->PushBack(sz);
+        bBusyLoop = false;
+      }
     }
 
     //--------------------------------------------------
