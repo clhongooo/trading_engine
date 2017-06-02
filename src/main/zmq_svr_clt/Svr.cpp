@@ -17,7 +17,8 @@ int main(int argc, const char *argv[])
   }
 
   const string sPort(argv[1]);
-  ZMQServer zsvr(sPort);
+  // ZMQServer zsvr(ZMQ_PUB,sPort);
+  ZMQServer zsvr(ZMQ_PAIR,sPort);
 
   string s;
   for (;;)

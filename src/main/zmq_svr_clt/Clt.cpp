@@ -17,7 +17,8 @@ int main(int argc, const char *argv[])
   }
 
   const string sIPPort(argv[1]);
-  ZMQClient zclt(sIPPort);
+  // ZMQClient zclt(ZMQ_SUB,sIPPort);
+  ZMQClient zclt(ZMQ_PAIR,sIPPort);
 
   string s;
   for (;;)
