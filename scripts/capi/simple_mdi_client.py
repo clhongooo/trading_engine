@@ -88,7 +88,8 @@ args = parser.parse_args()
 
 ###################################################
 context = zmq.Context()
-zmq_socket= context.socket(zmq.PAIR)
+zmq_socket= context.socket(zmq.SUB)
+zmq_socket.setsockopt(zmq.SUBSCRIBE, "")
 zmq_socket.connect("tcp://%s:%s" % (args.ip,args.port))
 
 recv_thd = Thread(target = recv_zmq)

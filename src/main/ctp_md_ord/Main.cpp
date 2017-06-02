@@ -104,8 +104,8 @@ int main(int argc, const char *argv[])
 
   boost::shared_ptr<StdStreamLogger> m_Logger = StdStreamLogger::Instance();
   //--------------------------------------------------
-  boost::shared_ptr<ZMQServer> p_zmq_server_md (new ZMQServer());
-  boost::shared_ptr<ZMQServer> p_zmq_server_ord(new ZMQServer());
+  boost::shared_ptr<ZMQServer> p_zmq_server_md (new ZMQServer(ZMQ_PUB));
+  boost::shared_ptr<ZMQServer> p_zmq_server_ord(new ZMQServer(ZMQ_PAIR));
   //--------------------------------------------------
   boost::shared_ptr<CentralMemMgr> cmm = CentralMemMgr::Instance();
   boost::shared_ptr<ExpandableCirBuffer> p_ecbMD (new ExpandableCirBuffer(1,4096,sizeof(ATU_MDI_marketfeed_struct)+3,cmm));
