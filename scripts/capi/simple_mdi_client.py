@@ -115,7 +115,7 @@ while True:
                   t if (t  > b and t  < a) else "",
                   t if t == a else a,
                   t if t  > a else "",
-                  str(round((a-b)/(a+b)*200.,2))+"%"]
+                  str(round((a-b)/(a+b)*200.,2))+"%" if (abs(a) > 0.0001 and abs(b) > 0.0001) else "Nil"]
 
         displ6 = [BBlack,
                   Red if t <= b else Color_Off,
