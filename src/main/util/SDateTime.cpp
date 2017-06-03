@@ -1083,6 +1083,13 @@ string SDateTime::fromGeniumDateToString(unsigned int expdate)
   return string(tmp);
 }
 
+string SDateTime::GetCurrentTimeYYYYMMDD()
+{
+  time_t t = time(0);   // get time now
+  struct tm * now = localtime( & t );
+  return boost::lexical_cast<string>(now->tm_year + 1900);
+}
+
 string SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_000000()
 {
   time_t t = time(0);   // get time now

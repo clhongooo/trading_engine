@@ -111,6 +111,7 @@ class SDateTime
     static string                                      fromUnixTimeToString_s(const unsigned long, TIMEPRECISION);
     static unsigned long                               fromStringToUnixTime(const string &,      TIMEPRECISION                    );
     static string fromGeniumDateToString(unsigned int);
+    static string GetCurrentTimeYYYYMMDD();
     static string GetCurrentTimeYYYYMMDD_HHMMSS_000000();
     static string GetCurrentTimeYYYYMMDD_HHMMSS_ffffff();
     static unsigned long GetCurrentUnixTimeInMillisecGMT();

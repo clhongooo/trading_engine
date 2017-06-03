@@ -61,9 +61,7 @@ class ATU_IB_MDI : public ATU_IB_Client_MDI
     virtual void error(const int p_id, const int p_errorCode, const IBString p_errorString);
 
     //--------------------------------------------------
-    // Interface in ATU_Abstract_MDI
-    //--------------------------------------------------
-    virtual bool on_process_subscription(ATU_MDI_subscription_struct &s);
+    virtual bool on_process_subscription(const string &);
     virtual void notify_marketfeed(const MarketDepthData &);
     virtual void notify_marketfeed(const ATU_MDI_marketfeed_struct &);
 
@@ -73,8 +71,9 @@ class ATU_IB_MDI : public ATU_IB_Client_MDI
     virtual void setClientID(const int);
     virtual void setAccount(const string &);
 
-  private:
     void readContracts(string p_filepath);
+
+  private:
 
     string        m_host;
     unsigned int  m_port;

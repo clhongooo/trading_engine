@@ -227,13 +227,10 @@ void ATU_IB_MDI::updateMktDepth(TickerId p_id, int p_position, int p_operation, 
   }
 }
 
-// Interface in ATU_Abstract_MDI
-bool ATU_IB_MDI::on_process_subscription(ATU_MDI_subscription_struct &s){
-
-  const string sFeedcode(s.m_instrument);
+bool ATU_IB_MDI::on_process_subscription(const string & sFeedcode){
   m_updateTickerIdMutex.lock();
 
-  if (m_feedcodeSet.find(string(s.m_instrument)) != m_feedcodeSet.end()) {
+  if (m_feedcodeSet.find(sFeedcode) != m_feedcodeSet.end()) {
     //		cout << "The feedcode: " << sFeedcode << " has been subscribed." << endl;
     m_updateTickerIdMutex.unlock();
     return false;
@@ -243,41 +240,41 @@ bool ATU_IB_MDI::on_process_subscription(ATU_MDI_subscription_struct &s){
   AtuContract* atuContract = NULL;
   bool wrongFeedcode = false;
 
-  if ( m_contractExtractor->hasProductCode(string(s.m_instrument)) ) {
-    atuContract = m_contractExtractor->getContract(string(s.m_instrument));
+  if ( m_contractExtractor->hasProductCode(sFeedcode) ) {
+    atuContract = m_contractExtractor->getContract(sFeedcode);
     Utility::initIBContractFromAtuContract(&contract, atuContract, m_contractExtractor);
   }
-  else {
-    // The content of feedcode follows the pattern: {symbol}-{localSymbol}-{secType}
-    vector<string> parts;
-    boost::split(parts, sFeedcode, boost::is_any_of("-"));
-    if (parts.size() >= 3) {
-      contract.symbol = parts[0];
-      contract.localSymbol = parts[1];
-      contract.secType = parts[2];
-      if (parts.size() > 3) {
-        contract.currency = parts[3];
-      }
-      contract.exchange = s.m_market;
-    }
-    //	else if (sFeedcode.find('_') != string::npos) {
-    //		Toolbox::split(parts, sFeedcode, "_");
-    //		if (parts.size() == 2) {
-    //			contract.conId = boost::lexical_cast<long>(parts[1]);
-    //		} else {
-    //			wrongFeedcode = true;
-    //		}
-    //	}
-    else {
-      wrongFeedcode = true;
-    }
-  }
-
-  if (wrongFeedcode) {
-    m_Logger->Write(StdStreamLogger::INFO,"%s: Feedcode is incorrect. it should include symbol-localSymbol-secType.", __FILENAME__);
-    m_updateTickerIdMutex.unlock();
-    return false;
-  }
+  // else {
+  //   // The content of feedcode follows the pattern: {symbol}-{localSymbol}-{secType}
+  //   vector<string> parts;
+  //   boost::split(parts, sFeedcode, boost::is_any_of("-"));
+  //   if (parts.size() >= 3) {
+  //     contract.symbol = parts[0];
+  //     contract.localSymbol = parts[1];
+  //     contract.secType = parts[2];
+  //     if (parts.size() > 3) {
+  //       contract.currency = parts[3];
+  //     }
+  //     contract.exchange = s.m_market;
+  //   }
+  //   //	else if (sFeedcode.find('_') != string::npos) {
+  //   //		Toolbox::split(parts, sFeedcode, "_");
+  //   //		if (parts.size() == 2) {
+  //   //			contract.conId = boost::lexical_cast<long>(parts[1]);
+  //   //		} else {
+  //   //			wrongFeedcode = true;
+  //   //		}
+  //   //	}
+  //   else {
+  //     wrongFeedcode = true;
+  //   }
+  // }
+  //
+  // if (wrongFeedcode) {
+  //   m_Logger->Write(StdStreamLogger::INFO,"%s: Feedcode is incorrect. it should include symbol-localSymbol-secType.", __FILENAME__);
+  //   m_updateTickerIdMutex.unlock();
+  //   return false;
+  // }
 
   IBString geneticTicks("100,101,104,105,106,107,165,221,225,233,236,258,293,294,295,318");
   bool snapShot = false;
