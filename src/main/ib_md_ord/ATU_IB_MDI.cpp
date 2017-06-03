@@ -86,6 +86,9 @@ void ATU_IB_MDI::run()
     m_Logger->Write(StdStreamLogger::INFO,"%s: --->>> MDI connected to TWS!", __FILENAME__);
     m_isReady = true;
     m_clientSocket.startHandlingSendRecvMsg();
+
+    sleep(2);
+    for (set<string>::iterator it = m_subscribedSymbols.begin(); it != m_subscribedSymbols.end(); ++it) on_process_subscription(*it);
   } else {
     m_Logger->Write(StdStreamLogger::INFO,"%s: --->>> MDI failed to connect to TWS.", __FILENAME__);
   }
