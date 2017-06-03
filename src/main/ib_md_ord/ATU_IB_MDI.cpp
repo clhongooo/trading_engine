@@ -22,7 +22,8 @@ ATU_IB_MDI::ATU_IB_MDI(boost::shared_ptr<ExpandableCirBuffer> p) :
   ,m_nextTickerId(0)
   ,m_ecbMD(p)
 {
-
+  m_Logger = StdStreamLogger::Instance();
+  m_subscribeList.clear();
 }
 
 ATU_IB_MDI::~ATU_IB_MDI()
@@ -297,7 +298,7 @@ bool ATU_IB_MDI::on_process_subscription(const string & sFeedcode){
 
 void ATU_IB_MDI::error(const int p_id, const int p_errorCode, const IBString p_errorString)
 {
-  const string errMsg = boost::lexical_cast<string>(p_errorCode) + " | " + p_errorString;
+  const string errMsg = boost::lexical_cast<string>(p_errorCode) + string(" | ") + string(p_errorString);
   m_Logger->Write(StdStreamLogger::INFO,"%s: Error message: %s", __FILENAME__, errMsg.c_str());
 }
 

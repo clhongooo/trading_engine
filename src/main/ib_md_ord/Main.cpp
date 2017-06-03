@@ -42,13 +42,6 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<ATU_IB_MDI> p_ibmd
   m_Logger->Write(StdStreamLogger::INFO,"LogLevel: %s", sLogLevel.c_str());
 
   //--------------------------------------------------
-  // 
-  //--------------------------------------------------
-  p_ibmd->readContracts("General.ContractFile");
-  p_ibord->readContracts("General.ContractFile");
-  p_ibord->readOrderMapping();
-
-  //--------------------------------------------------
   // ATU_IB_MDI
   //--------------------------------------------------
   p_ibmd->setPort     (pt.get<int>("MarketData.Port"));
@@ -56,13 +49,6 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<ATU_IB_MDI> p_ibmd
   p_ibmd->setIP               (STool::Trim(pt.get<std::string>("MarketData.IP")));
   p_ibmd->setAccount          (STool::Trim(pt.get<std::string>("MarketData.Account")));
   p_zmq_server_md->Set        (STool::Trim(pt.get<std::string>("MarketData.ZmqMdPort")));
-
-  //--------------------------------------------------
-  vector<string> vSym;
-  const string sSyms = pt.get<std::string>("General.SubscribeSymbols");
-  boost::split(vSym,sSyms,boost::is_any_of(","));
-  for (int i = 0; i < vSym.size(); i++)
-  p_ibmd->on_process_subscription(vSym[i]);
 
   //--------------------------------------------------
   // ATU_IB_OTI
@@ -79,6 +65,18 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<ATU_IB_MDI> p_ibmd
   //--------------------------------------------------
   if (STool::ToLowerCase(pt.get<std::string>("MarketData.IsON"))   != "true") p_ibmd->setIP  ("0.0.0.1");
   if (STool::ToLowerCase(pt.get<std::string>("OrderRouting.IsON")) != "true") p_ibord->setIP ("0.0.0.1");
+
+  //--------------------------------------------------
+  p_ibmd->readContracts(STool::Trim(pt.get<std::string>("General.ContractFile")));
+  p_ibord->readContracts(STool::Trim(pt.get<std::string>("General.ContractFile")));
+  p_ibord->readOrderMapping();
+
+  //--------------------------------------------------
+  vector<string> vSym;
+  const string sSyms = pt.get<std::string>("General.SubscribeSymbols");
+  boost::split(vSym,sSyms,boost::is_any_of(","));
+  for (int i = 0; i < vSym.size(); i++)
+  p_ibmd->on_process_subscription(vSym[i]);
 
   //--------------------------------------------------
   p_BinaryRecorder->SetOutFilePath(STool::Trim(pt.get<std::string>("MarketData.DataFolder"))+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_ffffff()+".csv","w+");
