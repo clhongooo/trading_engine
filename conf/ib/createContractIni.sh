@@ -14,7 +14,7 @@ cat $CTRTINIHKFUTBASE > $CTRTINI
 # source $BLMGCOMMONPATHS
 
 # for sym in $SYMBOLLIST_USSTK_1 $SYMBOLLIST_USSTK_2 $SYMBOLLIST_USSTK_3 $SYMBOLLIST_USSTK_4
-for sym in SPY QQQ GDX
+for sym in SPY AAPL GDX
 do
     IDFROMCONIDFILE=$(cat $CONIDFILE | grep "^$sym\>" | awk '{print $2}')
     if [[ -n $IDFROMCONIDFILE ]]
