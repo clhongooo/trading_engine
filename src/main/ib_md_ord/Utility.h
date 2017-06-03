@@ -19,7 +19,7 @@ namespace atu {
 
 class Utility {
 public:
-	static string resolve2IP(string p_host);
+	// static string resolve2IP(string p_host);
 	static void initIBContractFromAtuContract(Contract* p_contract, AtuContract* p_ppAtuContract, ContractManager* p_extractor);
 };
 

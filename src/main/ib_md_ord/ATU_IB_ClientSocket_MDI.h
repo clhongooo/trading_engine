@@ -15,8 +15,11 @@
 #include <sys/select.h>
 #include <sys/fcntl.h>
 #include <unistd.h>
+#include <iostream>
 #include <boost/thread.hpp>
 #include "EClientSocketBase.h"
+
+using namespace std;
 
 namespace atu {
 

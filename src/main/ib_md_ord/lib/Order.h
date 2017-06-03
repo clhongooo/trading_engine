@@ -36,7 +36,7 @@ struct OrderComboLeg
 	}
 };
 
-typedef shared_ptr<OrderComboLeg> OrderComboLegSPtr;
+typedef boost::shared_ptr<OrderComboLeg> OrderComboLegSPtr;
 
 struct Order
 {
@@ -260,7 +260,7 @@ struct Order
 
 	// order combo legs
 	typedef std::vector<OrderComboLegSPtr> OrderComboLegList;
-	typedef shared_ptr<OrderComboLegList> OrderComboLegListSPtr;
+	typedef boost::shared_ptr<OrderComboLegList> OrderComboLegListSPtr;
 
 	OrderComboLegListSPtr orderComboLegs;
 

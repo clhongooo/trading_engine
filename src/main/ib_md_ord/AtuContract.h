@@ -9,6 +9,9 @@
 #define ATUCONTRACT_H_
 
 #include <tr1/unordered_map>
+#include <vector>
+#include <string>
+#include <boost/algorithm/string.hpp>
 
 using std::vector;
 using std::string;

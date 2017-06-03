@@ -9,8 +9,6 @@
 #include "ATU_IB_ClientSocket_MDI.h"
 #include "TwsSocketClientErrors.h"
 
-#include "Toolbox.h"
-
 #define COND_WAIT_MS 1
 
 namespace atu {
@@ -337,4 +335,3 @@ bool ATU_IB_ClientSocket_MDI::handleSocketError()
 }
 
 }
-

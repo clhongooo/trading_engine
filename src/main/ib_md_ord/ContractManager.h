@@ -28,6 +28,4 @@ private:
 };
 
 }
-
-
 #endif /* CONTRACTMANAGER_H_ */

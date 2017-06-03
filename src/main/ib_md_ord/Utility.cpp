@@ -6,7 +6,6 @@
  */
 
 #include "Utility.h"
-#include "Toolbox.h"
 #include "Contract.h"
 #include "AtuContract.h"
 #include <vector>
@@ -23,38 +22,38 @@ using std::ostringstream;
 
 namespace atu {
 
-/*
- * If the passed p_host is an IP, return the IP. Otherwise, resolve the hostname to IP and return
- */
-string Utility::resolve2IP(string p_host) {
-	string resolvedIP = p_host;
-
-	string regexpIPSegment = "(\\d|[1-9]\\d|1\\d\\d?|2[0-4]\\d|25[0-5])";
-	ostringstream oss;
-	oss << "^";
-	for (int idx = 0; idx < 4; idx++) {
-			oss << regexpIPSegment;
-			if (idx < 3) oss << "\\.";
-	}
-	oss << "$";
-	boost::regex regexIP(oss.str().c_str());
-
-	if (!boost::regex_match( p_host.c_str(), regexIP )) {
-		// resolve hostname to IP
-		typedef boost::asio::ip::tcp::resolver boost_resolver;
-		boost::asio::io_service ioService;
-		boost_resolver resolver(ioService);
-		boost_resolver::query query(p_host, "");
-		for (boost_resolver::iterator iter = resolver.resolve(query); iter != boost_resolver::iterator(); ++iter) {
-				boost::asio::ip::tcp::endpoint end = *iter;
-				resolvedIP = end.address().to_string();
-				cout << "--->>> Host IP: " << resolvedIP << endl;
-				break;
-		}
-	}
-
-	return resolvedIP;
-}
+// /*
+//  * If the passed p_host is an IP, return the IP. Otherwise, resolve the hostname to IP and return
+//  */
+// string Utility::resolve2IP(string p_host) {
+// 	string resolvedIP = p_host;
+//
+// 	string regexpIPSegment = "(\\d|[1-9]\\d|1\\d\\d?|2[0-4]\\d|25[0-5])";
+// 	ostringstream oss;
+// 	oss << "^";
+// 	for (int idx = 0; idx < 4; idx++) {
+// 			oss << regexpIPSegment;
+// 			if (idx < 3) oss << "\\.";
+// 	}
+// 	oss << "$";
+// 	boost::regex regexIP(oss.str().c_str());
+//
+// 	if (!boost::regex_match( p_host.c_str(), regexIP )) {
+// 		// resolve hostname to IP
+// 		typedef boost::asio::ip::tcp::resolver boost_resolver;
+// 		boost::asio::io_service ioService;
+// 		boost_resolver resolver(ioService);
+// 		boost_resolver::query query(p_host, "");
+// 		for (boost_resolver::iterator iter = resolver.resolve(query); iter != boost_resolver::iterator(); ++iter) {
+// 				boost::asio::ip::tcp::endpoint end = *iter;
+// 				resolvedIP = end.address().to_string();
+// 				cout << "--->>> Host IP: " << resolvedIP << endl;
+// 				break;
+// 		}
+// 	}
+//
+// 	return resolvedIP;
+// }
 
 void Utility::initIBContractFromAtuContract(Contract* p_contract, AtuContract* p_atuContract, ContractManager* p_extractor) {
 	p_contract->symbol = p_atuContract->get("symbol");

@@ -6,7 +6,6 @@
  */
 
 #include "MarketDepthData.h"
-#include "Toolbox.h"
 
 namespace atu {
 
@@ -93,10 +92,9 @@ void MarketDepthData::deleteOrder(vector<pair<double, double> > &p_priceVol, int
 	updateOrder(p_priceVol, p_position, INVALID_NUM, INVALID_NUM);
 }
 
-ATU_MDI_marketfeed_struct MarketDepthData::getMarketfeed() {
-	ATU_MDI_marketfeed_struct mf;
-	mf.m_timestamp = Toolbox::timeStamp_full();
-	mf.m_feedcode = m_feedcode;
+void MarketDepthData::getMarketfeed(ATU_MDI_marketfeed_struct & mf) const {
+	mf.m_microsec_since_epoch_gmt = SDateTime::GetCurrentUnixTimeInMicrosecGMT();
+	strcpy(mf.m_instrument,m_feedcode.c_str());
 	mf.m_traded_price = m_traded_price;
 	mf.m_traded_volume = m_traded_volume;
 	mf.m_bid_price_1 = m_bidsPriceVol[0].first;
@@ -119,9 +117,7 @@ ATU_MDI_marketfeed_struct MarketDepthData::getMarketfeed() {
 	mf.m_ask_volume_4 = m_asksPriceVol[3].second;
 	mf.m_ask_price_5 = m_asksPriceVol[4].first;
 	mf.m_ask_volume_5 = m_asksPriceVol[4].second;
-	return mf;
-}
-
 }
 
 
+}

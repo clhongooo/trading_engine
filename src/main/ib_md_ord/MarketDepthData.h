@@ -14,12 +14,13 @@
 #include <utility>
 #include "IBString.h"
 #include "ATU_Abstract_MDI.h"
-
-namespace atu {
+#include "SDateTime.h"
 
 #define MARKET_DATA_DEPTH 5
 
 using namespace std;
+
+namespace atu {
 
 class MarketDepthData {
 public:
@@ -42,11 +43,10 @@ public:
 
 	void deleteOrder(vector<pair<double, double> > &p_priceVol, int p_position);
 
-	ATU_MDI_marketfeed_struct getMarketfeed();
+	void getMarketfeed(ATU_MDI_marketfeed_struct &) const;
 
 };
 
 }
-
 
 #endif /* MARKETDEPTHDATA_H_ */

@@ -63,7 +63,7 @@ struct UnderComp
 	double	price;
 };
 
-typedef shared_ptr<ComboLeg> ComboLegSPtr;
+typedef boost::shared_ptr<ComboLeg> ComboLegSPtr;
 
 struct Contract
 {
@@ -97,7 +97,7 @@ struct Contract
 
 	// combo legs
 	typedef std::vector<ComboLegSPtr> ComboLegList;
-	typedef shared_ptr<ComboLegList> ComboLegListSPtr;
+	typedef boost::shared_ptr<ComboLegList> ComboLegListSPtr;
 
 	ComboLegListSPtr comboLegs;
 

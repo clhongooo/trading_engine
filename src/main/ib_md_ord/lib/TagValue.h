@@ -4,7 +4,8 @@
 #ifndef tagvalue_def
 #define tagvalue_def
 
-#include "shared_ptr.h"
+// #include "shared_ptr.h"
+#include <boost/shared_ptr.hpp>
 #include "IBString.h"
 
 #include <vector>
@@ -20,9 +21,9 @@ struct TagValue
 	IBString value;
 };
 
-typedef shared_ptr<TagValue> TagValueSPtr;
+typedef boost::shared_ptr<TagValue> TagValueSPtr;
 typedef std::vector<TagValueSPtr> TagValueList;
-typedef shared_ptr<TagValueList> TagValueListSPtr;
+typedef boost::shared_ptr<TagValueList> TagValueListSPtr;
 
 #endif
 
