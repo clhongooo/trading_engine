@@ -169,8 +169,3 @@ void CtpMd::SubscribeSymbol(const string & sym)
   m_Logger->Write(StdStreamLogger::INFO,"%s: Subscribed %s.", __FILENAME__,sym.c_str());
 }
 
-void CtpMd::notify_marketfeed(const ATU_MDI_marketfeed_struct &s)
-{
-}
-
-

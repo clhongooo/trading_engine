@@ -47,7 +47,6 @@ class CtpMd : public CThostFtdcMdSpi
     virtual ~CtpMd();
 
     //--------------------------------------------------
-    virtual void notify_marketfeed(const ATU_MDI_marketfeed_struct &);
     virtual void on_process_subscription(const ATU_MDI_subscription_struct &s);
 
     //--------------------------------------------------
