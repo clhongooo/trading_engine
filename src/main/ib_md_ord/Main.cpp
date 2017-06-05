@@ -47,7 +47,6 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<ATU_IB_MDI> p_ibmd
   p_ibmd->setPort     (pt.get<int>("MarketData.Port"));
   p_ibmd->setClientID (pt.get<int>("MarketData.ClientID"));
   p_ibmd->setIP               (STool::Trim(pt.get<std::string>("MarketData.IP")));
-  p_ibmd->setAccount          (STool::Trim(pt.get<std::string>("MarketData.Account")));
   p_zmq_server_md->Set        (STool::Trim(pt.get<std::string>("MarketData.ZmqMdPort")));
 
   //--------------------------------------------------
@@ -57,7 +56,6 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<ATU_IB_MDI> p_ibmd
   p_ibord->setClientID  (pt.get<int>("OrderRouting.ClientID"));
   p_ibord->setOrderMappingFile(STool::Trim(pt.get<std::string>("OrderRouting.OrderMappingFile")));
   p_ibord->setIP              (STool::Trim(pt.get<std::string>("OrderRouting.IP")));
-  p_ibord->setAccount         (STool::Trim(pt.get<std::string>("OrderRouting.Account")));
   p_zmq_server_ord->Set       (STool::Trim(pt.get<std::string>("OrderRouting.ZmqOrdPort")));
 
   //--------------------------------------------------
@@ -76,7 +74,7 @@ void ReadConfig(const string & sConfigPath, boost::shared_ptr<ATU_IB_MDI> p_ibmd
   const string sSyms = pt.get<std::string>("General.SubscribeSymbols");
   boost::split(vSym,sSyms,boost::is_any_of(","));
   for (int i = 0; i < vSym.size(); i++)
-  p_ibmd->on_process_subscription(vSym[i]);
+  p_ibmd->setSubscriptionSymbol(vSym[i]);
 
   //--------------------------------------------------
   p_BinaryRecorder->SetOutFilePath(STool::Trim(pt.get<std::string>("MarketData.DataFolder"))+"/"+SDateTime::GetCurrentTimeYYYYMMDD_HHMMSS_ffffff()+".csv","w+");

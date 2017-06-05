@@ -69,7 +69,8 @@ class ATU_IB_MDI : public ATU_IB_Client_MDI
     virtual void setIP(const string &);
     virtual void setPort(const unsigned int);
     virtual void setClientID(const int);
-    virtual void setAccount(const string &);
+    // virtual void setAccount(const string &);
+    virtual void setSubscriptionSymbol(const string &);
 
     void readContracts(string p_filepath);
 
@@ -78,10 +79,9 @@ class ATU_IB_MDI : public ATU_IB_Client_MDI
     string        m_host;
     unsigned int  m_port;
     int           m_clientId;
-    IBString      m_account;
+    // IBString      m_account;
     bool          m_isReady;
     string        m_connection_string;
-    set<string>   m_subscribedSymbols;
 
     //--------------------------------------------------
     // Returning level II (market depth) data will trigger updateMktDepth() and tickPrice() and tickSize(),
@@ -103,6 +103,7 @@ class ATU_IB_MDI : public ATU_IB_Client_MDI
     // TODO: send all when connecting?
     map<TickerId, Contract> m_subscribeList;
     unordered_set<string> m_feedcodeSet;
+    unordered_set<string> m_goingtosubscribe_feedcodeSet;
     TickerId m_nextTickerId;
 
     boost::mutex m_updateTickerIdMutex;

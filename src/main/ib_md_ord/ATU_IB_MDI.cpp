@@ -4,13 +4,14 @@ ATU_IB_MDI::ATU_IB_MDI(boost::shared_ptr<ExpandableCirBuffer> p, const string &p
   m_host(p_host)
   ,m_port(p_port)
   ,m_clientId(p_clientId)
-  ,m_account(IBString(""))
   ,m_isReady(false)
   ,m_clientSocket(this)
   ,m_nextTickerId(0)
   ,m_ecbMD(p)
 {
   m_Logger = StdStreamLogger::Instance();
+  m_feedcodeSet.clear();
+  m_goingtosubscribe_feedcodeSet.clear();
   m_subscribeList.clear();
 }
 
@@ -23,6 +24,8 @@ ATU_IB_MDI::ATU_IB_MDI(boost::shared_ptr<ExpandableCirBuffer> p) :
   ,m_ecbMD(p)
 {
   m_Logger = StdStreamLogger::Instance();
+  m_feedcodeSet.clear();
+  m_goingtosubscribe_feedcodeSet.clear();
   m_subscribeList.clear();
 }
 
@@ -48,10 +51,11 @@ void ATU_IB_MDI::setClientID(const int id)
 {
   m_clientId = id;
 }
-void ATU_IB_MDI::setAccount(const string & s)
+void ATU_IB_MDI::setSubscriptionSymbol(const string & s)
 {
-  m_account = IBString(s);
+  m_goingtosubscribe_feedcodeSet.insert(s);
 }
+
 //--------------------------------------------------
 
 void ATU_IB_MDI::readContracts(string p_filepath) {
@@ -88,7 +92,7 @@ void ATU_IB_MDI::run()
     m_clientSocket.startHandlingSendRecvMsg();
 
     sleep(2);
-    for (set<string>::iterator it = m_subscribedSymbols.begin(); it != m_subscribedSymbols.end(); ++it) on_process_subscription(*it);
+    for (unordered_set<string>::iterator it = m_goingtosubscribe_feedcodeSet.begin(); it != m_goingtosubscribe_feedcodeSet.end(); ++it) on_process_subscription(*it);
   } else {
     m_Logger->Write(StdStreamLogger::INFO,"%s: --->>> MDI failed to connect to TWS.", __FILENAME__);
   }
@@ -248,6 +252,11 @@ bool ATU_IB_MDI::on_process_subscription(const string & sFeedcode){
     atuContract = m_contractExtractor->getContract(sFeedcode);
     Utility::initIBContractFromAtuContract(&contract, atuContract, m_contractExtractor);
   }
+  else
+  {
+    m_updateTickerIdMutex.unlock();
+    return false;
+  }
   // else {
   //   // The content of feedcode follows the pattern: {symbol}-{localSymbol}-{secType}
   //   vector<string> parts;
@@ -295,6 +304,8 @@ bool ATU_IB_MDI::on_process_subscription(const string & sFeedcode){
   m_nextTickerId++;
 
   m_updateTickerIdMutex.unlock();
+
+  m_Logger->Write(StdStreamLogger::INFO,"%s: Subscribed symbol: %s", __FILENAME__, sFeedcode.c_str());
 
   return true;
 }
