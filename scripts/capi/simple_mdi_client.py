@@ -79,52 +79,55 @@ def send_zmq(msg):
     zmq_socket.send(msg)
     print right_justify("Sent: %s%s%s" % (BWhite,msg,Color_Off), JUSTIFY_COL)
 
-###################################################
-parser = argparse.ArgumentParser(description = "Connects to ZMQ server and gets market data for symbols.")
-parser.add_argument('-i','--ip', dest='ip', help='Server IP', required=True)
-parser.add_argument('-p','--port', dest='port', help='Server Port', required=True)
-parser.add_argument('-f','--file', dest='symbolfile', help='Symbol file', required=False)
-args = parser.parse_args()
 
-###################################################
-context = zmq.Context()
-zmq_socket= context.socket(zmq.SUB)
-zmq_socket.setsockopt(zmq.SUBSCRIBE, "")
-zmq_socket.connect("tcp://%s:%s" % (args.ip,args.port))
+if __name__ == '__main__':
 
-recv_thd = Thread(target = recv_zmq)
-recv_thd.daemon = True
-recv_thd.start()
-###################################################
+    ###################################################
+    parser = argparse.ArgumentParser(description = "Connects to ZMQ server and gets market data for symbols.")
+    parser.add_argument('-i','--ip', dest='ip', help='Server IP', required=True)
+    parser.add_argument('-p','--port', dest='port', help='Server Port', required=True)
+    parser.add_argument('-f','--file', dest='symbolfile', help='Symbol file', required=False)
+    args = parser.parse_args()
+
+    ###################################################
+    context = zmq.Context()
+    zmq_socket= context.socket(zmq.SUB)
+    zmq_socket.setsockopt(zmq.SUBSCRIBE, "")
+    zmq_socket.connect("tcp://%s:%s" % (args.ip,args.port))
+
+    recv_thd = Thread(target = recv_zmq)
+    recv_thd.daemon = True
+    recv_thd.start()
+    ###################################################
 
 
-while True:
-    print in_colour("%s" % time.strftime("%Y-%m-%d %H:%M:%S"), BBlack)
+    while True:
+        print in_colour("%s" % time.strftime("%Y-%m-%d %H:%M:%S"), BBlack)
 
-    # ###################################################
-    # # for testing
-    # ###################################################
-    # MD_DICT = dict(map(lambda x: ("sym"+str(x),(30.+random.randint(1, 10)/10.,30.3,30.6)),range(1,10)))
-    # ###################################################
+        # ###################################################
+        # # for testing
+        # ###################################################
+        # MD_DICT = dict(map(lambda x: ("sym"+str(x),(30.+random.randint(1, 10)/10.,30.3,30.6)),range(1,10)))
+        # ###################################################
 
-    for k,v in sorted(MD_DICT.items()):
-        t,b,a = tuple(map(float,v))
-        sys.stdout.write (in_colour(right_justify(k, 10),BBlue) + " " + right_justify("T: ",5) + right_justify(t,10) + right_justify("B/A: ",10))
+        for k,v in sorted(MD_DICT.items()):
+            t,b,a = tuple(map(float,v))
+            sys.stdout.write (in_colour(right_justify(k, 10),BBlue) + " " + right_justify("T: ",5) + right_justify(t,10) + right_justify("B/A: ",10))
 
-        price6 = [t if t  < b else "",
-                  t if t == b else b,
-                  t if (t  > b and t  < a) else "",
-                  t if t == a else a,
-                  t if t  > a else "",
-                  str(round((a-b)/(a+b)*200.,2))+"%" if (abs(a) > 0.0001 and abs(b) > 0.0001) else "Nil"]
+            price6 = [t if t  < b else "",
+                      t if t == b else b,
+                      t if (t  > b and t  < a) else "",
+                      t if t == a else a,
+                      t if t  > a else "",
+                      str(round((a-b)/(a+b)*200.,2))+"%" if (abs(a) > 0.0001 and abs(b) > 0.0001) else "Nil"]
 
-        displ6 = [BBlack,
-                  Red if t <= b else Color_Off,
-                  Yellow,
-                  Green if t >= a else Color_Off,
-                  BBlack,
-                  Color_Off]
+            displ6 = [BBlack,
+                      Red if t <= b else Color_Off,
+                      Yellow,
+                      Green if t >= a else Color_Off,
+                      BBlack,
+                      Color_Off]
 
-        print ' '.join(map(lambda x: in_colour(right_justify(x[0],10),x[1]), zip(price6,displ6)))
+            print ' '.join(map(lambda x: in_colour(right_justify(x[0],10),x[1]), zip(price6,displ6)))
 
-    time.sleep(1)
+        time.sleep(1)
