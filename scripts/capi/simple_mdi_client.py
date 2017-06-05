@@ -109,7 +109,7 @@ while True:
 
     for k,v in sorted(MD_DICT.items()):
         t,b,a = tuple(map(float,v))
-        sys.stdout.write (in_colour(k,BBlue) + " " + right_justify("T: ",5) + right_justify(t,10) + right_justify("B/A: ",10))
+        sys.stdout.write (in_colour(right_justify(k, 10),BBlue) + " " + right_justify("T: ",5) + right_justify(t,10) + right_justify("B/A: ",10))
 
         price6 = [t if t  < b else "",
                   t if t == b else b,
