@@ -1,7 +1,7 @@
 #!/bin/bash
 
           BLMGCOMMONPATHS=/home/qy/Dropbox/dataENF/blmg/common_path.sh
-         CTRTINIHKFUTBASE=contracts_fut_base.ini
+           CTRTINIFUTBASE=contracts_fut_base.ini
            CTRTINISTKBASE=contracts_stk_base.ini
   CTRTINISTKBASEWITHCONID=contracts_stk_base_withConId.ini
            CTRTINICURBASE=contracts_cur_base.ini
@@ -11,8 +11,27 @@
                   TMPFILE=/tmp/create_ctrt.tmp
                  TMPFILE2=/tmp/create_ctrt2.tmp
 
+
 ##################################################
-cat $CTRTINIHKFUTBASE > $CTRTINI
+cat /dev/null > $CTRTINI
+
+##################################################
+for pdt in HSI HHI
+do
+    for mth in M N
+    do
+        for yr in 7
+        do
+            localsym=$pdt"$mth"1"$yr"
+            sym=$pdt"$mth"$yr
+            if [[ $pdt == "HHI" ]]; then pdt="HHI.HK"; fi
+            cat $CTRTINIFUTBASE | sed -e 's/__EXCHG__/HKFE/' | sed -e "s/__SYMBOL__/$sym/" | sed -e "s/__LOCALSYM__/$localsym/" | sed -e "s/__PRODUCT__/$pdt/" >> $CTRTINI
+            echo >> $CTRTINI
+        done
+    done
+done
+
+
 
 ##################################################
 # source $BLMGCOMMONPATHS
