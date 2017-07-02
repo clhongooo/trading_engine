@@ -12,7 +12,7 @@ ZMQServerClientBase::ZMQServerClientBase(const int zmq_type) : m_zmq_type(zmq_ty
   if (zmq_type == ZMQ_SUB) m_zmqsocket->setsockopt(ZMQ_SUBSCRIBE, "", 0);
 
   const int val = 0;
-  const int rc = zmq_setsockopt(*m_zmqsocket, ZMQ_LINGER, &val, sizeof(val));
+  const int rc = zmq_setsockopt(m_zmqsocket.get(), ZMQ_LINGER, &val, sizeof(val));
   assert (rc == 0);
 }
 
@@ -54,7 +54,7 @@ void ZMQServerClientBase::Run()
 void ZMQServerClientBase::KeepWaitingForRead()
 {
   zmq::pollitem_t m_pollitems [] = {
-    { *m_zmqsocket, 0, ZMQ_POLLIN, 0 }
+    { m_zmqsocket.get(), 0, ZMQ_POLLIN, 0 }
   };
   do
   {
@@ -66,7 +66,7 @@ void ZMQServerClientBase::KeepWaitingForRead()
 void ZMQServerClientBase::KeepWaitingForWrite()
 {
   zmq::pollitem_t m_pollitems [] = {
-    { *m_zmqsocket, 0, ZMQ_POLLOUT, 0 }
+    { m_zmqsocket.get(), 0, ZMQ_POLLOUT, 0 }
   };
   do
   {
