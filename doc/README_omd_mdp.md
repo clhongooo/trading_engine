@@ -113,3 +113,12 @@ E.g. Channel 10
 -   Log is written using the Pantheios library.
 -   Can issue manual commands (e.g. To force refresh to be performed) into the system by telnet'ing the port 8000.
 -   Conditional variable and is used for signaling among threads to achieve maximum speed
+
+
+# Comparing with Hanh's CME MDP
+- single thread vs numerous dedicated thread. will the latter be really slow? seems no.
+- Hanh: allocate again and again the refresh buffer
+- Hanh: refresh channel drop until got missing packets, not fast enough
+- Hanh: no simultaneous handling of multiple channels / symbols, no good
+- Sunny: (much) faster order book processing
+- Sunny: lavish approach: prefer speed at the expense of system resource
