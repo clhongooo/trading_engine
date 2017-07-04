@@ -7,6 +7,14 @@ BUILD_MODE=DEBUG
 
 [[ -n $(which ctags) ]] && ctags -R .
 
+###################################################
+cd src/main/libjson
+make clean
+mkdir Objects_static/
+make -j $CORE_MINUS_1
+cd ../../..
+
+###################################################
 if [[ $@ == *"c"* && -d $TARGET_FOLDER ]]
 then
     rm -rf $TARGET_FOLDER
