@@ -13,7 +13,10 @@ ZMQServerClientBase::ZMQServerClientBase(const int zmq_type) : m_zmq_type(zmq_ty
 
   const int val = 0;
   const int rc = zmq_setsockopt(m_zmqsocket.get(), ZMQ_LINGER, &val, sizeof(val));
-  assert (rc == 0);
+  //--------------------------------------------------
+  // if this fails just let it be
+  //--------------------------------------------------
+  // assert (rc == 0);
 }
 
 ZMQServer::ZMQServer(const int zmq_type) : ZMQServerClientBase(zmq_type) {}
