@@ -60,6 +60,8 @@ void Utility::initIBContractFromAtuContract(Contract* p_contract, AtuContract* p
 	p_contract->localSymbol = p_atuContract->get("localSymbol");
 	p_contract->secType = p_atuContract->get("secType");
 	p_contract->currency = p_atuContract->get("currency");
+	p_contract->right = p_atuContract->get("right");
+	p_contract->strike = boost::lexical_cast<double>(p_atuContract->get("strike"));
 	string strConId = p_atuContract->get("conId");
 	if (strConId != "") {
 		p_contract->conId = boost::lexical_cast<long>(strConId);
