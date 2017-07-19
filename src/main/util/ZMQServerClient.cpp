@@ -11,11 +11,11 @@ ZMQServerClientBase::ZMQServerClientBase(const int zmq_type) : m_zmq_type(zmq_ty
 
   if (zmq_type == ZMQ_SUB) m_zmqsocket->setsockopt(ZMQ_SUBSCRIBE, "", 0);
 
-  const int val = 0;
-  const int rc = zmq_setsockopt(m_zmqsocket.get(), ZMQ_LINGER, &val, sizeof(val));
-  //--------------------------------------------------
-  // if this fails just let it be
-  //--------------------------------------------------
+  // const int val = 0;
+  // const int rc = zmq_setsockopt(m_zmqsocket.get(), ZMQ_LINGER, &val, sizeof(val));
+  // //--------------------------------------------------
+  // // if this fails just let it be
+  // //--------------------------------------------------
   // assert (rc == 0);
 }
 
@@ -57,7 +57,7 @@ void ZMQServerClientBase::Run()
 void ZMQServerClientBase::KeepWaitingForRead()
 {
   zmq::pollitem_t m_pollitems [] = {
-    { m_zmqsocket.get(), 0, ZMQ_POLLIN, 0 }
+    { (void *)m_zmqsocket.get(), 0, ZMQ_POLLIN, 0 }
   };
   do
   {
@@ -69,7 +69,7 @@ void ZMQServerClientBase::KeepWaitingForRead()
 void ZMQServerClientBase::KeepWaitingForWrite()
 {
   zmq::pollitem_t m_pollitems [] = {
-    { m_zmqsocket.get(), 0, ZMQ_POLLOUT, 0 }
+    { (void *)m_zmqsocket.get(), 0, ZMQ_POLLOUT, 0 }
   };
   do
   {
@@ -98,7 +98,7 @@ void ZMQServerClientBase::SendRecvLoop()
         const size_t sz = m_send_queue->GetPktSize();
         zmq::message_t zmq_send_msg(sz);
         memcpy((void *)zmq_send_msg.data(),pb,sz);
-        KeepWaitingForWrite();
+        // KeepWaitingForWrite();
         m_zmqsocket->send(zmq_send_msg);
         // m_zmqsocket->send(zmq_send_msg, ZMQ_NOBLOCK);
         m_send_queue->PopFront();
