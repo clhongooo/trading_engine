@@ -9,8 +9,6 @@
 #include <iostream>
 using namespace std;
 
-#define LISTEN_ADDRESS "10.55.16.29"
-
 McastThreadCls::McastThreadCls(const McastIdentifier & id) : m_McIdentifier(id)
 {}
 
@@ -25,13 +23,11 @@ void McastThreadCls::Run()
   {
     McastReceiver mr (
         m_ios,
-        boost::asio::ip::address::from_string(LISTEN_ADDRESS),
+        boost::asio::ip::address::from_string("0.0.0.0"),
         boost::asio::ip::address::from_string(m_McIdentifier.IP()),
         m_McIdentifier.Port(),
         MAX_OMD_PACKET_SIZE,
         m_McIdentifier);
-
-    cout << m_McIdentifier.IP() << " " << LISTEN_ADDRESS << endl;
 
     m_ios.run(); //blocking
   }

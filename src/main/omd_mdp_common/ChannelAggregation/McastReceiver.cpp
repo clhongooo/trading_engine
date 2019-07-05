@@ -6,8 +6,6 @@
  */
 
 #include "McastReceiver.h"
-#include <iostream>
-using namespace std;
 
 McastReceiver::McastReceiver(boost::asio::io_context& io_context,
     const boost::asio::ip::address& listen_address,
@@ -41,7 +39,7 @@ McastReceiver::McastReceiver(boost::asio::io_context& io_context,
 
   // Join the multicast group.
   m_Socket.set_option(
-      boost::asio::ip::multicast::join_group(multicast_address.to_v4(), listen_address.to_v4()));
+      boost::asio::ip::multicast::join_group(multicast_address.to_v4(), boost::asio::ip::address::from_string("10.55.16.29").to_v4()));
 
   m_WritePtr = m_RawPktCirBuf->GetWritingPtr();
   m_Socket.async_receive_from(
@@ -64,8 +62,6 @@ void McastReceiver::handle_receive_from(const boost::system::error_code& error, 
       m_Logger->Write(Logger::DEBUG, "MulticastReceiver: Send Time:    %u", (unsigned long )(READ_UINT64(m_WritePtr+8)));
     }
 
-    cout << "packet size:" << (unsigned short)(READ_UINT16(m_WritePtr)) << endl; 
-    
     m_RawPktCirBuf->PushBack(bytes_recvd);
 
     m_WritePtr = m_RawPktCirBuf->GetWritingPtr();
