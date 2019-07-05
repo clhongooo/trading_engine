@@ -33,7 +33,7 @@ class McastThreadCls
     void CallIoserviceStop();
 
   private:
-    boost::asio::io_service m_ios;
+    boost::asio::io_context m_ios;
     McastIdentifier m_McIdentifier;
 };
 

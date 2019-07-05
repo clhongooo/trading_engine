@@ -42,9 +42,9 @@ RTSClient::RTSClient() :
 
   Init();
 
-  m_resolver.reset(new tcp::resolver(m_io_service));
-  m_socket.reset(new tcp::socket(m_io_service));
-  m_deadlinetimer.reset(new deadline_timer(m_io_service));
+  m_resolver.reset(new tcp::resolver(m_io_context));
+  m_socket.reset(new tcp::socket(m_io_context));
+  m_deadlinetimer.reset(new deadline_timer(m_io_context));
 
   m_Buffer = new char[TCPReadByte];
   memset(m_Buffer,'\0',TCPReadByte);
@@ -73,7 +73,7 @@ void RTSClient::Init()
   m_pRTS_ServerIP           =  m_SysCfg->GetRTSServerIP();
   m_pRTS_ServerPort         =  m_SysCfg->GetRTSServerPort();
   m_RTSClientSleepMillisec  =  m_SysCfg->GetRTSClientSleepMillisec();
-  m_RTS_SvrIndex            =  0; // Starting from the first RTS server. // Starting from the first RTS server::resolver resolver(m_io_service);
+  m_RTS_SvrIndex            =  0; // Starting from the first RTS server. // Starting from the first RTS server::resolver resolver(m_io_context);
   m_RTS_NoOfTimeout         =  0;
 
   return;
@@ -1041,7 +1041,7 @@ bool RTSClient::read_some_with_timeout(boost::shared_ptr<boost::asio::ip::tcp::s
   // Re-Init
   //--------------------------------------------------
   m_deadlinetimer->cancel();
-  sock->get_io_service().reset();
+  ((boost::asio::io_context&)sock->get_executor().context()).reset();
   m_BytesReadFrAsyncRead = 0;
   m_BytesWrittenFrAsyncWrite = 0;
   m_TimerExpired = false;
@@ -1052,7 +1052,7 @@ bool RTSClient::read_some_with_timeout(boost::shared_ptr<boost::asio::ip::tcp::s
   m_deadlinetimer->expires_from_now(boost::posix_time::seconds(10));
   m_deadlinetimer->async_wait(boost::bind(&RTSClient::handle_timerexpiry, this, boost::asio::placeholders::error));
 
-  sock->get_io_service().run();
+  ((boost::asio::io_context&)sock->get_executor().context()).run();
 
   bytes_transferred = m_BytesReadFrAsyncRead;
 
@@ -1068,7 +1068,7 @@ bool RTSClient::write_some_with_timeout(boost::shared_ptr<boost::asio::ip::tcp::
   // Re-Init
   //--------------------------------------------------
   m_deadlinetimer->cancel();
-  sock->get_io_service().reset();
+  ((boost::asio::io_context&)sock->get_executor().context()).reset();
   m_BytesReadFrAsyncRead = 0;
   m_BytesWrittenFrAsyncWrite = 0;
   m_TimerExpired = false;
@@ -1079,7 +1079,7 @@ bool RTSClient::write_some_with_timeout(boost::shared_ptr<boost::asio::ip::tcp::
   m_deadlinetimer->expires_from_now(boost::posix_time::seconds(10));
   m_deadlinetimer->async_wait(boost::bind(&RTSClient::handle_timerexpiry, this, boost::asio::placeholders::error));
 
-  sock->get_io_service().run();
+  ((boost::asio::io_context&)sock->get_executor().context()).run();
 
   if (m_TimerExpired) return false;
   else if (m_ReadWriteError) return false;

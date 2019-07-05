@@ -6,6 +6,7 @@
 
 #include <string>
 #include <iostream>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -584,7 +585,7 @@ void FixTrader::fromApp(const FIX::Message& message,
           order_type = FIX::OrdType_STOP;
         }
         string timestamp(time_now());
-        FIX::TransactTime transact_time(timestamp.c_str());
+        FIX::TransactTime transact_time(atoi(timestamp.c_str()));
         CME_FIX_NAMESPACE::NewOrderSingle new_order(cl_order_id, handl_inst, symbol,
                                                     side, transact_time, order_type);
         FIX::Price price(order->limit_price);
@@ -711,7 +712,7 @@ void FixTrader::fromApp(const FIX::Message& message,
         FIX::Symbol symbol(orig_order->symbol);
         // FIX::Symbol symbol("GE");
         string timestamp(time_now());
-        FIX::TransactTime transact_time(timestamp.c_str());
+        FIX::TransactTime transact_time(atoi(timestamp.c_str()));
 
         CME_FIX_NAMESPACE::OrderCancelRequest cancel_order(orig_cl_order_id,
                                                            cl_order_id,
@@ -812,7 +813,7 @@ void FixTrader::fromApp(const FIX::Message& message,
         FIX::Symbol symbol(str_symbol.c_str());
         // FIX::Symbol symbol("GE");
         string timestamp(time_now());
-        FIX::TransactTime transact_time(timestamp.c_str());
+        FIX::TransactTime transact_time(atoi(timestamp.c_str()));
 
         CME_FIX_NAMESPACE::OrderCancelRequest cancel_order(orig_cl_order_id,
                                                            cl_order_id,
@@ -901,7 +902,7 @@ void FixTrader::fromApp(const FIX::Message& message,
         FIX::ClOrdID cl_order_id(cl_order_id_str);
         FIX::SecurityDesc security_desc(order->instrument_id);
         string timestamp(time_now());
-        FIX::TransactTime transact_time(timestamp.c_str());
+        FIX::TransactTime transact_time(atoi(timestamp.c_str()));
 
         mass_order_cancel.setField(cl_order_id);
         mass_order_cancel.setField(security_desc);
@@ -949,7 +950,7 @@ void FixTrader::fromApp(const FIX::Message& message,
         FIX::Symbol symbol(orig_order->symbol);
         // FIX::Symbol symbol("GE");
         string timestamp(time_now());
-        FIX::TransactTime transact_time(timestamp.c_str());
+        FIX::TransactTime transact_time(atoi(timestamp.c_str()));
 
         CME_FIX_NAMESPACE::OrderCancelReplaceRequest replace_order(
           orig_cl_order_id, cl_order_id, handl_inst, symbol,

@@ -28,7 +28,7 @@ class McastReceiver
 {
   public:
     McastReceiver(
-        boost::asio::io_service&,
+        boost::asio::io_context&,
         const boost::asio::ip::address&,
         const boost::asio::ip::address&,
         const short,

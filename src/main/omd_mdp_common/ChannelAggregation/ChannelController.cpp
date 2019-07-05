@@ -6,6 +6,10 @@
  */
 
 #include "ChannelController.h"
+#include <iostream>
+using namespace std;
+
+#define LISTEN_ADDRESS "10.55.16.29"
 
 McastThreadCls::McastThreadCls(const McastIdentifier & id) : m_McIdentifier(id)
 {}
@@ -21,11 +25,13 @@ void McastThreadCls::Run()
   {
     McastReceiver mr (
         m_ios,
-        boost::asio::ip::address::from_string(m_McIdentifier.IP()),
+        boost::asio::ip::address::from_string(LISTEN_ADDRESS),
         boost::asio::ip::address::from_string(m_McIdentifier.IP()),
         m_McIdentifier.Port(),
         MAX_OMD_PACKET_SIZE,
         m_McIdentifier);
+
+    cout << m_McIdentifier.IP() << " " << LISTEN_ADDRESS << endl;
 
     m_ios.run(); //blocking
   }
@@ -50,7 +56,7 @@ void ChannelController::StopMcastRecvr()
 {
   for (unsigned int i = 0; i < m_McastThreadCls.size(); i++)
     m_McastThreadCls[i].CallIoserviceStop();    
-  Logger::Instance()->Write(Logger::NOTICE, "McastReceiver io_service have stopped.");
+  Logger::Instance()->Write(Logger::NOTICE, "McastReceiver io_context have stopped.");
 }
 
 void ChannelController::StartRecvMcast()

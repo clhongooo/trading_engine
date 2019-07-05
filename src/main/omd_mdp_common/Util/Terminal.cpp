@@ -8,9 +8,9 @@
 #include "Terminal.h"
 
 
-  TerminalSession::TerminalSession(boost::asio::io_service& io_service, ChannelController *cc)
-: m_socket(io_service),
-  m_ios(io_service),
+  TerminalSession::TerminalSession(boost::asio::io_context& io_context, ChannelController *cc)
+: m_socket(io_context),
+  m_ios(io_context),
   m_pChnlCtrlr(cc)
 {
   m_Logger = Logger::Instance();
@@ -541,9 +541,9 @@ void TerminalSession::output_tml_log()
 }
 
 
-  TerminalServer::TerminalServer(boost::asio::io_service& io_service, short port, ChannelController *cc)
-: io_service_(io_service),
-  acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
+  TerminalServer::TerminalServer(boost::asio::io_context& io_context, short port, ChannelController *cc)
+: io_context_(io_context),
+  acceptor_(io_context, tcp::endpoint(tcp::v4(), port)),
   m_pChnlCtrlr(cc)
 {
   m_Logger = Logger::Instance();
@@ -553,7 +553,7 @@ void TerminalSession::output_tml_log()
 
 void TerminalServer::start_accept()
 {
-  TerminalSession* newTmlSess = new TerminalSession(io_service_, m_pChnlCtrlr);
+  TerminalSession* newTmlSess = new TerminalSession(io_context_, m_pChnlCtrlr);
   m_vTmlSess.push_back(newTmlSess);
 
   if (!m_ShrObj->ThreadShouldExit())
@@ -574,7 +574,7 @@ void TerminalServer::handle_accept(TerminalSession* newTmlSess, const boost::sys
   if (!error)
   {
     newTmlSess->start();
-    newTmlSess = new TerminalSession(io_service_, m_pChnlCtrlr);
+    newTmlSess = new TerminalSession(io_context_, m_pChnlCtrlr);
     m_vTmlSess.push_back(newTmlSess);
     if (!m_ShrObj->ThreadShouldExit())
     {
@@ -611,9 +611,9 @@ void TerminalThread::Run()
   //--------------------------------------------------
   try
   {
-    boost::asio::io_service io_service;
-    TerminalServer s(io_service,m_SystemServicePort,m_pChnlCtrlr);
-    io_service.run(); // Blocks here
+    boost::asio::io_context io_context;
+    TerminalServer s(io_context,m_SystemServicePort,m_pChnlCtrlr);
+    io_context.run(); // Blocks here
   }
   catch (std::exception& e)
   {

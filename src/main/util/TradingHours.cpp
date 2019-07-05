@@ -157,7 +157,7 @@ bool TradingHours::IsTradingHourPrivate(const string & symbol, const YYYYMMDD & 
     it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
     if (it_vYYYYMMDD != vYYYYMMDD.end())
     {
-      iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+      iDateIdx = std::distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
     }
     else
     {
@@ -186,7 +186,7 @@ bool TradingHours::IsTradingHourPrivate(const string & symbol, const YYYYMMDD & 
       it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
       if (it_vYYYYMMDD != vYYYYMMDD.end())
       {
-        iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+        iDateIdx = std::distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
       }
       else
       {
@@ -236,7 +236,7 @@ bool TradingHours::IsTradingHourPrivate(const string & symbol, const YYYYMMDD & 
     // Not expecting a lot of trading sessions, so no need to memoize
     //--------------------------------------------------
     vector<HMS>::iterator it_vHMS = lower_bound(vHMS.begin(),vHMS.end(),hms);
-    const int iTimeIdx = distance(vHMS.begin(),it_vHMS);
+    const int iTimeIdx = std::distance(vHMS.begin(),it_vHMS);
 
     if (*it_vHMS == hms)
     {
@@ -299,7 +299,7 @@ HHMMSS TradingHours::GetTimeNSecBefClose(const string & symbol, const YYYYMMDD &
     it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
     if (it_vYYYYMMDD != vYYYYMMDD.end())
     {
-      iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+      iDateIdx = std::distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
     }
     else
     {
@@ -330,7 +330,7 @@ HHMMSS TradingHours::GetTimeNSecBefClose(const string & symbol, const YYYYMMDD &
         it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
         if (it_vYYYYMMDD != vYYYYMMDD.end())
         {
-          iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+          iDateIdx = std::distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
         }
         else
         {
@@ -404,7 +404,7 @@ HHMMSS TradingHours::GetTimeNSecAftOpen(const string & symbol, const YYYYMMDD & 
     it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
     if (it_vYYYYMMDD != vYYYYMMDD.end())
     {
-      iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+      iDateIdx = std::distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
     }
     else
     {
@@ -435,7 +435,7 @@ HHMMSS TradingHours::GetTimeNSecAftOpen(const string & symbol, const YYYYMMDD & 
         it_vYYYYMMDD = lower_bound(vYYYYMMDD.begin(),vYYYYMMDD.end(),ymd);
         if (it_vYYYYMMDD != vYYYYMMDD.end())
         {
-          iDateIdx = distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
+          iDateIdx = std::distance(vYYYYMMDD.begin(),it_vYYYYMMDD);
         }
         else
         {

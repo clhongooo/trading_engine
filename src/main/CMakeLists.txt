@@ -8,8 +8,9 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wfatal-errors -foptimize-sibling-calls -fext-nu
 # set_property(TARGET prog PROPERTY CXX_STANDARD 11)
 # set_property(TARGET prog PROPERTY CXX_STANDARD_REQUIRED ON)
 
-set(PANTHEIOS_INC /usr/local/pantheios/include
-                  /usr/local/stlsoft/include)
+set(PANTHEIOS_INC $ENV{PANTHEIOS_ROOT}/include
+    $ENV{STLSOFT}/include)
+set(PANTHEIOS_LIB $ENV{PANTHEIOS_ROOT}/lib)
 
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
@@ -21,7 +22,6 @@ find_package(Boost COMPONENTS
                               thread
                               filesystem
                               REQUIRED)
-
 
 ##################################################
 # cmake can't find GSL in some distros

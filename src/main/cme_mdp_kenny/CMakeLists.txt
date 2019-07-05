@@ -1,5 +1,5 @@
 project(cme_mdp_kenny)
 include_directories(. sbe cme ../logger)
-link_directories(/usr/local/pantheios/lib)
+link_directories($ENV{QUICKFIXLIB})
 add_executable(${PROJECT_NAME} CmeMdApi.cpp cme-md.cpp)
 target_link_libraries(${PROJECT_NAME} pthread logger pantheios.1.core.gcc46 pantheios.1.be.file.gcc46 pantheios.1.bec.file.gcc46 pantheios.1.util.gcc46)

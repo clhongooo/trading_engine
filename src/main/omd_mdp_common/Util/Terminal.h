@@ -49,7 +49,7 @@ class TerminalSession
 {
   enum { SIZE = 1024 };
   public:
-    TerminalSession(boost::asio::io_service&,ChannelController*);
+    TerminalSession(boost::asio::io_context&,ChannelController*);
 
     tcp::socket& socket() { return m_socket; }
 
@@ -65,7 +65,7 @@ class TerminalSession
     boost::shared_ptr<SystemConfig>   m_SysCfg;
     boost::shared_ptr<SharedObjects>  m_ShrObj;
     tcp::socket                m_socket;
-    boost::asio::io_service&   m_ios;
+    boost::asio::io_context&   m_ios;
     char                       m_Buffer[SIZE];
     char                       m_LastCmd[SIZE];
     ChannelController *       m_pChnlCtrlr;
@@ -74,7 +74,7 @@ class TerminalSession
 class TerminalServer
 {
   public:
-    TerminalServer(boost::asio::io_service&, short, ChannelController *);
+    TerminalServer(boost::asio::io_context&, short, ChannelController *);
     ~TerminalServer() {}
 
   private:
@@ -83,7 +83,7 @@ class TerminalServer
 
     boost::shared_ptr<Logger>           m_Logger;
     boost::shared_ptr<SharedObjects>    m_ShrObj;
-    boost::asio::io_service&     io_service_;
+    boost::asio::io_context&     io_context_;
     tcp::acceptor                acceptor_;
     ChannelController *          m_pChnlCtrlr;
     ptr_vector<TerminalSession>  m_vTmlSess;
